@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+tsconfig.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Claude Code / local planning files
+CLAUDE.md
+PLAN.md
+lessons.md
+.claude/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
