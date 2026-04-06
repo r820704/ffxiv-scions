@@ -1,0 +1,182 @@
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #e0e0e0;
+  background: #1a1a2e;
+  min-height: 100vh;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  color: #a0c4ff;
+}
+
+.layout {
+  display: flex;
+  gap: 16px;
+}
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ZoneSelector */
+.zoneSelector {
+  max-height: 70vh;
+  overflow-y: auto;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #16213e;
+}
+
+.groupLabel {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  color: #7a8ba8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #0f3460;
+  position: sticky;
+  top: 0;
+}
+
+.zoneButton {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: #c8d6e5;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.zoneButton:hover {
+  background: #1a3a5c;
+}
+
+.zoneButtonActive {
+  background: #1a3a5c;
+  color: #a0c4ff;
+  font-weight: bold;
+}
+
+/* WeatherFilter */
+.filterSection {
+  margin-bottom: 12px;
+}
+
+.filterTitle {
+  font-size: 0.85rem;
+  color: #7a8ba8;
+  margin-bottom: 6px;
+}
+
+.filterChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  padding: 3px 8px;
+  border: 1px solid #333;
+  border-radius: 12px;
+  background: transparent;
+  color: #c8d6e5;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.chip:hover {
+  border-color: #a0c4ff;
+}
+
+.chipActive {
+  background: #1a3a5c;
+  border-color: #a0c4ff;
+  color: #a0c4ff;
+}
+
+/* Timeline & MatchList */
+.sectionTitle {
+  font-size: 1rem;
+  color: #a0c4ff;
+  margin: 12px 0 8px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 4px;
+}
+
+.timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.weatherCell {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  background: #16213e;
+  border: 1px solid #333;
+  text-align: center;
+  min-width: 60px;
+}
+
+.weatherCellCurrent {
+  border-color: #a0c4ff;
+  background: #1a3a5c;
+}
+
+.weatherCellTime {
+  font-size: 0.65rem;
+  color: #7a8ba8;
+}
+
+.matchTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.matchTable th {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 2px solid #333;
+  color: #7a8ba8;
+  font-weight: normal;
+}
+
+.matchTable td {
+  padding: 5px 8px;
+  border-bottom: 1px solid #222;
+}
+
+.matchTable tr:hover td {
+  background: #16213e;
+}
+
+.noSelection {
+  text-align: center;
+  color: #7a8ba8;
+  margin-top: 40px;
+  font-size: 1rem;
+}
+
+/* Global reset */
+:global(body) {
+  margin: 0;
+  background: #1a1a2e;
+}
