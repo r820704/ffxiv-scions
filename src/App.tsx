@@ -37,9 +37,9 @@ export default function App() {
         <div className={styles.main}>
           {selectedZone ? (
             <>
-              <div className={styles.sectionTitle}>
+              <h2 className={styles.zoneTitle}>
                 {zoneNamesTw[selectedZone] ?? selectedZone}
-              </div>
+              </h2>
               <WeatherFilter
                 zone={selectedZone}
                 selectedWeathers={selectedWeathers}
@@ -49,7 +49,10 @@ export default function App() {
               <MatchList zone={selectedZone} targetWeathers={selectedWeathers} />
             </>
           ) : (
-            <div className={styles.noSelection}>← 請選擇一個地區</div>
+            <div className={styles.noSelection}>
+              ← 請從左側選擇一個地區
+              <span className={styles.noSelectionHint}>選擇後可查看天氣預報與篩選符合條件的時段</span>
+            </div>
           )}
         </div>
       </div>

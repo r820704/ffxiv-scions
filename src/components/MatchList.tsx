@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { findWeatherMatches } from '../utils/weather-engine';
 import { formatLocalTime, toEorzeaTime, formatEorzeaTime } from '../utils/eorzea-time';
+import { getWeatherColor } from '../utils/weather-colors';
 import styles from '../styles/App.module.css';
 
 interface MatchListProps {
@@ -20,31 +21,43 @@ export default function MatchList({ zone, targetWeathers }: MatchListProps) {
   }
 
   return (
-    <div>
-      <div className={styles.sectionTitle}>
-        匹配結果（{matches.length} 筆）
-      </div>
-      <table className={styles.matchTable}>
-        <thead>
-          <tr>
-            <th>本地時間</th>
-            <th>ET 時間</th>
-            <th>天氣</th>
-          </tr>
-        </thead>
-        <tbody>
-          {matches.map((m) => {
-            const et = toEorzeaTime(m.startTime);
-            return (
-              <tr key={m.startTime}>
-                <td>{formatLocalTime(m.startTime)}</td>
-                <td>{formatEorzeaTime(et)}</td>
-                <td>{m.weatherTw}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <section className={styles.card}>
+      <h2 className={styles.cardTitle}>匹配結果（{matches.length} 筆）</h2>
+      {matches.length === 0 ? (
+        <div className={styles.emptyMatches}>沒有符合條件的時段</div>
+      ) : (
+        <table className={styles.matchTable}>
+          <thead>
+            <tr>
+              <th>本地時間</th>
+              <th>ET 時間</th>
+              <th>天氣</th>
+            </tr>
+          </thead>
+          <tbody>
+            {matches.map((m) => {
+              const et = toEorzeaTime(m.startTime);
+              const color = getWeatherColor(m.weatherTw);
+              return (
+                <tr key={m.startTime}>
+                  <td>{formatLocalTime(m.startTime)}</td>
+                  <td>{formatEorzeaTime(et)}</td>
+                  <td>
+                    <span className={styles.matchWeatherCell}>
+                      <span
+                        className={styles.weatherDot}
+                        style={{ background: color }}
+                        aria-hidden="true"
+                      />
+                      {m.weatherTw}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </section>
   );
 }
