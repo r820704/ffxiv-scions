@@ -1,4 +1,5 @@
 import { getZoneWeathers, weatherNamesTw } from '../data/weather-data';
+import { getWeatherColor } from '../utils/weather-colors';
 import styles from '../styles/App.module.css';
 
 interface WeatherFilterProps {
@@ -11,19 +12,28 @@ export default function WeatherFilter({ zone, selectedWeathers, onToggleWeather 
   const weathers = getZoneWeathers(zone);
 
   return (
-    <div className={styles.filterSection}>
+    <section className={styles.card}>
       <div className={styles.filterTitle}>篩選天氣（點擊選擇）</div>
       <div className={styles.filterChips}>
-        {weathers.map((w) => (
-          <button
-            key={w}
-            className={`${styles.chip} ${selectedWeathers.has(w) ? styles.chipActive : ''}`}
-            onClick={() => onToggleWeather(w)}
-          >
-            {weatherNamesTw[w] ?? w}
-          </button>
-        ))}
+        {weathers.map((w) => {
+          const tw = weatherNamesTw[w] ?? w;
+          const color = getWeatherColor(tw);
+          return (
+            <button
+              key={w}
+              className={`${styles.chip} ${selectedWeathers.has(w) ? styles.chipActive : ''}`}
+              onClick={() => onToggleWeather(w)}
+            >
+              <span
+                className={styles.chipDot}
+                style={{ background: color }}
+                aria-hidden="true"
+              />
+              {tw}
+            </button>
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 }
