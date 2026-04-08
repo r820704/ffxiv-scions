@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { findWeatherMatches } from '../utils/weather-engine';
 import { formatLocalTime, toEorzeaTime, formatEorzeaTime } from '../utils/eorzea-time';
-import { getWeatherColor } from '../utils/weather-colors';
+import WeatherIcon from './WeatherIcon';
 import styles from '../styles/App.module.css';
 
 interface MatchListProps {
@@ -37,18 +37,13 @@ export default function MatchList({ zone, targetWeathers }: MatchListProps) {
           <tbody>
             {matches.map((m) => {
               const et = toEorzeaTime(m.startTime);
-              const color = getWeatherColor(m.weatherTw);
               return (
                 <tr key={m.startTime}>
                   <td>{formatLocalTime(m.startTime)}</td>
                   <td>{formatEorzeaTime(et)}</td>
                   <td>
                     <span className={styles.matchWeatherCell}>
-                      <span
-                        className={styles.weatherDot}
-                        style={{ background: color }}
-                        aria-hidden="true"
-                      />
+                      <WeatherIcon weatherEn={m.weather} weatherTw={m.weatherTw} size={20} />
                       {m.weatherTw}
                     </span>
                   </td>

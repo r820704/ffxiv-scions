@@ -196,7 +196,7 @@
 
 .timelineRow {
   display: grid;
-  grid-template-columns: 14px 1fr auto auto auto;
+  grid-template-columns: 24px 1fr auto auto auto;
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
@@ -222,6 +222,13 @@
   height: 12px;
   border-radius: 50%;
   display: inline-block;
+}
+
+.weatherIcon {
+  display: inline-block;
+  vertical-align: middle;
+  image-rendering: -webkit-optimize-contrast;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
 
 .weatherName {
@@ -335,7 +342,7 @@
   }
 
   .timelineRow {
-    grid-template-columns: 14px 1fr auto;
+    grid-template-columns: 24px 1fr auto;
     grid-template-areas:
       'dot name badge'
       'dot time time'
@@ -344,7 +351,8 @@
     column-gap: 10px;
   }
 
-  .weatherDot {
+  .weatherDot,
+  .weatherIcon {
     grid-area: dot;
   }
 
