@@ -3,7 +3,6 @@ import { zoneNamesTw } from './data/weather-data';
 import ZoneSelector from './components/ZoneSelector';
 import WeatherTimeline from './components/WeatherTimeline';
 import WeatherFilter from './components/WeatherFilter';
-import MatchList from './components/MatchList';
 import styles from './styles/App.module.css';
 
 export default function App() {
@@ -45,8 +44,7 @@ export default function App() {
                 selectedWeathers={selectedWeathers}
                 onToggleWeather={handleToggleWeather}
               />
-              <WeatherTimeline zone={selectedZone} />
-              <MatchList zone={selectedZone} targetWeathers={selectedWeathers} />
+              <WeatherTimeline zone={selectedZone} selectedWeathers={selectedWeathers} />
             </>
           ) : (
             <div className={styles.noSelection}>
