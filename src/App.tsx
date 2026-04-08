@@ -29,30 +29,26 @@ export default function App() {
   return (
     <div className={styles.app}>
       <h1 className={styles.title}>FFXIV 天氣查詢工具</h1>
-      <div className={styles.layout}>
-        <div className={styles.sidebar}>
-          <ZoneSelector selectedZone={selectedZone} onSelectZone={handleSelectZone} />
-        </div>
-        <div className={styles.main}>
-          {selectedZone ? (
-            <>
-              <h2 className={styles.zoneTitle}>
-                {zoneNamesTw[selectedZone] ?? selectedZone}
-              </h2>
-              <WeatherFilter
-                zone={selectedZone}
-                selectedWeathers={selectedWeathers}
-                onToggleWeather={handleToggleWeather}
-              />
-              <WeatherTimeline zone={selectedZone} selectedWeathers={selectedWeathers} />
-            </>
-          ) : (
-            <div className={styles.noSelection}>
-              ← 請從左側選擇一個地區
-              <span className={styles.noSelectionHint}>選擇後可查看天氣預報與篩選符合條件的時段</span>
-            </div>
-          )}
-        </div>
+      <ZoneSelector selectedZone={selectedZone} onSelectZone={handleSelectZone} />
+      <div className={styles.main}>
+        {selectedZone ? (
+          <>
+            <h2 className={styles.zoneTitle}>
+              {zoneNamesTw[selectedZone] ?? selectedZone}
+            </h2>
+            <WeatherFilter
+              zone={selectedZone}
+              selectedWeathers={selectedWeathers}
+              onToggleWeather={handleToggleWeather}
+            />
+            <WeatherTimeline zone={selectedZone} selectedWeathers={selectedWeathers} />
+          </>
+        ) : (
+          <div className={styles.noSelection}>
+            ↑ 請從上方選擇一個地區
+            <span className={styles.noSelectionHint}>選擇後可查看天氣預報與篩選符合條件的時段</span>
+          </div>
+        )}
       </div>
     </div>
   );

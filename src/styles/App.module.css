@@ -17,23 +17,12 @@
   font-weight: 600;
 }
 
-.layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 20px;
-  align-items: start;
-}
-
-.sidebar {
-  position: sticky;
-  top: 16px;
-}
-
 .main {
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-top: 16px;
 }
 
 /* Cards */
@@ -63,52 +52,77 @@
   letter-spacing: 0.02em;
 }
 
-/* ZoneSelector */
+/* ZoneSelector — top chip layout */
 .zoneSelector {
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
+  background: #1c2440;
   border: 1px solid #2a3556;
   border-radius: 12px;
-  background: #1c2440;
+  padding: 12px 14px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.groupLabel {
-  padding: 8px 14px;
-  font-size: 0.7rem;
-  color: #8a9bc4;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.zoneGroupRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.zoneGroupChip {
+  padding: 5px 12px;
+  border: 1px solid #2a3556;
+  border-radius: 999px;
   background: #131a30;
-  position: sticky;
-  top: 0;
-  border-bottom: 1px solid #2a3556;
-  font-weight: 600;
-}
-
-.zoneButton {
-  display: block;
-  width: 100%;
-  padding: 8px 14px;
-  border: none;
-  background: transparent;
-  color: #c8d6e5;
+  color: #8a9bc4;
   cursor: pointer;
-  text-align: left;
-  font-size: 0.875rem;
-  transition: background 0.15s, color 0.15s;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
 
-.zoneButton:hover {
-  background: #243056;
+.zoneGroupChip:hover {
+  border-color: #a0c4ff;
   color: #f0f4ff;
 }
 
-.zoneButtonActive {
+.zoneGroupChipActive {
   background: #2a3a6b;
+  border-color: #a0c4ff;
   color: #a0c4ff;
   font-weight: 600;
-  box-shadow: inset 3px 0 0 #a0c4ff;
+}
+
+.zoneRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-top: 1px dashed #2a3556;
+  padding-top: 10px;
+}
+
+.zoneChip {
+  padding: 6px 14px;
+  border: 1px solid #2a3556;
+  border-radius: 8px;
+  background: #131a30;
+  color: #c8d6e5;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.zoneChip:hover {
+  border-color: #a0c4ff;
+  color: #f0f4ff;
+}
+
+.zoneChipActive {
+  background: #2a3a6b;
+  border-color: #a0c4ff;
+  color: #a0c4ff;
+  font-weight: 600;
 }
 
 /* WeatherFilter */
@@ -332,18 +346,6 @@
 
 /* Responsive */
 @media (max-width: 720px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-
-  .sidebar {
-    position: static;
-  }
-
-  .zoneSelector {
-    max-height: 240px;
-  }
-
   .timelineRow {
     grid-template-columns: 24px 1fr auto;
     grid-template-areas:
