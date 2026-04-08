@@ -10,6 +10,7 @@ import {
   WEATHER_PERIOD_MS,
 } from '../utils/eorzea-time';
 import { getWeatherColor } from '../utils/weather-colors';
+import WeatherIcon from './WeatherIcon';
 import styles from '../styles/App.module.css';
 
 interface WeatherTimelineProps {
@@ -75,11 +76,7 @@ export default function WeatherTimeline({ zone }: WeatherTimelineProps) {
                     className={`${styles.timelineRow} ${isCurrent ? styles.timelineRowCurrent : ''}`}
                     style={{ borderLeftColor: color }}
                   >
-                    <span
-                      className={styles.weatherDot}
-                      style={{ background: color }}
-                      aria-hidden="true"
-                    />
+                    <WeatherIcon weatherEn={f.weather} weatherTw={f.weatherTw} />
                     <span className={styles.weatherName}>{f.weatherTw}</span>
                     <span className={styles.timeRange}>
                       {formatLocalClock(f.startTime)}–{formatLocalClock(endTime)}

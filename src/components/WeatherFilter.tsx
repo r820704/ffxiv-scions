@@ -1,5 +1,5 @@
 import { getZoneWeathers, weatherNamesTw } from '../data/weather-data';
-import { getWeatherColor } from '../utils/weather-colors';
+import WeatherIcon from './WeatherIcon';
 import styles from '../styles/App.module.css';
 
 interface WeatherFilterProps {
@@ -17,18 +17,13 @@ export default function WeatherFilter({ zone, selectedWeathers, onToggleWeather 
       <div className={styles.filterChips}>
         {weathers.map((w) => {
           const tw = weatherNamesTw[w] ?? w;
-          const color = getWeatherColor(tw);
           return (
             <button
               key={w}
               className={`${styles.chip} ${selectedWeathers.has(w) ? styles.chipActive : ''}`}
               onClick={() => onToggleWeather(w)}
             >
-              <span
-                className={styles.chipDot}
-                style={{ background: color }}
-                aria-hidden="true"
-              />
+              <WeatherIcon weatherEn={w} weatherTw={tw} size={18} />
               {tw}
             </button>
           );
