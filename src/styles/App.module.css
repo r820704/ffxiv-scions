@@ -196,7 +196,9 @@
 
 .timelineRow {
   display: grid;
-  grid-template-columns: 24px 1fr auto auto auto;
+  /* Last column is reserved for the "目前" badge so time/ET columns stay
+     aligned across rows whether or not the badge is rendered. */
+  grid-template-columns: 24px 1fr auto auto 44px;
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
@@ -253,6 +255,7 @@
   border-radius: 999px;
   font-weight: 700;
   letter-spacing: 0.04em;
+  justify-self: end;
 }
 
 /* MatchList */
