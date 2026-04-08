@@ -2,16 +2,18 @@ import { describe, it, expect } from 'vitest';
 import { getWeatherIconUrl } from './weather-icons';
 
 describe('getWeatherIconUrl', () => {
-  it('returns the XIVAPI url for a known weather', () => {
-    expect(getWeatherIconUrl('Clear Skies')).toBe('https://xivapi.com/i/060000/060201.png');
+  it('returns a bundled asset url for a known weather', () => {
+    const url = getWeatherIconUrl('Clear Skies');
+    expect(url).toBeDefined();
+    expect(url).toMatch(/060201/);
   });
 
-  it('pads the icon id to six digits', () => {
-    expect(getWeatherIconUrl('Moon Dust')).toBe('https://xivapi.com/i/060000/060222.png');
+  it('returns icons for the South Horn weathers', () => {
+    expect(getWeatherIconUrl('Atmospheric Phantasms')).toMatch(/060238/);
+    expect(getWeatherIconUrl('Illusory Disturbances')).toMatch(/060239/);
   });
 
-  it('returns undefined for unsupported weathers', () => {
-    expect(getWeatherIconUrl('Atmospheric Phantasms')).toBeUndefined();
-    expect(getWeatherIconUrl('Illusory Disturbances')).toBeUndefined();
+  it('returns undefined for unknown weathers', () => {
+    expect(getWeatherIconUrl('Made Up Weather')).toBeUndefined();
   });
 });
