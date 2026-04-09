@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
-import { zoneGroups, zoneNamesTw } from '../data/weather-data';
-import styles from '../styles/App.module.css';
+import { zoneGroups, zoneNamesTw } from '@/data/weather-data';
+import { cn } from '@/lib/utils';
 
 interface ZoneSelectorProps {
   selectedZone: string | null;
@@ -18,8 +18,6 @@ function findGroupForZone(zone: string | null): string {
 export default function ZoneSelector({ selectedZone, onSelectZone }: ZoneSelectorProps) {
   const [activeGroup, setActiveGroup] = useState<string>(() => findGroupForZone(selectedZone));
 
-  // When the selected zone changes externally to one in a different group,
-  // sync the active group so the user can see their selection.
   useEffect(() => {
     if (selectedZone) {
       const groupLabel = findGroupForZone(selectedZone);
@@ -33,26 +31,36 @@ export default function ZoneSelector({ selectedZone, onSelectZone }: ZoneSelecto
   );
 
   return (
-    <div className={styles.zoneSelector}>
-      <div className={styles.zoneGroupRow}>
+    <div className="bg-card rounded-lg border border-border p-3">
+      <div className="flex flex-wrap gap-1.5">
         {zoneGroups.map((group) => (
           <button
             key={group.label}
             type="button"
-            className={`${styles.zoneGroupChip} ${activeGroup === group.label ? styles.zoneGroupChipActive : ''}`}
             onClick={() => setActiveGroup(group.label)}
+            className={cn(
+              'px-3 py-1 text-xs rounded-md border transition-colors cursor-pointer',
+              activeGroup === group.label
+                ? 'bg-secondary border-primary text-primary'
+                : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30'
+            )}
           >
             {group.label}
           </button>
         ))}
       </div>
-      <div className={styles.zoneRow}>
+      <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
         {activeZones.map((zone) => (
           <button
             key={zone}
             type="button"
-            className={`${styles.zoneChip} ${selectedZone === zone ? styles.zoneChipActive : ''}`}
             onClick={() => onSelectZone(zone)}
+            className={cn(
+              'px-3.5 py-1.5 text-sm rounded-md border transition-colors cursor-pointer',
+              selectedZone === zone
+                ? 'bg-secondary border-primary text-primary font-medium'
+                : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30'
+            )}
           >
             {zoneNamesTw[zone] ?? zone}
           </button>

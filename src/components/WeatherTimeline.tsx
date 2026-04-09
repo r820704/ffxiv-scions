@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import type { WeatherForecast } from '../utils/weather-engine';
-import { generateForecasts, findWeatherMatches } from '../utils/weather-engine';
+import type { WeatherForecast } from '@/utils/weather-engine';
+import { generateForecasts, findWeatherMatches } from '@/utils/weather-engine';
 import {
   formatLocalClock,
   formatLocalDateKey,
@@ -8,10 +8,10 @@ import {
   toEorzeaTime,
   formatEorzeaTime,
   WEATHER_PERIOD_MS,
-} from '../utils/eorzea-time';
-import { getWeatherColor } from '../utils/weather-colors';
-import WeatherIcon from './WeatherIcon';
-import styles from '../styles/App.module.css';
+} from '@/utils/eorzea-time';
+import { getWeatherColor } from '@/utils/weather-colors';
+import WeatherIcon from '@/components/WeatherIcon';
+import { cn } from '@/lib/utils';
 
 interface WeatherTimelineProps {
   zone: string;
@@ -64,8 +64,6 @@ export default function WeatherTimeline({ zone, selectedWeathers }: WeatherTimel
   );
   const groups = useMemo(() => groupByLocalDate(forecasts, now), [forecasts, now]);
   const currentStart = useMemo(() => {
-    // Highlight only the current actual period — not just the first item
-    // (the first item could be far in the future when filtering).
     const all = generateForecasts(zone, 1, now);
     return all[0]?.startTime;
   }, [zone, now]);
@@ -75,16 +73,20 @@ export default function WeatherTimeline({ zone, selectedWeathers }: WeatherTimel
     : '天氣預報';
 
   return (
-    <section className={styles.card}>
-      <h2 className={styles.cardTitle}>{title}</h2>
+    <div className="rounded-lg border border-border bg-card p-4">
+      <h2 className="text-sm font-semibold text-foreground mb-3">{title}</h2>
       {forecasts.length === 0 ? (
-        <div className={styles.emptyMatches}>沒有符合條件的時段</div>
+        <div className="text-center text-muted-foreground py-4">沒有符合條件的時段</div>
       ) : (
-        <div className={styles.timelineList}>
+        <div className="flex flex-col gap-4">
           {groups.map((group) => (
-            <div key={group.key} className={styles.timelineGroup}>
-              <div className={styles.timelineGroupLabel}>{group.label}</div>
-              <ul className={styles.timelineItems}>
+            <div key={group.key}>
+              <div className="sticky top-0 z-10 bg-card/90 backdrop-blur-sm py-1 mb-2">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  {group.label}
+                </span>
+              </div>
+              <ul className="list-none m-0 p-0 flex flex-col gap-0.5">
                 {group.items.map((f) => {
                   const isCurrent = f.startTime === currentStart;
                   const endTime = f.startTime + WEATHER_PERIOD_MS;
@@ -94,18 +96,26 @@ export default function WeatherTimeline({ zone, selectedWeathers }: WeatherTimel
                   return (
                     <li
                       key={f.startTime}
-                      className={`${styles.timelineRow} ${isCurrent ? styles.timelineRowCurrent : ''}`}
+                      className={cn(
+                        'grid items-center gap-2 px-2 py-1.5 rounded-md text-sm border-l-2',
+                        'grid-cols-[24px_1fr_auto_auto_auto]',
+                        isCurrent ? 'bg-secondary/60 font-semibold' : ''
+                      )}
                       style={{ borderLeftColor: color }}
                     >
                       <WeatherIcon weatherEn={f.weather} weatherTw={f.weatherTw} />
-                      <span className={styles.weatherName}>{f.weatherTw}</span>
-                      <span className={styles.timeRange}>
+                      <span className="text-foreground">{f.weatherTw}</span>
+                      <span className="text-secondary-foreground text-xs tabular-nums">
                         {formatLocalClock(f.startTime)}–{formatLocalClock(endTime)}
                       </span>
-                      <span className={styles.etRange}>
+                      <span className="text-muted-foreground text-xs tabular-nums">
                         ET {formatEorzeaTime(etStart)}–{formatEorzeaTime(etEnd)}
                       </span>
-                      {isCurrent && <span className={styles.currentBadge}>目前</span>}
+                      {isCurrent && (
+                        <span className="bg-primary text-primary-foreground text-[0.65rem] px-2 py-0.5 rounded-full">
+                          目前
+                        </span>
+                      )}
                     </li>
                   );
                 })}
@@ -114,6 +124,6 @@ export default function WeatherTimeline({ zone, selectedWeathers }: WeatherTimel
           ))}
         </div>
       )}
-    </section>
+    </div>
   );
 }
