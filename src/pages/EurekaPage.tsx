@@ -1,0 +1,113 @@
+import { useState, useCallback, useEffect } from 'react';
+import { eurekaData } from '@/data/eureka-data';
+import { fetchLogogramPrices } from '@/services/universalis';
+import type { LogogramPrice } from '@/types/eureka';
+import LogosActionList from '@/components/eureka/LogosActionList';
+import MnemeSelector from '@/components/eureka/MnemeSelector';
+import { cn } from '@/lib/utils';
+
+type EurekaTab = 'actions' | 'mnemes';
+
+export default function EurekaPage() {
+  const [tab, setTab] = useState<EurekaTab>('actions');
+  const [prices, setPrices] = useState<LogogramPrice[]>([]);
+  const [priceLoading, setPriceLoading] = useState(false);
+  const [priceError, setPriceError] = useState(false);
+  const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const [selectedMnemes, setSelectedMnemes] = useState<Set<string>>(new Set());
+
+  const loadPrices = useCallback(async () => {
+    setPriceLoading(true);
+    setPriceError(false);
+    try {
+      const itemIds = eurekaData.logograms.map((l) => l.itemId);
+      const result = await fetchLogogramPrices(itemIds);
+      setPrices(result);
+      setLastFetched(new Date());
+    } catch {
+      setPriceError(true);
+    } finally {
+      setPriceLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadPrices();
+  }, [loadPrices]);
+
+  const handleToggleMneme = useCallback((mnemeId: string) => {
+    setSelectedMnemes((prev) => {
+      const next = new Set(prev);
+      if (next.has(mnemeId)) {
+        next.delete(mnemeId);
+      } else {
+        next.add(mnemeId);
+      }
+      return next;
+    });
+  }, []);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h1 className="text-2xl font-bold text-primary">Eureka 文理技能</h1>
+        <div className="flex items-center gap-3">
+          {lastFetched && (
+            <span className="text-xs text-muted-foreground">
+              更新於 {lastFetched.toLocaleTimeString('zh-TW')}
+            </span>
+          )}
+          <button
+            onClick={loadPrices}
+            disabled={priceLoading}
+            className="px-3 py-1.5 text-xs rounded-md border border-border bg-card text-foreground hover:bg-secondary transition-colors disabled:opacity-50 cursor-pointer"
+          >
+            {priceLoading ? '查詢中...' : '重新查詢價格'}
+          </button>
+        </div>
+      </div>
+
+      {priceError && (
+        <div className="text-xs text-destructive mb-3">
+          價格查詢失敗，請稍後重試
+        </div>
+      )}
+
+      <div className="flex gap-1 mb-4">
+        <button
+          onClick={() => setTab('actions')}
+          className={cn(
+            'px-4 py-2 text-sm rounded-md transition-colors cursor-pointer',
+            tab === 'actions'
+              ? 'bg-secondary text-primary font-medium'
+              : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+          )}
+        >
+          技能查詢
+        </button>
+        <button
+          onClick={() => setTab('mnemes')}
+          className={cn(
+            'px-4 py-2 text-sm rounded-md transition-colors cursor-pointer',
+            tab === 'mnemes'
+              ? 'bg-secondary text-primary font-medium'
+              : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+          )}
+        >
+          材料反查
+        </button>
+      </div>
+
+      {tab === 'actions' ? (
+        <LogosActionList prices={prices} priceLoading={priceLoading} />
+      ) : (
+        <MnemeSelector
+          selectedMnemes={selectedMnemes}
+          onToggleMneme={handleToggleMneme}
+          prices={prices}
+          priceLoading={priceLoading}
+        />
+      )}
+    </div>
+  );
+}

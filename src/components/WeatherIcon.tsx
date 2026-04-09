@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { getWeatherIconUrl } from '../data/weather-icons';
-import { getWeatherColor } from '../utils/weather-colors';
-import styles from '../styles/App.module.css';
+import { getWeatherIconUrl } from '@/data/weather-icons';
+import { getWeatherColor } from '@/utils/weather-colors';
 
 interface WeatherIconProps {
   weatherEn: string;
@@ -9,9 +8,6 @@ interface WeatherIconProps {
   size?: number;
 }
 
-// Renders the in-game weather icon (served by XIVAPI). Falls back to a
-// colored dot when the icon is unavailable or fails to load (e.g. unsupported
-// weathers like Atmospheric Phantasms, or offline XIVAPI).
 export default function WeatherIcon({ weatherEn, weatherTw, size = 24 }: WeatherIconProps) {
   const url = getWeatherIconUrl(weatherEn);
   const [errored, setErrored] = useState(false);
@@ -19,7 +15,7 @@ export default function WeatherIcon({ weatherEn, weatherTw, size = 24 }: Weather
   if (!url || errored) {
     return (
       <span
-        className={styles.weatherDot}
+        className="inline-block w-3 h-3 rounded-full shrink-0"
         style={{ background: getWeatherColor(weatherTw) }}
         aria-hidden="true"
       />
@@ -28,7 +24,7 @@ export default function WeatherIcon({ weatherEn, weatherTw, size = 24 }: Weather
 
   return (
     <img
-      className={styles.weatherIcon}
+      className="inline-block shrink-0"
       src={url}
       alt={weatherTw}
       width={size}
