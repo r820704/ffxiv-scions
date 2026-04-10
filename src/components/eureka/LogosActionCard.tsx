@@ -15,6 +15,7 @@ interface LogosActionCardProps {
 export default function LogosActionCard({ action, prices, priceLoading }: LogosActionCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [flipUp, setFlipUp] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -32,8 +33,16 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
     return () => document.removeEventListener('click', handleClick);
   }, [showTooltip]);
 
+  const updateFlip = () => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    setFlipUp(spaceBelow < 320);
+  };
+
   const handleMouseEnter = () => {
     clearTimeout(hoverTimeoutRef.current);
+    updateFlip();
     setShowTooltip(true);
   };
 
@@ -43,6 +52,7 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
 
   const handleTooltipTap = (e: React.MouseEvent) => {
     e.stopPropagation();
+    updateFlip();
     setShowTooltip((prev) => !prev);
   };
 
@@ -74,7 +84,7 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
             {showTooltip && (
               <div
                 ref={tooltipRef}
-                className="absolute left-0 top-full mt-1 z-50"
+                className={`absolute left-0 z-50 ${flipUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
