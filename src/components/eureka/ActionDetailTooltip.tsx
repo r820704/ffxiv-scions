@@ -1,5 +1,5 @@
 import type { LogosAction } from '@/types/eureka';
-import { ACTION_CATEGORY_LABELS, ROLE_LABELS } from '@/types/eureka';
+import { ACTION_CATEGORY_LABELS, ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 
 interface ActionDetailTooltipProps {
   action: LogosAction;
@@ -81,7 +81,7 @@ export default function ActionDetailTooltip({ action }: ActionDetailTooltipProps
           {action.roles.map((role) => (
             <span
               key={role}
-              className="text-[0.65rem] px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground"
+              className={`text-[0.65rem] px-1.5 py-0.5 rounded ${ROLE_COLORS[role]}`}
             >
               {ROLE_LABELS[role]}
             </span>

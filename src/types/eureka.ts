@@ -86,3 +86,12 @@ export const ROLE_LABELS: Record<Role, string> = {
   caster: '法師',
   all: '全職業',
 };
+
+export const ROLE_COLORS: Record<Role, string> = {
+  tank: 'bg-blue-700 text-blue-100',
+  healer: 'bg-green-700 text-green-100',
+  melee: 'bg-red-700 text-red-100',
+  ranged: 'bg-red-700 text-red-100',
+  caster: 'bg-red-700 text-red-100',
+  all: 'bg-zinc-600 text-zinc-100',
+};
