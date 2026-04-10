@@ -35,48 +35,65 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
         </div>
       </div>
       <p className="text-xs text-muted-foreground mb-3">{action.descriptionTw}</p>
-      <div className="space-y-2">
+      <div>
         {action.recipes.map((recipe, ri) => {
           const cost = calculateRecipeCost(recipe.ingredients, prices);
+          const hasMultiple = action.recipes.length > 1;
           return (
-            <div key={ri} className="rounded bg-muted/50 px-3 py-2">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
-                  {recipe.ingredients.map((ing, ii) => {
-                    const mneme = getMneme(ing.mnemeId);
-                    const logogram = getLogogramForMneme(ing.mnemeId);
-                    const logogramPrice = logogram
-                      ? prices.find((p) => p.itemId === logogram.itemId)
-                      : undefined;
-                    return (
-                      <span key={ii} className="text-foreground">
-                        {mneme?.nameTw ?? ing.mnemeId}
-                        {ing.quantity > 1 && <span className="text-primary"> ×{ing.quantity}</span>}
-                        {logogram && (
-                          <span className="text-muted-foreground ml-1">
-                            ({logogram.nameTw}{' '}
-                            <PriceDisplay
-                              price={logogramPrice?.price ?? null}
-                              worldName={logogramPrice?.worldName ?? null}
-                              loading={priceLoading}
-                            />
-                            )
-                          </span>
-                        )}
-                      </span>
-                    );
-                  })}
+            <div key={ri}>
+              {hasMultiple && ri > 0 && (
+                <div className="flex items-center gap-2 my-1.5">
+                  <div className="flex-1 border-t border-border/50" />
+                  <span className="text-[0.6rem] text-muted-foreground/60 shrink-0">或</span>
+                  <div className="flex-1 border-t border-border/50" />
                 </div>
-                <div className="shrink-0 text-right">
-                  {priceLoading ? (
-                    <span className="text-xs text-muted-foreground">計算中...</span>
-                  ) : cost != null ? (
-                    <span className="text-xs font-medium text-amber-400">
-                      合計 {cost.toLocaleString()} gil
-                    </span>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">—</span>
-                  )}
+              )}
+              <div className="rounded bg-muted/50 px-3 py-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 text-xs min-w-0">
+                    {hasMultiple && (
+                      <span className="text-[0.6rem] text-muted-foreground/80 bg-muted rounded px-1 py-0.5 shrink-0">
+                        {ri + 1}
+                      </span>
+                    )}
+                    <div className="flex flex-wrap gap-x-3 gap-y-1">
+                      {recipe.ingredients.map((ing, ii) => {
+                        const mneme = getMneme(ing.mnemeId);
+                        const logogram = getLogogramForMneme(ing.mnemeId);
+                        const logogramPrice = logogram
+                          ? prices.find((p) => p.itemId === logogram.itemId)
+                          : undefined;
+                        return (
+                          <span key={ii} className="text-foreground">
+                            {mneme?.nameTw ?? ing.mnemeId}
+                            {ing.quantity > 1 && <span className="text-primary"> ×{ing.quantity}</span>}
+                            {logogram && (
+                              <span className="text-muted-foreground ml-1">
+                                ({logogram.nameTw}{' '}
+                                <PriceDisplay
+                                  price={logogramPrice?.price ?? null}
+                                  worldName={logogramPrice?.worldName ?? null}
+                                  loading={priceLoading}
+                                />
+                                )
+                              </span>
+                            )}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    {priceLoading ? (
+                      <span className="text-xs text-muted-foreground">計算中...</span>
+                    ) : cost != null ? (
+                      <span className="text-xs font-medium text-amber-400">
+                        合計 {cost.toLocaleString()} gil
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
