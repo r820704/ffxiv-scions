@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import type { LogosAction, LogogramPrice } from '@/types/eureka';
 import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
 import { calculateRecipeCost } from '@/utils/eureka-helpers';
-import { ROLE_LABELS } from '@/types/eureka';
+import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 import PriceDisplay from './PriceDisplay';
 import ActionDetailTooltip from './ActionDetailTooltip';
 
@@ -87,7 +87,7 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
           {action.roles.map((role) => (
             <span
               key={role}
-              className="text-[0.6rem] px-1 py-0.5 rounded bg-secondary text-secondary-foreground"
+              className={`text-[0.6rem] px-1 py-0.5 rounded ${ROLE_COLORS[role]}`}
             >
               {ROLE_LABELS[role]}
             </span>
