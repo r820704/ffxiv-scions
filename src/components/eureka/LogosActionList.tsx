@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
 import { eurekaData } from '@/data/eureka-data';
-import type { LogosCategory, LogogramPrice, Role } from '@/types/eureka';
+import type { LogogramPrice, Role } from '@/types/eureka';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
-import CategoryFilter from './CategoryFilter';
 import LogosActionCard from './LogosActionCard';
 
 const EFFECT_TAGS: { label: string; keywords: string[] }[] = [
@@ -35,13 +34,11 @@ interface LogosActionListProps {
 
 export default function LogosActionList({ prices, priceLoading }: LogosActionListProps) {
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<LogosCategory | null>(null);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     return eurekaData.logosActions.filter((action) => {
-      if (category && action.category !== category) return false;
       if (selectedRole && !action.roles.includes(selectedRole) && !action.roles.includes('all')) return false;
       if (selectedTag) {
         const tags = getActionTags(action.descriptionTw);
@@ -58,7 +55,7 @@ export default function LogosActionList({ prices, priceLoading }: LogosActionLis
       }
       return true;
     });
-  }, [search, category, selectedRole, selectedTag]);
+  }, [search, selectedRole, selectedTag]);
 
   const availableTags = useMemo(() => {
     const tagSet = new Set<string>();
@@ -77,7 +74,6 @@ export default function LogosActionList({ prices, priceLoading }: LogosActionLis
         onChange={(e) => setSearch(e.target.value)}
         className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
       />
-      <CategoryFilter selected={category} onSelect={setCategory} />
 
       {/* Role filter */}
       <div className="flex flex-wrap gap-1.5">

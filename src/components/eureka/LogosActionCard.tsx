@@ -121,7 +121,7 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
                           {ri + 1}
                         </span>
                       )}
-                      <div className="flex flex-wrap gap-x-3 gap-y-1">
+                      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                         {recipe.ingredients.map((ing, ii) => {
                           const mneme = getMneme(ing.mnemeId);
                           const logogram = getLogogramForMneme(ing.mnemeId);
@@ -129,21 +129,22 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
                             ? prices.find((p) => p.itemId === logogram.itemId)
                             : undefined;
                           return (
-                            <span key={ii} className="text-foreground">
-                              {mneme?.nameTw ?? ing.mnemeId}
-                              {ing.quantity > 1 && <span className="text-primary"> ×{ing.quantity}</span>}
+                            <div key={ii} className="flex flex-col">
+                              <span className="text-foreground">
+                                {mneme?.nameTw ?? ing.mnemeId}
+                                {ing.quantity > 1 && <span className="text-primary"> ×{ing.quantity}</span>}
+                              </span>
                               {logogram && (
-                                <span className="text-muted-foreground ml-1">
-                                  ({logogram.nameTw}{' '}
+                                <span className="text-[0.65rem] text-muted-foreground leading-tight">
+                                  {logogram.nameTw}{' '}
                                   <PriceDisplay
                                     price={logogramPrice?.price ?? null}
                                     worldName={logogramPrice?.worldName ?? null}
                                     loading={priceLoading}
                                   />
-                                  )
                                 </span>
                               )}
-                            </span>
+                            </div>
                           );
                         })}
                       </div>
