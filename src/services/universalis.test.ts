@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { fetchLogogramPrices } from './universalis';
 
-const mockResponse = {
-  items: [
-    {
+const mockMultiResponse = {
+  itemIDs: [24007, 24008],
+  items: {
+    '24007': {
       itemID: 24007,
       listings: [
         { pricePerUnit: 500, quantity: 1, hq: false, worldName: 'Shinryu', worldID: 94 },
@@ -11,12 +12,13 @@ const mockResponse = {
       ],
       lastUploadTime: 1700000000000,
     },
-    {
+    '24008': {
       itemID: 24008,
       listings: [],
       lastUploadTime: 1700000000000,
     },
-  ],
+  },
+  unresolvedItems: [],
 };
 
 describe('fetchLogogramPrices', () => {
@@ -27,7 +29,7 @@ describe('fetchLogogramPrices', () => {
   it('should return cheapest price and world for each item', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
       ok: true,
-      json: async () => mockResponse,
+      json: async () => mockMultiResponse,
     } as Response);
 
     const result = await fetchLogogramPrices([24007, 24008]);
@@ -66,5 +68,30 @@ describe('fetchLogogramPrices', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0]?.price).toBeNull();
+  });
+
+  it('should handle single-item flat response format', async () => {
+    const singleResponse = {
+      itemID: 24007,
+      listings: [
+        { pricePerUnit: 999, quantity: 65, hq: false, worldName: 'Ramuh', worldID: 60 },
+      ],
+      lastUploadTime: 1700000000000,
+    };
+
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: async () => singleResponse,
+    } as Response);
+
+    const result = await fetchLogogramPrices([24007]);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual({
+      itemId: 24007,
+      price: 999,
+      worldName: 'Ramuh',
+      lastUpdated: 1700000000000,
+    });
   });
 });

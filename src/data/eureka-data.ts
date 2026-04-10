@@ -18,23 +18,23 @@ export const eurekaData: EurekaData = {
     { id: 'wisdom-martialist', nameTw: '鬥士的記憶', sourceLogogramId: 'conceptual' },
     { id: 'wisdom-platebearer', nameTw: '重騎兵的記憶', sourceLogogramId: 'conceptual' },
     { id: 'incense-l', nameTw: '文理激怒', sourceLogogramId: 'conceptual' },
-    { id: 'cure-l', nameTw: '文理治療', sourceLogogramId: 'conceptual' },
+    { id: 'cure-l', nameTw: '文理療傷', sourceLogogramId: 'conceptual' },
     { id: 'backstep-l', nameTw: '文理後跳', sourceLogogramId: 'conceptual' },
     { id: 'paralyze-l', nameTw: '文理麻痺', sourceLogogramId: 'conceptual' },
-    { id: 'esuna-l', nameTw: '文理康復', sourceLogogramId: 'fundamental' },
+    { id: 'esuna-l', nameTw: '文理復原', sourceLogogramId: 'fundamental' },
     { id: 'raise-l', nameTw: '文理復活', sourceLogogramId: 'fundamental' },
     { id: 'feint-l', nameTw: '文理虛槍', sourceLogogramId: 'fundamental' },
     { id: 'tranquilizer-l', nameTw: '文理鎮定', sourceLogogramId: 'fundamental' },
-    { id: 'protect-l', nameTw: '文理護盾', sourceLogogramId: 'fundamental' },
+    { id: 'protect-l', nameTw: '文理物防護', sourceLogogramId: 'fundamental' },
     { id: 'wisdom-ordained', nameTw: '祭司的記憶', sourceLogogramId: 'curative' },
-    { id: 'cure-l-ii', nameTw: '文理救療', sourceLogogramId: 'curative' },
+    { id: 'cure-l-ii', nameTw: '文理中療傷', sourceLogogramId: 'curative' },
     { id: 'wisdom-skirmisher', nameTw: '武人的記憶', sourceLogogramId: 'offensive' },
     { id: 'bloodbath-l', nameTw: '文理浴血', sourceLogogramId: 'offensive' },
     { id: 'wisdom-guardian', nameTw: '守護者的記憶', sourceLogogramId: 'protective' },
     { id: 'spirit-remembered', nameTw: '英傑的加護', sourceLogogramId: 'protective' },
     { id: 'featherfoot-l', nameTw: '文理飄羽步', sourceLogogramId: 'tactical' },
     { id: 'stealth-l', nameTw: '文理潛行', sourceLogogramId: 'tactical' },
-    { id: 'shell-l', nameTw: '文理魔盾', sourceLogogramId: 'mitigative' },
+    { id: 'shell-l', nameTw: '文理魔防殼', sourceLogogramId: 'mitigative' },
     { id: 'stoneskin-l', nameTw: '文理石膚', sourceLogogramId: 'mitigative' },
     { id: 'spirit-dart-l', nameTw: '文理精神鏢', sourceLogogramId: 'inimical' },
     { id: 'dispel-l', nameTw: '文理驅魔', sourceLogogramId: 'inimical' },
@@ -48,22 +48,22 @@ export const eurekaData: EurekaData = {
     // === 智慧 (WISDOM) ===
     {
       id: 'wisdom-aetherweaver', nameTw: '術士的記憶', descriptionTw: '魔法攻擊力提高60%',
-      category: 'wisdom', roles: ['healer'],
+      category: 'wisdom', roles: ['healer'], iconId: 64601,
       recipes: [{ ingredients: [{ mnemeId: 'wisdom-aetherweaver', quantity: 1 }] }],
     },
     {
       id: 'wisdom-martialist', nameTw: '鬥士的記憶', descriptionTw: '攻擊力提高40%',
-      category: 'wisdom', roles: ['tank'],
+      category: 'wisdom', roles: ['tank'], iconId: 64602,
       recipes: [{ ingredients: [{ mnemeId: 'wisdom-martialist', quantity: 1 }] }],
     },
     {
       id: 'wisdom-platebearer', nameTw: '重騎兵的記憶', descriptionTw: '受到的傷害減少80%，最大HP提高50%',
-      category: 'wisdom', roles: ['healer', 'caster', 'ranged', 'melee'],
+      category: 'wisdom', roles: ['healer', 'caster', 'ranged', 'melee'], iconId: 64603,
       recipes: [{ ingredients: [{ mnemeId: 'wisdom-platebearer', quantity: 1 }] }],
     },
     {
       id: 'wisdom-guardian', nameTw: '守護者的記憶', descriptionTw: '受到的傷害減少45%，最大HP提高10%',
-      category: 'wisdom', roles: ['tank'],
+      category: 'wisdom', roles: ['tank'], iconId: 64604,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-platebearer', quantity: 1 }, { mnemeId: 'protect-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-guardian', quantity: 1 }] },
@@ -74,7 +74,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'wisdom-ordained', nameTw: '祭司的記憶', descriptionTw: '最大MP提高50%，治療魔法的回復力提高25%',
-      category: 'wisdom', roles: ['healer'],
+      category: 'wisdom', roles: ['healer'], iconId: 64605,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-aetherweaver', quantity: 1 }, { mnemeId: 'esuna-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-ordained', quantity: 1 }] },
@@ -84,7 +84,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'wisdom-skirmisher', nameTw: '武人的記憶', descriptionTw: '攻擊力提高20%',
-      category: 'wisdom', roles: ['caster', 'ranged', 'melee'],
+      category: 'wisdom', roles: ['caster', 'ranged', 'melee'], iconId: 64606,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-martialist', quantity: 1 }, { mnemeId: 'feint-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-skirmisher', quantity: 1 }] },
@@ -93,12 +93,12 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'wisdom-watcher', nameTw: '斥候的記憶', descriptionTw: '迴避率提高25%，攻擊力降低5%',
-      category: 'wisdom', roles: ['tank'],
+      category: 'wisdom', roles: ['tank'], iconId: 64607,
       recipes: [{ ingredients: [{ mnemeId: 'stealth-l', quantity: 2 }] }],
     },
     {
       id: 'wisdom-templar', nameTw: '聖騎士的記憶', descriptionTw: '治療魔法的回復力提高50%，最大HP提高30%，攻擊力降低5%',
-      category: 'wisdom', roles: ['healer'],
+      category: 'wisdom', roles: ['healer'], iconId: 64608,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-skirmisher', quantity: 1 }, { mnemeId: 'cure-l-ii', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-skirmisher', quantity: 1 }, { mnemeId: 'stoneskin-l', quantity: 1 }] },
@@ -107,7 +107,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'wisdom-irregular', nameTw: '狂戰士的記憶', descriptionTw: '攻擊力提高30%，魔法防禦力降低60%',
-      category: 'wisdom', roles: ['caster', 'ranged', 'melee'],
+      category: 'wisdom', roles: ['caster', 'ranged', 'melee'], iconId: 64609,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-martialist', quantity: 1 }, { mnemeId: 'incense-l', quantity: 1 }, { mnemeId: 'wisdom-skirmisher', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-skirmisher', quantity: 1 }, { mnemeId: 'wisdom-guardian', quantity: 1 }] },
@@ -115,7 +115,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'wisdom-breathtaker', nameTw: '盜賊的記憶', descriptionTw: '毒抗性提高，移動速度提高，迴避率提高10%',
-      category: 'wisdom', roles: ['all'],
+      category: 'wisdom', roles: ['all'], iconId: 64610,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-breathtaker', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'featherfoot-l', quantity: 1 }, { mnemeId: 'stealth-l', quantity: 1 }] },
@@ -125,7 +125,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'wisdom-elder', nameTw: '長老的記憶', descriptionTw: '魔法攻擊力提高35%，魔法防禦力降低22%，魔法MP消耗減少',
-      category: 'wisdom', roles: ['caster'],
+      category: 'wisdom', roles: ['caster'], iconId: 64652,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-aetherweaver', quantity: 1 }, { mnemeId: 'wisdom-ordained', quantity: 1 }, { mnemeId: 'magic-burst-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-guardian', quantity: 1 }, { mnemeId: 'stoneskin-l', quantity: 1 }, { mnemeId: 'magic-burst-l', quantity: 1 }] },
@@ -133,7 +133,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'wisdom-duelist', nameTw: '決鬥者的記憶', descriptionTw: '物理攻擊力提高40%，最大HP提高15%',
-      category: 'wisdom', roles: ['melee'],
+      category: 'wisdom', roles: ['melee'], iconId: 64653,
       recipes: [
         { ingredients: [{ mnemeId: 'backstep-l', quantity: 1 }, { mnemeId: 'bloodbath-l', quantity: 1 }, { mnemeId: 'double-edge-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-skirmisher', quantity: 2 }, { mnemeId: 'double-edge-l', quantity: 1 }] },
@@ -141,7 +141,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'wisdom-fiendhunter', nameTw: '獵魔者的記憶', descriptionTw: '物理攻擊力提高25%，迴避率提高25%',
-      category: 'wisdom', roles: ['ranged'],
+      category: 'wisdom', roles: ['ranged'], iconId: 64654,
       recipes: [
         { ingredients: [{ mnemeId: 'featherfoot-l', quantity: 1 }, { mnemeId: 'spirit-dart-l', quantity: 1 }, { mnemeId: 'eagle-eye-shot-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'feint-l', quantity: 1 }, { mnemeId: 'tranquilizer-l', quantity: 1 }, { mnemeId: 'eagle-eye-shot-l', quantity: 1 }] },
@@ -149,7 +149,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'wisdom-indomitable', nameTw: '不屈者的記憶', descriptionTw: '受到的傷害減少64%，受到超過50%HP的傷害時回復HP',
-      category: 'wisdom', roles: ['tank'],
+      category: 'wisdom', roles: ['tank'], iconId: 64655,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-platebearer', quantity: 1 }, { mnemeId: 'incense-l', quantity: 1 }, { mnemeId: 'double-edge-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'protect-l', quantity: 1 }, { mnemeId: 'spirit-remembered', quantity: 1 }, { mnemeId: 'double-edge-l', quantity: 1 }] },
@@ -158,7 +158,7 @@ export const eurekaData: EurekaData = {
     // === 精神 (SPIRIT) ===
     {
       id: 'spirit-remembered', nameTw: '英傑的加護', descriptionTw: '最大HP提高10%，命中率提高30%，倒下時70%機率自動復活（180分鐘）',
-      category: 'spirit', roles: ['all'],
+      category: 'spirit', roles: ['all'], iconId: 64611,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-aetherweaver', quantity: 1 }, { mnemeId: 'wisdom-martialist', quantity: 1 }, { mnemeId: 'wisdom-platebearer', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'spirit-remembered', quantity: 1 }] },
@@ -168,7 +168,7 @@ export const eurekaData: EurekaData = {
     // === 攻擊 (OFFENSIVE) ===
     {
       id: 'spirit-dart-l', nameTw: '文理精神鏢', descriptionTw: '遠程攻擊（威力100），目標受到的傷害增加8%（60秒）',
-      category: 'offensive', roles: ['caster', 'ranged', 'melee'],
+      category: 'offensive', roles: ['caster', 'ranged', 'melee'], iconId: 64617,
       recipes: [
         { ingredients: [{ mnemeId: 'spirit-dart-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'tranquilizer-l', quantity: 1 }, { mnemeId: 'wisdom-ordained', quantity: 1 }] },
@@ -177,7 +177,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'catastrophe-l', nameTw: '文理天災', descriptionTw: '範圍攻擊（威力4000），對自身造成999999傷害',
-      category: 'offensive', roles: ['ranged', 'melee', 'tank'],
+      category: 'offensive', roles: ['ranged', 'melee', 'tank'], iconId: 64618,
       recipes: [
         { ingredients: [{ mnemeId: 'bloodbath-l', quantity: 2 }] },
         { ingredients: [{ mnemeId: 'wisdom-guardian', quantity: 1 }, { mnemeId: 'spirit-dart-l', quantity: 1 }] },
@@ -185,8 +185,8 @@ export const eurekaData: EurekaData = {
       ],
     },
     {
-      id: 'death-l', nameTw: '文理即死', descriptionTw: '即死（目標HP越低成功率越高）',
-      category: 'offensive', roles: ['all'],
+      id: 'death-l', nameTw: '文理致死一擊', descriptionTw: '即死（目標HP越低成功率越高）',
+      category: 'offensive', roles: ['all'], iconId: 64641,
       recipes: [
         { ingredients: [{ mnemeId: 'raise-l', quantity: 1 }, { mnemeId: 'dispel-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'raise-l', quantity: 1 }, { mnemeId: 'tranquilizer-l', quantity: 2 }] },
@@ -196,7 +196,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'focus-l', nameTw: '文理蓄力', descriptionTw: '增加蓄力層數（最大16層），每層武器技能威力提高30%',
-      category: 'offensive', roles: ['all'],
+      category: 'offensive', roles: ['all'], iconId: 64642,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-skirmisher', quantity: 1 }, { mnemeId: 'bloodbath-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-martialist', quantity: 1 }, { mnemeId: 'stoneskin-l', quantity: 2 }] },
@@ -205,7 +205,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'double-edge-l', nameTw: '文理雙刃劍', descriptionTw: '物理攻擊力每層提高15%（最大16層），每層自傷1200（48秒）',
-      category: 'offensive', roles: ['melee', 'tank'],
+      category: 'offensive', roles: ['melee', 'tank'], iconId: 64649,
       recipes: [
         { ingredients: [{ mnemeId: 'double-edge-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-skirmisher', quantity: 1 }, { mnemeId: 'bloodbath-l', quantity: 1 }, { mnemeId: 'wisdom-guardian', quantity: 1 }] },
@@ -213,7 +213,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'eagle-eye-shot-l', nameTw: '文理銳眼追擊', descriptionTw: '遠程攻擊（威力80），目標HP越低傷害越高（最高1000%）',
-      category: 'offensive', roles: ['ranged'],
+      category: 'offensive', roles: ['ranged'], iconId: 64650,
       recipes: [
         { ingredients: [{ mnemeId: 'eagle-eye-shot-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-skirmisher', quantity: 1 }, { mnemeId: 'spirit-remembered', quantity: 1 }, { mnemeId: 'spirit-dart-l', quantity: 1 }] },
@@ -221,7 +221,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'magic-burst-l', nameTw: '文理魔法爆發', descriptionTw: '魔法傷害提高100%，MP消耗增加（20秒）',
-      category: 'offensive', roles: ['caster', 'healer'],
+      category: 'offensive', roles: ['caster', 'healer'], iconId: 64648,
       recipes: [
         { ingredients: [{ mnemeId: 'magic-burst-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'spirit-remembered', quantity: 1 }, { mnemeId: 'wisdom-ordained', quantity: 1 }, { mnemeId: 'stoneskin-l', quantity: 1 }] },
@@ -229,28 +229,28 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'smite-l', nameTw: '文理猛擊', descriptionTw: '攻擊（威力1000，HP低於50%時可使用），回復HP',
-      category: 'offensive', roles: ['tank'],
+      category: 'offensive', roles: ['tank'], iconId: 64638,
       recipes: [
         { ingredients: [{ mnemeId: 'tranquilizer-l', quantity: 1 }, { mnemeId: 'wisdom-skirmisher', quantity: 1 }, { mnemeId: 'spirit-dart-l', quantity: 1 }] },
       ],
     },
     {
       id: 'banish-l', nameTw: '文理放逐', descriptionTw: '無屬性攻擊（威力200），不死族受到的傷害增加25%（60秒）',
-      category: 'offensive', roles: ['healer'],
+      category: 'offensive', roles: ['healer'], iconId: 64639,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-aetherweaver', quantity: 1 }, { mnemeId: 'dispel-l', quantity: 2 }] },
       ],
     },
     {
       id: 'banish-l-iii', nameTw: '文理強放逐', descriptionTw: '範圍無屬性攻擊（威力150），不死族受到的傷害增加25%（60秒）',
-      category: 'offensive', roles: ['healer'],
+      category: 'offensive', roles: ['healer'], iconId: 64640,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-ordained', quantity: 1 }, { mnemeId: 'dispel-l', quantity: 2 }] },
       ],
     },
     {
       id: 'haymaker-l', nameTw: '文理反攻', descriptionTw: '攻擊（威力300，迴避後可使用），目標減速20%（30秒）',
-      category: 'offensive', roles: ['tank'],
+      category: 'offensive', roles: ['tank'], iconId: 64627,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-skirmisher', quantity: 1 }, { mnemeId: 'featherfoot-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-martialist', quantity: 1 }, { mnemeId: 'incense-l', quantity: 1 }, { mnemeId: 'featherfoot-l', quantity: 1 }] },
@@ -258,13 +258,13 @@ export const eurekaData: EurekaData = {
     },
     // === 防禦 (DEFENSIVE) ===
     {
-      id: 'protect-l', nameTw: '文理護盾', descriptionTw: '物理傷害減免22%（30分鐘）',
-      category: 'defensive', roles: ['all'],
+      id: 'protect-l', nameTw: '文理物防護', descriptionTw: '物理傷害減免22%（30分鐘）',
+      category: 'defensive', roles: ['all'], iconId: 64612,
       recipes: [{ ingredients: [{ mnemeId: 'protect-l', quantity: 1 }] }],
     },
     {
-      id: 'shell-l', nameTw: '文理魔盾', descriptionTw: '魔法傷害減免22%（30分鐘）',
-      category: 'defensive', roles: ['all'],
+      id: 'shell-l', nameTw: '文理魔防殼', descriptionTw: '魔法傷害減免22%（30分鐘）',
+      category: 'defensive', roles: ['all'], iconId: 64613,
       recipes: [
         { ingredients: [{ mnemeId: 'shell-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'protect-l', quantity: 1 }, { mnemeId: 'esuna-l', quantity: 1 }] },
@@ -272,7 +272,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'stoneskin-l', nameTw: '文理石膚', descriptionTw: '護盾吸收10%最大HP的傷害（30秒）',
-      category: 'defensive', roles: ['all'],
+      category: 'defensive', roles: ['all'], iconId: 64631,
       recipes: [
         { ingredients: [{ mnemeId: 'stoneskin-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'protect-l', quantity: 1 }, { mnemeId: 'shell-l', quantity: 1 }] },
@@ -282,28 +282,28 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'solid-shield-l', nameTw: '文理物理盾', descriptionTw: '物理傷害減免99%（8秒）',
-      category: 'defensive', roles: ['caster', 'ranged', 'melee', 'healer'],
+      category: 'defensive', roles: ['caster', 'ranged', 'melee', 'healer'], iconId: 64636,
       recipes: [
         { ingredients: [{ mnemeId: 'protect-l', quantity: 1 }, { mnemeId: 'wisdom-guardian', quantity: 1 }, { mnemeId: 'stoneskin-l', quantity: 1 }] },
       ],
     },
     {
       id: 'spell-shield-l', nameTw: '文理魔法盾', descriptionTw: '魔法傷害減免99%（8秒）',
-      category: 'defensive', roles: ['caster', 'ranged', 'melee', 'healer'],
+      category: 'defensive', roles: ['caster', 'ranged', 'melee', 'healer'], iconId: 64637,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-guardian', quantity: 1 }, { mnemeId: 'shell-l', quantity: 1 }, { mnemeId: 'stoneskin-l', quantity: 1 }] },
       ],
     },
     {
       id: 'reflect-l', nameTw: '文理反射', descriptionTw: '反射魔法屏障（10秒）',
-      category: 'defensive', roles: ['all'],
+      category: 'defensive', roles: ['all'], iconId: 64646,
       recipes: [
         { ingredients: [{ mnemeId: 'protect-l', quantity: 1 }, { mnemeId: 'wisdom-ordained', quantity: 1 }, { mnemeId: 'shell-l', quantity: 1 }] },
       ],
     },
     {
       id: 'featherfoot-l', nameTw: '文理飄羽步', descriptionTw: '迴避率提高15%（45秒）',
-      category: 'defensive', roles: ['all'],
+      category: 'defensive', roles: ['all'], iconId: 64616,
       recipes: [
         { ingredients: [{ mnemeId: 'featherfoot-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'feint-l', quantity: 2 }] },
@@ -311,7 +311,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'bloodbath-l', nameTw: '文理浴血', descriptionTw: '攻擊傷害轉化為HP回復（45秒）',
-      category: 'defensive', roles: ['all'],
+      category: 'defensive', roles: ['all'], iconId: 64625,
       recipes: [
         { ingredients: [{ mnemeId: 'bloodbath-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'cure-l', quantity: 1 }, { mnemeId: 'wisdom-skirmisher', quantity: 1 }] },
@@ -320,13 +320,13 @@ export const eurekaData: EurekaData = {
     },
     // === 回復 (HEALING) ===
     {
-      id: 'cure-l', nameTw: '文理治療', descriptionTw: '回復HP（回復力9000）',
-      category: 'healing', roles: ['caster', 'ranged', 'melee', 'tank'],
+      id: 'cure-l', nameTw: '文理療傷', descriptionTw: '回復HP（回復力9000）',
+      category: 'healing', roles: ['caster', 'ranged', 'melee', 'tank'], iconId: 64629,
       recipes: [{ ingredients: [{ mnemeId: 'cure-l', quantity: 1 }] }],
     },
     {
-      id: 'cure-l-ii', nameTw: '文理救療', descriptionTw: '回復HP（回復力12000）',
-      category: 'healing', roles: ['caster', 'ranged', 'melee'],
+      id: 'cure-l-ii', nameTw: '文理中療傷', descriptionTw: '回復HP（回復力12000）',
+      category: 'healing', roles: ['caster', 'ranged', 'melee'], iconId: 64630,
       recipes: [
         { ingredients: [{ mnemeId: 'cure-l-ii', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'cure-l', quantity: 1 }, { mnemeId: 'wisdom-ordained', quantity: 1 }] },
@@ -335,8 +335,8 @@ export const eurekaData: EurekaData = {
       ],
     },
     {
-      id: 'cure-l-iii', nameTw: '文理癒療', descriptionTw: '範圍回復HP（回復力9000）',
-      category: 'healing', roles: ['caster', 'ranged', 'melee', 'tank'],
+      id: 'cure-l-iii', nameTw: '文理大療傷', descriptionTw: '範圍回復HP（回復力9000）',
+      category: 'healing', roles: ['caster', 'ranged', 'melee', 'tank'], iconId: 64632,
       recipes: [
         { ingredients: [{ mnemeId: 'cure-l-ii', quantity: 2 }] },
         { ingredients: [{ mnemeId: 'bloodbath-l', quantity: 1 }, { mnemeId: 'wisdom-ordained', quantity: 1 }] },
@@ -345,7 +345,7 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'regen-l', nameTw: '文理再生', descriptionTw: '持續回復HP（回復力2500，21秒）',
-      category: 'healing', roles: ['caster', 'ranged', 'melee', 'tank'],
+      category: 'healing', roles: ['caster', 'ranged', 'melee', 'tank'], iconId: 64633,
       recipes: [
         { ingredients: [{ mnemeId: 'tranquilizer-l', quantity: 1 }, { mnemeId: 'cure-l-ii', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'feint-l', quantity: 1 }, { mnemeId: 'cure-l-ii', quantity: 1 }] },
@@ -353,18 +353,18 @@ export const eurekaData: EurekaData = {
       ],
     },
     {
-      id: 'esuna-l', nameTw: '文理康復', descriptionTw: '移除一個異常狀態',
-      category: 'healing', roles: ['caster', 'ranged', 'melee', 'tank'],
+      id: 'esuna-l', nameTw: '文理復原', descriptionTw: '移除一個異常狀態',
+      category: 'healing', roles: ['caster', 'ranged', 'melee', 'tank'], iconId: 64634,
       recipes: [{ ingredients: [{ mnemeId: 'esuna-l', quantity: 1 }] }],
     },
     {
       id: 'raise-l', nameTw: '文理復活', descriptionTw: '復活目標',
-      category: 'healing', roles: ['caster', 'ranged', 'melee', 'tank'],
+      category: 'healing', roles: ['caster', 'ranged', 'melee', 'tank'], iconId: 64645,
       recipes: [{ ingredients: [{ mnemeId: 'raise-l', quantity: 1 }] }],
     },
     {
       id: 'rejuvenate-l', nameTw: '文理充能', descriptionTw: '回復50%最大HP和MP',
-      category: 'healing', roles: ['all'],
+      category: 'healing', roles: ['all'], iconId: 64626,
       recipes: [
         { ingredients: [{ mnemeId: 'bloodbath-l', quantity: 1 }, { mnemeId: 'shell-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'spirit-remembered', quantity: 1 }, { mnemeId: 'spirit-dart-l', quantity: 1 }] },
@@ -372,22 +372,22 @@ export const eurekaData: EurekaData = {
       ],
     },
     {
-      id: 'sacrifice-l', nameTw: '文理犧牲', descriptionTw: '回復目標100%HP（倒下狀態也可），自身獲得死宣告',
-      category: 'healing', roles: ['healer'],
+      id: 'sacrifice-l', nameTw: '文理獻祭', descriptionTw: '回復目標100%HP（倒下狀態也可），自身獲得死宣告',
+      category: 'healing', roles: ['healer'], iconId: 64656,
       recipes: [
         { ingredients: [{ mnemeId: 'esuna-l', quantity: 1 }, { mnemeId: 'raise-l', quantity: 1 }, { mnemeId: 'magic-burst-l', quantity: 1 }] },
       ],
     },
     {
       id: 'refresh-l', nameTw: '文理醒神', descriptionTw: '提高以太恢復速度（30秒）',
-      category: 'healing', roles: ['healer'],
+      category: 'healing', roles: ['healer'], iconId: 64647,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-aetherweaver', quantity: 1 }, { mnemeId: 'wisdom-ordained', quantity: 1 }, { mnemeId: 'cure-l-ii', quantity: 1 }] },
       ],
     },
     {
       id: 'bravery-l', nameTw: '文理勇氣', descriptionTw: '目標攻擊力提高10%（300秒）',
-      category: 'healing', roles: ['caster', 'healer'],
+      category: 'healing', roles: ['caster', 'healer'], iconId: 64635,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-skirmisher', quantity: 1 }, { mnemeId: 'wisdom-guardian', quantity: 1 }, { mnemeId: 'wisdom-ordained', quantity: 1 }] },
       ],
@@ -395,12 +395,12 @@ export const eurekaData: EurekaData = {
     // === 輔助 (UTILITY) ===
     {
       id: 'paralyze-l', nameTw: '文理麻痺', descriptionTw: '賦予麻痺狀態（60秒）',
-      category: 'utility', roles: ['all'],
+      category: 'utility', roles: ['all'], iconId: 64614,
       recipes: [{ ingredients: [{ mnemeId: 'paralyze-l', quantity: 1 }] }],
     },
     {
       id: 'paralyze-l-iii', nameTw: '文理強麻痺', descriptionTw: '範圍賦予麻痺狀態（60秒）',
-      category: 'utility', roles: ['all'],
+      category: 'utility', roles: ['all'], iconId: 64615,
       recipes: [
         { ingredients: [{ mnemeId: 'paralyze-l', quantity: 1 }, { mnemeId: 'spirit-dart-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'paralyze-l', quantity: 3 }] },
@@ -409,12 +409,12 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'tranquilizer-l', nameTw: '文理鎮定', descriptionTw: '暈眩目標（8秒）',
-      category: 'utility', roles: ['all'],
+      category: 'utility', roles: ['all'], iconId: 64624,
       recipes: [{ ingredients: [{ mnemeId: 'tranquilizer-l', quantity: 1 }] }],
     },
     {
       id: 'dispel-l', nameTw: '文理驅魔', descriptionTw: '移除敵人一個增益效果',
-      category: 'utility', roles: ['caster', 'ranged', 'melee', 'healer'],
+      category: 'utility', roles: ['caster', 'ranged', 'melee', 'healer'], iconId: 64619,
       recipes: [
         { ingredients: [{ mnemeId: 'dispel-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'esuna-l', quantity: 1 }, { mnemeId: 'wisdom-ordained', quantity: 1 }] },
@@ -424,25 +424,25 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'incense-l', nameTw: '文理激怒', descriptionTw: '獲得最高仇恨，仇恨產生量提高（15秒）',
-      category: 'utility', roles: ['caster', 'ranged', 'melee', 'healer'],
+      category: 'utility', roles: ['caster', 'ranged', 'melee', 'healer'], iconId: 64644,
       recipes: [{ ingredients: [{ mnemeId: 'incense-l', quantity: 1 }] }],
     },
     {
       id: 'feint-l', nameTw: '文理虛槍', descriptionTw: '攻擊（威力100），降低目標迴避率（60秒）',
-      category: 'utility', roles: ['healer', 'tank'],
+      category: 'utility', roles: ['healer', 'tank'], iconId: 64620,
       recipes: [{ ingredients: [{ mnemeId: 'feint-l', quantity: 1 }] }],
     },
     {
-      id: 'rapid-recast-l', nameTw: '文理高速復唱', descriptionTw: '下一個能力技回復時間縮短50%（15秒）',
-      category: 'utility', roles: ['caster', 'ranged', 'melee', 'tank'],
+      id: 'rapid-recast-l', nameTw: '文理高速冷卻', descriptionTw: '下一個能力技回復時間縮短50%（15秒）',
+      category: 'utility', roles: ['caster', 'ranged', 'melee', 'tank'], iconId: 64628,
       recipes: [
         { ingredients: [{ mnemeId: 'esuna-l', quantity: 1 }, { mnemeId: 'dispel-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'cure-l', quantity: 1 }, { mnemeId: 'esuna-l', quantity: 1 }, { mnemeId: 'feint-l', quantity: 1 }] },
       ],
     },
     {
-      id: 'perception-l', nameTw: '文理感知', descriptionTw: '顯示陷阱（15碼）／偵測（36碼）',
-      category: 'utility', roles: ['caster', 'ranged', 'melee'],
+      id: 'perception-l', nameTw: '文理探景', descriptionTw: '顯示陷阱（15碼）／偵測（36碼）',
+      category: 'utility', roles: ['caster', 'ranged', 'melee'], iconId: 64651,
       recipes: [
         { ingredients: [{ mnemeId: 'wisdom-breathtaker', quantity: 2 }] },
         { ingredients: [{ mnemeId: 'stealth-l', quantity: 1 }, { mnemeId: 'dispel-l', quantity: 1 }, { mnemeId: 'wisdom-breathtaker', quantity: 1 }] },
@@ -451,12 +451,12 @@ export const eurekaData: EurekaData = {
     // === 移動 (MOVEMENT) ===
     {
       id: 'backstep-l', nameTw: '文理後跳', descriptionTw: '向後跳躍10碼',
-      category: 'movement', roles: ['all'],
+      category: 'movement', roles: ['all'], iconId: 64623,
       recipes: [{ ingredients: [{ mnemeId: 'backstep-l', quantity: 1 }] }],
     },
     {
       id: 'swift-l', nameTw: '文理敏捷', descriptionTw: '大幅提高移動速度（10秒）',
-      category: 'movement', roles: ['all'],
+      category: 'movement', roles: ['all'], iconId: 64643,
       recipes: [
         { ingredients: [{ mnemeId: 'featherfoot-l', quantity: 2 }] },
         { ingredients: [{ mnemeId: 'backstep-l', quantity: 2 }, { mnemeId: 'featherfoot-l', quantity: 1 }] },
@@ -464,15 +464,15 @@ export const eurekaData: EurekaData = {
     },
     {
       id: 'stealth-l', nameTw: '文理潛行', descriptionTw: '進入隱身狀態，移動速度降低50%',
-      category: 'movement', roles: ['all'],
+      category: 'movement', roles: ['all'], iconId: 64621,
       recipes: [
         { ingredients: [{ mnemeId: 'stealth-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-ordained', quantity: 1 }, { mnemeId: 'shell-l', quantity: 1 }] },
       ],
     },
     {
-      id: 'aetherial-manipulation-l', nameTw: '文理以太步', descriptionTw: '瞬間移動到目標身邊',
-      category: 'movement', roles: ['all'],
+      id: 'aetherial-manipulation-l', nameTw: '文理乙太步', descriptionTw: '瞬間移動到目標身邊',
+      category: 'movement', roles: ['all'], iconId: 64622,
       recipes: [
         { ingredients: [{ mnemeId: 'backstep-l', quantity: 1 }, { mnemeId: 'stealth-l', quantity: 1 }] },
         { ingredients: [{ mnemeId: 'wisdom-martialist', quantity: 1 }, { mnemeId: 'backstep-l', quantity: 1 }, { mnemeId: 'feint-l', quantity: 1 }] },
