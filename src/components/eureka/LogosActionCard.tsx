@@ -14,7 +14,15 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
   return (
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="text-sm font-semibold text-foreground">{action.nameTw}</h3>
+        <div className="flex items-center gap-2">
+          <img
+            src={`https://xivapi.com/i/064000/0${action.iconId}.png`}
+            alt={action.nameTw}
+            className="w-8 h-8 shrink-0"
+            loading="lazy"
+          />
+          <h3 className="text-sm font-semibold text-foreground">{action.nameTw}</h3>
+        </div>
         <div className="flex gap-1 shrink-0">
           {action.roles.map((role) => (
             <span

@@ -18,8 +18,10 @@ interface UniversalisItem {
 }
 
 interface UniversalisMultiResponse {
-  items: UniversalisItem[];
+  items: Record<string, UniversalisItem>;
 }
+
+interface UniversalisSingleResponse extends UniversalisItem {}
 
 export async function fetchLogogramPrices(itemIds: number[]): Promise<LogogramPrice[]> {
   const emptyResults: LogogramPrice[] = itemIds.map((id) => ({
@@ -38,10 +40,14 @@ export async function fetchLogogramPrices(itemIds: number[]): Promise<LogogramPr
       return emptyResults;
     }
 
-    const data: UniversalisMultiResponse = await response.json();
+    const raw = await response.json();
+
+    // Single-item response is flat; multi-item wraps in { items: { "id": ... } }
+    const itemMap: Record<string, UniversalisItem> =
+      itemIds.length === 1 ? { [String(itemIds[0])]: raw as UniversalisSingleResponse } : (raw as UniversalisMultiResponse).items ?? {};
 
     return itemIds.map((itemId) => {
-      const item = data.items?.find((i) => i.itemID === itemId);
+      const item = itemMap[String(itemId)];
       if (!item || !item.listings || item.listings.length === 0) {
         return {
           itemId,

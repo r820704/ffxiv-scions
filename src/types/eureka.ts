@@ -38,6 +38,7 @@ export interface LogosAction {
   category: LogosCategory;
   roles: Role[];
   recipes: Recipe[];
+  iconId: number;
 }
 
 export interface LogogramPrice {
