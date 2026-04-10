@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { LogosAction, LogogramPrice } from '@/types/eureka';
 import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
 import { calculateRecipeCost } from '@/utils/eureka-helpers';
 import { ROLE_LABELS } from '@/types/eureka';
 import PriceDisplay from './PriceDisplay';
-import ActionDetailModal from './ActionDetailModal';
+import ActionDetailTooltip from './ActionDetailTooltip';
 
 interface LogosActionCardProps {
   action: LogosAction;
@@ -13,23 +13,69 @@ interface LogosActionCardProps {
 }
 
 export default function LogosActionCard({ action, prices, priceLoading }: LogosActionCardProps) {
-  const [showDetail, setShowDetail] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Close tooltip on outside click (mobile tap-away)
+  useEffect(() => {
+    if (!showTooltip) return;
+    const handleClick = (e: MouseEvent) => {
+      if (
+        triggerRef.current?.contains(e.target as Node) ||
+        tooltipRef.current?.contains(e.target as Node)
+      ) return;
+      setShowTooltip(false);
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [showTooltip]);
+
+  const handleMouseEnter = () => {
+    clearTimeout(hoverTimeoutRef.current);
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => setShowTooltip(false), 150);
+  };
+
+  const handleTap = () => {
+    setShowTooltip((prev) => !prev);
+  };
 
   return (
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-start justify-between gap-2 mb-2">
-        <button
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left"
-          onClick={() => setShowDetail(true)}
-        >
-          <img
-            src={`https://xivapi.com/i/064000/0${action.iconId}.png`}
-            alt={action.nameTw}
-            className="w-8 h-8 shrink-0"
-            loading="lazy"
-          />
-          <h3 className="text-sm font-semibold text-foreground underline decoration-dotted underline-offset-2">{action.nameTw}</h3>
-        </button>
+        <div className="relative" ref={triggerRef}>
+          <div
+            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={handleTap}
+          >
+            <img
+              src={`https://xivapi.com/i/064000/0${action.iconId}.png`}
+              alt={action.nameTw}
+              className="w-8 h-8 shrink-0"
+              loading="lazy"
+            />
+            <h3 className="text-sm font-semibold text-foreground underline decoration-dotted underline-offset-2">
+              {action.nameTw}
+            </h3>
+          </div>
+          {showTooltip && (
+            <div
+              ref={tooltipRef}
+              className="absolute left-0 top-full mt-1 z-50"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <ActionDetailTooltip action={action} />
+            </div>
+          )}
+        </div>
         <div className="flex gap-1 shrink-0">
           {action.roles.map((role) => (
             <span
@@ -41,7 +87,6 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
           ))}
         </div>
       </div>
-      <p className="text-xs text-muted-foreground mb-3">{action.descriptionTw}</p>
       <div>
         {action.recipes.map((recipe, ri) => {
           const cost = calculateRecipeCost(recipe.ingredients, prices);
@@ -107,9 +152,6 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
           );
         })}
       </div>
-      {showDetail && (
-        <ActionDetailModal action={action} onClose={() => setShowDetail(false)} />
-      )}
     </div>
   );
 }
