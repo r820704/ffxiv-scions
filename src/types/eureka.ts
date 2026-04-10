@@ -31,6 +31,14 @@ export interface Recipe {
   ingredients: RecipeIngredient[];
 }
 
+export type ActionCategory = 'spell' | 'ability' | 'weaponskill';
+
+export const ACTION_CATEGORY_LABELS: Record<ActionCategory, string> = {
+  spell: '魔法',
+  ability: '能力',
+  weaponskill: '戰技',
+};
+
 export interface LogosAction {
   id: string;
   nameTw: string;
@@ -39,6 +47,11 @@ export interface LogosAction {
   roles: Role[];
   recipes: Recipe[];
   iconId: number;
+  actionCategory: ActionCategory;
+  cast100ms: number;
+  recast100ms: number;
+  range: number;
+  effectRange: number;
 }
 
 export interface LogogramPrice {
