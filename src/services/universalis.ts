@@ -1,7 +1,7 @@
 import type { LogogramPrice } from '@/types/eureka';
 
 const UNIVERSALIS_BASE = 'https://universalis.app/api/v2';
-const DATA_CENTER = 'Meteor';
+const DATA_CENTER = '陸行鳥';
 
 interface UniversalisListing {
   pricePerUnit: number;
