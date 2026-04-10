@@ -52,6 +52,7 @@ export interface LogosAction {
   recast100ms: number;
   range: number;
   effectRange: number;
+  duration: string | null;
 }
 
 export interface LogogramPrice {

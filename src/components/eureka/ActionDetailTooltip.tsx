@@ -66,6 +66,12 @@ export default function ActionDetailTooltip({ action }: ActionDetailTooltipProps
       {/* Description */}
       <div className="px-3 py-2 border-b border-border">
         <p className="text-xs text-foreground leading-relaxed">{action.descriptionTw}</p>
+        {action.duration && (
+          <p className="text-xs mt-1.5">
+            <span className="text-green-400">持續時間：</span>
+            <span className="text-foreground font-semibold">{action.duration}</span>
+          </p>
+        )}
       </div>
 
       {/* Roles */}

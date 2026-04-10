@@ -42,7 +42,7 @@ export default function LogosActionList({ prices, priceLoading }: LogosActionLis
       <div className="text-xs text-muted-foreground">
         顯示 {filtered.length} / {eurekaData.logosActions.length} 個技能
       </div>
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {filtered.map((action) => (
           <LogosActionCard
             key={action.id}
