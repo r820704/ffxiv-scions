@@ -77,10 +77,6 @@ export const weatherRates: Record<string, WeatherRateEntry[]> = {
   'Shaaloani': ['Clear Skies', 5, 'Fair Skies', 50, 'Clouds', 70, 'Dust Storms', 85, 'Gales'],
   'Heritage Found': ['Fair Skies', 5, 'Clouds', 25, 'Fog', 40, 'Rain', 45, 'Thunderstorms', 50, 'Umbral Static'],
   'Living Memory': ['Rain', 10, 'Fog', 20, 'Clouds', 40, 'Fair Skies'],
-  'Sinus Ardorum': ['Moon Dust', 15, 'Fair Skies', 85, 'Umbral Wind'],
-  'South Horn': ['Clear Skies', 10, 'Fair Skies', 55, 'Clouds', 70, 'Rain', 80, 'Atmospheric Phantasms', 95, 'Illusory Disturbances'],
-  'Phaenna': ['Fair Skies', 60, 'Clouds', 80, 'Rain'],
-  'Oizys': ['Clouds', 20, 'Fair Skies', 80, 'Clear Skies'],
 };
 
 // English → Traditional Chinese weather name mapping
@@ -104,8 +100,6 @@ export const weatherNamesTw: Record<string, string> = {
   'Umbral Static': '靈電',
   'Moon Dust': '月塵',
   'Astromagnetic Storms': '磁暴',
-  'Atmospheric Phantasms': '大氣幻象',
-  'Illusory Disturbances': '幻象擾動',
 };
 
 // English → Traditional Chinese zone name mapping
@@ -135,7 +129,7 @@ export const zoneNamesTw: Record<string, string> = {
   'Coerthas Central Highlands': '庫爾札斯中央高地',
   'Coerthas Western Highlands': '庫爾札斯西部高地',
   'Empyreum': '穹頂皓天',
-  'The Sea of Clouds': '雲海',
+  'The Sea of Clouds': '阿巴拉提亞雲海',
   'Azys Lla': '魔大陸阿濟茲拉',
   'The Diadem': '雲冠群島',
   'Idyllshire': '田園郡',
@@ -183,10 +177,6 @@ export const zoneNamesTw: Record<string, string> = {
   'Shaaloani': '夏勞尼荒野',
   'Heritage Found': '遺產之地',
   'Living Memory': '憶想之地',
-  'Sinus Ardorum': '炎灣',
-  'South Horn': '南角地帶',
-  'Phaenna': '法恩那',
-  'Oizys': '俄厄緒斯',
 };
 
 // Zone groups by expansion/region
@@ -194,7 +184,7 @@ export const zoneGroups: ZoneGroup[] = [
   { label: '拉諾西亞', zones: ['Limsa Lominsa', 'Middle La Noscea', 'Lower La Noscea', 'Eastern La Noscea', 'Western La Noscea', 'Upper La Noscea', 'Outer La Noscea', 'Mist'] },
   { label: '黑衣森林', zones: ['Gridania', 'Central Shroud', 'East Shroud', 'South Shroud', 'North Shroud', 'The Lavender Beds'] },
   { label: '薩納蘭', zones: ["Ul'dah", 'Western Thanalan', 'Central Thanalan', 'Eastern Thanalan', 'Southern Thanalan', 'Northern Thanalan', 'The Goblet'] },
-  { label: '伊修加德', zones: ['Ishgard', 'Coerthas Central Highlands', 'Coerthas Western Highlands', 'Empyreum'] },
+  { label: '伊修加爾德', zones: ['Ishgard', 'Coerthas Central Highlands', 'Coerthas Western Highlands', 'Empyreum'] },
   { label: '龍詩戰爭（天空）', zones: ['The Sea of Clouds', 'Azys Lla'] },
   { label: '龍詩戰爭（地面）', zones: ['Idyllshire', 'The Dravanian Forelands', 'The Dravanian Hinterlands', 'The Churning Mists'] },
   { label: '基拉巴尼亞', zones: ["Rhalgr's Reach", 'The Fringes', 'The Peaks', 'The Lochs'] },
@@ -203,18 +193,16 @@ export const zoneGroups: ZoneGroup[] = [
   { label: '諾弗蘭特（城鎮）', zones: ['The Crystarium', 'Eulmore'] },
   { label: '諾弗蘭特', zones: ['Lakeland', 'Kholusia', 'Amh Araeng', 'Il Mheg', "The Rak'tika Greatwood", 'The Tempest'] },
   { label: '薩維奈 / 加雷馬', zones: ['Radz-at-Han', 'Thavnair', 'Garlemald'] },
-  { label: '舊薩雷安 / 迷宮', zones: ['Old Sharlayan', 'Labyrinthos'] },
+  { label: '舊薩雷安 / 迷津', zones: ['Old Sharlayan', 'Labyrinthos'] },
   { label: '月球 / 終點', zones: ['Mare Lamentorum', 'Ultima Thule'] },
   { label: '厄爾庇斯', zones: ['Elpis'] },
-  { label: '特拉爾大陸', zones: ['Tuliyollal', 'Urqopacha', "Kozama'uka", "Yak T'el"] },
-  { label: '九號方案', zones: ['Solution Nine', 'Shaaloani', 'Heritage Found'] },
-  { label: '活著的記憶', zones: ['Living Memory'] },
+  { label: '圖拉爾大陸', zones: ['Tuliyollal', 'Urqopacha', "Kozama'uka", "Yak T'el"] },
+  { label: '九號解決方案', zones: ['Solution Nine', 'Shaaloani', 'Heritage Found'] },
+  { label: '憶想之地', zones: ['Living Memory'] },
   { label: '摩杜納', zones: ['Mor Dhona'] },
   { label: '禁地優雷卡', zones: ['Eureka Anemos', 'Eureka Pagos', 'Eureka Pyros', 'Eureka Hydatos'] },
   { label: '博茲雅', zones: ['Bozjan Southern Front', 'Zadnor'] },
   { label: '無人島', zones: ['Unnamed Island'] },
-  { label: '宇宙探索', zones: ['Sinus Ardorum', 'Phaenna', 'Oizys'] },
-  { label: '南角', zones: ['South Horn'] },
   { label: '雲冠群島', zones: ['The Diadem'] },
 ];
 
