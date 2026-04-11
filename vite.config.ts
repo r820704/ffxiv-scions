@@ -6,7 +6,7 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/ffxiv-baldesion/',
+  base: process.env.VITE_BASE_URL || '/ffxiv-baldesion/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
