@@ -77,10 +77,6 @@ export const weatherRates: Record<string, WeatherRateEntry[]> = {
   'Shaaloani': ['Clear Skies', 5, 'Fair Skies', 50, 'Clouds', 70, 'Dust Storms', 85, 'Gales'],
   'Heritage Found': ['Fair Skies', 5, 'Clouds', 25, 'Fog', 40, 'Rain', 45, 'Thunderstorms', 50, 'Umbral Static'],
   'Living Memory': ['Rain', 10, 'Fog', 20, 'Clouds', 40, 'Fair Skies'],
-  'Sinus Ardorum': ['Moon Dust', 15, 'Fair Skies', 85, 'Umbral Wind'],
-  'South Horn': ['Clear Skies', 10, 'Fair Skies', 55, 'Clouds', 70, 'Rain', 80, 'Atmospheric Phantasms', 95, 'Illusory Disturbances'],
-  'Phaenna': ['Fair Skies', 60, 'Clouds', 80, 'Rain'],
-  'Oizys': ['Clouds', 20, 'Fair Skies', 80, 'Clear Skies'],
 };
 
 // English → Traditional Chinese weather name mapping
@@ -104,8 +100,6 @@ export const weatherNamesTw: Record<string, string> = {
   'Umbral Static': '靈電',
   'Moon Dust': '月塵',
   'Astromagnetic Storms': '磁暴',
-  'Atmospheric Phantasms': '大氣幻象',
-  'Illusory Disturbances': '幻象擾動',
 };
 
 // English → Traditional Chinese zone name mapping
@@ -183,10 +177,6 @@ export const zoneNamesTw: Record<string, string> = {
   'Shaaloani': '夏勞尼荒野',
   'Heritage Found': '遺產之地',
   'Living Memory': '憶想之地',
-  'Sinus Ardorum': '炎灣',
-  'South Horn': '南角地帶',
-  'Phaenna': '法恩那',
-  'Oizys': '俄厄緒斯',
 };
 
 // Zone groups by expansion/region
@@ -213,8 +203,6 @@ export const zoneGroups: ZoneGroup[] = [
   { label: '禁地優雷卡', zones: ['Eureka Anemos', 'Eureka Pagos', 'Eureka Pyros', 'Eureka Hydatos'] },
   { label: '博茲雅', zones: ['Bozjan Southern Front', 'Zadnor'] },
   { label: '無人島', zones: ['Unnamed Island'] },
-  { label: '宇宙探索', zones: ['Sinus Ardorum', 'Phaenna', 'Oizys'] },
-  { label: '南角', zones: ['South Horn'] },
   { label: '雲冠群島', zones: ['The Diadem'] },
 ];
 
