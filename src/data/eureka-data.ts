@@ -134,7 +134,7 @@ export const eurekaData: EurekaData = {
       ],
     },
     {
-      id: 'wisdom-elder', nameTw: '長老的記憶', descriptionTw: '魔法攻擊力提高35%，魔法防禦力降低22%，魔法MP消耗減少',
+      id: 'wisdom-elder', nameTw: '賢者的記憶', descriptionTw: '魔法攻擊力提高35%，魔法防禦力降低22%，魔法MP消耗減少',
       category: 'wisdom', roles: ['caster'], iconId: 64652,
       actionCategory: 'spell', cast100ms: 0, recast100ms: 100, range: 0, effectRange: 0, duration: '永久',
       recipes: [
@@ -143,7 +143,7 @@ export const eurekaData: EurekaData = {
       ],
     },
     {
-      id: 'wisdom-duelist', nameTw: '決鬥者的記憶', descriptionTw: '物理攻擊力提高40%，最大HP提高15%',
+      id: 'wisdom-duelist', nameTw: '劍豪的記憶', descriptionTw: '物理攻擊力提高40%，最大HP提高15%',
       category: 'wisdom', roles: ['melee'], iconId: 64653,
       actionCategory: 'spell', cast100ms: 0, recast100ms: 100, range: 0, effectRange: 0, duration: '永久',
       recipes: [
@@ -152,7 +152,7 @@ export const eurekaData: EurekaData = {
       ],
     },
     {
-      id: 'wisdom-fiendhunter', nameTw: '獵魔者的記憶', descriptionTw: '物理攻擊力提高25%，迴避率提高25%',
+      id: 'wisdom-fiendhunter', nameTw: '弓聖的記憶', descriptionTw: '物理攻擊力提高25%，迴避率提高25%',
       category: 'wisdom', roles: ['ranged'], iconId: 64654,
       actionCategory: 'spell', cast100ms: 0, recast100ms: 100, range: 0, effectRange: 0, duration: '永久',
       recipes: [
@@ -161,7 +161,7 @@ export const eurekaData: EurekaData = {
       ],
     },
     {
-      id: 'wisdom-indomitable', nameTw: '不屈者的記憶', descriptionTw: '受到的傷害減少64%，受到超過50%HP的傷害時回復HP',
+      id: 'wisdom-indomitable', nameTw: '豪傑的記憶', descriptionTw: '受到的傷害減少64%，受到超過50%HP的傷害時回復HP',
       category: 'wisdom', roles: ['tank'], iconId: 64655,
       actionCategory: 'spell', cast100ms: 0, recast100ms: 100, range: 0, effectRange: 0, duration: '永久',
       recipes: [
