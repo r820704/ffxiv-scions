@@ -98,7 +98,7 @@ export default function WeatherTimeline({ zone, selectedWeathers }: WeatherTimel
                       key={f.startTime}
                       className={cn(
                         'grid items-center gap-2 px-2 py-1.5 rounded-md text-sm border-l-2',
-                        'grid-cols-[24px_1fr_auto_auto_auto]',
+                        'grid-cols-[24px_1fr_auto_auto_3rem]',
                         isCurrent ? 'bg-secondary/60 font-semibold' : ''
                       )}
                       style={{ borderLeftColor: color }}
@@ -111,11 +111,13 @@ export default function WeatherTimeline({ zone, selectedWeathers }: WeatherTimel
                       <span className="text-muted-foreground text-xs tabular-nums">
                         ET {formatEorzeaTime(etStart)}–{formatEorzeaTime(etEnd)}
                       </span>
-                      {isCurrent && (
-                        <span className="bg-primary text-primary-foreground text-[0.65rem] px-2 py-0.5 rounded-full">
-                          目前
-                        </span>
-                      )}
+                      <span className="justify-self-end">
+                        {isCurrent && (
+                          <span className="bg-primary text-primary-foreground text-[0.65rem] px-2 py-0.5 rounded-full">
+                            目前
+                          </span>
+                        )}
+                      </span>
                     </li>
                   );
                 })}
