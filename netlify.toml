@@ -1,0 +1,10 @@
+[build]
+  publish = "dist"
+  ignore = "exit 0"
+
+[context.deploy-preview]
+  command = "npm run build"
+  ignore = "exit 1"
+
+[context.deploy-preview.environment]
+  VITE_BASE_URL = "/"
