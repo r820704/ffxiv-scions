@@ -111,10 +111,12 @@ export default function WeatherTimeline({ zone, selectedWeathers }: WeatherTimel
                       <span className="text-muted-foreground text-xs tabular-nums">
                         ET {formatEorzeaTime(etStart)}–{formatEorzeaTime(etEnd)}
                       </span>
-                      {isCurrent && (
+                      {isCurrent ? (
                         <span className="bg-primary text-primary-foreground text-[0.65rem] px-2 py-0.5 rounded-full">
                           目前
                         </span>
+                      ) : (
+                        <span />
                       )}
                     </li>
                   );
