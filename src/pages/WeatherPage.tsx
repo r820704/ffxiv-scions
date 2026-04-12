@@ -27,8 +27,8 @@ export default function WeatherPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-center text-primary mb-4">
-        FFXIV 天氣查詢工具
+      <h1 className="font-title text-2xl font-bold text-center text-primary mb-4">
+        天氣查詢
       </h1>
       <ZoneSelector selectedZone={selectedZone} onSelectZone={handleSelectZone} />
       <div className="flex flex-col gap-4 mt-4">
