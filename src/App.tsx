@@ -7,7 +7,7 @@ import EurekaPage from '@/pages/EurekaPage';
 export default function App() {
   return (
     <HashRouter>
-      <div className="max-w-[1080px] mx-auto px-4 py-4 font-sans">
+      <div className="max-w-[1080px] mx-auto px-4 py-4">
         <NavBar />
         <Routes>
           <Route path="/" element={<HomePage />} />

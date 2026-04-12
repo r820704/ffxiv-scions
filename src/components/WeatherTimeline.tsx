@@ -82,7 +82,7 @@ export default function WeatherTimeline({ zone, selectedWeathers }: WeatherTimel
           {groups.map((group) => (
             <div key={group.key}>
               <div className="sticky top-0 z-10 bg-card/90 backdrop-blur-sm py-1 mb-2">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <span className="text-xs font-medium text-primary uppercase tracking-wider">
                   {group.label}
                 </span>
               </div>
@@ -99,7 +99,7 @@ export default function WeatherTimeline({ zone, selectedWeathers }: WeatherTimel
                       className={cn(
                         'grid items-center gap-2 px-2 py-1.5 rounded-md text-sm border-l-2',
                         'grid-cols-[24px_1fr_auto_auto_3rem]',
-                        isCurrent ? 'bg-secondary/60 font-semibold' : ''
+                        isCurrent ? 'bg-secondary font-semibold' : ''
                       )}
                       style={{ borderLeftColor: color }}
                     >
@@ -114,7 +114,7 @@ export default function WeatherTimeline({ zone, selectedWeathers }: WeatherTimel
                       <span className="justify-self-end">
                         {isCurrent && (
                           <span className="bg-primary text-primary-foreground text-[0.65rem] px-2 py-0.5 rounded-full">
-                            目前
+                            現在
                           </span>
                         )}
                       </span>
