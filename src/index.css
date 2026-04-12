@@ -1,31 +1,47 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0e1424;
-  --color-foreground: #f0f4ff;
-  --color-card: #1c2440;
-  --color-card-foreground: #f0f4ff;
-  --color-primary: #a0c4ff;
-  --color-primary-foreground: #0e1424;
-  --color-secondary: #2a3a6b;
-  --color-secondary-foreground: #c8d6e5;
-  --color-muted: #1a2744;
-  --color-muted-foreground: #8a9bc4;
-  --color-accent: #2a3a6b;
-  --color-accent-foreground: #f0f4ff;
-  --color-border: #2a3a6b;
-  --color-input: #2a3a6b;
-  --color-ring: #a0c4ff;
+  --color-background: #12101c;
+  --color-foreground: #e8e0d0;
+  --color-card: #1a1528;
+  --color-card-foreground: #e8e0d0;
+  --color-primary: #C5B69D;
+  --color-primary-dark: #A57B18;
+  --color-primary-foreground: #12101c;
+  --color-secondary: #252040;
+  --color-secondary-foreground: #C5B69D;
+  --color-muted: #1a1528;
+  --color-muted-foreground: #8a7e6a;
+  --color-muted-dim: #6a5e4a;
+  --color-accent: #252040;
+  --color-accent-foreground: #e8e0d0;
+  --color-border: #2a2440;
+  --color-input: #2a2440;
+  --color-ring: #C5B69D;
   --color-destructive: #ef4444;
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
+  --font-title: 'LXGW WenKai', serif;
 }
 
 html, body {
   background: var(--color-background);
-  background-image: radial-gradient(ellipse at 50% 0%, #1a2744 0%, #0e1424 70%);
   color: var(--color-foreground);
+  font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
   margin: 0;
   min-height: 100vh;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.font-title {
+  font-family: var(--font-title);
 }
