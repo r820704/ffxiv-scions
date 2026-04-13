@@ -55,11 +55,18 @@ export interface LogosAction {
   duration: string | null;
 }
 
+export interface LogogramListing {
+  pricePerUnit: number;
+  quantity: number;
+  worldName: string;
+}
+
 export interface LogogramPrice {
   itemId: number;
   price: number | null;
   worldName: string | null;
   lastUpdated: number | null;
+  listings: LogogramListing[];
 }
 
 export interface EurekaData {
