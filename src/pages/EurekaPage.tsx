@@ -135,7 +135,7 @@ export default function EurekaPage() {
             </button>
             <button
               onClick={resetAll}
-              className="text-[10px] px-2 py-1 rounded bg-secondary text-muted-foreground hover:bg-destructive/80 hover:text-destructive-foreground transition-colors cursor-pointer whitespace-nowrap font-medium"
+              className="text-[10px] px-2 py-1 rounded bg-destructive/70 text-destructive-foreground hover:bg-destructive transition-colors cursor-pointer whitespace-nowrap font-medium"
             >
               重置
             </button>
