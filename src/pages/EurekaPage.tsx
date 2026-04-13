@@ -4,9 +4,13 @@ import { fetchLogogramPrices } from '@/services/universalis';
 import type { LogogramPrice } from '@/types/eureka';
 import LogosActionList from '@/components/eureka/LogosActionList';
 import MnemeSelector from '@/components/eureka/MnemeSelector';
+import AlbumGrid from '@/components/eureka/AlbumGrid';
+import CrystalOverview from '@/components/eureka/CrystalOverview';
+import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
+import { useAlbumState } from '@/hooks/useAlbumState';
 import { cn } from '@/lib/utils';
 
-type EurekaTab = 'actions' | 'mnemes';
+type EurekaTab = 'actions' | 'mnemes' | 'album';
 
 export default function EurekaPage() {
   const [tab, setTab] = useState<EurekaTab>('actions');
@@ -15,6 +19,8 @@ export default function EurekaPage() {
   const [priceError, setPriceError] = useState(false);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [selectedMnemes, setSelectedMnemes] = useState<Set<string>>(new Set());
+
+  const { learnedSkills, toggleLearned, inventory, setMnemeCount } = useAlbumState();
 
   const loadPrices = useCallback(async () => {
     setPriceLoading(true);
@@ -107,17 +113,67 @@ export default function EurekaPage() {
         >
           材料反查
         </button>
+        <button
+          onClick={() => setTab('album')}
+          className={cn(
+            'px-4 py-2 text-sm rounded-md transition-colors cursor-pointer',
+            tab === 'album'
+              ? 'bg-secondary text-primary font-medium'
+              : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+          )}
+        >
+          圖鑑
+        </button>
       </div>
 
       {tab === 'actions' ? (
         <LogosActionList prices={prices} priceLoading={priceLoading} />
-      ) : (
+      ) : tab === 'mnemes' ? (
         <MnemeSelector
           selectedMnemes={selectedMnemes}
           onToggleMneme={handleToggleMneme}
           prices={prices}
           priceLoading={priceLoading}
         />
+      ) : (
+        <div className="space-y-4">
+          {/* Progress bar */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-secondary rounded h-2 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-primary-dark to-primary rounded transition-all"
+                style={{ width: `${(learnedSkills.size / 56) * 100}%` }}
+              />
+            </div>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {learnedSkills.size} / 56 已習得
+            </span>
+          </div>
+
+          {/* Grid + Crystal: side by side on desktop, stacked on mobile */}
+          <div className="flex flex-col md:flex-row gap-4 items-start">
+            <div className="w-full md:w-[55%] flex-shrink-0">
+              <AlbumGrid learnedSkills={learnedSkills} onToggle={toggleLearned} />
+            </div>
+            <div className="w-full md:flex-1">
+              <CrystalOverview
+                learnedSkills={learnedSkills}
+                inventory={inventory}
+                onSetMnemeCount={setMnemeCount}
+                prices={prices}
+                priceLoading={priceLoading}
+              />
+            </div>
+          </div>
+
+          {/* Recipe list */}
+          <AlbumRecipeList
+            learnedSkills={learnedSkills}
+            onToggle={toggleLearned}
+            prices={prices}
+            priceLoading={priceLoading}
+          />
+        </div>
       )}
       </div>
     </div>
