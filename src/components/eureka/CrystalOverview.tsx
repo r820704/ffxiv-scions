@@ -61,7 +61,20 @@ export default function CrystalOverview({
     [prices]
   );
 
-  const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(
+    () => new Set(LOGOGRAM_FIXED_ORDER)
+  );
+
+  const expandAll = () => setExpandedRows(new Set(LOGOGRAM_FIXED_ORDER));
+  const collapseAll = () => setExpandedRows(new Set());
+  const toggleRow = (id: string) => {
+    setExpandedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-3">
@@ -82,10 +95,26 @@ export default function CrystalOverview({
 
       {/* Crystal table */}
       <div className="bg-card border border-border rounded-lg p-3">
-        <div className="text-sm font-medium text-primary mb-2">碎晶總覽</div>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-primary">碎晶總覽</span>
+          <div className="flex gap-2">
+            <button
+              onClick={expandAll}
+              className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer"
+            >
+              全部展開
+            </button>
+            <button
+              onClick={collapseAll}
+              className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer"
+            >
+              全部縮合
+            </button>
+          </div>
+        </div>
 
         {/* Header */}
-        <div className="grid grid-cols-[1fr_60px_30px_30px_52px] gap-1 text-[10px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
+        <div className="grid grid-cols-[1fr_60px_30px_30px_72px] gap-1 text-[10px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
           <span>名稱</span>
           <span className="text-center">持有</span>
           <span className="text-right">需求</span>
@@ -104,17 +133,17 @@ export default function CrystalOverview({
           const listings = listingsMap.get(logogram.itemId) ?? [];
           const plan = remaining > 0 ? buildPurchasePlan(listings, remaining) : null;
           const lineCost = plan ? plan.totalCost : 0;
-          const isExpanded = expandedRow === logogramId;
+          const isExpanded = expandedRows.has(logogramId);
           const totalAvailable = listings.reduce((sum, l) => sum + l.quantity, 0);
 
           return (
             <div key={logogramId}>
               <div
                 className={cn(
-                  'grid grid-cols-[1fr_60px_30px_30px_52px] gap-1 items-center py-1 text-xs border-b border-border/30',
+                  'grid grid-cols-[1fr_60px_30px_30px_72px] gap-1 items-center py-1 text-xs border-b border-border/30',
                   remaining > 0 && 'cursor-pointer hover:bg-secondary/50'
                 )}
-                onClick={() => remaining > 0 && setExpandedRow(isExpanded ? null : logogramId)}
+                onClick={() => remaining > 0 && toggleRow(logogramId)}
               >
                 <span className="text-xs text-foreground truncate flex items-center gap-1">
                   {logogram.nameTw}
@@ -161,7 +190,7 @@ export default function CrystalOverview({
                   {priceLoading
                     ? '...'
                     : lineCost > 0
-                      ? `${Math.floor(lineCost / 1000)}k`
+                      ? lineCost.toLocaleString()
                       : '—'}
                 </span>
               </div>
