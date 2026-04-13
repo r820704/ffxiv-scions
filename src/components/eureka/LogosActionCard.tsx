@@ -10,10 +10,14 @@ interface LogosActionCardProps {
   action: LogosAction;
   prices: LogogramPrice[];
   priceLoading: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
-export default function LogosActionCard({ action, prices, priceLoading }: LogosActionCardProps) {
-  const [expanded, setExpanded] = useState(false);
+export default function LogosActionCard({ action, prices, priceLoading, isExpanded, onToggleExpand }: LogosActionCardProps) {
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  const expanded = isExpanded !== undefined ? isExpanded : internalExpanded;
+  const toggleExpand = onToggleExpand ?? (() => setInternalExpanded((prev) => !prev));
   const [showTooltip, setShowTooltip] = useState(false);
   const [flipUp, setFlipUp] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -61,7 +65,7 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
       {/* Header - always visible, clickable to expand */}
       <div
         className="flex items-center justify-between gap-2 cursor-pointer select-none"
-        onClick={() => setExpanded((prev) => !prev)}
+        onClick={toggleExpand}
       >
         <div className="flex items-center gap-2 min-w-0">
           <div className="relative" ref={triggerRef}>
