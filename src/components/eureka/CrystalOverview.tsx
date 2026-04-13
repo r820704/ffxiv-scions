@@ -33,6 +33,33 @@ function buildPurchasePlan(listings: LogogramListing[], need: number): PurchaseP
   return { entries, totalCost, fulfilled: remaining <= 0 };
 }
 
+interface GroupedEntry {
+  worldName: string;
+  quantity: number;
+  totalCost: number;
+  avgPrice: number;
+}
+
+function groupEntriesByWorld(entries: PurchasePlan['entries']): GroupedEntry[] {
+  const map = new Map<string, { quantity: number; totalCost: number }>();
+  for (const entry of entries) {
+    const existing = map.get(entry.worldName);
+    const cost = entry.quantity * entry.pricePerUnit;
+    if (existing) {
+      existing.quantity += entry.quantity;
+      existing.totalCost += cost;
+    } else {
+      map.set(entry.worldName, { quantity: entry.quantity, totalCost: cost });
+    }
+  }
+  return Array.from(map.entries()).map(([worldName, { quantity, totalCost }]) => ({
+    worldName,
+    quantity,
+    totalCost,
+    avgPrice: Math.round(totalCost / quantity),
+  }));
+}
+
 interface CrystalOverviewProps {
   learnedSkills: Set<string>;
   inventory: Record<string, number>;
@@ -195,17 +222,17 @@ export default function CrystalOverview({
                 </span>
               </div>
 
-              {/* Purchase plan detail */}
+              {/* Purchase plan detail — grouped by world */}
               {isExpanded && plan && (
                 <div className="bg-secondary/30 rounded px-3 py-1.5 my-1 text-[10px] space-y-0.5">
-                  {plan.entries.map((entry, i) => (
-                    <div key={i} className="flex justify-between text-muted-foreground">
+                  {groupEntriesByWorld(plan.entries).map((g) => (
+                    <div key={g.worldName} className="flex justify-between text-muted-foreground">
                       <span>
-                        <span className="text-foreground">{entry.worldName}</span>
-                        {' '}x{entry.quantity} @ {entry.pricePerUnit.toLocaleString()} gil
+                        <span className="text-foreground">{g.worldName}</span>
+                        {' '}x{g.quantity} 均價 {g.avgPrice.toLocaleString()} gil
                       </span>
                       <span className="text-amber-400">
-                        {(entry.quantity * entry.pricePerUnit).toLocaleString()}
+                        {g.totalCost.toLocaleString()}
                       </span>
                     </div>
                   ))}
