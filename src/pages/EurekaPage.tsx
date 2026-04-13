@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { eurekaData } from '@/data/eureka-data';
 import { fetchLogogramPrices } from '@/services/universalis';
 import type { LogogramPrice } from '@/types/eureka';
@@ -7,6 +7,7 @@ import AlbumGrid from '@/components/eureka/AlbumGrid';
 import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
 import { useAlbumState } from '@/hooks/useAlbumState';
+import { computeRemainingCost } from '@/utils/album-helpers';
 import { cn } from '@/lib/utils';
 
 type EurekaTab = 'album' | 'mnemes';
@@ -20,6 +21,11 @@ export default function EurekaPage() {
   const [selectedMnemes, setSelectedMnemes] = useState<Set<string>>(new Set());
 
   const { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount } = useAlbumState();
+
+  const remainingCost = useMemo(
+    () => computeRemainingCost(learnedSkills, inventory, prices),
+    [learnedSkills, inventory, prices]
+  );
 
   const loadPrices = useCallback(async () => {
     setPriceLoading(true);
@@ -143,8 +149,23 @@ export default function EurekaPage() {
 
           {/* Grid + Crystal: side by side on desktop, stacked on mobile */}
           <div className="flex flex-col md:flex-row gap-4 items-start">
-            <div className="w-full md:w-[45%] flex-shrink-0">
+            <div className="w-full md:w-[45%] flex-shrink-0 space-y-3">
               <AlbumGrid learnedSkills={learnedSkills} onToggle={toggleLearned} />
+              <div className="bg-secondary rounded-lg p-3">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs text-muted-foreground">還需花費</span>
+                  <span className="text-lg font-bold text-amber-400">
+                    {priceLoading
+                      ? '...'
+                      : remainingCost != null
+                        ? `${remainingCost.toLocaleString()} Gil`
+                        : '價格未知'}
+                  </span>
+                </div>
+                <div className="text-[10px] text-muted-foreground">
+                  {56 - learnedSkills.size} 個技能未習得
+                </div>
+              </div>
             </div>
             <div className="w-full md:flex-1">
               <CrystalOverview

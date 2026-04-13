@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react';
 import type { LogogramPrice, LogogramListing } from '@/types/eureka';
 import { eurekaData } from '@/data/eureka-data';
-import { computeCrystalNeeds, computeRemainingCost, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
+import { computeCrystalNeeds, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import { cn } from '@/lib/utils';
 
 const logogramMap = new Map(eurekaData.logograms.map((l) => [l.id, l]));
@@ -76,13 +76,6 @@ export default function CrystalOverview({
   priceLoading,
 }: CrystalOverviewProps) {
   const needs = useMemo(() => computeCrystalNeeds(learnedSkills), [learnedSkills]);
-  const remainingCost = useMemo(
-    () => computeRemainingCost(learnedSkills, inventory, prices),
-    [learnedSkills, inventory, prices]
-  );
-
-  const unlearnedCount = 56 - learnedSkills.size;
-
   const listingsMap = useMemo(
     () => new Map(prices.map((p) => [p.itemId, p.listings])),
     [prices]
@@ -104,22 +97,7 @@ export default function CrystalOverview({
   };
 
   return (
-    <div className="space-y-3">
-      {/* Cost summary */}
-      <div className="bg-secondary rounded-lg p-3">
-        <div className="flex justify-between items-baseline">
-          <span className="text-xs text-muted-foreground">還需花費</span>
-          <span className="text-lg font-bold text-amber-400">
-            {priceLoading
-              ? '...'
-              : remainingCost != null
-                ? `${remainingCost.toLocaleString()} Gil`
-                : '價格未知'}
-          </span>
-        </div>
-        <div className="text-[10px] text-muted-foreground">{unlearnedCount} 個技能未習得</div>
-      </div>
-
+    <div>
       {/* Crystal table */}
       <div className="bg-card border border-border rounded-lg p-3">
         <div className="flex items-center justify-between mb-2">
