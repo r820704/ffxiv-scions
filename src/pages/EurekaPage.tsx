@@ -129,13 +129,13 @@ export default function EurekaPage() {
             </span>
             <button
               onClick={learnAll}
-              className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer whitespace-nowrap"
+              className="text-[10px] px-2 py-1 rounded bg-primary-dark/80 text-primary-foreground hover:bg-primary-dark transition-colors cursor-pointer whitespace-nowrap font-medium"
             >
               全部解鎖
             </button>
             <button
               onClick={resetAll}
-              className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer whitespace-nowrap"
+              className="text-[10px] px-2 py-1 rounded bg-secondary text-muted-foreground hover:bg-destructive/80 hover:text-destructive-foreground transition-colors cursor-pointer whitespace-nowrap font-medium"
             >
               重置
             </button>
