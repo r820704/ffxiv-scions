@@ -49,7 +49,7 @@ describe('computeCrystalNeeds', () => {
 
   it('should exclude learned skills from needs', () => {
     const allLearned = new Set(ALBUM_ORDER);
-    const oneLearned = new Set([ALBUM_ORDER[0]]);
+    const oneLearned = new Set([ALBUM_ORDER[0]!]);
     const needsAll = computeCrystalNeeds(allLearned);
     const needsOne = computeCrystalNeeds(oneLearned);
     const needsNone = computeCrystalNeeds(new Set());

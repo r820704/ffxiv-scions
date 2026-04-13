@@ -12,7 +12,7 @@ function cheapestRecipe(actionId: string): RecipeIngredient[] {
   const action = actionMap.get(actionId);
   if (!action || action.recipes.length === 0) return [];
   // For now, just pick the first recipe (cheapest selection deferred to price-aware version)
-  return action.recipes[0].ingredients;
+  return action.recipes[0]!.ingredients;
 }
 
 export function computeCrystalNeeds(
