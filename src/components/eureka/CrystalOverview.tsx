@@ -203,19 +203,20 @@ export default function CrystalOverview({
                 </span>
               </div>
 
-              {/* Purchase plan detail — grouped by world */}
+              {/* Purchase plan detail — single inline row */}
               {isExpanded && plan && (
-                <div className="bg-secondary/30 rounded px-3 py-1.5 my-1 text-[10px] space-y-0.5">
-                  {groupEntriesByWorld(plan.entries).map((g) => (
-                    <div key={g.worldName} className="text-muted-foreground">
+                <div className="text-[10px] text-muted-foreground pl-3 pb-1 whitespace-nowrap overflow-x-auto">
+                  {groupEntriesByWorld(plan.entries).map((g, i) => (
+                    <span key={g.worldName}>
+                      {i > 0 && <span className="mx-1.5 text-muted-foreground/30">|</span>}
                       <span className="text-foreground">{g.worldName}</span>
                       {' '}x{g.quantity} 均價 {g.avgPrice.toLocaleString()} gil
-                    </div>
+                    </span>
                   ))}
                   {!plan.fulfilled && (
-                    <div className="text-red-400 pt-0.5">
-                      市場供應不足（需 {remaining} 個，僅有 {totalAvailable} 個）
-                    </div>
+                    <span className="ml-2 text-red-400">
+                      (供應不足，僅有 {totalAvailable} 個)
+                    </span>
                   )}
                 </div>
               )}
