@@ -19,7 +19,7 @@ export default function EurekaPage() {
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [selectedMnemes, setSelectedMnemes] = useState<Set<string>>(new Set());
 
-  const { learnedSkills, toggleLearned, inventory, setItemCount } = useAlbumState();
+  const { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount } = useAlbumState();
 
   const loadPrices = useCallback(async () => {
     setPriceLoading(true);
@@ -127,6 +127,18 @@ export default function EurekaPage() {
             <span className="text-xs text-muted-foreground whitespace-nowrap">
               {learnedSkills.size} / 56 已習得
             </span>
+            <button
+              onClick={learnAll}
+              className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer whitespace-nowrap"
+            >
+              全部解鎖
+            </button>
+            <button
+              onClick={resetAll}
+              className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer whitespace-nowrap"
+            >
+              重置
+            </button>
           </div>
 
           {/* Grid + Crystal: side by side on desktop, stacked on mobile */}
