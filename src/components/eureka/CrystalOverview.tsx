@@ -81,9 +81,7 @@ export default function CrystalOverview({
     [prices]
   );
 
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(
-    () => new Set(LOGOGRAM_FIXED_ORDER)
-  );
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const expandAll = () => setExpandedRows(new Set(LOGOGRAM_FIXED_ORDER));
   const collapseAll = () => setExpandedRows(new Set());
@@ -156,7 +154,12 @@ export default function CrystalOverview({
                     <span className="text-[9px] text-red-400" title="市場供應不足">⚠</span>
                   )}
                   {remaining > 0 && (
-                    <span className="text-[8px] text-muted-foreground/50">{isExpanded ? '▲' : '▼'}</span>
+                    <span className={cn(
+                      'text-[8px]',
+                      isExpanded ? 'text-muted-foreground/50' : 'text-primary/60'
+                    )}>
+                      {isExpanded ? '▲' : '▼ 購買方案'}
+                    </span>
                   )}
                 </span>
                 <div className="flex items-center justify-center">
@@ -204,14 +207,9 @@ export default function CrystalOverview({
               {isExpanded && plan && (
                 <div className="bg-secondary/30 rounded px-3 py-1.5 my-1 text-[10px] space-y-0.5">
                   {groupEntriesByWorld(plan.entries).map((g) => (
-                    <div key={g.worldName} className="flex justify-between text-muted-foreground">
-                      <span>
-                        <span className="text-foreground">{g.worldName}</span>
-                        {' '}x{g.quantity} 均價 {g.avgPrice.toLocaleString()} gil
-                      </span>
-                      <span className="text-amber-400">
-                        {g.totalCost.toLocaleString()}
-                      </span>
+                    <div key={g.worldName} className="text-muted-foreground">
+                      <span className="text-foreground">{g.worldName}</span>
+                      {' '}x{g.quantity} 均價 {g.avgPrice.toLocaleString()} gil
                     </div>
                   ))}
                   {!plan.fulfilled && (

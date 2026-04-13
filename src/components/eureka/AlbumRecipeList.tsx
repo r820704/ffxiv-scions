@@ -232,34 +232,40 @@ export default function AlbumRecipeList({
       </div>
 
       {/* Card list */}
-      <div className="space-y-2">
-        {filtered.map((action) => {
-          const isLearned = learnedSkills.has(action.id);
-          return (
-            <div key={action.id} className="flex items-start gap-2">
-              <div className={cn('flex-1 min-w-0', isLearned && 'opacity-40')}>
-                <LogosActionCard
-                  action={action}
-                  prices={prices}
-                  priceLoading={priceLoading}
-                  isExpanded={expandedSet.has(action.id)}
-                  onToggleExpand={() => toggleCardExpand(action.id)}
-                />
+      <div className="space-y-2 min-h-[200px]">
+        {filtered.length === 0 ? (
+          <div className="flex items-center justify-center h-[200px] text-sm text-muted-foreground">
+            {learnedFilter === 'learned' ? '尚未習得任何技能' : '沒有符合條件的技能'}
+          </div>
+        ) : (
+          filtered.map((action) => {
+            const isLearned = learnedSkills.has(action.id);
+            return (
+              <div key={action.id} className="flex items-start gap-2">
+                <div className={cn('flex-1 min-w-0', !isLearned && 'opacity-60')}>
+                  <LogosActionCard
+                    action={action}
+                    prices={prices}
+                    priceLoading={priceLoading}
+                    isExpanded={expandedSet.has(action.id)}
+                    onToggleExpand={() => toggleCardExpand(action.id)}
+                  />
+                </div>
+                <button
+                  onClick={() => onToggle(action.id)}
+                  className={cn(
+                    'text-[10px] px-2 py-1 rounded border cursor-pointer transition-colors shrink-0 mt-3',
+                    isLearned
+                      ? 'border-primary-dark text-primary-dark bg-primary-dark/10 hover:bg-primary-dark/20'
+                      : 'border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  {isLearned ? '✓ 已習得' : '標記習得'}
+                </button>
               </div>
-              <button
-                onClick={() => onToggle(action.id)}
-                className={cn(
-                  'text-[10px] px-2 py-1 rounded border cursor-pointer transition-colors shrink-0 mt-3',
-                  isLearned
-                    ? 'border-primary-dark text-primary-dark bg-primary-dark/10 hover:bg-primary-dark/20'
-                    : 'border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground'
-                )}
-              >
-                {isLearned ? '✓ 已習得' : '標記習得'}
-              </button>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </div>
   );
