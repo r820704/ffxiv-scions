@@ -54,7 +54,7 @@ export default function CrystalOverview({
         <div className="text-xs font-medium text-primary mb-2">碎晶總覽</div>
 
         {/* Header */}
-        <div className="grid grid-cols-[1fr_60px_30px_30px_52px] gap-1 text-[9px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
+        <div className="grid grid-cols-[1fr_60px_30px_30px_52px] gap-1 text-[10px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
           <span>名稱</span>
           <span className="text-center">持有</span>
           <span className="text-right">需求</span>
@@ -76,9 +76,9 @@ export default function CrystalOverview({
           return (
             <div
               key={logogramId}
-              className="grid grid-cols-[1fr_60px_30px_30px_52px] gap-1 items-center py-0.5 text-[10px] border-b border-border/30"
+              className="grid grid-cols-[1fr_60px_30px_30px_52px] gap-1 items-center py-1 text-xs border-b border-border/30"
             >
-              <span className="text-foreground truncate">{logogram.nameTw}</span>
+              <span className="text-xs text-foreground truncate">{logogram.nameTw}</span>
               <div className="flex items-center justify-center">
                 <button
                   onClick={() => onSetCount(logogramId, owned - 1)}

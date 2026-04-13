@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import type { LogosAction, LogogramPrice } from '@/types/eureka';
 import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
 import { calculateRecipeCost } from '@/utils/eureka-helpers';
@@ -10,10 +10,14 @@ interface LogosActionCardProps {
   action: LogosAction;
   prices: LogogramPrice[];
   priceLoading: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
-export default function LogosActionCard({ action, prices, priceLoading }: LogosActionCardProps) {
-  const [expanded, setExpanded] = useState(false);
+export default function LogosActionCard({ action, prices, priceLoading, isExpanded, onToggleExpand }: LogosActionCardProps) {
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  const expanded = isExpanded !== undefined ? isExpanded : internalExpanded;
+  const toggleExpand = onToggleExpand ?? (() => setInternalExpanded((prev) => !prev));
   const [showTooltip, setShowTooltip] = useState(false);
   const [flipUp, setFlipUp] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -56,12 +60,26 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
     setShowTooltip((prev) => !prev);
   };
 
+  const cheapestIdx = useMemo(() => {
+    if (action.recipes.length <= 1) return -1;
+    let minCost = Infinity;
+    let minIdx = -1;
+    action.recipes.forEach((recipe, i) => {
+      const cost = calculateRecipeCost(recipe.ingredients, prices);
+      if (cost != null && cost < minCost) {
+        minCost = cost;
+        minIdx = i;
+      }
+    });
+    return minIdx;
+  }, [action.recipes, prices]);
+
   return (
     <div className="rounded-lg border border-border bg-card p-3">
       {/* Header - always visible, clickable to expand */}
       <div
         className="flex items-center justify-between gap-2 cursor-pointer select-none"
-        onClick={() => setExpanded((prev) => !prev)}
+        onClick={toggleExpand}
       >
         <div className="flex items-center gap-2 min-w-0">
           <div className="relative" ref={triggerRef}>
@@ -114,6 +132,7 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
           {action.recipes.map((recipe, ri) => {
             const cost = calculateRecipeCost(recipe.ingredients, prices);
             const hasMultiple = action.recipes.length > 1;
+            const isCheapest = hasMultiple && cheapestIdx === ri;
             return (
               <div key={ri}>
                 {hasMultiple && ri > 0 && (
@@ -123,7 +142,7 @@ export default function LogosActionCard({ action, prices, priceLoading }: LogosA
                     <div className="flex-1 border-t border-border/50" />
                   </div>
                 )}
-                <div className="rounded bg-muted/50 px-3 py-2">
+                <div className={`rounded px-3 py-2 ${isCheapest ? 'bg-primary-dark/15 ring-1 ring-primary-dark/40' : 'bg-muted/50'}`}>
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 text-xs min-w-0">
                       {hasMultiple && (

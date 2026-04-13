@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { ALBUM_ORDER } from '@/data/album-order';
 
 const LEARNED_KEY = 'eureka-album-learned';
 const INVENTORY_KEY = 'eureka-album-inventory';
@@ -56,5 +57,17 @@ export function useAlbumState() {
     });
   }, []);
 
-  return { learnedSkills, toggleLearned, inventory, setItemCount };
+  const learnAll = useCallback(() => {
+    const all = new Set(ALBUM_ORDER);
+    saveLearned(all);
+    setLearnedSkills(all);
+  }, []);
+
+  const resetAll = useCallback(() => {
+    const empty = new Set<string>();
+    saveLearned(empty);
+    setLearnedSkills(empty);
+  }, []);
+
+  return { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount };
 }
