@@ -1,14 +1,16 @@
 // src/components/eureka/CrystalOverview.tsx
 import { useMemo } from 'react';
 import type { LogogramPrice } from '@/types/eureka';
-import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
-import { computeCrystalNeeds, computeRemainingCost, MNEME_FIXED_ORDER } from '@/utils/album-helpers';
+import { eurekaData } from '@/data/eureka-data';
+import { computeCrystalNeeds, computeRemainingCost, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import { cn } from '@/lib/utils';
+
+const logogramMap = new Map(eurekaData.logograms.map((l) => [l.id, l]));
 
 interface CrystalOverviewProps {
   learnedSkills: Set<string>;
   inventory: Record<string, number>;
-  onSetMnemeCount: (mnemeId: string, count: number) => void;
+  onSetCount: (logogramId: string, count: number) => void;
   prices: LogogramPrice[];
   priceLoading: boolean;
 }
@@ -16,7 +18,7 @@ interface CrystalOverviewProps {
 export default function CrystalOverview({
   learnedSkills,
   inventory,
-  onSetMnemeCount,
+  onSetCount,
   prices,
   priceLoading,
 }: CrystalOverviewProps) {
@@ -60,30 +62,26 @@ export default function CrystalOverview({
           <span className="text-right">花費</span>
         </div>
 
-        {/* Rows */}
-        {MNEME_FIXED_ORDER.map((mnemeId) => {
-          const mneme = getMneme(mnemeId);
-          if (!mneme) return null;
-          const need = needs[mnemeId] || 0;
-          const owned = inventory[mnemeId] || 0;
+        {/* Rows — one per logogram (9 total) */}
+        {LOGOGRAM_FIXED_ORDER.map((logogramId) => {
+          const logogram = logogramMap.get(logogramId);
+          if (!logogram) return null;
+          const need = needs[logogramId] || 0;
+          const owned = inventory[logogramId] || 0;
           const remaining = Math.max(0, need - owned);
 
-          const logogram = getLogogramForMneme(mnemeId);
-          const unitPrice = logogram ? priceMap.get(logogram.itemId) ?? null : null;
+          const unitPrice = priceMap.get(logogram.itemId) ?? null;
           const lineCost = unitPrice != null ? remaining * unitPrice : null;
-
-          // Skip mnemes with 0 need to keep the list compact
-          if (need === 0) return null;
 
           return (
             <div
-              key={mnemeId}
+              key={logogramId}
               className="grid grid-cols-[1fr_60px_30px_30px_52px] gap-1 items-center py-0.5 text-[10px] border-b border-border/30"
             >
-              <span className="text-foreground truncate">{mneme.nameTw}</span>
+              <span className="text-foreground truncate">{logogram.nameTw}</span>
               <div className="flex items-center justify-center">
                 <button
-                  onClick={() => onSetMnemeCount(mnemeId, owned - 1)}
+                  onClick={() => onSetCount(logogramId, owned - 1)}
                   className="w-4 h-4 rounded-l-sm border border-border bg-secondary text-primary text-[10px] flex items-center justify-center cursor-pointer hover:bg-muted"
                 >
                   −
@@ -92,12 +90,12 @@ export default function CrystalOverview({
                   type="number"
                   min={0}
                   value={owned}
-                  onChange={(e) => onSetMnemeCount(mnemeId, parseInt(e.target.value) || 0)}
+                  onChange={(e) => onSetCount(logogramId, parseInt(e.target.value) || 0)}
                   onFocus={(e) => e.target.select()}
                   className="w-7 h-4 text-center border-y border-border bg-background text-foreground text-[10px] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <button
-                  onClick={() => onSetMnemeCount(mnemeId, owned + 1)}
+                  onClick={() => onSetCount(logogramId, owned + 1)}
                   className="w-4 h-4 rounded-r-sm border border-border bg-secondary text-primary text-[10px] flex items-center justify-center cursor-pointer hover:bg-muted"
                 >
                   +

@@ -48,13 +48,13 @@ export function useAlbumState() {
     });
   }, []);
 
-  const setMnemeCount = useCallback((mnemeId: string, count: number) => {
+  const setItemCount = useCallback((itemId: string, count: number) => {
     setInventory((prev) => {
-      const next = { ...prev, [mnemeId]: Math.max(0, count) };
+      const next = { ...prev, [itemId]: Math.max(0, count) };
       saveInventory(next);
       return next;
     });
   }, []);
 
-  return { learnedSkills, toggleLearned, inventory, setMnemeCount };
+  return { learnedSkills, toggleLearned, inventory, setItemCount };
 }

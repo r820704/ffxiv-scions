@@ -20,7 +20,7 @@ export default function EurekaPage() {
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [selectedMnemes, setSelectedMnemes] = useState<Set<string>>(new Set());
 
-  const { learnedSkills, toggleLearned, inventory, setMnemeCount } = useAlbumState();
+  const { learnedSkills, toggleLearned, inventory, setItemCount } = useAlbumState();
 
   const loadPrices = useCallback(async () => {
     setPriceLoading(true);
@@ -159,7 +159,7 @@ export default function EurekaPage() {
               <CrystalOverview
                 learnedSkills={learnedSkills}
                 inventory={inventory}
-                onSetMnemeCount={setMnemeCount}
+                onSetCount={setItemCount}
                 prices={prices}
                 priceLoading={priceLoading}
               />
