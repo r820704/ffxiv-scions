@@ -77,6 +77,7 @@ describe('computeRemainingCost', () => {
     price: 1000,
     worldName: 'TestWorld',
     lastUpdated: Date.now(),
+    listings: [{ pricePerUnit: 1000, quantity: 999, worldName: 'TestWorld' }],
   }));
 
   it('should return 0 when all skills learned', () => {

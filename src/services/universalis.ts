@@ -29,11 +29,12 @@ export async function fetchLogogramPrices(itemIds: number[]): Promise<LogogramPr
     price: null,
     worldName: null,
     lastUpdated: null,
+    listings: [],
   }));
 
   try {
     const ids = itemIds.join(',');
-    const url = `${UNIVERSALIS_BASE}/${DATA_CENTER}/${ids}?listings=5&entries=0`;
+    const url = `${UNIVERSALIS_BASE}/${DATA_CENTER}/${ids}?listings=30&entries=0`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -54,6 +55,7 @@ export async function fetchLogogramPrices(itemIds: number[]): Promise<LogogramPr
           price: null,
           worldName: null,
           lastUpdated: item?.lastUploadTime ?? null,
+          listings: [],
         };
       }
 
@@ -63,6 +65,11 @@ export async function fetchLogogramPrices(itemIds: number[]): Promise<LogogramPr
         price: cheapest.pricePerUnit,
         worldName: cheapest.worldName,
         lastUpdated: item.lastUploadTime,
+        listings: item.listings.map((l) => ({
+          pricePerUnit: l.pricePerUnit,
+          quantity: l.quantity,
+          worldName: l.worldName,
+        })),
       };
     });
   } catch {

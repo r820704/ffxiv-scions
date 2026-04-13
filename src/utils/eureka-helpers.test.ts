@@ -3,15 +3,15 @@ import { calculateRecipeCost, findActionsForMnemes } from './eureka-helpers';
 import type { LogogramPrice } from '@/types/eureka';
 
 const mockPrices: LogogramPrice[] = [
-  { itemId: 24007, price: 500, worldName: 'Shinryu', lastUpdated: null },
-  { itemId: 24008, price: 300, worldName: 'Mandragora', lastUpdated: null },
-  { itemId: 24009, price: 1000, worldName: 'Ramuh', lastUpdated: null },
-  { itemId: 24010, price: 800, worldName: 'Shinryu', lastUpdated: null },
-  { itemId: 24011, price: 600, worldName: 'Shinryu', lastUpdated: null },
-  { itemId: 24012, price: 200, worldName: 'Valefor', lastUpdated: null },
-  { itemId: 24013, price: 400, worldName: 'Shinryu', lastUpdated: null },
-  { itemId: 24014, price: 700, worldName: 'Mandragora', lastUpdated: null },
-  { itemId: 24809, price: 2000, worldName: 'Ramuh', lastUpdated: null },
+  { itemId: 24007, price: 500, worldName: 'Shinryu', lastUpdated: null, listings: [] },
+  { itemId: 24008, price: 300, worldName: 'Mandragora', lastUpdated: null, listings: [] },
+  { itemId: 24009, price: 1000, worldName: 'Ramuh', lastUpdated: null, listings: [] },
+  { itemId: 24010, price: 800, worldName: 'Shinryu', lastUpdated: null, listings: [] },
+  { itemId: 24011, price: 600, worldName: 'Shinryu', lastUpdated: null, listings: [] },
+  { itemId: 24012, price: 200, worldName: 'Valefor', lastUpdated: null, listings: [] },
+  { itemId: 24013, price: 400, worldName: 'Shinryu', lastUpdated: null, listings: [] },
+  { itemId: 24014, price: 700, worldName: 'Mandragora', lastUpdated: null, listings: [] },
+  { itemId: 24809, price: 2000, worldName: 'Ramuh', lastUpdated: null, listings: [] },
 ];
 
 describe('calculateRecipeCost', () => {
@@ -44,7 +44,7 @@ describe('calculateRecipeCost', () => {
 
   it('should return null if any price is missing', () => {
     const noPrices: LogogramPrice[] = [
-      { itemId: 24007, price: null, worldName: null, lastUpdated: null },
+      { itemId: 24007, price: null, worldName: null, lastUpdated: null, listings: [] },
     ];
     const cost = calculateRecipeCost(
       [{ mnemeId: 'wisdom-aetherweaver', quantity: 1 }],

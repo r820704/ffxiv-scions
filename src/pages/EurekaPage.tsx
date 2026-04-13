@@ -124,18 +124,18 @@ export default function EurekaPage() {
                 style={{ width: `${(learnedSkills.size / 56) * 100}%` }}
               />
             </div>
-            <span className="text-xs text-muted-foreground whitespace-nowrap">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
               {learnedSkills.size} / 56 已習得
             </span>
             <button
               onClick={learnAll}
-              className="text-[10px] px-2 py-1 rounded bg-primary-dark/80 text-primary-foreground hover:bg-primary-dark transition-colors cursor-pointer whitespace-nowrap font-medium"
+              className="text-xs px-2.5 py-1 rounded bg-primary-dark/80 text-primary-foreground hover:bg-primary-dark transition-colors cursor-pointer whitespace-nowrap font-medium"
             >
               全部解鎖
             </button>
             <button
               onClick={resetAll}
-              className="text-[10px] px-2 py-1 rounded bg-destructive/70 text-destructive-foreground hover:bg-destructive transition-colors cursor-pointer whitespace-nowrap font-medium"
+              className="text-xs px-2.5 py-1 rounded bg-destructive/70 text-destructive-foreground hover:bg-destructive transition-colors cursor-pointer whitespace-nowrap font-medium"
             >
               重置
             </button>

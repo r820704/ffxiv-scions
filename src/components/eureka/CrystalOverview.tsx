@@ -1,11 +1,37 @@
 // src/components/eureka/CrystalOverview.tsx
-import { useMemo } from 'react';
-import type { LogogramPrice } from '@/types/eureka';
+import { useState, useMemo } from 'react';
+import type { LogogramPrice, LogogramListing } from '@/types/eureka';
 import { eurekaData } from '@/data/eureka-data';
 import { computeCrystalNeeds, computeRemainingCost, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import { cn } from '@/lib/utils';
 
 const logogramMap = new Map(eurekaData.logograms.map((l) => [l.id, l]));
+
+interface PurchasePlan {
+  entries: { worldName: string; quantity: number; pricePerUnit: number }[];
+  totalCost: number;
+  fulfilled: boolean;
+}
+
+function buildPurchasePlan(listings: LogogramListing[], need: number): PurchasePlan {
+  const entries: PurchasePlan['entries'] = [];
+  let remaining = need;
+  let totalCost = 0;
+
+  for (const listing of listings) {
+    if (remaining <= 0) break;
+    const take = Math.min(listing.quantity, remaining);
+    entries.push({
+      worldName: listing.worldName,
+      quantity: take,
+      pricePerUnit: listing.pricePerUnit,
+    });
+    totalCost += take * listing.pricePerUnit;
+    remaining -= take;
+  }
+
+  return { entries, totalCost, fulfilled: remaining <= 0 };
+}
 
 interface CrystalOverviewProps {
   learnedSkills: Set<string>;
@@ -30,7 +56,12 @@ export default function CrystalOverview({
 
   const unlearnedCount = 56 - learnedSkills.size;
 
-  const priceMap = useMemo(() => new Map(prices.map((p) => [p.itemId, p.price])), [prices]);
+  const listingsMap = useMemo(
+    () => new Map(prices.map((p) => [p.itemId, p.listings])),
+    [prices]
+  );
+
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   return (
     <div className="space-y-3">
@@ -51,7 +82,7 @@ export default function CrystalOverview({
 
       {/* Crystal table */}
       <div className="bg-card border border-border rounded-lg p-3">
-        <div className="text-xs font-medium text-primary mb-2">碎晶總覽</div>
+        <div className="text-sm font-medium text-primary mb-2">碎晶總覽</div>
 
         {/* Header */}
         <div className="grid grid-cols-[1fr_60px_30px_30px_52px] gap-1 text-[10px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
@@ -70,53 +101,92 @@ export default function CrystalOverview({
           const owned = inventory[logogramId] || 0;
           const remaining = Math.max(0, need - owned);
 
-          const unitPrice = priceMap.get(logogram.itemId) ?? null;
-          const lineCost = unitPrice != null ? remaining * unitPrice : null;
+          const listings = listingsMap.get(logogram.itemId) ?? [];
+          const plan = remaining > 0 ? buildPurchasePlan(listings, remaining) : null;
+          const lineCost = plan ? plan.totalCost : 0;
+          const isExpanded = expandedRow === logogramId;
+          const totalAvailable = listings.reduce((sum, l) => sum + l.quantity, 0);
 
           return (
-            <div
-              key={logogramId}
-              className="grid grid-cols-[1fr_60px_30px_30px_52px] gap-1 items-center py-1 text-xs border-b border-border/30"
-            >
-              <span className="text-xs text-foreground truncate">{logogram.nameTw}</span>
-              <div className="flex items-center justify-center">
-                <button
-                  onClick={() => onSetCount(logogramId, owned - 1)}
-                  className="w-4 h-4 rounded-l-sm border border-border bg-secondary text-primary text-[10px] flex items-center justify-center cursor-pointer hover:bg-muted"
-                >
-                  −
-                </button>
-                <input
-                  type="number"
-                  min={0}
-                  value={owned}
-                  onChange={(e) => onSetCount(logogramId, parseInt(e.target.value) || 0)}
-                  onFocus={(e) => e.target.select()}
-                  className="w-7 h-4 text-center border-y border-border bg-background text-foreground text-[10px] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                />
-                <button
-                  onClick={() => onSetCount(logogramId, owned + 1)}
-                  className="w-4 h-4 rounded-r-sm border border-border bg-secondary text-primary text-[10px] flex items-center justify-center cursor-pointer hover:bg-muted"
-                >
-                  +
-                </button>
-              </div>
-              <span className="text-primary text-right">×{need}</span>
-              <span
+            <div key={logogramId}>
+              <div
                 className={cn(
-                  'text-right font-semibold',
-                  remaining === 0 ? 'text-green-400' : 'text-red-400'
+                  'grid grid-cols-[1fr_60px_30px_30px_52px] gap-1 items-center py-1 text-xs border-b border-border/30',
+                  remaining > 0 && 'cursor-pointer hover:bg-secondary/50'
                 )}
+                onClick={() => remaining > 0 && setExpandedRow(isExpanded ? null : logogramId)}
               >
-                {remaining}
-              </span>
-              <span className="text-amber-400 text-right">
-                {priceLoading
-                  ? '...'
-                  : lineCost != null && lineCost > 0
-                    ? `${Math.floor(lineCost / 1000)}k`
-                    : '—'}
-              </span>
+                <span className="text-xs text-foreground truncate flex items-center gap-1">
+                  {logogram.nameTw}
+                  {remaining > 0 && plan && !plan.fulfilled && (
+                    <span className="text-[9px] text-red-400" title="市場供應不足">⚠</span>
+                  )}
+                  {remaining > 0 && (
+                    <span className="text-[8px] text-muted-foreground/50">{isExpanded ? '▲' : '▼'}</span>
+                  )}
+                </span>
+                <div className="flex items-center justify-center">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onSetCount(logogramId, owned - 1); }}
+                    className="w-4 h-4 rounded-l-sm border border-border bg-secondary text-primary text-[10px] flex items-center justify-center cursor-pointer hover:bg-muted"
+                  >
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    min={0}
+                    value={owned}
+                    onChange={(e) => onSetCount(logogramId, parseInt(e.target.value) || 0)}
+                    onFocus={(e) => e.target.select()}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-7 h-4 text-center border-y border-border bg-background text-foreground text-[10px] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onSetCount(logogramId, owned + 1); }}
+                    className="w-4 h-4 rounded-r-sm border border-border bg-secondary text-primary text-[10px] flex items-center justify-center cursor-pointer hover:bg-muted"
+                  >
+                    +
+                  </button>
+                </div>
+                <span className="text-primary text-right">x{need}</span>
+                <span
+                  className={cn(
+                    'text-right font-semibold',
+                    remaining === 0 ? 'text-green-400' : 'text-red-400'
+                  )}
+                >
+                  {remaining}
+                </span>
+                <span className="text-amber-400 text-right">
+                  {priceLoading
+                    ? '...'
+                    : lineCost > 0
+                      ? `${Math.floor(lineCost / 1000)}k`
+                      : '—'}
+                </span>
+              </div>
+
+              {/* Purchase plan detail */}
+              {isExpanded && plan && (
+                <div className="bg-secondary/30 rounded px-3 py-1.5 my-1 text-[10px] space-y-0.5">
+                  {plan.entries.map((entry, i) => (
+                    <div key={i} className="flex justify-between text-muted-foreground">
+                      <span>
+                        <span className="text-foreground">{entry.worldName}</span>
+                        {' '}x{entry.quantity} @ {entry.pricePerUnit.toLocaleString()} gil
+                      </span>
+                      <span className="text-amber-400">
+                        {(entry.quantity * entry.pricePerUnit).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                  {!plan.fulfilled && (
+                    <div className="text-red-400 pt-0.5">
+                      市場供應不足（需 {remaining} 個，僅有 {totalAvailable} 個）
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}

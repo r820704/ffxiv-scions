@@ -40,12 +40,17 @@ describe('fetchLogogramPrices', () => {
       price: 500,
       worldName: 'Shinryu',
       lastUpdated: 1700000000000,
+      listings: [
+        { pricePerUnit: 500, quantity: 1, worldName: 'Shinryu' },
+        { pricePerUnit: 600, quantity: 3, worldName: 'Mandragora' },
+      ],
     });
     expect(result[1]).toEqual({
       itemId: 24008,
       price: null,
       worldName: null,
       lastUpdated: 1700000000000,
+      listings: [],
     });
   });
 
@@ -92,6 +97,7 @@ describe('fetchLogogramPrices', () => {
       price: 999,
       worldName: 'Ramuh',
       lastUpdated: 1700000000000,
+      listings: [{ pricePerUnit: 999, quantity: 65, worldName: 'Ramuh' }],
     });
   });
 });
