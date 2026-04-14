@@ -1,5 +1,5 @@
-import type { RecipeIngredient, LogogramPrice, LogosAction } from '@/types/eureka';
-import { eurekaData, getLogogramForMneme } from '@/data/eureka-data';
+import type { RecipeIngredient, LogogramPrice } from '@/types/eureka';
+import { getLogogramForMneme } from '@/data/eureka-data';
 
 export function calculateRecipeCost(
   ingredients: RecipeIngredient[],
@@ -19,14 +19,4 @@ export function calculateRecipeCost(
   }
 
   return total;
-}
-
-export function findActionsForMnemes(ownedMnemes: Set<string>): LogosAction[] {
-  if (ownedMnemes.size === 0) return [];
-
-  return eurekaData.logosActions.filter((action) =>
-    action.recipes.some((recipe) =>
-      recipe.ingredients.every((ing) => ownedMnemes.has(ing.mnemeId))
-    )
-  );
 }

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ozma Logo — 淺色系比較</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#12101c;color:#e8e0d0;font-family:'Noto Sans TC',sans-serif;padding:20px}
+  h1{text-align:center;font-size:1.2rem;color:#C5B69D;font-family:'LXGW WenKai',serif;margin-bottom:4px}
+  .page-sub{text-align:center;color:#6a5e4a;font-size:0.75rem;margin-bottom:20px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:860px;margin:0 auto}
+  @media(max-width:600px){.grid{grid-template-columns:1fr;max-width:400px}}
+  .cell{background:#1a1528;border:1px solid #2a2440;border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:border-color 0.3s}
+  .cell:hover{border-color:#C5B69D40}
+  .cell.selected{border-color:#C5B69D;box-shadow:0 0 20px rgba(197,182,157,0.15)}
+  .cell-label{font-size:0.85rem;color:#C5B69D;font-weight:600;margin-bottom:4px;font-family:'LXGW WenKai',serif}
+  .cell-desc{font-size:0.68rem;color:#6a5e4a;margin-bottom:12px;line-height:1.5}
+  .cell canvas{display:block;margin:0 auto}
+  .form-label{font-size:0.7rem;color:#6a5e4a;margin-top:8px}
+  .navbar-row{max-width:860px;margin:20px auto 0}
+  .nav-demo{background:linear-gradient(180deg,#1a1528,#161220);border:1px solid #2a2440;border-radius:10px;padding:0 16px;height:48px;display:flex;align-items:center;gap:8px;position:relative;overflow:hidden}
+  .nav-demo::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#C5B69D40,transparent)}
+  .nav-logo-text{font-family:'LXGW WenKai',serif;font-size:0.9rem;font-weight:700;color:#C5B69D}
+  .nav-link{padding:4px 10px;font-size:0.75rem;color:#8a7e6a;border-radius:6px;margin-left:4px}
+  .nav-link.active{color:#C5B69D;background:#252040}
+  .nav-label{font-size:0.65rem;color:#6a5e4a;margin-bottom:4px;text-align:center}
+</style>
+</head>
+<body>
+<h1>奧茲瑪 Logo — 淺色系比較</h1>
+<p class="page-sub">保留 D 風格的金屬光澤 + sheen 效果，使用淺色系配色</p>
+
+<div class="grid">
+  <div class="cell" onclick="selectCell(this,'A')">
+    <div class="cell-label">A. 冰晶藍</div>
+    <div class="cell-desc">v5 的藍色水晶調 + 金屬光澤<br>冷色系，像結晶的藍寶石</div>
+    <canvas id="cA" width="300" height="300" style="width:150px;height:150px;"></canvas>
+    <div class="form-label" id="labelA">立方體</div>
+  </div>
+  <div class="cell" onclick="selectCell(this,'B')">
+    <div class="cell-label">B. 月光銀</div>
+    <div class="cell-desc">銀白色金屬質感，冷冽清透<br>帶淡藍反射的白鋼光澤</div>
+    <canvas id="cB" width="300" height="300" style="width:150px;height:150px;"></canvas>
+    <div class="form-label" id="labelB">立方體</div>
+  </div>
+  <div class="cell" onclick="selectCell(this,'C')">
+    <div class="cell-label">C. 琥珀金</div>
+    <div class="cell-desc">暖色金色系，完全呼應網站金色主色<br>像打磨過的黃銅 + 琥珀</div>
+    <canvas id="cC" width="300" height="300" style="width:150px;height:150px;"></canvas>
+    <div class="form-label" id="labelC">立方體</div>
+  </div>
+  <div class="cell" onclick="selectCell(this,'D')">
+    <div class="cell-label">D. 紫晶幻光</div>
+    <div class="cell-desc">淡紫色水晶，帶金色邊緣<br>神秘感 + 與深紫背景和諧</div>
+    <canvas id="cD" width="300" height="300" style="width:150px;height:150px;"></canvas>
+    <div class="form-label" id="labelD">立方體</div>
+  </div>
+</div>
+
+<div class="navbar-row">
+  <div class="nav-label" id="navLabel">NavBar 預覽（點選上方選項後顯示）</div>
+  <div class="nav-demo">
+    <canvas id="cNav" width="72" height="72" style="width:28px;height:28px;"></canvas>
+    <span class="nav-logo-text">FFXIV 巴爾德西昂</span>
+    <span class="nav-link active">天氣查詢</span>
+    <span class="nav-link">文理技能</span>
+  </div>
+</div>
+
+<script>
+const TAU = Math.PI * 2;
+let selectedStyle = null;
+
+function selectCell(el, style) {
+  document.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedStyle = style;
+  const names = {A:'冰晶藍',B:'月光銀',C:'琥珀金',D:'紫晶幻光'};
+  document.getElementById('navLabel').textContent = `NavBar 預覽（${names[style]}）`;
+}
+
+let particles = [];
+function spawnSpark(n) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random()*TAU, sp = 0.003+Math.random()*0.01;
+    particles.push({x:(Math.random()-0.5)*0.1,y:(Math.random()-0.5)*0.1,
+      vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,decay:0.01+Math.random()*0.015,
+      size:0.01+Math.random()*0.03,
+      color: ['#FFFFFF','#E0E8FF','#D0D8F0','#C0C8E0','#B8C0D8'][Math.floor(Math.random()*5)]
+    });
+  }
+}
+function updateParticles() {
+  particles = particles.filter(p => p.life > 0);
+  particles.forEach(p => {p.x+=p.vx;p.y+=p.vy;p.life-=p.decay;});
+}
+
+function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;}}
+function easeOutExpo(t){return t===1?1:1-Math.pow(2,-10*t);}
+function easeInOutCubic(t){return t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+function drawPoly(ctx,pts,fill,stroke){ctx.beginPath();pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}}
+
+function drawHalo(ctx, cx, cy, rx, ry, time, intensity, haloColor) {
+  const pulse = 0.5 + 0.35*Math.sin(time*1.5);
+  const I = pulse * intensity;
+  ctx.save();
+  ctx.globalAlpha = I * 0.2;
+  ctx.strokeStyle = haloColor.outer;
+  ctx.lineWidth = rx*0.08;
+  ctx.beginPath();ctx.ellipse(cx,cy,rx*1.06,ry*1.06,0,0,TAU);ctx.stroke();
+  ctx.globalAlpha = I * 0.8;
+  ctx.strokeStyle = haloColor.ring;
+  ctx.lineWidth = rx*0.02;
+  ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,TAU);ctx.stroke();
+  for (const off of [0, Math.PI]) {
+    const a = time*0.9 + off;
+    const sx = cx+rx*Math.cos(a), sy = cy+ry*Math.sin(a);
+    const g = ctx.createRadialGradient(sx,sy,0,sx,sy,rx*0.1);
+    g.addColorStop(0,haloColor.spot1.replace('I',I));
+    g.addColorStop(0.3,haloColor.spot2.replace('I',I*0.5));
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.globalAlpha = I;ctx.fillStyle = g;ctx.beginPath();ctx.arc(sx,sy,rx*0.1,0,TAU);ctx.fill();
+  }
+  ctx.restore();
+}
+
+// ===== Color Palettes =====
+const palettes = {
+  // A: Ice Crystal Blue
+  A: {
+    cube: {
+      left: [{s:0,c:'rgba(70,120,185,0.85)'},{s:1,c:'rgba(35,70,130,0.7)'}],
+      right: [{s:0,c:'rgba(80,135,200,0.8)'},{s:1,c:'rgba(40,80,140,0.65)'}],
+      top: [{s:0,c:'rgba(150,200,250,0.9)'},{s:0.5,c:'rgba(110,170,235,0.82)'},{s:1,c:'rgba(85,145,215,0.75)'}],
+      edge: 'rgba(180,215,255,0.7)', edgeG: 'rgba(197,182,157,0.5)',
+      spec: {cx:-0.15,cy:-0.7,r:0.1,c:['rgba(255,255,255,0.92)','rgba(200,230,255,0.45)','rgba(180,215,250,0)']},
+    },
+    pyr: {
+      left: [{s:0,c:'rgba(90,150,220,0.85)'},{s:1,c:'rgba(35,70,125,0.7)'}],
+      right: [{s:0,c:'rgba(75,130,200,0.78)'},{s:1,c:'rgba(30,60,110,0.62)'}],
+      top: [{s:0,c:'rgba(165,215,255,0.92)'},{s:1,c:'rgba(115,175,240,0.8)'}],
+      edge: 'rgba(170,210,255,0.7)', edgeG: 'rgba(197,182,157,0.5)',
+    },
+    sph: {
+      body: [{s:0,c:'rgba(130,185,240,0.95)'},{s:0.35,c:'rgba(80,140,210,0.9)'},{s:0.75,c:'rgba(45,90,160,0.85)'},{s:1,c:'rgba(30,65,120,0.78)'}],
+      rim: 'rgba(120,175,235,0.5)', edge: 'rgba(80,130,200,0.6)',
+    },
+    halo: {outer:'rgba(120,170,235,0.3)',ring:'rgba(180,215,255,0.8)',spot1:'rgba(255,255,255,I)',spot2:'rgba(160,200,250,I)'},
+    burst: {c1:'rgba(100,150,220,0.85)',c2:'rgba(45,80,140,0.5)',edge:'rgba(120,170,235,0.5)',core:['rgba(255,255,255,0.95)','rgba(180,215,255,0.5)','rgba(150,195,245,0)']},
+    particle: ['#FFFFFF','#B8D8FF','#90C0F0','#C8E0FF','#A0C8F0'],
+  },
+  // B: Moonlight Silver
+  B: {
+    cube: {
+      left: [{s:0,c:'rgba(120,125,135,0.88)'},{s:1,c:'rgba(70,75,85,0.75)'}],
+      right: [{s:0,c:'rgba(135,140,152,0.85)'},{s:1,c:'rgba(82,88,98,0.7)'}],
+      top: [{s:0,c:'rgba(195,200,215,0.92)'},{s:0.5,c:'rgba(160,168,185,0.85)'},{s:1,c:'rgba(130,138,155,0.78)'}],
+      edge: 'rgba(210,215,228,0.7)', edgeG: 'rgba(197,182,157,0.5)',
+      spec: {cx:-0.15,cy:-0.7,r:0.1,c:['rgba(255,255,255,0.95)','rgba(220,225,235,0.5)','rgba(200,205,220,0)']},
+    },
+    pyr: {
+      left: [{s:0,c:'rgba(130,135,148,0.88)'},{s:1,c:'rgba(68,72,85,0.72)'}],
+      right: [{s:0,c:'rgba(118,122,138,0.82)'},{s:1,c:'rgba(60,65,78,0.65)'}],
+      top: [{s:0,c:'rgba(205,210,225,0.92)'},{s:1,c:'rgba(165,170,188,0.82)'}],
+      edge: 'rgba(205,210,225,0.7)', edgeG: 'rgba(197,182,157,0.5)',
+    },
+    sph: {
+      body: [{s:0,c:'rgba(180,185,200,0.95)'},{s:0.35,c:'rgba(130,135,155,0.92)'},{s:0.75,c:'rgba(80,85,100,0.88)'},{s:1,c:'rgba(55,58,72,0.82)'}],
+      rim: 'rgba(160,165,185,0.5)', edge: 'rgba(110,115,135,0.6)',
+    },
+    halo: {outer:'rgba(180,185,205,0.3)',ring:'rgba(215,220,235,0.8)',spot1:'rgba(255,255,255,I)',spot2:'rgba(190,195,215,I)'},
+    burst: {c1:'rgba(150,155,175,0.85)',c2:'rgba(75,78,92,0.5)',edge:'rgba(160,165,185,0.5)',core:['rgba(255,255,255,0.95)','rgba(210,215,230,0.5)','rgba(190,195,215,0)']},
+    particle: ['#FFFFFF','#D0D4E8','#C0C5DA','#E0E4F0','#B8BCD0'],
+  },
+  // C: Amber Gold
+  C: {
+    cube: {
+      left: [{s:0,c:'rgba(165,123,24,0.85)'},{s:1,c:'rgba(110,80,15,0.7)'}],
+      right: [{s:0,c:'rgba(180,140,35,0.82)'},{s:1,c:'rgba(120,90,20,0.68)'}],
+      top: [{s:0,c:'rgba(215,190,120,0.92)'},{s:0.5,c:'rgba(197,170,85,0.85)'},{s:1,c:'rgba(175,148,60,0.78)'}],
+      edge: 'rgba(220,200,140,0.7)', edgeG: 'rgba(197,182,157,0.6)',
+      spec: {cx:-0.15,cy:-0.7,r:0.1,c:['rgba(255,255,240,0.95)','rgba(230,215,170,0.5)','rgba(210,195,140,0)']},
+    },
+    pyr: {
+      left: [{s:0,c:'rgba(175,135,30,0.88)'},{s:1,c:'rgba(105,75,12,0.72)'}],
+      right: [{s:0,c:'rgba(155,118,25,0.8)'},{s:1,c:'rgba(95,68,10,0.65)'}],
+      top: [{s:0,c:'rgba(225,200,130,0.92)'},{s:1,c:'rgba(190,165,80,0.82)'}],
+      edge: 'rgba(215,195,135,0.7)', edgeG: 'rgba(197,182,157,0.6)',
+    },
+    sph: {
+      body: [{s:0,c:'rgba(210,185,110,0.95)'},{s:0.35,c:'rgba(170,140,55,0.92)'},{s:0.75,c:'rgba(120,95,25,0.88)'},{s:1,c:'rgba(85,65,15,0.82)'}],
+      rim: 'rgba(185,155,65,0.5)', edge: 'rgba(140,110,30,0.6)',
+    },
+    halo: {outer:'rgba(197,182,157,0.3)',ring:'rgba(225,210,165,0.8)',spot1:'rgba(255,252,235,I)',spot2:'rgba(197,182,157,I)'},
+    burst: {c1:'rgba(185,155,60,0.85)',c2:'rgba(110,85,20,0.5)',edge:'rgba(175,148,55,0.5)',core:['rgba(255,252,235,0.95)','rgba(220,200,140,0.5)','rgba(197,182,157,0)']},
+    particle: ['#FFFFFF','#E8D8A0','#D0C080','#F0E0B0','#C5B69D'],
+  },
+  // D: Amethyst
+  D: {
+    cube: {
+      left: [{s:0,c:'rgba(120,80,170,0.85)'},{s:1,c:'rgba(70,42,115,0.7)'}],
+      right: [{s:0,c:'rgba(135,92,185,0.82)'},{s:1,c:'rgba(78,50,125,0.68)'}],
+      top: [{s:0,c:'rgba(190,155,230,0.92)'},{s:0.5,c:'rgba(160,120,210,0.85)'},{s:1,c:'rgba(138,100,195,0.78)'}],
+      edge: 'rgba(195,165,235,0.7)', edgeG: 'rgba(197,182,157,0.5)',
+      spec: {cx:-0.15,cy:-0.7,r:0.1,c:['rgba(255,255,255,0.92)','rgba(220,200,245,0.5)','rgba(200,175,235,0)']},
+    },
+    pyr: {
+      left: [{s:0,c:'rgba(130,88,180,0.88)'},{s:1,c:'rgba(68,38,110,0.72)'}],
+      right: [{s:0,c:'rgba(115,75,165,0.8)'},{s:1,c:'rgba(58,32,98,0.65)'}],
+      top: [{s:0,c:'rgba(200,165,240,0.92)'},{s:1,c:'rgba(165,125,215,0.82)'}],
+      edge: 'rgba(190,160,235,0.7)', edgeG: 'rgba(197,182,157,0.5)',
+    },
+    sph: {
+      body: [{s:0,c:'rgba(175,140,218,0.95)'},{s:0.35,c:'rgba(130,90,185,0.92)'},{s:0.75,c:'rgba(80,48,135,0.88)'},{s:1,c:'rgba(55,30,95,0.82)'}],
+      rim: 'rgba(145,108,195,0.5)', edge: 'rgba(105,68,158,0.6)',
+    },
+    halo: {outer:'rgba(155,120,200,0.3)',ring:'rgba(200,170,240,0.8)',spot1:'rgba(255,255,255,I)',spot2:'rgba(175,145,220,I)'},
+    burst: {c1:'rgba(140,100,195,0.85)',c2:'rgba(72,42,120,0.5)',edge:'rgba(145,108,195,0.5)',core:['rgba(255,255,255,0.95)','rgba(200,175,240,0.5)','rgba(175,150,225,0)']},
+    particle: ['#FFFFFF','#D0B8F0','#C0A8E0','#E0D0F8','#B898D8'],
+  },
+};
+
+// ===== Generic shape drawers using palette =====
+function drawCubeP(ctx, cx, cy, s, alpha, time, P) {
+  const w = s*0.28, h = s*0.42;
+  const topPts=[{x:cx,y:cy-h},{x:cx+w,y:cy-h*0.4},{x:cx,y:cy+h*0.08},{x:cx-w,y:cy-h*0.4}];
+  const leftPts=[{x:cx-w,y:cy-h*0.4},{x:cx,y:cy+h*0.08},{x:cx,y:cy+h*0.7},{x:cx-w,y:cy+h*0.22}];
+  const rightPts=[{x:cx+w,y:cy-h*0.4},{x:cx,y:cy+h*0.08},{x:cx,y:cy+h*0.7},{x:cx+w,y:cy+h*0.22}];
+  ctx.save(); ctx.globalAlpha = alpha;
+
+  let g;
+  // Left
+  g = ctx.createLinearGradient(cx-w,cy-h*0.4,cx,cy+h*0.7);
+  P.cube.left.forEach(s=>g.addColorStop(s.s,s.c));
+  drawPoly(ctx, leftPts, g, P.cube.edge.replace('0.7','0.4'));
+  // Right
+  g = ctx.createLinearGradient(cx+w,cy-h*0.4,cx,cy+h*0.7);
+  P.cube.right.forEach(s=>g.addColorStop(s.s,s.c));
+  drawPoly(ctx, rightPts, g, P.cube.edge.replace('0.7','0.35'));
+  // Top
+  g = ctx.createLinearGradient(cx,cy-h,cx,cy+h*0.08);
+  P.cube.top.forEach(s=>g.addColorStop(s.s,s.c));
+  drawPoly(ctx, topPts, g, P.cube.edge);
+
+  // Sheen
+  ctx.save();ctx.beginPath();
+  topPts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.closePath();
+  leftPts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.closePath();
+  rightPts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.closePath();
+  ctx.clip();
+  const sheenY = cy - h + (h*1.7)*((Math.sin(time*0.5)+1)/2);
+  ctx.globalAlpha = alpha * 0.2;
+  const shG = ctx.createLinearGradient(cx-w,sheenY-s*0.08,cx+w,sheenY+s*0.08);
+  shG.addColorStop(0,'rgba(255,255,255,0)');shG.addColorStop(0.4,'rgba(255,255,255,0.65)');
+  shG.addColorStop(0.5,'rgba(255,255,255,0.85)');shG.addColorStop(0.6,'rgba(255,255,255,0.65)');
+  shG.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=shG;ctx.fillRect(cx-w-5,sheenY-s*0.06,w*2+10,s*0.12);
+  ctx.restore();
+
+  // Gold edges
+  ctx.globalAlpha = alpha * 0.55;ctx.strokeStyle = P.cube.edgeG;ctx.lineWidth = 1.8;
+  ctx.beginPath();ctx.moveTo(cx,cy-h);ctx.lineTo(cx+w,cy-h*0.4);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-h);ctx.lineTo(cx-w,cy-h*0.4);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy+h*0.08);ctx.lineTo(cx,cy+h*0.7);ctx.stroke();
+  ctx.globalAlpha = alpha * 0.25;ctx.lineWidth = 1;
+  ctx.beginPath();ctx.moveTo(cx-w,cy-h*0.4);ctx.lineTo(cx-w,cy+h*0.22);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+w,cy-h*0.4);ctx.lineTo(cx+w,cy+h*0.22);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-w,cy+h*0.22);ctx.lineTo(cx,cy+h*0.7);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+w,cy+h*0.22);ctx.lineTo(cx,cy+h*0.7);ctx.stroke();
+
+  // Specular
+  const sp = P.cube.spec;
+  ctx.globalAlpha = alpha * 0.85;
+  const hlG = ctx.createRadialGradient(cx+w*sp.cx,cy+h*sp.cy,0,cx+w*sp.cx,cy+h*sp.cy,s*sp.r);
+  sp.c.forEach((c,i)=>hlG.addColorStop(i===0?0:i===1?0.3:1,c));
+  ctx.fillStyle=hlG;ctx.beginPath();ctx.arc(cx+w*sp.cx,cy+h*sp.cy,s*sp.r,0,TAU);ctx.fill();
+
+  ctx.restore();
+}
+
+function drawPyramidP(ctx, cx, cy, s, alpha, time, P) {
+  const w = s*0.4, topY = cy-s*0.25, botY = cy+s*0.4;
+  const midY = topY + (botY-topY)*0.12;
+  const leftFace=[{x:cx-w,y:topY},{x:cx,y:midY},{x:cx,y:botY}];
+  const rightFace=[{x:cx+w,y:topY},{x:cx,y:midY},{x:cx,y:botY}];
+  const topFace=[{x:cx-w,y:topY},{x:cx+w,y:topY},{x:cx+w*0.06,y:midY},{x:cx-w*0.06,y:midY}];
+  ctx.save(); ctx.globalAlpha = alpha;
+
+  let g;
+  g = ctx.createLinearGradient(cx-w,topY,cx,botY);
+  P.pyr.left.forEach(s=>g.addColorStop(s.s,s.c));
+  drawPoly(ctx, leftFace, g, P.pyr.edge.replace('0.7','0.4'));
+  g = ctx.createLinearGradient(cx+w,topY,cx,botY);
+  P.pyr.right.forEach(s=>g.addColorStop(s.s,s.c));
+  drawPoly(ctx, rightFace, g, P.pyr.edge.replace('0.7','0.35'));
+  g = ctx.createLinearGradient(cx,topY,cx,midY);
+  P.pyr.top.forEach(s=>g.addColorStop(s.s,s.c));
+  drawPoly(ctx, topFace, g, P.pyr.edge);
+
+  // Sheen
+  ctx.save();ctx.beginPath();
+  leftFace.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.closePath();
+  rightFace.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.closePath();ctx.clip();
+  const sheenY = topY + (botY-topY)*((Math.sin(time*0.45)+1)/2);
+  ctx.globalAlpha = alpha * 0.15;
+  const shG = ctx.createLinearGradient(cx-w,sheenY-s*0.06,cx+w,sheenY+s*0.06);
+  shG.addColorStop(0,'rgba(255,255,255,0)');shG.addColorStop(0.45,'rgba(255,255,255,0.7)');
+  shG.addColorStop(0.55,'rgba(255,255,255,0.7)');shG.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=shG;ctx.fillRect(cx-w-5,sheenY-s*0.05,w*2+10,s*0.1);
+  ctx.restore();
+
+  // Gold edges
+  ctx.globalAlpha = alpha * 0.55;ctx.strokeStyle = P.pyr.edgeG;ctx.lineWidth = 1.8;
+  ctx.beginPath();ctx.moveTo(cx-w,topY);ctx.lineTo(cx+w,topY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-w,topY);ctx.lineTo(cx,botY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+w,topY);ctx.lineTo(cx,botY);ctx.stroke();
+
+  // Specular
+  ctx.globalAlpha = alpha * 0.75;
+  const hlG = ctx.createRadialGradient(cx-w*0.3,topY+4,0,cx-w*0.3,topY+4,s*0.09);
+  hlG.addColorStop(0,'rgba(255,255,255,0.92)');hlG.addColorStop(0.3,'rgba(255,255,255,0.4)');hlG.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=hlG;ctx.beginPath();ctx.arc(cx-w*0.3,topY+4,s*0.09,0,TAU);ctx.fill();
+
+  ctx.restore();
+}
+
+function drawSphereP(ctx, cx, cy, s, alpha, time, P) {
+  const r = s*0.36;
+  ctx.save(); ctx.globalAlpha = alpha;
+
+  const g = ctx.createRadialGradient(cx-r*0.3,cy-r*0.3,r*0.05,cx,cy,r);
+  P.sph.body.forEach(s=>g.addColorStop(s.s,s.c));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,r,0,TAU);ctx.fill();
+  ctx.strokeStyle=P.sph.edge;ctx.lineWidth=1;ctx.stroke();
+
+  // Sheen
+  ctx.save();ctx.beginPath();ctx.arc(cx,cy,r-2,0,TAU);ctx.clip();
+  const sx1=cx+Math.cos(time*0.4)*r*0.5, sy1=cy+Math.sin(time*0.4)*r*0.3;
+  ctx.globalAlpha=alpha*0.15;
+  const shG=ctx.createRadialGradient(sx1,sy1,0,sx1,sy1,r*0.6);
+  shG.addColorStop(0,'rgba(255,255,255,0.5)');shG.addColorStop(0.3,'rgba(255,255,255,0.15)');shG.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=shG;ctx.beginPath();ctx.arc(sx1,sy1,r*0.6,0,TAU);ctx.fill();
+  ctx.restore();
+
+  // Specular
+  ctx.globalAlpha=alpha*0.9;
+  const hlG=ctx.createRadialGradient(cx-r*0.3,cy-r*0.35,0,cx-r*0.3,cy-r*0.35,r*0.28);
+  hlG.addColorStop(0,'rgba(255,255,255,0.95)');hlG.addColorStop(0.12,'rgba(255,255,255,0.55)');
+  hlG.addColorStop(0.35,'rgba(255,255,255,0.12)');hlG.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=hlG;ctx.beginPath();ctx.arc(cx-r*0.3,cy-r*0.35,r*0.28,0,TAU);ctx.fill();
+
+  // Hot dot
+  ctx.globalAlpha=alpha;
+  const dG=ctx.createRadialGradient(cx-r*0.25,cy-r*0.38,0,cx-r*0.25,cy-r*0.38,r*0.08);
+  dG.addColorStop(0,'rgba(255,255,255,1)');dG.addColorStop(0.4,'rgba(255,255,255,0.5)');dG.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=dG;ctx.beginPath();ctx.arc(cx-r*0.25,cy-r*0.38,r*0.08,0,TAU);ctx.fill();
+
+  // Rim
+  ctx.globalAlpha=alpha*0.3;ctx.strokeStyle=P.sph.rim;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy,r-1,4.2,6.0);ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawStarburstP(ctx, cx, cy, s, alpha, time, seed, P) {
+  const rng = mulberry32(seed);
+  const spikes = 10+Math.floor(rng()*4);
+  const pts = [];
+  for (let i = 0; i < spikes; i++) {
+    const a = TAU*i/spikes + (rng()-0.5)*0.3;
+    const outerR = s*(0.28+rng()*0.2);
+    const innerR = s*(0.06+rng()*0.08);
+    pts.push({x:cx+outerR*Math.cos(a),y:cy+outerR*Math.sin(a)});
+    const a2 = a+TAU/spikes*0.5;
+    pts.push({x:cx+innerR*Math.cos(a2),y:cy+innerR*Math.sin(a2)});
+  }
+  ctx.save();ctx.globalAlpha=alpha;
+  const g = ctx.createRadialGradient(cx,cy,0,cx,cy,s*0.4);
+  g.addColorStop(0,P.burst.c1);g.addColorStop(1,P.burst.c2);
+  ctx.fillStyle=g;ctx.beginPath();
+  pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  ctx.closePath();ctx.fill();
+  ctx.strokeStyle=P.burst.edge;ctx.lineWidth=1;ctx.stroke();
+
+  ctx.globalAlpha=alpha*0.9;
+  const cG=ctx.createRadialGradient(cx,cy,0,cx,cy,s*0.12);
+  P.burst.core.forEach((c,i)=>cG.addColorStop(i===0?0:i===1?0.3:1,c));
+  ctx.fillStyle=cG;ctx.beginPath();ctx.arc(cx,cy,s*0.12,0,TAU);ctx.fill();
+
+  ctx.globalAlpha=alpha*0.6;
+  for(let i=0;i<pts.length;i+=2){
+    const tG=ctx.createRadialGradient(pts[i].x,pts[i].y,0,pts[i].x,pts[i].y,s*0.03);
+    tG.addColorStop(0,'rgba(255,255,255,0.9)');tG.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=tG;ctx.beginPath();ctx.arc(pts[i].x,pts[i].y,s*0.03,0,TAU);ctx.fill();
+  }
+  ctx.restore();
+}
+
+function renderStyle(ctx, w, h, time, morphState, style) {
+  const cx=w/2,cy=h/2,s=w*0.8;
+  const P = palettes[style];
+  ctx.clearRect(0,0,w,h);
+
+  const bg=ctx.createRadialGradient(cx,cy,0,cx,cy,w*0.45);
+  bg.addColorStop(0,'rgba(35,30,55,0.1)');bg.addColorStop(1,'rgba(18,16,28,0)');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+
+  const {formIdx,phase,t}=morphState;
+  const funcs=[
+    (c,x,y,sz,a,t2)=>drawCubeP(c,x,y,sz,a,t2,P),
+    (c,x,y,sz,a,t2)=>drawPyramidP(c,x,y,sz,a,t2,P),
+    (c,x,y,sz,a,t2)=>drawSphereP(c,x,y,sz,a,t2,P),
+  ];
+  const nextIdx=(formIdx+1)%3;
+  const haloI=phase==='hold'?1:(phase==='explode'?1+t*0.8:1.8-t*0.8);
+
+  drawHalo(ctx,cx,cy,w*0.42,w*0.1,time,haloI,P.halo);
+
+  if(phase==='hold'){
+    funcs[formIdx](ctx,cx,cy,s,1,time);
+  }else if(phase==='explode'){
+    const et=easeOutExpo(t);
+    if(1-et>0.01)funcs[formIdx](ctx,cx,cy,s,1-et,time);
+    drawStarburstP(ctx,cx,cy,s,et,time,formIdx*137+42,P);
+  }else{
+    const ct=easeInOutCubic(t);
+    drawStarburstP(ctx,cx,cy,s,1-ct,time,formIdx*137+42,P);
+    if(ct>0.01)funcs[nextIdx](ctx,cx,cy,s,ct,time);
+  }
+
+  if(phase!=='hold'){
+    const intensity=phase==='explode'?t:1-t;
+    ctx.save();ctx.globalAlpha=intensity*0.2;
+    const eg=ctx.createRadialGradient(cx,cy,s*0.12,cx,cy,s*0.5);
+    eg.addColorStop(0,'rgba(200,200,220,0)');eg.addColorStop(0.6,'rgba(200,200,220,0)');
+    eg.addColorStop(1,'rgba(200,200,220,0.5)');
+    ctx.fillStyle=eg;ctx.beginPath();ctx.arc(cx,cy,s*0.5,0,TAU);ctx.fill();
+    ctx.restore();
+  }
+
+  const scale=w*0.75;
+  particles.forEach(p=>{
+    if(p.life<=0)return;
+    const px2=cx+p.x*scale,py2=cy+p.y*scale,pS=p.size*scale;
+    ctx.globalAlpha=p.life*0.8;
+    const pg=ctx.createRadialGradient(px2,py2,0,px2,py2,pS);
+    pg.addColorStop(0,p.color);pg.addColorStop(1,'rgba(150,150,200,0)');
+    ctx.fillStyle=pg;ctx.beginPath();ctx.arc(px2,py2,pS,0,TAU);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+}
+
+const HOLD=2500,EXPLODE=500,CONVERGE=600,CYCLE=HOLD+EXPLODE+CONVERGE;
+const shapeNames=['立方體','倒金字塔','球體'];
+let lastTrans=-1;
+
+const configs=[
+  {canvas:'cA',label:'labelA',style:'A',w:300,h:300},
+  {canvas:'cB',label:'labelB',style:'B',w:300,h:300},
+  {canvas:'cC',label:'labelC',style:'C',w:300,h:300},
+  {canvas:'cD',label:'labelD',style:'D',w:300,h:300},
+];
+
+function animate(ts) {
+  const time=ts/1000,elapsed=ts%(CYCLE*3);
+  const cycleIdx=Math.floor(elapsed/CYCLE),pos=elapsed-cycleIdx*CYCLE;
+  const formIdx=cycleIdx%3;
+  let morphState,labelText;
+
+  if(pos<HOLD){
+    morphState={formIdx,phase:'hold',t:0};labelText=shapeNames[formIdx];
+  }else if(pos<HOLD+EXPLODE){
+    const t=(pos-HOLD)/EXPLODE;
+    morphState={formIdx,phase:'explode',t};labelText='—';
+    if(cycleIdx!==lastTrans){lastTrans=cycleIdx;spawnSpark(40);}
+    if(Math.random()<0.4)spawnSpark(2);
+  }else{
+    const t=(pos-HOLD-EXPLODE)/CONVERGE;
+    morphState={formIdx,phase:'converge',t};
+    labelText=t>0.5?shapeNames[(formIdx+1)%3]:'—';
+  }
+  updateParticles();
+
+  configs.forEach(({canvas,label,style,w:cw,h:ch})=>{
+    const c=document.getElementById(canvas);if(!c)return;
+    renderStyle(c.getContext('2d'),cw,ch,time,morphState,style);
+    const lbl=document.getElementById(label);
+    if(lbl){lbl.textContent=labelText;lbl.style.opacity=labelText==='—'?'0.3':'1';}
+  });
+
+  const navC=document.getElementById('cNav');
+  if(navC&&selectedStyle){
+    renderStyle(navC.getContext('2d'),72,72,time,morphState,selectedStyle);
+  }
+
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>

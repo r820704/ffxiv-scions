@@ -2,23 +2,17 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { eurekaData } from '@/data/eureka-data';
 import { fetchLogogramPrices } from '@/services/universalis';
 import type { LogogramPrice } from '@/types/eureka';
-import MnemeSelector from '@/components/eureka/MnemeSelector';
 import AlbumGrid from '@/components/eureka/AlbumGrid';
 import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
 import { useAlbumState } from '@/hooks/useAlbumState';
 import { computeRemainingCost } from '@/utils/album-helpers';
-import { cn } from '@/lib/utils';
-
-type EurekaTab = 'album' | 'mnemes';
 
 export default function EurekaPage() {
-  const [tab, setTab] = useState<EurekaTab>('album');
   const [prices, setPrices] = useState<LogogramPrice[]>([]);
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceError, setPriceError] = useState(false);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
-  const [selectedMnemes, setSelectedMnemes] = useState<Set<string>>(new Set());
 
   const { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount } = useAlbumState();
 
@@ -45,18 +39,6 @@ export default function EurekaPage() {
   useEffect(() => {
     loadPrices();
   }, [loadPrices]);
-
-  const handleToggleMneme = useCallback((mnemeId: string) => {
-    setSelectedMnemes((prev) => {
-      const next = new Set(prev);
-      if (next.has(mnemeId)) {
-        next.delete(mnemeId);
-      } else {
-        next.add(mnemeId);
-      }
-      return next;
-    });
-  }, []);
 
   return (
     <div className="relative">
@@ -95,33 +77,7 @@ export default function EurekaPage() {
         </div>
       )}
 
-      <div className="flex gap-1 mb-4">
-        <button
-          onClick={() => setTab('album')}
-          className={cn(
-            'px-4 py-2 text-sm rounded-md transition-colors cursor-pointer',
-            tab === 'album'
-              ? 'bg-secondary text-primary font-medium'
-              : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-          )}
-        >
-          圖鑑
-        </button>
-        <button
-          onClick={() => setTab('mnemes')}
-          className={cn(
-            'px-4 py-2 text-sm rounded-md transition-colors cursor-pointer',
-            tab === 'mnemes'
-              ? 'bg-secondary text-primary font-medium'
-              : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-          )}
-        >
-          材料反查
-        </button>
-      </div>
-
-      {tab === 'album' ? (
-        <div className="space-y-4">
+      <div className="space-y-4">
           {/* Progress bar */}
           <div className="flex items-center gap-3">
             <div className="flex-1 bg-secondary rounded h-2 overflow-hidden">
@@ -184,16 +140,9 @@ export default function EurekaPage() {
             onToggle={toggleLearned}
             prices={prices}
             priceLoading={priceLoading}
+            inventory={inventory}
           />
         </div>
-      ) : (
-        <MnemeSelector
-          selectedMnemes={selectedMnemes}
-          onToggleMneme={handleToggleMneme}
-          prices={prices}
-          priceLoading={priceLoading}
-        />
-      )}
       </div>
     </div>
   );

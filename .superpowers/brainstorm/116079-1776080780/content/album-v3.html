@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文理技能圖鑑 Mockup v3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #12101c;
+    color: #e8e0d0;
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* === Page container === */
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    position: relative;
+  }
+
+  /* === Decorative bg === */
+  .page::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(88,56,160,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(40,60,140,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .page > * { position: relative; z-index: 1; }
+
+  /* === Title === */
+  .page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #C5B69D;
+    margin-bottom: 16px;
+  }
+
+  /* === Tabs === */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    background: #1a1528;
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .tab {
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #8a7e6a;
+    border: none;
+    background: none;
+    font-family: inherit;
+  }
+  .tab:hover { color: #e8e0d0; background: rgba(37,32,64,0.5); }
+  .tab.active {
+    background: #252040;
+    color: #C5B69D;
+    font-weight: 500;
+  }
+
+  /* === Progress === */
+  .progress-section {
+    margin-bottom: 16px;
+  }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-bar {
+    flex: 1;
+    background: #252040;
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #A57B18, #C5B69D);
+    border-radius: 4px;
+    transition: width 0.3s;
+  }
+  .progress-text {
+    color: #8a7e6a;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  /* === Grid === */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    margin-bottom: 24px;
+  }
+  .cell {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    border: 2px solid #2a2440;
+    background: #1a1528;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.2s, opacity 0.2s, transform 0.15s;
+    overflow: visible;
+  }
+  .cell:hover { transform: scale(1.08); z-index: 10; }
+  .cell.unlocked { border-color: #A57B18; }
+  .cell.unlocked:hover { border-color: #C5B69D; box-shadow: 0 0 12px rgba(197,182,157,0.3); }
+  .cell.unlocked .icon { width: 80%; height: 80%; object-fit: contain; border-radius: 3px; }
+  .cell.locked { opacity: 0.4; }
+  .cell.locked:hover { opacity: 0.7; border-color: #4a4460; }
+  .cell.locked .icon { width: 80%; height: 80%; object-fit: contain; border-radius: 3px; filter: brightness(0.25) grayscale(1); }
+
+  /* Checkmark for unlocked */
+  .cell.unlocked::after {
+    content: '✓';
+    position: absolute;
+    bottom: 1px;
+    right: 2px;
+    font-size: 9px;
+    color: #A57B18;
+    font-weight: bold;
+  }
+
+  /* === Tooltip === */
+  .tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    background: #1a1528;
+    border: 1px solid #A57B18;
+    border-radius: 8px;
+    padding: 12px;
+    z-index: 100;
+    pointer-events: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  }
+  .cell:hover .tooltip { display: block; }
+  .cell.tip-below .tooltip { bottom: auto; top: calc(100% + 8px); }
+  .cell.tip-left .tooltip { left: 0; transform: translateX(0); }
+  .cell.tip-right .tooltip { left: auto; right: 0; transform: translateX(0); }
+  .tooltip .t-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .tooltip .t-icon { width: 36px; height: 36px; border-radius: 4px; }
+  .tooltip .t-name { font-size: 14px; font-weight: bold; color: #C5B69D; }
+  .tooltip .t-cat { font-size: 11px; }
+  .tooltip .t-desc { font-size: 12px; color: #e8e0d0; line-height: 1.5; border-top: 1px solid #2a2440; padding-top: 8px; }
+
+  /* === Collapsible recipe section === */
+  .recipe-toggle {
+    width: 100%;
+    background: #1a1528;
+    border: 1px solid #2a2440;
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: #C5B69D;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+  .recipe-toggle:hover { background: #252040; }
+  .recipe-toggle .arrow {
+    transition: transform 0.3s;
+    font-size: 12px;
+    color: #8a7e6a;
+  }
+  .recipe-toggle.open .arrow { transform: rotate(180deg); }
+
+  .recipe-panel {
+    display: none;
+    background: #1a1528;
+    border: 1px solid #2a2440;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 16px;
+    margin-top: -8px;
+  }
+  .recipe-panel.open { display: block; }
+
+  /* Summary bar */
+  .recipe-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #252040;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  .recipe-summary .label { font-size: 12px; color: #8a7e6a; }
+  .recipe-summary .value { font-size: 18px; font-weight: 700; color: #daa520; }
+  .recipe-summary .sub { font-size: 11px; color: #8a7e6a; margin-top: 2px; }
+
+  /* Recipe list */
+  .recipe-list { display: flex; flex-direction: column; gap: 8px; }
+  .recipe-item {
+    background: #12101c;
+    border: 1px solid #2a2440;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .recipe-item .r-icon { width: 28px; height: 28px; border-radius: 4px; flex-shrink: 0; }
+  .recipe-item .r-name { font-size: 13px; color: #e8e0d0; flex: 1; }
+  .recipe-item .r-mats { font-size: 11px; color: #8a7e6a; }
+  .recipe-item .r-price { font-size: 13px; color: #daa520; font-weight: 500; white-space: nowrap; }
+  .recipe-item.learned { opacity: 0.4; }
+  .recipe-item.learned .r-price { text-decoration: line-through; color: #8a7e6a; }
+  .recipe-item.learned .r-name::after { content: ' ✓ 已習得'; font-size: 11px; color: #A57B18; }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    font-size: 11px;
+    color: #8a7e6a;
+    margin-bottom: 20px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid; }
+  .legend-dot.u { background: #A57B18; border-color: #A57B18; }
+  .legend-dot.l { background: #1a1528; border-color: #2a2440; opacity: 0.5; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1 class="page-title">優雷卡文理技能</h1>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab">技能查詢</button>
+    <button class="tab">材料反查</button>
+    <button class="tab active">圖鑑</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-section">
+    <div class="progress-row">
+      <div class="progress-bar">
+        <div class="progress-fill" id="pFill" style="width:21%"></div>
+      </div>
+      <div class="progress-text" id="pText">12 / 56 已習得</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot u"></div>已習得</div>
+    <div class="legend-item"><div class="legend-dot l"></div>未習得</div>
+  </div>
+
+  <!-- Grid -->
+  <div class="grid" id="grid"></div>
+
+  <!-- Collapsible recipe section -->
+  <button class="recipe-toggle" id="recipeToggle" onclick="toggleRecipes()">
+    <span>全部配方與價格</span>
+    <span class="arrow">▼</span>
+  </button>
+  <div class="recipe-panel" id="recipePanel">
+    <!-- Summary -->
+    <div class="recipe-summary">
+      <div>
+        <div class="label">未習得技能總花費（最低配方）</div>
+        <div class="value" id="totalCost">1,284,600 Gil</div>
+        <div class="sub" id="totalCount">44 個技能未習得</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="label">全圖鑑總花費</div>
+        <div class="value" style="font-size:14px;color:#8a7e6a;" id="fullCost">1,520,300 Gil</div>
+      </div>
+    </div>
+
+    <!-- Recipe list -->
+    <div class="recipe-list" id="recipeList"></div>
+  </div>
+</div>
+
+<script>
+const skills = [
+  { id:'wisdom-aetherweaver', name:'術士的記憶', icon:64601, cat:'睿識', desc:'魔法攻擊力提高60%，但物理攻擊力降低60%，最大HP降低40%。', mats:'術士的記憶 ×1', price:12500 },
+  { id:'wisdom-martialist', name:'鬥士的記憶', icon:64602, cat:'睿識', desc:'攻擊力提高40%，但最大HP降低40%。', mats:'鬥士的記憶 ×1', price:8200 },
+  { id:'wisdom-platebearer', name:'重騎兵的記憶', icon:64603, cat:'睿識', desc:'受到的傷害減少80%，最大HP提高50%，但攻擊力降低80%。', mats:'重騎兵的記憶 ×1', price:15600 },
+  { id:'wisdom-guardian', name:'守護者的記憶', icon:64604, cat:'睿識', desc:'受到的傷害減少45%，最大HP提高10%，但攻擊力降低40%。', mats:'守護者的記憶 ×1', price:22400 },
+  { id:'wisdom-ordained', name:'祭司的記憶', icon:64605, cat:'睿識', desc:'最大MP提高50%，治療魔法的回復力提高25%。', mats:'祭司的記憶 ×2', price:31000 },
+  { id:'wisdom-skirmisher', name:'武人的記憶', icon:64606, cat:'睿識', desc:'攻擊力提高20%。', mats:'武人的記憶 ×1', price:9800 },
+  { id:'wisdom-watcher', name:'斥候的記憶', icon:64607, cat:'睿識', desc:'迴避率提高25%，攻擊力降低5%。', mats:'斥候的記憶 ×1', price:7500 },
+  { id:'wisdom-templar', name:'聖騎士的記憶', icon:64608, cat:'睿識', desc:'治療魔法的回復力提高50%，受到的傷害減少30%。', mats:'祭司的記憶 ×1 + 守護者的記憶 ×1', price:26700 },
+  { id:'wisdom-irregular', name:'狂戰士的記憶', icon:64609, cat:'睿識', desc:'攻擊力提高30%，魔法防禦力降低50%。', mats:'鬥士的記憶 ×1 + 武人的記憶 ×1', price:18000 },
+  { id:'wisdom-breathtaker', name:'盜賊的記憶', icon:64610, cat:'睿識', desc:'毒抗性提高，移動速度提高。', mats:'盜賊的記憶 ×1', price:11200 },
+  { id:'spirit-remembered', name:'英傑的加護', icon:64611, cat:'精神', desc:'最大HP提高10%，命中率提高30%。', mats:'英傑的記憶 ×1', price:45000 },
+  { id:'protect-l', name:'文理物防護', icon:64612, cat:'防禦', desc:'物理傷害減免22%（30分鐘）。', mats:'守護者的記憶 ×1', price:22400 },
+  { id:'shell-l', name:'文理魔防殼', icon:64613, cat:'防禦', desc:'魔法傷害減免22%（30分鐘）。', mats:'祭司的記憶 ×1', price:15500 },
+  { id:'death-l', name:'文理致死一擊', icon:64641, cat:'攻擊', desc:'即死（目標HP越低成功率越高）。', mats:'殺手的記憶 ×3', price:66000 },
+  { id:'focus-l', name:'文理蓄力', icon:64642, cat:'攻擊', desc:'增加蓄力層數（最大16層），每層提高攻擊力。', mats:'鬥士的記憶 ×3', price:24600 },
+  { id:'paralyze-l', name:'文理麻痺', icon:64614, cat:'輔助', desc:'賦予麻痺狀態（60秒）。', mats:'術士的記憶 ×1', price:12500 },
+  { id:'paralyze-l-iii', name:'文理強麻痺', icon:64615, cat:'輔助', desc:'範圍賦予麻痺狀態（60秒）。', mats:'術士的記憶 ×2 + 鬥士的記憶 ×1', price:33200 },
+  { id:'swift-l', name:'文理敏捷', icon:64643, cat:'移動', desc:'大幅提高移動速度（10秒）。', mats:'盜賊的記憶 ×2', price:22400 },
+  { id:'featherfoot-l', name:'文理飄羽步', icon:64616, cat:'防禦', desc:'迴避率提高15%（45秒）。', mats:'斥候的記憶 ×2', price:15000 },
+  { id:'spirit-dart-l', name:'文理精神鏢', icon:64617, cat:'攻擊', desc:'遠程攻擊（威力100），目標詠唱中斷。', mats:'鬥士的記憶 ×1 + 術士的記憶 ×1', price:20700 },
+  { id:'catastrophe-l', name:'文理天災', icon:64618, cat:'攻擊', desc:'範圍攻擊（威力4000），對自己造成傷害。', mats:'殺手的記憶 ×1 + 術士的記憶 ×1', price:34500 },
+  { id:'dispel-l', name:'文理驅魔', icon:64619, cat:'輔助', desc:'移除敵人一個增益效果。', mats:'祭司的記憶 ×1 + 術士的記憶 ×1', price:28000 },
+  { id:'feint-l', name:'文理虛槍', icon:64620, cat:'輔助', desc:'攻擊（威力100），降低目標攻擊力。', mats:'武人的記憶 ×2', price:19600 },
+  { id:'stealth-l', name:'文理潛行', icon:64621, cat:'移動', desc:'進入隱身狀態，移動速度降低。', mats:'盜賊的記憶 ×1 + 斥候的記憶 ×1', price:18700 },
+  { id:'aetherial-manipulation-l', name:'文理乙太步', icon:64622, cat:'移動', desc:'瞬間移動到目標身邊。', mats:'術士的記憶 ×3', price:37500 },
+  { id:'backstep-l', name:'文理後跳', icon:64623, cat:'移動', desc:'向後跳躍10碼。', mats:'盜賊的記憶 ×1', price:11200 },
+  { id:'tranquilizer-l', name:'文理鎮定', icon:64624, cat:'輔助', desc:'暈眩目標（8秒）。', mats:'斥候的記憶 ×2 + 鬥士的記憶 ×1', price:23200 },
+  { id:'bloodbath-l', name:'文理浴血', icon:64625, cat:'防禦', desc:'攻擊傷害轉化為HP回復（45秒）。', mats:'武人的記憶 ×2 + 鬥士的記憶 ×1', price:27800 },
+  { id:'rejuvenate-l', name:'文理充能', icon:64626, cat:'回復', desc:'回復50%最大HP和MP。', mats:'祭司的記憶 ×1 + 守護者的記憶 ×1', price:37900 },
+  { id:'haymaker-l', name:'文理反攻', icon:64627, cat:'攻擊', desc:'攻擊（威力300，迴避後可使用）。', mats:'斥候的記憶 ×1 + 武人的記憶 ×1', price:17300 },
+  { id:'rapid-recast-l', name:'文理高速冷卻', icon:64628, cat:'輔助', desc:'下一個能力技回復時間縮短。', mats:'武人的記憶 ×1 + 鬥士的記憶 ×2', price:26200 },
+  { id:'cure-l', name:'文理療傷', icon:64629, cat:'回復', desc:'回復HP（回復力9000）。', mats:'祭司的記憶 ×1', price:15500 },
+  { id:'cure-l-ii', name:'文理中療傷', icon:64630, cat:'回復', desc:'回復HP（回復力12000）。', mats:'祭司的記憶 ×2', price:31000 },
+  { id:'stoneskin-l', name:'文理石膚', icon:64631, cat:'防禦', desc:'護盾吸收10%最大HP的傷害。', mats:'守護者的記憶 ×2', price:44800 },
+  { id:'cure-l-iii', name:'文理大療傷', icon:64632, cat:'回復', desc:'範圍回復HP（回復力9000）。', mats:'祭司的記憶 ×3', price:46500 },
+  { id:'regen-l', name:'文理再生', icon:64633, cat:'回復', desc:'持續回復HP（回復力2500，21秒）。', mats:'祭司的記憶 ×2 + 守護者的記憶 ×1', price:53400 },
+  { id:'esuna-l', name:'文理復原', icon:64634, cat:'回復', desc:'移除一個異常狀態。', mats:'祭司的記憶 ×1 + 術士的記憶 ×1', price:28000 },
+  { id:'incense-l', name:'文理激怒', icon:64644, cat:'輔助', desc:'獲得最高仇恨，仇恨產生量提高。', mats:'守護者的記憶 ×2 + 鬥士的記憶 ×1', price:53000 },
+  { id:'raise-l', name:'文理復活', icon:64645, cat:'回復', desc:'復活目標。', mats:'祭司的記憶 ×3', price:46500 },
+  { id:'bravery-l', name:'文理勇氣', icon:64635, cat:'回復', desc:'目標攻擊力提高10%（300秒）。', mats:'武人的記憶 ×1 + 鬥士的記憶 ×1', price:18000 },
+  { id:'solid-shield-l', name:'文理物理盾', icon:64636, cat:'防禦', desc:'物理傷害減免99%（8秒）。', mats:'守護者的記憶 ×3', price:67200 },
+  { id:'spell-shield-l', name:'文理魔法盾', icon:64637, cat:'防禦', desc:'魔法傷害減免99%（8秒）。', mats:'祭司的記憶 ×2 + 守護者的記憶 ×1', price:53400 },
+  { id:'reflect-l', name:'文理反射', icon:64646, cat:'防禦', desc:'反射魔法屏障（10秒）。', mats:'祭司的記憶 ×1 + 守護者的記憶 ×2', price:60300 },
+  { id:'smite-l', name:'文理猛擊', icon:64638, cat:'攻擊', desc:'攻擊（威力1000，HP低於50%時威力提升）。', mats:'武人的記憶 ×3', price:29400 },
+  { id:'refresh-l', name:'文理醒神', icon:64647, cat:'回復', desc:'提高以太恢復速度（30秒）。', mats:'祭司的記憶 ×2 + 術士的記憶 ×1', price:43500 },
+  { id:'banish-l', name:'文理放逐', icon:64639, cat:'攻擊', desc:'無屬性攻擊（威力200），不死系特效。', mats:'祭司的記憶 ×1 + 鬥士的記憶 ×1', price:23700 },
+  { id:'banish-l-iii', name:'文理強放逐', icon:64640, cat:'攻擊', desc:'範圍無屬性攻擊（威力150），不死系特效。', mats:'祭司的記憶 ×2 + 鬥士的記憶 ×1', price:39200 },
+  { id:'magic-burst-l', name:'文理魔法爆發', icon:64648, cat:'攻擊', desc:'魔法傷害提高100%，MP消耗提高100%。', mats:'術士的記憶 ×3', price:37500 },
+  { id:'double-edge-l', name:'文理雙刃劍', icon:64649, cat:'攻擊', desc:'物理攻擊力每層提高15%（最大5層），受傷害增加。', mats:'武人的記憶 ×3 + 鬥士的記憶 ×3', price:54000 },
+  { id:'eagle-eye-shot-l', name:'文理銳眼追擊', icon:64650, cat:'攻擊', desc:'遠程攻擊（威力80），目標HP越低威力越高。', mats:'斥候的記憶 ×3 + 武人的記憶 ×3', price:51900 },
+  { id:'perception-l', name:'文理探景', icon:64651, cat:'輔助', desc:'顯示陷阱（15碼）／偵測（30碼）。', mats:'盜賊的記憶 ×3', price:33600 },
+  { id:'wisdom-elder', name:'賢者的記憶', icon:64652, cat:'睿識', desc:'魔法攻擊力提高35%，魔法防禦力提高。', mats:'術士的記憶 ×1 + 祭司的記憶 ×1 + 英傑的記憶 ×1', price:73000 },
+  { id:'wisdom-duelist', name:'劍豪的記憶', icon:64653, cat:'睿識', desc:'物理攻擊力提高40%，最大HP降低。', mats:'鬥士的記憶 ×1 + 武人的記憶 ×1 + 英傑的記憶 ×1', price:63000 },
+  { id:'wisdom-fiendhunter', name:'弓聖的記憶', icon:64654, cat:'睿識', desc:'物理攻擊力提高25%，迴避率提高。', mats:'斥候的記憶 ×1 + 武人的記憶 ×1 + 英傑的記憶 ×1', price:62200 },
+  { id:'wisdom-indomitable', name:'豪傑的記憶', icon:64655, cat:'睿識', desc:'受到的傷害減少64%，受到的回復減少。', mats:'守護者的記憶 ×1 + 英傑的記憶 ×2', price:112400 },
+  { id:'sacrifice-l', name:'文理獻祭', icon:64656, cat:'回復', desc:'回復目標100%HP（倒下狀態可用），自己HP歸零。', mats:'殺手的記憶 ×3 + 祭司的記憶 ×3', price:112500 },
+];
+
+const catColors = {
+  '睿識': '#8b6cc5', '精神': '#4a90d9', '攻擊': '#d94444',
+  '防禦': '#4488aa', '回復': '#44aa66', '輔助': '#d9a544', '移動': '#6aaa6a',
+};
+
+// Demo unlocked
+const unlocked = new Set([0,1,4,5,10,14,18,28,31,35,38,51].map(i => skills[i].id));
+
+const grid = document.getElementById('grid');
+
+skills.forEach((skill, idx) => {
+  const isUnlocked = unlocked.has(skill.id);
+  const cell = document.createElement('div');
+  cell.className = `cell ${isUnlocked ? 'unlocked' : 'locked'}`;
+  cell.dataset.idx = idx;
+
+  const row = Math.floor(idx / 10);
+  const col = idx % 10;
+  if (row < 2) cell.classList.add('tip-below');
+  if (col < 2) cell.classList.add('tip-left');
+  if (col > 7) cell.classList.add('tip-right');
+
+  const iconUrl = `https://xivapi.com/i/064000/0${skill.icon}.png`;
+  cell.innerHTML = `
+    <img class="icon" src="${iconUrl}" alt="${skill.name}" loading="lazy">
+    <div class="tooltip">
+      <div class="t-header">
+        <img class="t-icon" src="${iconUrl}" alt="">
+        <div>
+          <div class="t-name">${skill.name}</div>
+          <div class="t-cat" style="color:${catColors[skill.cat]}">${skill.cat} #${idx+1}</div>
+        </div>
+      </div>
+      <div class="t-desc">${skill.desc}</div>
+    </div>
+  `;
+
+  cell.addEventListener('click', () => {
+    const id = skills[idx].id;
+    if (unlocked.has(id)) unlocked.delete(id); else unlocked.add(id);
+    cell.classList.toggle('unlocked');
+    cell.classList.toggle('locked');
+    updateProgress();
+    renderRecipes();
+  });
+
+  grid.appendChild(cell);
+});
+
+function updateProgress() {
+  const count = unlocked.size;
+  document.getElementById('pFill').style.width = `${(count/56)*100}%`;
+  document.getElementById('pText').textContent = `${count} / 56 已習得`;
+}
+
+function toggleRecipes() {
+  const btn = document.getElementById('recipeToggle');
+  const panel = document.getElementById('recipePanel');
+  btn.classList.toggle('open');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) renderRecipes();
+}
+
+function renderRecipes() {
+  const list = document.getElementById('recipeList');
+  list.innerHTML = '';
+  let unlearntTotal = 0;
+  let fullTotal = 0;
+
+  skills.forEach((skill, idx) => {
+    const isLearned = unlocked.has(skill.id);
+    const iconUrl = `https://xivapi.com/i/064000/0${skill.icon}.png`;
+    fullTotal += skill.price;
+    if (!isLearned) unlearntTotal += skill.price;
+
+    const item = document.createElement('div');
+    item.className = `recipe-item ${isLearned ? 'learned' : ''}`;
+    item.innerHTML = `
+      <img class="r-icon" src="${iconUrl}" alt="">
+      <div style="flex:1;min-width:0;">
+        <div class="r-name">${idx+1}. ${skill.name}</div>
+        <div class="r-mats">${skill.mats}</div>
+      </div>
+      <div class="r-price">${skill.price.toLocaleString()} Gil</div>
+    `;
+    list.appendChild(item);
+  });
+
+  document.getElementById('totalCost').textContent = `${unlearntTotal.toLocaleString()} Gil`;
+  document.getElementById('totalCount').textContent = `${56 - unlocked.size} 個技能未習得`;
+  document.getElementById('fullCost').textContent = `${fullTotal.toLocaleString()} Gil`;
+}
+
+updateProgress();
+</script>
+</body>
+</html>
