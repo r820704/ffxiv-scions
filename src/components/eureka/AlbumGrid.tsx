@@ -14,11 +14,12 @@ interface AlbumGridProps {
   mode?: 'album' | 'synthesis';
   inventory?: Record<string, number>;
   onSynthesize?: (recipe: Recipe) => void;
+  mini?: boolean;
 }
 
 const actionMap = new Map(eurekaData.logosActions.map((a) => [a.id, a]));
 
-export default function AlbumGrid({ learnedSkills, onToggle, mode = 'album', inventory = {}, onSynthesize }: AlbumGridProps) {
+export default function AlbumGrid({ learnedSkills, onToggle, mode = 'album', inventory = {}, onSynthesize, mini = false }: AlbumGridProps) {
   const orderedActions = useMemo(() => {
     return ALBUM_ORDER.map((id) => actionMap.get(id)).filter(
       (a): a is LogosAction => a !== undefined
@@ -55,7 +56,7 @@ export default function AlbumGrid({ learnedSkills, onToggle, mode = 'album', inv
   }, [onToggle, mode]);
 
   return (
-    <div className="grid grid-cols-10 gap-0.5" ref={gridRef}>
+    <div className={cn('grid grid-cols-10 gap-0.5', mini && 'w-[290px]')} ref={gridRef}>
       {orderedActions.map((action, idx) => {
         const isLearned = learnedSkills.has(action.id);
         const row = Math.floor(idx / 10);
@@ -71,6 +72,7 @@ export default function AlbumGrid({ learnedSkills, onToggle, mode = 'album', inv
               onClick={(e) => handleCellClick(action.id, e)}
               className={cn(
                 'aspect-square w-full rounded border-2 flex items-center justify-center transition-all cursor-pointer',
+                mini && 'rounded-sm border',
                 isLearned
                   ? 'border-primary-dark bg-card opacity-100'
                   : 'border-border bg-card opacity-40 hover:opacity-70 hover:border-muted-foreground'

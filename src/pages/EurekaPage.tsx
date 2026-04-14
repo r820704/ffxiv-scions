@@ -6,8 +6,10 @@ import type { Recipe } from '@/types/eureka';
 import AlbumGrid from '@/components/eureka/AlbumGrid';
 import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
+import SkillSlots from '@/components/eureka/SkillSlots';
 import { useAlbumState } from '@/hooks/useAlbumState';
-import { computeRemainingCost, synthesizeRecipe } from '@/utils/album-helpers';
+import { useSkillSlots } from '@/hooks/useSkillSlots';
+import { synthesizeRecipe, computeSlotNeeds, computeCrystalNeeds, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import { cn } from '@/lib/utils';
 
 type EurekaMode = 'album' | 'synthesis';
@@ -21,11 +23,35 @@ export default function EurekaPage() {
   const [mode, setMode] = useState<EurekaMode>('album');
 
   const { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount } = useAlbumState();
+  const { slots, setSlot } = useSkillSlots();
+  const [albumCostEnabled, setAlbumCostEnabled] = useState(true);
+  const [slotCostEnabled, setSlotCostEnabled] = useState(true);
 
-  const remainingCost = useMemo(
-    () => computeRemainingCost(learnedSkills, inventory, prices),
-    [learnedSkills, inventory, prices]
+  const slotNeeds = useMemo(
+    () => computeSlotNeeds(slots),
+    [slots]
   );
+
+  const remainingCost = useMemo(() => {
+    if (prices.length === 0) return null;
+    const priceMap = new Map(prices.map((p) => [p.itemId, p.price]));
+    const albumNeeds = albumCostEnabled ? computeCrystalNeeds(learnedSkills) : {};
+    const sNeeds = slotCostEnabled ? slotNeeds : {};
+    let total = 0;
+
+    for (const logogramId of LOGOGRAM_FIXED_ORDER) {
+      const need = (albumNeeds[logogramId] || 0) + (sNeeds[logogramId] || 0);
+      const owned = inventory[logogramId] || 0;
+      const remaining = Math.max(0, need - owned);
+      if (remaining === 0) continue;
+      const logogram = eurekaData.logograms.find((l) => l.id === logogramId);
+      if (!logogram) continue;
+      const price = priceMap.get(logogram.itemId);
+      if (price == null) return null;
+      total += remaining * price;
+    }
+    return total;
+  }, [learnedSkills, inventory, prices, slotNeeds, albumCostEnabled, slotCostEnabled]);
 
   const loadPrices = useCallback(async () => {
     setPriceLoading(true);
@@ -138,16 +164,28 @@ export default function EurekaPage() {
           {/* Grid + Crystal: side by side on desktop, stacked on mobile */}
           <div className="flex flex-col md:flex-row gap-4 items-start">
             <div className="w-full md:w-[45%] flex-shrink-0 space-y-3">
-              <AlbumGrid
-                learnedSkills={learnedSkills}
-                onToggle={toggleLearned}
-                mode={mode}
-                inventory={inventory}
-                onSynthesize={(recipe: Recipe) => {
-                  const next = synthesizeRecipe(recipe, inventory);
-                  Object.entries(next).forEach(([id, count]) => setItemCount(id, count));
-                }}
-              />
+              {/* Mini grid + Skill slots row */}
+              <div className="flex gap-3 items-start">
+                <div className="flex-shrink-0">
+                  <AlbumGrid
+                    learnedSkills={learnedSkills}
+                    onToggle={toggleLearned}
+                    mode={mode}
+                    inventory={inventory}
+                    onSynthesize={(recipe: Recipe) => {
+                      const next = synthesizeRecipe(recipe, inventory);
+                      Object.entries(next).forEach(([id, count]) => setItemCount(id, count));
+                    }}
+                    mini
+                  />
+                </div>
+                <SkillSlots
+                  slots={slots}
+                  learnedSkills={learnedSkills}
+                  onSetSlot={setSlot}
+                />
+              </div>
+              {/* 還需花費 */}
               <div className="bg-secondary rounded-lg p-3">
                 <div className="flex justify-between items-baseline">
                   <span className="text-xs text-muted-foreground">還需花費</span>
@@ -161,6 +199,9 @@ export default function EurekaPage() {
                 </div>
                 <div className="text-[10px] text-muted-foreground">
                   {56 - learnedSkills.size} 個技能未習得
+                  {slots.flat().filter(Boolean).length > 0 && (
+                    <> + {slots.flat().filter(Boolean).length} 個技能格待合成</>
+                  )}
                 </div>
               </div>
             </div>
@@ -171,6 +212,12 @@ export default function EurekaPage() {
                 onSetCount={setItemCount}
                 prices={prices}
                 priceLoading={priceLoading}
+                slotNeeds={slotNeeds}
+                albumCostEnabled={albumCostEnabled}
+                slotCostEnabled={slotCostEnabled}
+                onToggleAlbumCost={() => setAlbumCostEnabled((prev) => !prev)}
+                onToggleSlotCost={() => setSlotCostEnabled((prev) => !prev)}
+                hasSlots
               />
             </div>
           </div>
