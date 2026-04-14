@@ -1,12 +1,11 @@
 // src/components/eureka/AlbumRecipeList.tsx
 import { useState, useMemo, useCallback } from 'react';
 import { ALBUM_ORDER } from '@/data/album-order';
-import type { LogosAction, LogogramPrice, Role, Recipe } from '@/types/eureka';
+import type { LogosAction, LogogramPrice, Role } from '@/types/eureka';
 import { eurekaData } from '@/data/eureka-data';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 import LogosActionCard from './LogosActionCard';
 import { cn } from '@/lib/utils';
-import { isCraftable } from '@/utils/album-helpers';
 
 const EFFECT_TAGS: { label: string; keywords: string[] }[] = [
   { label: '攻擊力', keywords: ['攻擊力提高', '魔法攻擊力提高', '物理攻擊力提高', '威力'] },
@@ -31,15 +30,13 @@ function getActionTags(descriptionTw: string): string[] {
 
 const FILTERABLE_ROLES: Role[] = ['tank', 'healer', 'melee', 'ranged', 'caster'];
 
-type LearnedFilter = 'all' | 'unlearned' | 'learned' | 'craftable';
+type LearnedFilter = 'all' | 'unlearned' | 'learned';
 
 interface AlbumRecipeListProps {
   learnedSkills: Set<string>;
   onToggle: (skillId: string) => void;
   prices: LogogramPrice[];
   priceLoading: boolean;
-  inventory: Record<string, number>;
-  onSynthesize?: (recipe: Recipe) => void;
 }
 
 const actionMap = new Map(eurekaData.logosActions.map((a) => [a.id, a]));
@@ -49,8 +46,6 @@ export default function AlbumRecipeList({
   onToggle,
   prices,
   priceLoading,
-  inventory,
-  onSynthesize,
 }: AlbumRecipeListProps) {
   const [search, setSearch] = useState('');
   const [selectedRoles, setSelectedRoles] = useState<Set<Role>>(new Set());
@@ -81,9 +76,6 @@ export default function AlbumRecipeList({
       // Learned filter
       if (learnedFilter === 'unlearned' && learnedSkills.has(action.id)) return false;
       if (learnedFilter === 'learned' && !learnedSkills.has(action.id)) return false;
-      if (learnedFilter === 'craftable') {
-        if (!isCraftable(action, inventory)) return false;
-      }
       // Search
       if (search) {
         const q = search.toLowerCase();
@@ -94,7 +86,7 @@ export default function AlbumRecipeList({
       }
       return true;
     });
-  }, [orderedActions, search, selectedRoles, selectedTags, learnedFilter, learnedSkills, inventory]);
+  }, [orderedActions, search, selectedRoles, selectedTags, learnedFilter, learnedSkills]);
 
   const availableTags = useMemo(() => {
     const tagSet = new Set<string>();
@@ -158,7 +150,7 @@ export default function AlbumRecipeList({
 
       {/* Learned filter */}
       <div className="flex flex-wrap gap-1.5">
-        {([['all', '全部'], ['unlearned', '未習得'], ['learned', '已習得'], ['craftable', '可合成']] as const).map(([value, label]) => (
+        {([['all', '全部'], ['unlearned', '未習得'], ['learned', '已習得']] as const).map(([value, label]) => (
           <button
             key={value}
             onClick={() => setLearnedFilter(value)}
@@ -257,9 +249,6 @@ export default function AlbumRecipeList({
                     priceLoading={priceLoading}
                     isExpanded={expandedSet.has(action.id)}
                     onToggleExpand={() => toggleCardExpand(action.id)}
-                    inventory={inventory}
-                    onSynthesize={onSynthesize}
-                    learnedSkills={learnedSkills}
                   />
                 </div>
                 <button

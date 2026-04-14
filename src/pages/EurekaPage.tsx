@@ -2,12 +2,11 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { eurekaData } from '@/data/eureka-data';
 import { fetchLogogramPrices } from '@/services/universalis';
 import type { LogogramPrice } from '@/types/eureka';
-import type { Recipe } from '@/types/eureka';
 import AlbumGrid from '@/components/eureka/AlbumGrid';
 import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
 import { useAlbumState } from '@/hooks/useAlbumState';
-import { synthesizeRecipe, computeCrystalNeeds, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
+import { computeCrystalNeeds, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 
 export default function EurekaPage() {
   const [prices, setPrices] = useState<LogogramPrice[]>([]);
@@ -36,11 +35,6 @@ export default function EurekaPage() {
     }
     return total;
   }, [learnedSkills, inventory, prices]);
-
-  const handleSynthesize = useCallback((recipe: Recipe) => {
-    const next = synthesizeRecipe(recipe, inventory);
-    Object.entries(next).forEach(([id, count]) => setItemCount(id, count));
-  }, [inventory, setItemCount]);
 
   const loadPrices = useCallback(async () => {
     setPriceLoading(true);
@@ -126,11 +120,10 @@ export default function EurekaPage() {
 
           {/* Grid + Crystal: side by side on desktop, stacked on mobile */}
           <div className="flex flex-col md:flex-row gap-4 items-start">
-            <div className="w-full md:w-[45%] flex-shrink-0 space-y-3">
+            <div className="w-full md:flex-1 space-y-3">
               <AlbumGrid
                 learnedSkills={learnedSkills}
                 onToggle={toggleLearned}
-                mini
               />
               {/* 還需花費 */}
               <div className="bg-secondary rounded-lg p-3">
@@ -166,8 +159,6 @@ export default function EurekaPage() {
             onToggle={toggleLearned}
             prices={prices}
             priceLoading={priceLoading}
-            inventory={inventory}
-            onSynthesize={handleSynthesize}
           />
         </div>
       </div>
