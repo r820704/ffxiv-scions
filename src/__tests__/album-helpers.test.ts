@@ -6,10 +6,12 @@ import {
   LOGOGRAM_FIXED_ORDER,
   isCraftable,
   synthesizeRecipe,
+  computeSlotNeeds,
 } from '@/utils/album-helpers';
 import { eurekaData, getLogogramForMneme } from '@/data/eureka-data';
 import { ALBUM_ORDER } from '@/data/album-order';
 import type { LogogramPrice } from '@/types/eureka';
+import type { SkillSlotRow } from '@/hooks/useSkillSlots';
 
 describe('LOGOGRAM_FIXED_ORDER', () => {
   it('should contain all logogram IDs from eurekaData', () => {
@@ -171,5 +173,37 @@ describe('synthesizeRecipe', () => {
     const result = synthesizeRecipe(recipe, inventory);
     expect(inventory[logogram.id]).toBe(5);
     expect(result[logogram.id]).toBe(4);
+  });
+});
+
+describe('computeSlotNeeds', () => {
+  it('should return empty needs for empty slots', () => {
+    const emptySlots: SkillSlotRow[] = Array.from({ length: 6 }, () => [null, null]);
+    const needs = computeSlotNeeds(emptySlots);
+    const total = Object.values(needs).reduce((a, b) => a + b, 0);
+    expect(total).toBe(0);
+  });
+
+  it('should compute needs for filled slots', () => {
+    const slots: SkillSlotRow[] = Array.from({ length: 6 }, () => [null, null]);
+    slots[0] = ['wisdom-aetherweaver', null];
+    const needs = computeSlotNeeds(slots);
+    const total = Object.values(needs).reduce((a, b) => a + b, 0);
+    expect(total).toBeGreaterThan(0);
+  });
+
+  it('should aggregate needs from multiple slots', () => {
+    const slots1: SkillSlotRow[] = Array.from({ length: 6 }, () => [null, null]);
+    slots1[0] = ['wisdom-aetherweaver', null];
+
+    const slots2: SkillSlotRow[] = Array.from({ length: 6 }, () => [null, null]);
+    slots2[0] = ['wisdom-aetherweaver', null];
+    slots2[1] = ['wisdom-martialist', null];
+
+    const needs1 = computeSlotNeeds(slots1);
+    const needs2 = computeSlotNeeds(slots2);
+    const total1 = Object.values(needs1).reduce((a, b) => a + b, 0);
+    const total2 = Object.values(needs2).reduce((a, b) => a + b, 0);
+    expect(total2).toBeGreaterThan(total1);
   });
 });
