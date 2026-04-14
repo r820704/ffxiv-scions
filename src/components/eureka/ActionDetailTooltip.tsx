@@ -1,8 +1,10 @@
 import type { LogosAction } from '@/types/eureka';
 import { ACTION_CATEGORY_LABELS, ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
+import { cn } from '@/lib/utils';
 
 interface ActionDetailTooltipProps {
   action: LogosAction;
+  learnButton?: React.ReactNode;
 }
 
 function formatTime(value100ms: number): string {
@@ -17,7 +19,7 @@ function formatRange(range: number): string {
   return `${range}m`;
 }
 
-export default function ActionDetailTooltip({ action }: ActionDetailTooltipProps) {
+export default function ActionDetailTooltip({ action, learnButton }: ActionDetailTooltipProps) {
   return (
     <div className="w-[340px] rounded-lg border border-border bg-card shadow-xl text-left">
       {/* Header */}
@@ -75,7 +77,7 @@ export default function ActionDetailTooltip({ action }: ActionDetailTooltipProps
       </div>
 
       {/* Roles */}
-      <div className="px-3 py-2">
+      <div className={cn('px-3 py-2', learnButton && 'border-b border-border')}>
         <div className="text-[0.6rem] text-muted-foreground mb-1">適用職業</div>
         <div className="flex flex-wrap gap-1">
           {action.roles.map((role) => (
@@ -88,6 +90,12 @@ export default function ActionDetailTooltip({ action }: ActionDetailTooltipProps
           ))}
         </div>
       </div>
+
+      {learnButton && (
+        <div className="px-3 py-2">
+          {learnButton}
+        </div>
+      )}
     </div>
   );
 }
