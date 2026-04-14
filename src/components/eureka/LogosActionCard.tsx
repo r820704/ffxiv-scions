@@ -3,7 +3,6 @@ import type { LogosAction, LogogramPrice } from '@/types/eureka';
 import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
 import { calculateRecipeCost } from '@/utils/eureka-helpers';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
-import PriceDisplay from './PriceDisplay';
 import ActionDetailTooltip from './ActionDetailTooltip';
 
 interface LogosActionCardProps {
@@ -176,13 +175,22 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
                           </span>
                         </span>
                         {logogram && (
-                          <span className="text-[0.65rem] text-muted-foreground leading-tight">
-                            {logogram.nameTw}{' '}
-                            <PriceDisplay
-                              price={logogramPrice?.price ?? null}
-                              worldName={logogramPrice?.worldName ?? null}
-                              loading={priceLoading}
-                            />
+                          <span className="text-[0.65rem] text-muted-foreground leading-tight flex">
+                            <span className="shrink-0">{logogram.nameTw}</span>
+                            {priceLoading ? (
+                              <span className="inline-block h-3 w-16 bg-muted animate-pulse rounded ml-1" />
+                            ) : logogramPrice?.price != null ? (
+                              <>
+                                <span className="text-amber-400 font-medium tabular-nums min-w-[4.5rem] text-right ml-0.5">
+                                  {logogramPrice.price.toLocaleString()} gil
+                                </span>
+                                {logogramPrice.worldName && (
+                                  <span className="ml-1">@ {logogramPrice.worldName}</span>
+                                )}
+                              </>
+                            ) : (
+                              <span className="ml-1">價格未知</span>
+                            )}
                           </span>
                         )}
                       </div>
