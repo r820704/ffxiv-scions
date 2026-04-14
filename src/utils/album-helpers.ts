@@ -1,5 +1,5 @@
 // src/utils/album-helpers.ts
-import type { LogogramPrice, RecipeIngredient } from '@/types/eureka';
+import type { LogogramPrice, RecipeIngredient, LogosAction, Recipe } from '@/types/eureka';
 import { eurekaData, getLogogramForMneme } from '@/data/eureka-data';
 import { ALBUM_ORDER } from '@/data/album-order';
 
@@ -87,4 +87,41 @@ export function computeFullCost(prices: LogogramPrice[]): number | null {
   }
 
   return total;
+}
+
+/**
+ * Check if a skill can be crafted with current inventory.
+ * Returns true if at least one recipe's materials are all satisfied.
+ * Simple check — does not consider cross-skill material competition.
+ */
+export function isCraftable(
+  action: LogosAction,
+  inventory: Record<string, number>
+): boolean {
+  return action.recipes.some((recipe) =>
+    recipe.ingredients.every((ing) => {
+      const logogram = getLogogramForMneme(ing.mnemeId);
+      if (!logogram) return false;
+      const owned = inventory[logogram.id] ?? 0;
+      return owned >= ing.quantity;
+    })
+  );
+}
+
+/**
+ * Deduct recipe ingredients from inventory and return new inventory.
+ * Does NOT mutate the original inventory.
+ */
+export function synthesizeRecipe(
+  recipe: Recipe,
+  inventory: Record<string, number>
+): Record<string, number> {
+  const next = { ...inventory };
+  for (const ing of recipe.ingredients) {
+    const logogram = getLogogramForMneme(ing.mnemeId);
+    if (logogram) {
+      next[logogram.id] = (next[logogram.id] ?? 0) - ing.quantity;
+    }
+  }
+  return next;
 }

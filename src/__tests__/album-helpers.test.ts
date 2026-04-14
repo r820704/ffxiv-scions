@@ -4,8 +4,9 @@ import {
   computeCrystalNeeds,
   computeRemainingCost,
   LOGOGRAM_FIXED_ORDER,
+  isCraftable,
 } from '@/utils/album-helpers';
-import { eurekaData } from '@/data/eureka-data';
+import { eurekaData, getLogogramForMneme } from '@/data/eureka-data';
 import { ALBUM_ORDER } from '@/data/album-order';
 import type { LogogramPrice } from '@/types/eureka';
 
@@ -99,5 +100,37 @@ describe('computeRemainingCost', () => {
   it('should return null when prices unavailable', () => {
     const cost = computeRemainingCost(new Set(), {}, []);
     expect(cost).toBeNull();
+  });
+});
+
+describe('isCraftable', () => {
+  it('should return true when inventory has enough logograms for a recipe', () => {
+    const action = eurekaData.logosActions.find(a => a.id === 'wisdom-aetherweaver')!;
+    const logogram = getLogogramForMneme(action.recipes[0]!.ingredients[0]!.mnemeId)!;
+    const inventory = { [logogram.id]: 1 };
+    expect(isCraftable(action, inventory)).toBe(true);
+  });
+
+  it('should return false when inventory is empty', () => {
+    const action = eurekaData.logosActions.find(a => a.id === 'wisdom-aetherweaver')!;
+    expect(isCraftable(action, {})).toBe(false);
+  });
+
+  it('should return false when inventory has insufficient quantity', () => {
+    const action = eurekaData.logosActions.find(a => a.id === 'wisdom-aetherweaver')!;
+    const logogram = getLogogramForMneme(action.recipes[0]!.ingredients[0]!.mnemeId)!;
+    const inventory = { [logogram.id]: 0 };
+    expect(isCraftable(action, inventory)).toBe(false);
+  });
+
+  it('should return true if ANY recipe is craftable', () => {
+    const multiRecipeAction = eurekaData.logosActions.find(a => a.recipes.length > 1)!;
+    const recipe = multiRecipeAction.recipes[0]!;
+    const inventory: Record<string, number> = {};
+    for (const ing of recipe.ingredients) {
+      const logogram = getLogogramForMneme(ing.mnemeId)!;
+      inventory[logogram.id] = (inventory[logogram.id] ?? 0) + ing.quantity;
+    }
+    expect(isCraftable(multiRecipeAction, inventory)).toBe(true);
   });
 });
