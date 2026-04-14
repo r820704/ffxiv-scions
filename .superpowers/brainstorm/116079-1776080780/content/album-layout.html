@@ -1,0 +1,208 @@
+<h2>文理技能圖鑑 — 版面配置</h2>
+<p class="subtitle">選擇你偏好的圖鑑排列方式</p>
+
+<div class="cards">
+  <!-- Option A: Game-like Grid -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#12101c; border-radius:8px; padding:16px; font-family:sans-serif;">
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span style="color:#C5B69D; font-size:14px; font-weight:bold;">文理技能圖鑑</span>
+          <span style="color:#8a7e6a; font-size:12px;">12/56 已習得</span>
+        </div>
+        <!-- Progress bar -->
+        <div style="background:#252040; border-radius:4px; height:6px; margin-bottom:16px; overflow:hidden;">
+          <div style="background:linear-gradient(90deg,#A57B18,#C5B69D); width:21%; height:100%; border-radius:4px;"></div>
+        </div>
+        <!-- Grid 10 columns -->
+        <div style="display:grid; grid-template-columns:repeat(10,1fr); gap:4px;">
+          <!-- Row 1: some unlocked, some locked -->
+          <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative;">
+            <div style="width:24px;height:24px;background:#3a6a3a;border-radius:4px;"></div>
+            <span style="color:#e8e0d0;font-size:7px;margin-top:1px;">術士</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:24px;height:24px;background:#6a3a3a;border-radius:4px;"></div>
+            <span style="color:#e8e0d0;font-size:7px;margin-top:1px;">鬥士</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">3</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">4</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:24px;height:24px;background:#3a3a6a;border-radius:4px;"></div>
+            <span style="color:#e8e0d0;font-size:7px;margin-top:1px;">神官</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">6</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">7</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:24px;height:24px;background:#6a5a3a;border-radius:4px;"></div>
+            <span style="color:#e8e0d0;font-size:7px;margin-top:1px;">聖殿</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">9</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">10</span>
+          </div>
+          <!-- Row 2 -->
+          <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:24px;height:24px;background:#5a3a5a;border-radius:4px;"></div>
+            <span style="color:#e8e0d0;font-size:7px;margin-top:1px;">亡靈</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:24px;height:24px;background:#4a5a3a;border-radius:4px;"></div>
+            <span style="color:#e8e0d0;font-size:7px;margin-top:1px;">守護</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">13</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">14</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">15</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:24px;height:24px;background:#3a5a6a;border-radius:4px;"></div>
+            <span style="color:#e8e0d0;font-size:7px;margin-top:1px;">迅捷</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">17</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+            <span style="color:#8a7e6a;font-size:11px;font-weight:bold;">18</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:24px;height:24px;background:#6a4a3a;border-radius:4px;"></div>
+            <span style="color:#e8e0d0;font-size:7px;margin-top:1px;">輕功</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:24px;height:24px;background:#5a6a3a;border-radius:4px;"></div>
+            <span style="color:#e8e0d0;font-size:7px;margin-top:1px;">精靈</span>
+          </div>
+          <!-- Row 3: more locked -->
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:11px;font-weight:bold;">21</span></div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:11px;font-weight:bold;">22</span></div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:11px;font-weight:bold;">23</span></div>
+          <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:24px;height:24px;background:#4a3a6a;border-radius:4px;"></div>
+            <span style="color:#e8e0d0;font-size:7px;margin-top:1px;">潛行</span>
+          </div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:11px;font-weight:bold;">25</span></div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:11px;font-weight:bold;">26</span></div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:11px;font-weight:bold;">27</span></div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:11px;font-weight:bold;">28</span></div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:11px;font-weight:bold;">29</span></div>
+          <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:11px;font-weight:bold;">30</span></div>
+        </div>
+        <!-- Legend -->
+        <div style="display:flex; gap:16px; margin-top:12px; font-size:10px; color:#8a7e6a;">
+          <span><span style="display:inline-block;width:8px;height:8px;background:#A57B18;border-radius:2px;margin-right:4px;"></span>已習得</span>
+          <span><span style="display:inline-block;width:8px;height:8px;background:#2a2440;border-radius:2px;margin-right:4px;opacity:0.5;"></span>未習得</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. 遊戲風格網格</h3>
+      <p>仿照遊戲內的 10 欄格狀排列，已習得顯示 icon + 名稱，未習得顯示灰色編號。點擊切換習得狀態。最接近遊戲體驗。</p>
+    </div>
+  </div>
+
+  <!-- Option B: Categorized Grid -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#12101c; border-radius:8px; padding:16px; font-family:sans-serif;">
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span style="color:#C5B69D; font-size:14px; font-weight:bold;">文理技能圖鑑</span>
+          <span style="color:#8a7e6a; font-size:12px;">12/56 已習得</span>
+        </div>
+        <!-- Progress bar -->
+        <div style="background:#252040; border-radius:4px; height:6px; margin-bottom:16px; overflow:hidden;">
+          <div style="background:linear-gradient(90deg,#A57B18,#C5B69D); width:21%; height:100%; border-radius:4px;"></div>
+        </div>
+        <!-- Category: 睿識 -->
+        <div style="margin-bottom:12px;">
+          <div style="color:#C5B69D; font-size:11px; font-weight:bold; margin-bottom:6px; border-bottom:1px solid #2a2440; padding-bottom:4px;">睿識系 <span style="color:#8a7e6a; font-weight:normal;">5/14</span></div>
+          <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px;">
+            <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <div style="width:22px;height:22px;background:#3a6a3a;border-radius:4px;"></div>
+              <span style="color:#e8e0d0;font-size:6px;margin-top:1px;">術士</span>
+            </div>
+            <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <div style="width:22px;height:22px;background:#6a3a3a;border-radius:4px;"></div>
+              <span style="color:#e8e0d0;font-size:6px;margin-top:1px;">鬥士</span>
+            </div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">3</span></div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">4</span></div>
+            <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <div style="width:22px;height:22px;background:#3a3a6a;border-radius:4px;"></div>
+              <span style="color:#e8e0d0;font-size:6px;margin-top:1px;">神官</span>
+            </div>
+            <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <div style="width:22px;height:22px;background:#5a5a3a;border-radius:4px;"></div>
+              <span style="color:#e8e0d0;font-size:6px;margin-top:1px;">散兵</span>
+            </div>
+            <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <div style="width:22px;height:22px;background:#6a5a3a;border-radius:4px;"></div>
+              <span style="color:#e8e0d0;font-size:6px;margin-top:1px;">監視</span>
+            </div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">8</span></div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">9</span></div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">10</span></div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">11</span></div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">12</span></div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">13</span></div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">14</span></div>
+          </div>
+        </div>
+        <!-- Category: 攻擊 -->
+        <div style="margin-bottom:8px;">
+          <div style="color:#C5B69D; font-size:11px; font-weight:bold; margin-bottom:6px; border-bottom:1px solid #2a2440; padding-bottom:4px;">攻擊系 <span style="color:#8a7e6a; font-weight:normal;">3/11</span></div>
+          <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px;">
+            <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <div style="width:22px;height:22px;background:#6a3a3a;border-radius:4px;"></div>
+              <span style="color:#e8e0d0;font-size:6px;margin-top:1px;">即死</span>
+            </div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">2</span></div>
+            <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <div style="width:22px;height:22px;background:#5a3a5a;border-radius:4px;"></div>
+              <span style="color:#e8e0d0;font-size:6px;margin-top:1px;">麻痺</span>
+            </div>
+            <div style="background:#1a1528; border:1px solid #A57B18; border-radius:4px; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <div style="width:22px;height:22px;background:#4a5a3a;border-radius:4px;"></div>
+              <span style="color:#e8e0d0;font-size:6px;margin-top:1px;">大麻痺</span>
+            </div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">5</span></div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">6</span></div>
+            <div style="background:#1a1528; border:1px solid #2a2440; border-radius:4px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; opacity:0.5;"><span style="color:#8a7e6a;font-size:10px;">7</span></div>
+          </div>
+        </div>
+        <div style="color:#8a7e6a; font-size:9px; font-style:italic; margin-top:8px;">...更多分類（防禦、回復、輔助、移動）</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. 分類網格</h3>
+      <p>按技能分類（睿識、攻擊、防禦、回復、輔助、移動）分組，每組獨立顯示進度。更容易找到特定類型的技能，但不完全還原遊戲排列。</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3>兩者共同特點</h3>
+  <ul>
+    <li>點擊格子 → 切換已習得/未習得狀態</li>
+    <li>習得狀態存 localStorage</li>
+    <li>進度條顯示 X/56</li>
+    <li>已習得：顯示技能 icon + 簡稱</li>
+    <li>未習得：灰色半透明 + 編號</li>
+  </ul>
+</div>

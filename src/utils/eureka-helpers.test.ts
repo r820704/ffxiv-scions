@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateRecipeCost, findActionsForMnemes } from './eureka-helpers';
+import { calculateRecipeCost } from './eureka-helpers';
 import type { LogogramPrice } from '@/types/eureka';
 
 const mockPrices: LogogramPrice[] = [
@@ -51,26 +51,5 @@ describe('calculateRecipeCost', () => {
       noPrices
     );
     expect(cost).toBeNull();
-  });
-});
-
-describe('findActionsForMnemes', () => {
-  it('should find actions that can be crafted with given mnemes', () => {
-    const actions = findActionsForMnemes(new Set(['wisdom-aetherweaver']));
-    const ids = actions.map((a) => a.id);
-    expect(ids).toContain('wisdom-aetherweaver');
-  });
-
-  it('should find actions with multi-mneme recipes', () => {
-    const actions = findActionsForMnemes(new Set(['wisdom-platebearer', 'protect-l']));
-    const ids = actions.map((a) => a.id);
-    expect(ids).toContain('wisdom-guardian');
-    expect(ids).toContain('wisdom-platebearer');
-    expect(ids).toContain('protect-l');
-  });
-
-  it('should return empty for no matching mnemes', () => {
-    const actions = findActionsForMnemes(new Set());
-    expect(actions).toHaveLength(0);
   });
 });

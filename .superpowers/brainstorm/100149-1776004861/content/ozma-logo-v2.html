@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ozma Logo - SVG Version</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #12101c; color: #e8e0d0; font-family: 'Noto Sans TC', sans-serif; padding: 24px; }
+  h1 { text-align: center; font-size: 1.3rem; color: #C5B69D; font-family: 'LXGW WenKai', serif; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: #6a5e4a; font-size: 0.8rem; margin-bottom: 32px; }
+  .section-label { font-size: 0.75rem; color: #8a7e6a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; text-align: center; }
+
+  .showcase { display: flex; flex-direction: column; align-items: center; gap: 32px; max-width: 800px; margin: 0 auto; }
+
+  /* Forms row */
+  .forms-row { display: flex; gap: 40px; justify-content: center; align-items: center; }
+  .form-item { text-align: center; }
+  .form-item .label { font-size: 0.7rem; color: #6a5e4a; margin-top: 8px; }
+
+  /* Ozma SVG container */
+  .ozma-wrap { position: relative; display: inline-block; }
+  .ozma-svg { overflow: visible; }
+
+  /* Animated container */
+  .anim-box { padding: 32px; background: #1a1528; border-radius: 12px; border: 1px solid #2a2440; width: 100%; text-align: center; }
+
+  /* NavBar */
+  .navbar-demo { width: 100%; background: linear-gradient(180deg, #1a1528, #161220); border: 1px solid #2a2440; border-radius: 10px; padding: 0 20px; height: 52px; display: flex; align-items: center; gap: 10px; position: relative; overflow: hidden; }
+  .navbar-demo::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent 0%, #C5B69D40 50%, transparent 100%); }
+  .nav-logo-text { font-family: 'LXGW WenKai', serif; font-size: 1rem; font-weight: 700; color: #C5B69D; }
+  .nav-link { padding: 6px 14px; font-size: 0.82rem; color: #8a7e6a; border-radius: 6px; margin-left: 8px; }
+  .nav-link.active { color: #C5B69D; background: #252040; }
+
+  /* Hero */
+  .hero-demo { text-align: center; padding: 40px 20px; background: #12101c; border: 1px solid #2a2440; border-radius: 10px; width: 100%; }
+  .hero-title { font-family: 'LXGW WenKai', serif; font-size: 1.6rem; color: #C5B69D; margin-top: 16px; }
+  .hero-sub { font-size: 0.85rem; color: #8a7e6a; margin-top: 4px; }
+
+  .note { font-size: 0.72rem; color: #6a5e4a; line-height: 1.6; padding: 12px; background: #1a1528; border-radius: 6px; border-left: 3px solid #C5B69D; width: 100%; max-width: 600px; }
+
+  /* Morph animation keyframes */
+  @keyframes halo-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes halo-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.9; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  @keyframes glow-pulse {
+    0%, 100% { filter: drop-shadow(0 0 6px rgba(120,140,255,0.3)); }
+    50% { filter: drop-shadow(0 0 14px rgba(120,140,255,0.5)); }
+  }
+
+  .float-anim { animation: float 3s ease-in-out infinite; }
+  .glow-anim { animation: glow-pulse 2s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<h1>奧茲瑪 Logo — 精細版</h1>
+<p class="subtitle">SVG + CSS 動畫，三種型態平滑變形循環</p>
+
+<div class="showcase">
+
+  <!-- Three static forms -->
+  <div>
+    <div class="section-label">三種型態</div>
+    <div class="forms-row">
+      <div class="form-item">
+        <svg width="80" height="80" viewBox="0 0 100 100" class="ozma-svg">
+          <defs>
+            <linearGradient id="cube-face-top" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#B0D8FF" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#6090D0" stop-opacity="0.7"/>
+            </linearGradient>
+            <linearGradient id="cube-face-left" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#80B0E0" stop-opacity="0.7"/>
+              <stop offset="100%" stop-color="#405880" stop-opacity="0.8"/>
+            </linearGradient>
+            <linearGradient id="cube-face-right" x1="1" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#90C0E8" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#3A5078" stop-opacity="0.7"/>
+            </linearGradient>
+            <filter id="cube-glow">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Halo -->
+          <ellipse cx="50" cy="52" rx="38" ry="8" fill="none" stroke="url(#halo-grad-s1)" stroke-width="2" opacity="0.6"/>
+          <!-- Cube (tilted) -->
+          <g filter="url(#cube-glow)">
+            <polygon points="50,20 80,38 50,55 20,38" fill="url(#cube-face-top)" stroke="#6888C0" stroke-width="0.5"/>
+            <polygon points="20,38 50,55 50,80 20,62" fill="url(#cube-face-left)" stroke="#5070A0" stroke-width="0.5"/>
+            <polygon points="80,38 50,55 50,80 80,62" fill="url(#cube-face-right)" stroke="#5070A0" stroke-width="0.5"/>
+          </g>
+          <!-- Inner reflection -->
+          <polygon points="35,42 50,50 50,65 35,56" fill="#90D0D8" opacity="0.15"/>
+          <!-- Highlight -->
+          <polygon points="50,22 65,32 50,40 35,32" fill="#D0EEFF" opacity="0.3"/>
+        </svg>
+        <div class="label">立方體</div>
+      </div>
+      <div class="form-item" style="font-size:1.5rem;color:#3a3252;">→</div>
+      <div class="form-item">
+        <svg width="80" height="80" viewBox="0 0 100 100" class="ozma-svg">
+          <defs>
+            <linearGradient id="pyr-left" x1="0" y1="0" x2="0.5" y2="1">
+              <stop offset="0%" stop-color="#A0C8F0" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#3A5880" stop-opacity="0.7"/>
+            </linearGradient>
+            <linearGradient id="pyr-right" x1="1" y1="0" x2="0.5" y2="1">
+              <stop offset="0%" stop-color="#80A8D0" stop-opacity="0.7"/>
+              <stop offset="100%" stop-color="#2A4060" stop-opacity="0.8"/>
+            </linearGradient>
+            <filter id="pyr-glow">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <ellipse cx="50" cy="38" rx="38" ry="8" fill="none" stroke="#7090D0" stroke-width="2" opacity="0.5"/>
+          <g filter="url(#pyr-glow)">
+            <!-- Top face -->
+            <polygon points="20,30 80,30 50,42" fill="#B0D8FF" fill-opacity="0.6" stroke="#6888C0" stroke-width="0.5"/>
+            <!-- Left face -->
+            <polygon points="20,30 50,42 50,85" fill="url(#pyr-left)" stroke="#5070A0" stroke-width="0.5"/>
+            <!-- Right face -->
+            <polygon points="80,30 50,42 50,85" fill="url(#pyr-right)" stroke="#5070A0" stroke-width="0.5"/>
+          </g>
+          <polygon points="30,34 50,42 50,65" fill="#90D0D8" opacity="0.12"/>
+          <polygon points="25,30 75,30 50,38" fill="#D0EEFF" opacity="0.3"/>
+        </svg>
+        <div class="label">倒金字塔</div>
+      </div>
+      <div class="form-item" style="font-size:1.5rem;color:#3a3252;">→</div>
+      <div class="form-item">
+        <svg width="80" height="80" viewBox="0 0 100 100" class="ozma-svg">
+          <defs>
+            <radialGradient id="sphere-grad" cx="40%" cy="35%" r="55%">
+              <stop offset="0%" stop-color="#C0E0FF" stop-opacity="0.9"/>
+              <stop offset="40%" stop-color="#6098D8" stop-opacity="0.7"/>
+              <stop offset="100%" stop-color="#2A4870" stop-opacity="0.8"/>
+            </radialGradient>
+            <filter id="sphere-glow">
+              <feGaussianBlur stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <ellipse cx="50" cy="52" rx="38" ry="8" fill="none" stroke="#7090D0" stroke-width="2" opacity="0.5"/>
+          <g filter="url(#sphere-glow)">
+            <circle cx="50" cy="50" r="28" fill="url(#sphere-grad)" stroke="#5078B0" stroke-width="0.5"/>
+          </g>
+          <!-- Equator line -->
+          <ellipse cx="50" cy="52" rx="27" ry="6" fill="none" stroke="#80A8E0" stroke-width="1" opacity="0.3"/>
+          <!-- Swirl hints -->
+          <path d="M35,40 Q45,35 55,42 Q60,48 50,55 Q40,58 38,50" fill="none" stroke="#B0D8FF" stroke-width="1.5" opacity="0.2"/>
+          <path d="M60,38 Q65,45 58,55 Q52,60 48,52" fill="none" stroke="#80B0E0" stroke-width="1" opacity="0.15"/>
+          <!-- Highlight -->
+          <circle cx="42" cy="40" r="6" fill="#D8F0FF" opacity="0.3"/>
+          <circle cx="40" cy="38" r="3" fill="#FFFFFF" opacity="0.25"/>
+        </svg>
+        <div class="label">球體</div>
+      </div>
+      <div class="form-item" style="font-size:1.5rem;color:#3a3252;">↩</div>
+    </div>
+  </div>
+
+  <!-- Animated large -->
+  <div class="anim-box">
+    <div class="section-label">動畫效果（自動循環）</div>
+    <div style="display:inline-block;margin:16px 0;" class="float-anim glow-anim">
+      <svg id="ozma-anim" width="120" height="120" viewBox="0 0 100 100" class="ozma-svg">
+        <defs>
+          <linearGradient id="a-cube-top" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#B0D8FF" stop-opacity="0.9"/><stop offset="100%" stop-color="#6090D0" stop-opacity="0.7"/></linearGradient>
+          <linearGradient id="a-cube-left" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#80B0E0" stop-opacity="0.7"/><stop offset="100%" stop-color="#405880" stop-opacity="0.8"/></linearGradient>
+          <linearGradient id="a-cube-right" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#90C0E8" stop-opacity="0.6"/><stop offset="100%" stop-color="#3A5078" stop-opacity="0.7"/></linearGradient>
+          <radialGradient id="a-sphere" cx="40%" cy="35%" r="55%"><stop offset="0%" stop-color="#C0E0FF" stop-opacity="0.9"/><stop offset="40%" stop-color="#6098D8" stop-opacity="0.7"/><stop offset="100%" stop-color="#2A4870" stop-opacity="0.8"/></radialGradient>
+          <linearGradient id="halo-grad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#8080FF" stop-opacity="0"/><stop offset="30%" stop-color="#9090FF" stop-opacity="0.8"/><stop offset="50%" stop-color="#B0B0FF" stop-opacity="1"/><stop offset="70%" stop-color="#9090FF" stop-opacity="0.8"/><stop offset="100%" stop-color="#8080FF" stop-opacity="0"/></linearGradient>
+          <filter id="a-glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="halo-blur"><feGaussianBlur stdDeviation="1.5"/></filter>
+        </defs>
+
+        <!-- Halo (always visible) -->
+        <g id="halo-group" style="animation: halo-pulse 2s ease-in-out infinite;">
+          <ellipse cx="50" cy="50" rx="40" ry="9" fill="none" stroke="url(#halo-grad)" stroke-width="2.5" filter="url(#halo-blur)"/>
+          <!-- Halo bright spots -->
+          <circle cx="12" cy="50" r="3" fill="#B0B8FF" opacity="0.6" filter="url(#halo-blur)"/>
+          <circle cx="88" cy="50" r="3" fill="#B0B8FF" opacity="0.6" filter="url(#halo-blur)"/>
+        </g>
+
+        <!-- Morphing shape -->
+        <g id="shape-group" filter="url(#a-glow)">
+          <!-- Cube faces (initial state) -->
+          <polygon id="face1" fill="url(#a-cube-top)" stroke="#6888C0" stroke-width="0.5"/>
+          <polygon id="face2" fill="url(#a-cube-left)" stroke="#5070A0" stroke-width="0.5"/>
+          <polygon id="face3" fill="url(#a-cube-right)" stroke="#5070A0" stroke-width="0.5"/>
+        </g>
+
+        <!-- Highlight overlay -->
+        <circle id="highlight" cx="42" cy="38" r="0" fill="#D8F0FF" opacity="0"/>
+      </svg>
+    </div>
+    <div style="font-size:0.75rem;color:#8a7e6a;" id="anim-label">立方體</div>
+  </div>
+
+  <!-- NavBar -->
+  <div style="width:100%;">
+    <div class="section-label">NavBar 中的效果</div>
+    <div class="navbar-demo">
+      <div style="display:inline-block;" class="float-anim">
+        <svg id="ozma-nav" width="28" height="28" viewBox="0 0 100 100" class="ozma-svg">
+          <defs>
+            <linearGradient id="n-halo" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#8080FF" stop-opacity="0"/><stop offset="50%" stop-color="#A0A0FF" stop-opacity="0.7"/><stop offset="100%" stop-color="#8080FF" stop-opacity="0"/></linearGradient>
+            <filter id="n-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <ellipse cx="50" cy="50" rx="40" ry="9" fill="none" stroke="url(#n-halo)" stroke-width="3" opacity="0.5"/>
+          <g filter="url(#n-glow)">
+            <polygon id="nav-face1" fill="#80B0E0" fill-opacity="0.8" stroke="#6888C0" stroke-width="1"/>
+            <polygon id="nav-face2" fill="#5080B8" fill-opacity="0.7" stroke="#5070A0" stroke-width="1"/>
+            <polygon id="nav-face3" fill="#6098D0" fill-opacity="0.6" stroke="#5070A0" stroke-width="1"/>
+          </g>
+        </svg>
+      </div>
+      <span class="nav-logo-text">FFXIV 工具箱</span>
+      <span class="nav-link active">天氣查詢</span>
+      <span class="nav-link">文理技能</span>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div style="width:100%;">
+    <div class="section-label">首頁 Hero</div>
+    <div class="hero-demo">
+      <div style="display:inline-block;" class="float-anim glow-anim">
+        <svg id="ozma-hero" width="88" height="88" viewBox="0 0 100 100" class="ozma-svg">
+          <defs>
+            <linearGradient id="h-halo" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#8080FF" stop-opacity="0"/><stop offset="30%" stop-color="#9090FF" stop-opacity="0.7"/><stop offset="50%" stop-color="#B0B0FF" stop-opacity="1"/><stop offset="70%" stop-color="#9090FF" stop-opacity="0.7"/><stop offset="100%" stop-color="#8080FF" stop-opacity="0"/></linearGradient>
+            <filter id="h-glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="h-halo-blur"><feGaussianBlur stdDeviation="1.5"/></filter>
+          </defs>
+          <g style="animation: halo-pulse 2s ease-in-out infinite;">
+            <ellipse cx="50" cy="50" rx="40" ry="9" fill="none" stroke="url(#h-halo)" stroke-width="2.5" filter="url(#h-halo-blur)"/>
+            <circle cx="12" cy="50" r="3" fill="#B0B8FF" opacity="0.5" filter="url(#h-halo-blur)"/>
+            <circle cx="88" cy="50" r="3" fill="#B0B8FF" opacity="0.5" filter="url(#h-halo-blur)"/>
+          </g>
+          <g filter="url(#h-glow)">
+            <polygon id="hero-face1" fill="#A0C8F0" fill-opacity="0.8" stroke="#6888C0" stroke-width="0.5"/>
+            <polygon id="hero-face2" fill="#6090C0" fill-opacity="0.7" stroke="#5070A0" stroke-width="0.5"/>
+            <polygon id="hero-face3" fill="#7AA8D8" fill-opacity="0.6" stroke="#5070A0" stroke-width="0.5"/>
+          </g>
+        </svg>
+      </div>
+      <div class="hero-title">FFXIV 工具箱</div>
+      <div class="hero-sub">Final Fantasy XIV 繁中伺服器玩家工具</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong style="color:#C5B69D;">精細版設計重點：</strong><br>
+    • SVG 繪製，任何尺寸都銳利清晰<br>
+    • 半透明漸層模擬水晶質感<br>
+    • 三面 polygon 平滑 morph 變形（立方體 → 倒金字塔 → 球體）<br>
+    • 藍紫光環持續脈動 + 兩端亮點<br>
+    • 整體帶有微浮動動畫（float）<br>
+    • 比像素版更能表現奧茲瑪的透明水晶感
+  </div>
+</div>
+
+<script>
+// Shape definitions as polygon points
+// Cube (tilted isometric)
+const CUBE = {
+  face1: '50,18 82,36 50,54 18,36',   // top
+  face2: '18,36 50,54 50,82 18,64',     // left
+  face3: '82,36 50,54 50,82 82,64',     // right
+};
+
+// Inverted pyramid
+const PYRAMID = {
+  face1: '18,25 82,25 50,40',           // top
+  face2: '18,25 50,40 50,85',           // left
+  face3: '82,25 50,40 50,85',           // right
+};
+
+// Sphere (approximated with polygon vertices)
+// We'll use many-point polygons to approximate curves
+function circlePoints(cx, cy, r, startAngle, endAngle, n) {
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const a = startAngle + (endAngle - startAngle) * (i / n);
+    pts.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`);
+  }
+  return pts;
+}
+
+const SPHERE = (() => {
+  const cx = 50, cy = 50, r = 30;
+  // Top hemisphere as face1
+  const topArc = circlePoints(cx, cy, r, Math.PI, 0, 16);
+  const face1 = topArc.join(' ');
+  // Bottom-left quarter
+  const blArc = circlePoints(cx, cy, r, 0, Math.PI/2, 8);
+  blArc.push(`${cx},${cy}`);
+  const face2 = blArc.join(' ');
+  // Bottom-right quarter
+  const brArc = circlePoints(cx, cy, r, Math.PI/2, Math.PI, 8);
+  brArc.push(`${cx},${cy}`);
+  const face3 = brArc.join(' ');
+  return { face1, face2, face3 };
+})();
+
+const shapes = [CUBE, PYRAMID, SPHERE];
+const labels = ['立方體', '倒金字塔', '球體'];
+
+// Interpolate polygon points
+function parsePoints(str) {
+  return str.split(/\s+/).map(p => {
+    const [x, y] = p.split(',').map(Number);
+    return { x, y };
+  });
+}
+
+function interpolatePolygons(from, to, t) {
+  const fromPts = parsePoints(from);
+  const toPts = parsePoints(to);
+
+  // Resample to same number of points
+  const maxLen = Math.max(fromPts.length, toPts.length);
+  const resampleFrom = resample(fromPts, maxLen);
+  const resampleTo = resample(toPts, maxLen);
+
+  return resampleFrom.map((fp, i) => {
+    const tp = resampleTo[i];
+    const x = fp.x + (tp.x - fp.x) * t;
+    const y = fp.y + (tp.y - fp.y) * t;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+}
+
+function resample(pts, n) {
+  if (pts.length === n) return pts;
+  const result = [];
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1) * (pts.length - 1);
+    const idx = Math.floor(t);
+    const frac = t - idx;
+    if (idx >= pts.length - 1) {
+      result.push(pts[pts.length - 1]);
+    } else {
+      result.push({
+        x: pts[idx].x + (pts[idx + 1].x - pts[idx].x) * frac,
+        y: pts[idx].y + (pts[idx + 1].y - pts[idx].y) * frac,
+      });
+    }
+  }
+  return result;
+}
+
+// Easing function
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+// Animation state
+let currentShape = 0;
+let startTime = performance.now();
+const HOLD_MS = 2500;
+const MORPH_MS = 800;
+const CYCLE_MS = HOLD_MS + MORPH_MS;
+
+function updateShapes(time) {
+  const elapsed = (time - startTime) % (CYCLE_MS * 3);
+  const cycleIndex = Math.floor(elapsed / CYCLE_MS);
+  const posInCycle = elapsed - cycleIndex * CYCLE_MS;
+
+  const fromIdx = cycleIndex % 3;
+  const toIdx = (cycleIndex + 1) % 3;
+  const from = shapes[fromIdx];
+  const to = shapes[toIdx];
+
+  let face1Pts, face2Pts, face3Pts;
+  let labelText;
+
+  if (posInCycle < HOLD_MS) {
+    // Hold
+    face1Pts = from.face1;
+    face2Pts = from.face2;
+    face3Pts = from.face3;
+    labelText = labels[fromIdx];
+  } else {
+    // Morph
+    const rawT = (posInCycle - HOLD_MS) / MORPH_MS;
+    const t = easeInOutCubic(rawT);
+    face1Pts = interpolatePolygons(from.face1, to.face1, t);
+    face2Pts = interpolatePolygons(from.face2, to.face2, t);
+    face3Pts = interpolatePolygons(from.face3, to.face3, t);
+    labelText = rawT > 0.5 ? labels[toIdx] : labels[fromIdx];
+  }
+
+  // Update all SVG instances
+  ['', 'nav-', 'hero-'].forEach(prefix => {
+    const f1 = document.getElementById(`${prefix}face1`);
+    const f2 = document.getElementById(`${prefix}face2`);
+    const f3 = document.getElementById(`${prefix}face3`);
+    if (f1) f1.setAttribute('points', face1Pts);
+    if (f2) f2.setAttribute('points', face2Pts);
+    if (f3) f3.setAttribute('points', face3Pts);
+  });
+
+  document.getElementById('anim-label').textContent = labelText;
+
+  // Highlight for sphere form
+  const hl = document.getElementById('highlight');
+  if (hl) {
+    if (posInCycle >= HOLD_MS && fromIdx === 1) {
+      const t = easeInOutCubic((posInCycle - HOLD_MS) / MORPH_MS);
+      hl.setAttribute('r', (8 * t).toFixed(1));
+      hl.setAttribute('opacity', (0.25 * t).toFixed(2));
+    } else if (fromIdx === 2 && posInCycle < HOLD_MS) {
+      hl.setAttribute('r', '8');
+      hl.setAttribute('opacity', '0.25');
+    } else if (fromIdx === 2 && posInCycle >= HOLD_MS) {
+      const t = 1 - easeInOutCubic((posInCycle - HOLD_MS) / MORPH_MS);
+      hl.setAttribute('r', (8 * t).toFixed(1));
+      hl.setAttribute('opacity', (0.25 * t).toFixed(2));
+    } else {
+      hl.setAttribute('r', '0');
+      hl.setAttribute('opacity', '0');
+    }
+  }
+
+  requestAnimationFrame(updateShapes);
+}
+
+// Initialize
+['', 'nav-', 'hero-'].forEach(prefix => {
+  const f1 = document.getElementById(`${prefix}face1`);
+  const f2 = document.getElementById(`${prefix}face2`);
+  const f3 = document.getElementById(`${prefix}face3`);
+  if (f1) f1.setAttribute('points', CUBE.face1);
+  if (f2) f2.setAttribute('points', CUBE.face2);
+  if (f3) f3.setAttribute('points', CUBE.face3);
+});
+
+requestAnimationFrame(updateShapes);
+</script>
+
+</body>
+</html>

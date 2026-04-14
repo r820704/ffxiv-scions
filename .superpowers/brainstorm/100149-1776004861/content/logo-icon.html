@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo Icon Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #12101c; color: #e8e0d0; font-family: 'Noto Sans TC', sans-serif; padding: 24px; }
+  h1 { text-align: center; font-size: 1.3rem; color: #C5B69D; font-family: 'LXGW WenKai', serif; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: #6a5e4a; font-size: 0.8rem; margin-bottom: 28px; }
+
+  .icon-showcase { display: flex; flex-direction: column; gap: 24px; max-width: 700px; margin: 0 auto; }
+
+  .icon-row { display: flex; justify-content: center; gap: 32px; align-items: flex-end; margin-bottom: 16px; }
+  .icon-item { text-align: center; }
+  .icon-item .label { font-size: 0.65rem; color: #6a5e4a; margin-top: 6px; }
+
+  canvas { image-rendering: pixelated; border-radius: 4px; }
+
+  /* Navbar preview */
+  .navbar-preview { background: linear-gradient(180deg, #1a1528, #161220); border: 1px solid #2a2440; border-radius: 10px; padding: 0 20px; height: 52px; display: flex; align-items: center; gap: 10px; position: relative; overflow: hidden; }
+  .navbar-preview::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent 0%, #C5B69D40 50%, transparent 100%); }
+  .nav-logo-text { font-family: 'LXGW WenKai', serif; font-size: 1rem; font-weight: 700; color: #C5B69D; }
+  .nav-link { padding: 6px 14px; font-size: 0.82rem; color: #8a7e6a; border-radius: 6px; margin-left: 12px; }
+  .nav-link.active { color: #C5B69D; background: #252040; }
+
+  .section-label { font-size: 0.75rem; color: #8a7e6a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .note { font-size: 0.72rem; color: #6a5e4a; line-height: 1.5; padding: 10px; background: #1a1528; border-radius: 6px; border-left: 3px solid #C5B69D; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<h1>Logo Icon 設計</h1>
+<p class="subtitle">以 FFXIV 水晶/碎晶為原型的像素風 Logo</p>
+
+<div class="icon-showcase">
+
+  <!-- Icon variations at different sizes -->
+  <div>
+    <div class="section-label">Icon 變體（不同尺寸）</div>
+    <div class="icon-row">
+      <div class="icon-item">
+        <canvas id="icon-64" width="16" height="16" style="width:64px;height:64px;"></canvas>
+        <div class="label">64px（大圖）</div>
+      </div>
+      <div class="icon-item">
+        <canvas id="icon-48" width="16" height="16" style="width:48px;height:48px;"></canvas>
+        <div class="label">48px</div>
+      </div>
+      <div class="icon-item">
+        <canvas id="icon-32" width="16" height="16" style="width:32px;height:32px;"></canvas>
+        <div class="label">32px</div>
+      </div>
+      <div class="icon-item">
+        <canvas id="icon-24" width="16" height="16" style="width:24px;height:24px;"></canvas>
+        <div class="label">24px（NavBar）</div>
+      </div>
+      <div class="icon-item">
+        <canvas id="icon-16" width="16" height="16" style="width:16px;height:16px;"></canvas>
+        <div class="label">16px（favicon）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Color variations -->
+  <div>
+    <div class="section-label">配色變體</div>
+    <div class="icon-row">
+      <div class="icon-item">
+        <canvas id="icon-gold" width="16" height="16" style="width:56px;height:56px;"></canvas>
+        <div class="label">金色（主要）</div>
+      </div>
+      <div class="icon-item">
+        <canvas id="icon-blue" width="16" height="16" style="width:56px;height:56px;"></canvas>
+        <div class="label">藍色（天氣頁）</div>
+      </div>
+      <div class="icon-item">
+        <canvas id="icon-purple" width="16" height="16" style="width:56px;height:56px;"></canvas>
+        <div class="label">紫色（Eureka 頁）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- In NavBar context -->
+  <div>
+    <div class="section-label">NavBar 中的效果</div>
+    <div class="navbar-preview">
+      <canvas id="icon-nav" width="16" height="16" style="width:24px;height:24px;"></canvas>
+      <span class="nav-logo-text">FFXIV 工具箱</span>
+      <span class="nav-link active">天氣查詢</span>
+      <span class="nav-link">文理技能</span>
+    </div>
+  </div>
+
+  <!-- On dark card -->
+  <div>
+    <div class="section-label">首頁 Hero 大圖效果</div>
+    <div style="text-align:center; padding: 32px; background: #12101c; border: 1px solid #2a2440; border-radius: 10px;">
+      <canvas id="icon-hero" width="16" height="16" style="width:72px;height:72px; filter: drop-shadow(0 0 12px rgba(197,182,157,0.3));"></canvas>
+      <div style="font-family:'LXGW WenKai',serif; font-size:1.6rem; color:#C5B69D; margin-top:12px;">FFXIV 工具箱</div>
+      <div style="font-size:0.85rem; color:#8a7e6a; margin-top:4px;">Final Fantasy XIV 繁中伺服器玩家工具</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong style="color:#C5B69D;">設計說明：</strong><br>
+    • 以 FFXIV 碎晶（logogram）icon 為原型，簡化成像素風水晶造型<br>
+    • 水晶主體用金色漸層，外框用深色邊線增加辨識度<br>
+    • 內部有菱形高光，呼應遊戲中水晶的光澤感<br>
+    • 可依頁面切換配色（金/藍/紫），但主色維持金色<br>
+    • 16×16 像素畫布，放大後保持銳利的像素邊緣
+  </div>
+</div>
+
+<script>
+function drawCrystalIcon(canvasId, colors) {
+  const c = document.getElementById(canvasId);
+  if (!c) return;
+  const ctx = c.getContext('2d');
+
+  // Clear with transparent
+  ctx.clearRect(0, 0, 16, 16);
+
+  const { border, dark, mid, light, highlight, bg } = colors;
+
+  function px(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, 1, 1);
+  }
+
+  // Background frame (rounded square border)
+  // Top border
+  [4,5,6,7,8,9,10,11].forEach(x => px(x, 1, border));
+  // Bottom border
+  [4,5,6,7,8,9,10,11].forEach(x => px(x, 14, border));
+  // Left border
+  [2,3,4,5,6,7,8,9,10,11,12,13].forEach(y => px(3, y, border));
+  // Right border
+  [2,3,4,5,6,7,8,9,10,11,12,13].forEach(y => px(12, y, border));
+  // Corners
+  px(3, 1, border); px(12, 1, border);
+  px(3, 14, border); px(12, 14, border);
+
+  // Fill background inside frame
+  for (let y = 2; y <= 13; y++) {
+    for (let x = 4; x <= 11; x++) {
+      px(x, y, bg);
+    }
+  }
+  // Corner fills
+  [4,5,6,7,8,9,10,11].forEach(x => { px(x, 1, border); });
+
+  // Crystal body - hexagonal/diamond shape
+  // Top point
+  [7,8].forEach(x => px(x, 3, light));
+
+  // Upper widening
+  [6,7,8,9].forEach(x => px(x, 4, light));
+  [5,6,9,10].forEach(x => px(x, 4, mid));
+
+  [5,6,7,8,9,10].forEach(x => px(x, 5, mid));
+  px(6, 5, light); px(7, 5, light);
+
+  [5,6,7,8,9,10].forEach(x => px(x, 6, mid));
+  px(6, 6, light); px(7, 6, highlight);
+
+  // Middle section (widest)
+  [5,6,7,8,9,10].forEach(x => px(x, 7, mid));
+  px(7, 7, highlight); px(8, 7, light);
+
+  [5,6,7,8,9,10].forEach(x => px(x, 8, mid));
+  px(6, 8, light);
+
+  // Lower narrowing
+  [5,6,7,8,9,10].forEach(x => px(x, 9, dark));
+  px(6, 9, mid);
+
+  [6,7,8,9].forEach(x => px(x, 10, dark));
+
+  [6,7,8,9].forEach(x => px(x, 11, dark));
+
+  // Bottom point
+  [7,8].forEach(x => px(x, 12, dark));
+
+  // Crystal outline
+  px(7, 2, border); px(8, 2, border);
+  px(6, 3, border); px(9, 3, border);
+  px(4, 4, border); px(11, 4, border);
+  px(4, 5, border); px(11, 5, border);
+  px(4, 6, border); px(11, 6, border);
+  px(4, 7, border); px(11, 7, border);
+  px(4, 8, border); px(11, 8, border);
+  px(4, 9, border); px(11, 9, border);
+  px(5, 10, border); px(10, 10, border);
+  px(5, 11, border); px(10, 11, border);
+  px(6, 12, border); px(9, 12, border);
+  px(7, 13, border); px(8, 13, border);
+
+  // Inner facet lines (crystal structure)
+  px(7, 5, highlight);
+  px(8, 6, light);
+  px(7, 8, light);
+  px(8, 9, mid);
+}
+
+const goldColors = {
+  border: '#2a2040',
+  bg: '#1a1528',
+  dark: '#8B6914',
+  mid: '#C5A030',
+  light: '#D4B860',
+  highlight: '#F0E0A0'
+};
+
+const blueColors = {
+  border: '#1a2040',
+  bg: '#141828',
+  dark: '#2A60A0',
+  mid: '#4A9BD9',
+  light: '#6ABCF0',
+  highlight: '#A0E0FF'
+};
+
+const purpleColors = {
+  border: '#201a40',
+  bg: '#1a1428',
+  dark: '#5A3090',
+  mid: '#8B5FC7',
+  light: '#A878E0',
+  highlight: '#D0B0FF'
+};
+
+// Size variants (all gold)
+['icon-64', 'icon-48', 'icon-32', 'icon-24', 'icon-16', 'icon-nav', 'icon-hero'].forEach(id => {
+  drawCrystalIcon(id, goldColors);
+});
+
+// Color variants
+drawCrystalIcon('icon-gold', goldColors);
+drawCrystalIcon('icon-blue', blueColors);
+drawCrystalIcon('icon-purple', purpleColors);
+</script>
+
+</body>
+</html>

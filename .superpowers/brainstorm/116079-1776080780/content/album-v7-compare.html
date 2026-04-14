@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文理技能圖鑑 — 版面比較</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0e0c16; color: #e8e0d0; font-family: 'Noto Sans TC', sans-serif; }
+
+  .compare-header {
+    text-align: center; padding: 24px 16px 8px; max-width: 1200px; margin: 0 auto;
+  }
+  .compare-header h1 { font-size: 20px; color: #C5B69D; margin-bottom: 4px; }
+  .compare-header p { font-size: 12px; color: #8a7e6a; }
+
+  .compare-wrap {
+    display: flex; gap: 24px; max-width: 1200px; margin: 0 auto; padding: 16px;
+    align-items: flex-start;
+  }
+
+  .version { flex: 1; min-width: 0; }
+  .version-label {
+    font-size: 14px; font-weight: 700; color: #C5B69D; margin-bottom: 12px;
+    padding: 8px 12px; background: #252040; border-radius: 6px; text-align: center;
+    cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
+  }
+  .version-label:hover { border-color: #A57B18; }
+  .version-label.selected { border-color: #A57B18; background: #302850; }
+  .version-label .tag { font-size: 10px; color: #8a7e6a; font-weight: 400; display: block; margin-top: 2px; }
+
+  .mock-page { background: #12101c; border-radius: 8px; padding: 14px; border: 1px solid #2a2440; }
+
+  /* Shared: tabs */
+  .tabs { display: flex; gap: 3px; margin-bottom: 12px; background: #1a1528; border-radius: 6px; padding: 3px; width: fit-content; }
+  .tab { padding: 5px 10px; font-size: 10px; border-radius: 4px; color: #8a7e6a; border: none; background: none; font-family: inherit; }
+  .tab.active { background: #252040; color: #C5B69D; font-weight: 500; }
+
+  /* Shared: progress */
+  .progress-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .progress-bar { flex: 1; background: #252040; border-radius: 3px; height: 5px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #A57B18, #C5B69D); border-radius: 3px; width: 21%; }
+  .progress-text { color: #8a7e6a; font-size: 10px; white-space: nowrap; }
+
+  /* Shared: small grid */
+  .grid { display: grid; gap: 3px; }
+  .cell {
+    aspect-ratio: 1; border-radius: 3px; border: 1.5px solid #2a2440; background: #1a1528;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .cell.unlocked { border-color: #A57B18; }
+  .cell.locked { opacity: 0.35; }
+  .cell .icon { width: 78%; height: 78%; object-fit: contain; border-radius: 2px; }
+  .cell.locked .icon { filter: brightness(0.25) grayscale(1); }
+
+  /* Shared: crystal merged table */
+  .crystal-card { background: #1a1528; border: 1px solid #2a2440; border-radius: 6px; padding: 10px; }
+  .crystal-title { font-size: 11px; font-weight: 600; color: #C5B69D; margin-bottom: 6px; }
+  .crystal-header {
+    display: grid; gap: 4px; font-size: 8px; color: #5a5460;
+    padding-bottom: 4px; border-bottom: 1px solid #2a2440; margin-bottom: 4px;
+  }
+  .crystal-row {
+    display: grid; gap: 4px; font-size: 10px; padding: 3px 0;
+    align-items: center; border-bottom: 1px solid #1e1830;
+  }
+  .crystal-row:last-child { border-bottom: none; }
+  .cr-name { color: #e8e0d0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cr-inv { display: flex; align-items: center; }
+  .cr-btn { width: 16px; height: 16px; border: 1px solid #2a2440; background: #252040; color: #C5B69D; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+  .cr-btn:first-child { border-radius: 2px 0 0 2px; }
+  .cr-btn:last-child { border-radius: 0 2px 2px 0; }
+  .cr-input { width: 28px; height: 16px; text-align: center; border: 1px solid #2a2440; border-left: none; border-right: none; background: #12101c; color: #e8e0d0; font-size: 9px; font-family: inherit; outline: none; }
+  .cr-need { color: #C5B69D; text-align: right; }
+  .cr-remain { text-align: right; font-weight: 600; }
+  .cr-remain.zero { color: #44aa66; }
+  .cr-remain.need { color: #d94444; }
+  .cr-price { color: #daa520; text-align: right; }
+
+  /* Shared: cost summary */
+  .cost-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 10px; background: #252040; border-radius: 6px; margin-bottom: 8px;
+  }
+  .cost-label { font-size: 10px; color: #8a7e6a; }
+  .cost-val { font-size: 15px; font-weight: 700; color: #daa520; }
+  .cost-val.sm { font-size: 11px; color: #8a7e6a; }
+  .cost-sub { font-size: 9px; color: #8a7e6a; }
+
+  /* === Version A specific: side by side === */
+  .layout-a { display: flex; gap: 12px; align-items: flex-start; }
+  .layout-a .grid { grid-template-columns: repeat(10, 1fr); }
+  .layout-a .grid-wrap { flex-shrink: 0; width: 55%; }
+  .layout-a .side-panel { flex: 1; min-width: 0; }
+  .layout-a .crystal-header, .layout-a .crystal-row {
+    grid-template-columns: 1fr 60px 30px 30px 52px;
+  }
+
+  /* === Version B specific: stacked === */
+  .layout-b .grid { grid-template-columns: repeat(10, 1fr); max-width: 380px; }
+  .layout-b .crystal-card { margin-top: 10px; }
+  .layout-b .crystal-header, .layout-b .crystal-row {
+    grid-template-columns: 1fr 60px 36px 36px 64px;
+  }
+
+  /* Shared: recipe section */
+  .recipe-section { margin-top: 10px; }
+  .recipe-toggle-bar {
+    width: 100%; background: #1a1528; border: 1px solid #2a2440; border-radius: 6px;
+    padding: 8px 10px; color: #C5B69D; font-size: 11px; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: inherit;
+  }
+  .recipe-toggle-bar:hover { background: #252040; }
+  .recipe-toggle-bar .arrow { font-size: 10px; color: #8a7e6a; }
+
+  .mobile-note {
+    margin-top: 8px; font-size: 9px; color: #5a5460; text-align: center;
+    padding: 6px; background: #1a1528; border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="compare-header">
+  <h1>版面比較：圖鑑 + 碎晶區塊</h1>
+  <p>碎晶已合併為一個區塊（持有輸入 + 需求 + 還需 + 花費）</p>
+</div>
+
+<div class="compare-wrap">
+  <!-- VERSION A -->
+  <div class="version">
+    <div class="version-label" onclick="this.classList.toggle('selected')">
+      A. 圖鑑左 + 碎晶右（並排）
+      <span class="tag">類似參考圖，桌面版最佳利用空間</span>
+    </div>
+    <div class="mock-page">
+      <div class="tabs">
+        <button class="tab">技能查詢</button>
+        <button class="tab">材料反查</button>
+        <button class="tab active">圖鑑</button>
+      </div>
+      <div class="progress-row">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="progress-text">12 / 56</div>
+      </div>
+
+      <div class="layout-a">
+        <div class="grid-wrap">
+          <div class="grid" id="gridA"></div>
+        </div>
+        <div class="side-panel">
+          <!-- Cost summary -->
+          <div class="cost-bar" style="margin-bottom:6px;">
+            <div><div class="cost-label">還需花費</div><div class="cost-sub">44 技能未習得</div></div>
+            <div class="cost-val">1,284,600</div>
+          </div>
+
+          <!-- Merged crystal -->
+          <div class="crystal-card">
+            <div class="crystal-title">碎晶總覽</div>
+            <div class="crystal-header">
+              <span>名稱</span><span style="text-align:center;">持有</span><span style="text-align:right;">需求</span><span style="text-align:right;">還需</span><span style="text-align:right;">花費</span>
+            </div>
+            <div id="crystalA"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-section">
+        <button class="recipe-toggle-bar">
+          <span>全部技能配方</span><span class="arrow">▼</span>
+        </button>
+      </div>
+      <div class="mobile-note">手機版自動改為上下堆疊</div>
+    </div>
+  </div>
+
+  <!-- VERSION B -->
+  <div class="version">
+    <div class="version-label" onclick="this.classList.toggle('selected')">
+      B. 全部上下堆疊
+      <span class="tag">圖鑑 → 碎晶 → 配方，手機桌面一致</span>
+    </div>
+    <div class="mock-page">
+      <div class="tabs">
+        <button class="tab">技能查詢</button>
+        <button class="tab">材料反查</button>
+        <button class="tab active">圖鑑</button>
+      </div>
+      <div class="progress-row">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="progress-text">12 / 56</div>
+      </div>
+
+      <div class="layout-b">
+        <div class="grid" id="gridB"></div>
+
+        <!-- Cost summary -->
+        <div class="cost-bar" style="margin-top:10px;margin-bottom:6px;">
+          <div><div class="cost-label">還需花費</div><div class="cost-sub">44 技能未習得</div></div>
+          <div class="cost-val">1,284,600</div>
+        </div>
+
+        <!-- Merged crystal -->
+        <div class="crystal-card">
+          <div class="crystal-title">碎晶總覽</div>
+          <div class="crystal-header">
+            <span>名稱</span><span style="text-align:center;">持有</span><span style="text-align:right;">需求</span><span style="text-align:right;">還需</span><span style="text-align:right;">花費</span>
+          </div>
+          <div id="crystalB"></div>
+        </div>
+      </div>
+
+      <div class="recipe-section">
+        <button class="recipe-toggle-bar">
+          <span>全部技能配方</span><span class="arrow">▼</span>
+        </button>
+      </div>
+      <div class="mobile-note">手機桌面版面一致，不需 responsive 切換</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const demoSkills = [
+  {icon:64601,u:1},{icon:64602,u:1},{icon:64603,u:0},{icon:64604,u:0},{icon:64605,u:1},
+  {icon:64606,u:1},{icon:64607,u:0},{icon:64608,u:0},{icon:64609,u:0},{icon:64610,u:0},
+  {icon:64611,u:1},{icon:64612,u:0},{icon:64613,u:0},{icon:64641,u:0},{icon:64642,u:1},
+  {icon:64614,u:0},{icon:64615,u:0},{icon:64643,u:0},{icon:64616,u:1},{icon:64617,u:0},
+  {icon:64618,u:0},{icon:64619,u:0},{icon:64620,u:0},{icon:64621,u:0},{icon:64622,u:0},
+  {icon:64623,u:0},{icon:64624,u:0},{icon:64625,u:0},{icon:64626,u:1},{icon:64627,u:0},
+  {icon:64628,u:0},{icon:64629,u:1},{icon:64630,u:0},{icon:64631,u:0},{icon:64632,u:0},
+  {icon:64633,u:1},{icon:64634,u:0},{icon:64644,u:0},{icon:64645,u:1},{icon:64635,u:0},
+  {icon:64636,u:0},{icon:64637,u:0},{icon:64646,u:0},{icon:64638,u:0},{icon:64647,u:0},
+  {icon:64639,u:0},{icon:64640,u:0},{icon:64648,u:0},{icon:64649,u:0},{icon:64650,u:0},
+  {icon:64651,u:0},{icon:64652,u:1},{icon:64653,u:0},{icon:64654,u:0},{icon:64655,u:0},
+  {icon:64656,u:0},
+];
+
+function buildGrid(containerId) {
+  const g = document.getElementById(containerId);
+  demoSkills.forEach(s => {
+    const c = document.createElement('div');
+    c.className = `cell ${s.u ? 'unlocked' : 'locked'}`;
+    c.innerHTML = `<img class="icon" src="https://xivapi.com/i/064000/0${s.icon}.png" loading="lazy">`;
+    g.appendChild(c);
+  });
+}
+
+const crystalData = [
+  {name:'術士的記憶', owned:3, need:14, price:12500},
+  {name:'鬥士的記憶', owned:0, need:18, price:8200},
+  {name:'重騎兵的記憶', owned:0, need:1, price:15600},
+  {name:'守護者的記憶', owned:2, need:16, price:22400},
+  {name:'祭司的記憶', owned:5, need:26, price:15500},
+  {name:'武人的記憶', owned:0, need:17, price:9800},
+  {name:'斥候的記憶', owned:0, need:12, price:7500},
+  {name:'盜賊的記憶', owned:0, need:7, price:11200},
+  {name:'英傑的記憶', owned:0, need:6, price:45000},
+  {name:'殺手的記憶', owned:0, need:7, price:22000},
+];
+
+function buildCrystals(containerId) {
+  const c = document.getElementById(containerId);
+  crystalData.forEach(cr => {
+    const rem = Math.max(0, cr.need - cr.owned);
+    const cost = rem * cr.price;
+    const row = document.createElement('div');
+    row.className = 'crystal-row';
+    row.innerHTML = `
+      <div class="cr-name">${cr.name}</div>
+      <div class="cr-inv">
+        <button class="cr-btn">−</button>
+        <input class="cr-input" type="number" value="${cr.owned}" min="0">
+        <button class="cr-btn">+</button>
+      </div>
+      <div class="cr-need">×${cr.need}</div>
+      <div class="cr-remain ${rem===0?'zero':'need'}">${rem}</div>
+      <div class="cr-price">${cost>0?Math.floor(cost/1000)+'k':'—'}</div>`;
+    c.appendChild(row);
+  });
+}
+
+buildGrid('gridA');
+buildGrid('gridB');
+buildCrystals('crystalA');
+buildCrystals('crystalB');
+</script>
+</body>
+</html>
