@@ -134,7 +134,7 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
       {expanded && (() => {
         const hasMultiple = action.recipes.length > 1;
         const maxCols = Math.max(...action.recipes.map((r) => r.ingredients.length));
-        const templateCols = `repeat(${maxCols}, auto) auto`;
+        const templateCols = `repeat(${maxCols}, max-content) auto`;
         return (
         <div
           className="mt-2 pt-2 border-t border-border/50 grid text-xs"
