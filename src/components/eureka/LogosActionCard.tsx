@@ -134,7 +134,7 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
       {expanded && (() => {
         const hasMultiple = action.recipes.length > 1;
         const maxCols = Math.max(...action.recipes.map((r) => r.ingredients.length));
-        const templateCols = `${hasMultiple ? 'auto ' : ''}repeat(${maxCols}, auto) auto`;
+        const templateCols = `repeat(${maxCols}, auto) auto`;
         return (
         <div
           className="mt-2 pt-2 border-t border-border/50 grid text-xs"
@@ -156,11 +156,6 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
                   className={`rounded px-3 py-2 items-baseline gap-x-4 ${isCheapest ? 'bg-primary-dark/15 ring-1 ring-primary-dark/40' : 'bg-muted/50'}`}
                   style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'subgrid' }}
                 >
-                  {hasMultiple && (
-                    <span className="text-[0.6rem] text-muted-foreground/80 bg-muted rounded px-1 py-0.5 self-center">
-                      {ri + 1}
-                    </span>
-                  )}
                   {recipe.ingredients.map((ing, ii) => {
                     const mneme = getMneme(ing.mnemeId);
                     const logogram = getLogogramForMneme(ing.mnemeId);
@@ -169,9 +164,16 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
                       : undefined;
                     return (
                       <div key={ii} className="flex flex-col">
-                        <span className="text-foreground">
-                          {mneme?.nameTw ?? ing.mnemeId}
-                          {ing.quantity > 1 && <span className="text-primary"> ×{ing.quantity}</span>}
+                        <span className="text-foreground flex items-baseline gap-1.5">
+                          {hasMultiple && ii === 0 && (
+                            <span className="text-[0.6rem] text-muted-foreground/80 bg-muted rounded px-1 py-0.5 shrink-0">
+                              {ri + 1}
+                            </span>
+                          )}
+                          <span>
+                            {mneme?.nameTw ?? ing.mnemeId}
+                            {ing.quantity > 1 && <span className="text-primary"> ×{ing.quantity}</span>}
+                          </span>
                         </span>
                         {logogram && (
                           <span className="text-[0.65rem] text-muted-foreground leading-tight">
