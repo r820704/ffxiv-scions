@@ -45,16 +45,20 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
   };
 
   const handleMouseEnter = () => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
     clearTimeout(hoverTimeoutRef.current);
     updateFlip();
     setShowTooltip(true);
   };
 
   const handleMouseLeave = () => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
     hoverTimeoutRef.current = setTimeout(() => setShowTooltip(false), 150);
   };
 
   const handleTooltipTap = (e: React.MouseEvent) => {
+    // On touch devices, let the click bubble up to toggle expand instead
+    if (window.matchMedia('(pointer: coarse)').matches) return;
     e.stopPropagation();
     updateFlip();
     setShowTooltip((prev) => !prev);

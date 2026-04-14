@@ -1,5 +1,5 @@
 // src/components/eureka/AlbumGrid.tsx
-import { useMemo } from 'react';
+import { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import { eurekaData } from '@/data/eureka-data';
 import { ALBUM_ORDER } from '@/data/album-order';
 import type { LogosAction } from '@/types/eureka';
@@ -20,12 +20,37 @@ export default function AlbumGrid({ learnedSkills, onToggle }: AlbumGridProps) {
     );
   }, []);
 
+  const [tappedId, setTappedId] = useState<string | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  // Close tooltip when tapping outside the grid
+  useEffect(() => {
+    if (!tappedId) return;
+    const handleClick = (e: MouseEvent) => {
+      if (gridRef.current?.contains(e.target as Node)) return;
+      setTappedId(null);
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [tappedId]);
+
+  const handleCellClick = useCallback((actionId: string, e: React.MouseEvent) => {
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    if (isTouch) {
+      e.preventDefault();
+      setTappedId((prev) => (prev === actionId ? null : actionId));
+    } else {
+      onToggle(actionId);
+    }
+  }, [onToggle]);
+
   return (
-    <div className="grid grid-cols-10 gap-0.5">
+    <div className="grid grid-cols-10 gap-0.5" ref={gridRef}>
       {orderedActions.map((action, idx) => {
         const isLearned = learnedSkills.has(action.id);
         const row = Math.floor(idx / 10);
         const col = idx % 10;
+        const isTapped = tappedId === action.id;
 
         return (
           <div
@@ -33,7 +58,7 @@ export default function AlbumGrid({ learnedSkills, onToggle }: AlbumGridProps) {
             className="relative group"
           >
             <button
-              onClick={() => onToggle(action.id)}
+              onClick={(e) => handleCellClick(action.id, e)}
               className={cn(
                 'aspect-square w-full rounded border-2 flex items-center justify-center transition-all cursor-pointer',
                 isLearned
@@ -57,7 +82,7 @@ export default function AlbumGrid({ learnedSkills, onToggle }: AlbumGridProps) {
               )}
             </button>
 
-            {/* Tooltip — uses ActionDetailTooltip for full detail */}
+            {/* Desktop: hover tooltip (no learn button) */}
             <div
               className={cn(
                 'hidden group-hover:block absolute z-50 pointer-events-none',
@@ -67,6 +92,35 @@ export default function AlbumGrid({ learnedSkills, onToggle }: AlbumGridProps) {
             >
               <ActionDetailTooltip action={action} />
             </div>
+
+            {/* Mobile: tap tooltip (with learn button) */}
+            {isTapped && (
+              <div
+                className={cn(
+                  'absolute z-50',
+                  row < 2 ? 'top-full mt-2' : 'bottom-full mb-2',
+                  col < 2 ? 'left-0' : col > 7 ? 'right-0' : 'left-1/2 -translate-x-1/2'
+                )}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ActionDetailTooltip
+                  action={action}
+                  learnButton={
+                    <button
+                      onClick={() => { onToggle(action.id); setTappedId(null); }}
+                      className={cn(
+                        'w-full text-xs py-1.5 rounded cursor-pointer transition-colors font-medium',
+                        isLearned
+                          ? 'bg-primary-dark/20 text-primary-dark hover:bg-primary-dark/30'
+                          : 'bg-primary-dark/80 text-primary-foreground hover:bg-primary-dark'
+                      )}
+                    >
+                      {isLearned ? '✓ 已習得 — 點擊取消' : '標記習得'}
+                    </button>
+                  }
+                />
+              </div>
+            )}
           </div>
         );
       })}
