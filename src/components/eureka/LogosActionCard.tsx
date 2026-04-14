@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect, Fragment } from 'react';
-import type { LogosAction, LogogramPrice } from '@/types/eureka';
+import type { LogosAction, LogogramPrice, Recipe } from '@/types/eureka';
 import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
 import { calculateRecipeCost } from '@/utils/eureka-helpers';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
@@ -11,9 +11,17 @@ interface LogosActionCardProps {
   priceLoading: boolean;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
+  mode?: 'album' | 'synthesis';
+  inventory?: Record<string, number>;
+  onSynthesize?: (recipe: Recipe) => void;
+  learnedSkills?: Set<string>;
+  onToggle?: (skillId: string) => void;
 }
 
-export default function LogosActionCard({ action, prices, priceLoading, isExpanded, onToggleExpand }: LogosActionCardProps) {
+export default function LogosActionCard({
+  action, prices, priceLoading, isExpanded, onToggleExpand,
+  mode = 'album', inventory = {}, onSynthesize, learnedSkills, onToggle,
+}: LogosActionCardProps) {
   const [internalExpanded, setInternalExpanded] = useState(false);
   const expanded = isExpanded !== undefined ? isExpanded : internalExpanded;
   const toggleExpand = onToggleExpand ?? (() => setInternalExpanded((prev) => !prev));
@@ -61,6 +69,14 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
     e.stopPropagation();
     updateFlip();
     setShowTooltip((prev) => !prev);
+  };
+
+  const isRecipeCraftable = (recipe: Recipe) => {
+    return recipe.ingredients.every((ing) => {
+      const logogram = getLogogramForMneme(ing.mnemeId);
+      if (!logogram) return false;
+      return (inventory[logogram.id] ?? 0) >= ing.quantity;
+    });
   };
 
   const cheapestIdx = useMemo(() => {
@@ -199,7 +215,7 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
                   {Array.from({ length: maxCols - recipe.ingredients.length }, (_, i) => (
                     <div key={`empty-${i}`} />
                   ))}
-                  <div className="text-right justify-self-end">
+                  <div className="text-right justify-self-end flex items-center gap-2">
                     {priceLoading ? (
                       <span className="text-muted-foreground">計算中...</span>
                     ) : cost != null ? (
@@ -208,6 +224,25 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
                       </span>
                     ) : (
                       <span className="text-muted-foreground">—</span>
+                    )}
+                    {mode === 'synthesis' && (
+                      <button
+                        disabled={!isRecipeCraftable(recipe)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSynthesize?.(recipe);
+                          if (learnedSkills && onToggle && !learnedSkills.has(action.id)) {
+                            onToggle(action.id);
+                          }
+                        }}
+                        className={`text-[10px] px-2 py-1 rounded font-medium whitespace-nowrap transition-colors ${
+                          isRecipeCraftable(recipe)
+                            ? 'bg-primary-dark text-primary-foreground cursor-pointer hover:bg-primary-dark/80'
+                            : 'bg-muted text-muted-foreground cursor-not-allowed'
+                        }`}
+                      >
+                        {isRecipeCraftable(recipe) ? '合成' : '材料不足'}
+                      </button>
                     )}
                   </div>
                 </div>

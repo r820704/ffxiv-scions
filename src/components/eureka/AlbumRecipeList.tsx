@@ -1,7 +1,7 @@
 // src/components/eureka/AlbumRecipeList.tsx
 import { useState, useMemo, useCallback } from 'react';
 import { ALBUM_ORDER } from '@/data/album-order';
-import type { LogosAction, LogogramPrice, Role } from '@/types/eureka';
+import type { LogosAction, LogogramPrice, Role, Recipe } from '@/types/eureka';
 import { eurekaData } from '@/data/eureka-data';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 import LogosActionCard from './LogosActionCard';
@@ -39,6 +39,8 @@ interface AlbumRecipeListProps {
   prices: LogogramPrice[];
   priceLoading: boolean;
   inventory: Record<string, number>;
+  mode?: 'album' | 'synthesis';
+  onSynthesize?: (recipe: Recipe) => void;
 }
 
 const actionMap = new Map(eurekaData.logosActions.map((a) => [a.id, a]));
@@ -49,6 +51,8 @@ export default function AlbumRecipeList({
   prices,
   priceLoading,
   inventory,
+  mode = 'album',
+  onSynthesize,
 }: AlbumRecipeListProps) {
   const [search, setSearch] = useState('');
   const [selectedRoles, setSelectedRoles] = useState<Set<Role>>(new Set());
@@ -256,6 +260,11 @@ export default function AlbumRecipeList({
                     priceLoading={priceLoading}
                     isExpanded={expandedSet.has(action.id)}
                     onToggleExpand={() => toggleCardExpand(action.id)}
+                    mode={mode}
+                    inventory={inventory}
+                    onSynthesize={onSynthesize}
+                    learnedSkills={learnedSkills}
+                    onToggle={onToggle}
                   />
                 </div>
                 <button
@@ -267,7 +276,10 @@ export default function AlbumRecipeList({
                       : 'border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground'
                   )}
                 >
-                  {isLearned ? '✓ 已習得' : '標記習得'}
+                  {mode === 'synthesis'
+                    ? (isLearned ? '✓ 已習得' : '合成技能')
+                    : (isLearned ? '✓ 已習得' : '標記習得')
+                  }
                 </button>
               </div>
             );

@@ -182,6 +182,11 @@ export default function EurekaPage() {
             prices={prices}
             priceLoading={priceLoading}
             inventory={inventory}
+            mode={mode}
+            onSynthesize={(recipe: Recipe) => {
+              const next = synthesizeRecipe(recipe, inventory);
+              Object.entries(next).forEach(([id, count]) => setItemCount(id, count));
+            }}
           />
         </div>
       </div>
