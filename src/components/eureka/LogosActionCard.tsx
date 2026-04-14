@@ -131,11 +131,13 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
       </div>
 
       {/* Recipes - collapsible */}
-      {expanded && (
+      {expanded && (() => {
+        const hasMultiple = action.recipes.length > 1;
+        const maxCols = Math.max(...action.recipes.map((r) => r.ingredients.length));
+        return (
         <div className="mt-2 pt-2 border-t border-border/50">
           {action.recipes.map((recipe, ri) => {
             const cost = calculateRecipeCost(recipe.ingredients, prices);
-            const hasMultiple = action.recipes.length > 1;
             const isCheapest = hasMultiple && cheapestIdx === ri;
             return (
               <div key={ri}>
@@ -154,7 +156,10 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
                           {ri + 1}
                         </span>
                       )}
-                      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                      <div
+                        className="grid gap-x-4 gap-y-1.5"
+                        style={{ gridTemplateColumns: `repeat(${maxCols}, 1fr)` }}
+                      >
                         {recipe.ingredients.map((ing, ii) => {
                           const mneme = getMneme(ing.mnemeId);
                           const logogram = getLogogramForMneme(ing.mnemeId);
@@ -199,7 +204,8 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
             );
           })}
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
