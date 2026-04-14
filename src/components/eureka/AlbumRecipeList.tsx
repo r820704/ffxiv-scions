@@ -39,7 +39,6 @@ interface AlbumRecipeListProps {
   prices: LogogramPrice[];
   priceLoading: boolean;
   inventory: Record<string, number>;
-  mode?: 'album' | 'synthesis';
   onSynthesize?: (recipe: Recipe) => void;
 }
 
@@ -51,7 +50,6 @@ export default function AlbumRecipeList({
   prices,
   priceLoading,
   inventory,
-  mode = 'album',
   onSynthesize,
 }: AlbumRecipeListProps) {
   const [search, setSearch] = useState('');
@@ -84,7 +82,6 @@ export default function AlbumRecipeList({
       if (learnedFilter === 'unlearned' && learnedSkills.has(action.id)) return false;
       if (learnedFilter === 'learned' && !learnedSkills.has(action.id)) return false;
       if (learnedFilter === 'craftable') {
-        if (learnedSkills.has(action.id)) return false;
         if (!isCraftable(action, inventory)) return false;
       }
       // Search
@@ -260,11 +257,9 @@ export default function AlbumRecipeList({
                     priceLoading={priceLoading}
                     isExpanded={expandedSet.has(action.id)}
                     onToggleExpand={() => toggleCardExpand(action.id)}
-                    mode={mode}
                     inventory={inventory}
                     onSynthesize={onSynthesize}
                     learnedSkills={learnedSkills}
-                    onToggle={onToggle}
                   />
                 </div>
                 <button
@@ -276,10 +271,7 @@ export default function AlbumRecipeList({
                       : 'border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground'
                   )}
                 >
-                  {mode === 'synthesis'
-                    ? (isLearned ? '✓ 已習得' : '合成技能')
-                    : (isLearned ? '✓ 已習得' : '標記習得')
-                  }
+                  {isLearned ? '✓ 已習得' : '標記習得'}
                 </button>
               </div>
             );

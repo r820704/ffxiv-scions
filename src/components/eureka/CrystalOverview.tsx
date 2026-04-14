@@ -66,12 +66,6 @@ interface CrystalOverviewProps {
   onSetCount: (logogramId: string, count: number) => void;
   prices: LogogramPrice[];
   priceLoading: boolean;
-  slotNeeds?: Record<string, number>;
-  albumCostEnabled?: boolean;
-  slotCostEnabled?: boolean;
-  onToggleAlbumCost?: () => void;
-  onToggleSlotCost?: () => void;
-  hasSlots?: boolean;
 }
 
 export default function CrystalOverview({
@@ -80,25 +74,9 @@ export default function CrystalOverview({
   onSetCount,
   prices,
   priceLoading,
-  slotNeeds,
-  albumCostEnabled = true,
-  slotCostEnabled = true,
-  onToggleAlbumCost,
-  onToggleSlotCost,
-  hasSlots = false,
 }: CrystalOverviewProps) {
-  const albumNeeds = useMemo(() => computeCrystalNeeds(learnedSkills), [learnedSkills]);
+  const needs = useMemo(() => computeCrystalNeeds(learnedSkills), [learnedSkills]);
 
-  const needs = useMemo(() => {
-    const merged: Record<string, number> = {};
-    for (const id of LOGOGRAM_FIXED_ORDER) {
-      let total = 0;
-      if (albumCostEnabled) total += albumNeeds[id] || 0;
-      if (slotCostEnabled && slotNeeds) total += slotNeeds[id] || 0;
-      merged[id] = total;
-    }
-    return merged;
-  }, [albumNeeds, slotNeeds, albumCostEnabled, slotCostEnabled]);
   const listingsMap = useMemo(
     () => new Map(prices.map((p) => [p.itemId, p.listings])),
     [prices]
@@ -123,43 +101,19 @@ export default function CrystalOverview({
       <div className="bg-card border border-border rounded-lg p-3">
         <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
           <span className="text-sm font-medium text-primary">碎晶成本總覽</span>
-          <div className="flex items-center gap-3">
-            {hasSlots && (
-              <>
-                <label className="flex items-center gap-1 text-[10px] text-muted-foreground cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={albumCostEnabled}
-                    onChange={onToggleAlbumCost}
-                    className="accent-primary-dark"
-                  />
-                  圖鑑所需
-                </label>
-                <label className="flex items-center gap-1 text-[10px] text-muted-foreground cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={slotCostEnabled}
-                    onChange={onToggleSlotCost}
-                    className="accent-primary-dark"
-                  />
-                  技能格所需
-                </label>
-              </>
-            )}
-            <div className="flex gap-2">
-              <button
-                onClick={expandAll}
-                className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer"
-              >
-                全部展開
-              </button>
-              <button
-                onClick={collapseAll}
-                className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer"
-              >
-                全部縮合
-              </button>
-            </div>
+          <div className="flex gap-2">
+            <button
+              onClick={expandAll}
+              className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer"
+            >
+              全部展開
+            </button>
+            <button
+              onClick={collapseAll}
+              className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer"
+            >
+              全部縮合
+            </button>
           </div>
         </div>
 

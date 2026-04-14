@@ -1,6 +1,5 @@
 // src/utils/album-helpers.ts
 import type { LogogramPrice, RecipeIngredient, LogosAction, Recipe } from '@/types/eureka';
-import type { SkillSlotRow } from '@/hooks/useSkillSlots';
 import { eurekaData, getLogogramForMneme } from '@/data/eureka-data';
 import { ALBUM_ORDER } from '@/data/album-order';
 
@@ -107,33 +106,6 @@ export function isCraftable(
       return owned >= ing.quantity;
     })
   );
-}
-
-/**
- * Compute logogram needs for skills placed in skill slots.
- * Uses the first recipe (cheapest by position) for each skill.
- */
-export function computeSlotNeeds(
-  slots: SkillSlotRow[]
-): Record<string, number> {
-  const needs: Record<string, number> = {};
-  for (const id of LOGOGRAM_FIXED_ORDER) {
-    needs[id] = 0;
-  }
-
-  for (const [left, right] of slots) {
-    for (const skillId of [left, right]) {
-      if (!skillId) continue;
-      const ingredients = cheapestRecipe(skillId);
-      for (const ing of ingredients) {
-        const logogram = getLogogramForMneme(ing.mnemeId);
-        if (!logogram) continue;
-        needs[logogram.id] = (needs[logogram.id] || 0) + ing.quantity;
-      }
-    }
-  }
-
-  return needs;
 }
 
 /**
