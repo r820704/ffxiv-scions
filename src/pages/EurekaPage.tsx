@@ -7,12 +7,17 @@ import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
 import { useAlbumState } from '@/hooks/useAlbumState';
 import { computeRemainingCost } from '@/utils/album-helpers';
+import { cn } from '@/lib/utils';
+
+type EurekaMode = 'album' | 'synthesis';
 
 export default function EurekaPage() {
   const [prices, setPrices] = useState<LogogramPrice[]>([]);
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceError, setPriceError] = useState(false);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+
+  const [mode, setMode] = useState<EurekaMode>('album');
 
   const { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount } = useAlbumState();
 
@@ -78,6 +83,32 @@ export default function EurekaPage() {
       )}
 
       <div className="space-y-4">
+          {/* Mode toggle */}
+          <div className="flex gap-0.5 bg-secondary rounded-lg p-0.5 w-fit mb-4">
+            <button
+              onClick={() => setMode('album')}
+              className={cn(
+                'text-xs px-3 py-1.5 rounded-md transition-colors cursor-pointer',
+                mode === 'album'
+                  ? 'bg-card text-foreground font-medium shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              圖鑑模式
+            </button>
+            <button
+              onClick={() => setMode('synthesis')}
+              className={cn(
+                'text-xs px-3 py-1.5 rounded-md transition-colors cursor-pointer',
+                mode === 'synthesis'
+                  ? 'bg-card text-foreground font-medium shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              合成模式
+            </button>
+          </div>
+
           {/* Progress bar */}
           <div className="flex items-center gap-3">
             <div className="flex-1 bg-secondary rounded h-2 overflow-hidden">
