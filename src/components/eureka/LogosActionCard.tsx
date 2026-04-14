@@ -150,14 +150,14 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
                 )}
                 <div className={`rounded px-3 py-2 ${isCheapest ? 'bg-primary-dark/15 ring-1 ring-primary-dark/40' : 'bg-muted/50'}`}>
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 text-xs min-w-0">
+                    <div className="flex items-center gap-1.5 text-xs min-w-0 flex-1">
                       {hasMultiple && (
                         <span className="text-[0.6rem] text-muted-foreground/80 bg-muted rounded px-1 py-0.5 shrink-0">
                           {ri + 1}
                         </span>
                       )}
                       <div
-                        className="grid gap-x-4 gap-y-1.5"
+                        className="grid gap-x-4 gap-y-1.5 flex-1"
                         style={{ gridTemplateColumns: `repeat(${maxCols}, 1fr)` }}
                       >
                         {recipe.ingredients.map((ing, ii) => {
@@ -187,7 +187,7 @@ export default function LogosActionCard({ action, prices, priceLoading, isExpand
                         })}
                       </div>
                     </div>
-                    <div className="shrink-0 text-right">
+                    <div className="shrink-0 text-right min-w-[5.5rem]">
                       {priceLoading ? (
                         <span className="text-xs text-muted-foreground">計算中...</span>
                       ) : cost != null ? (
