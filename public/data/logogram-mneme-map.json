@@ -1,0 +1,84 @@
+[
+  {
+    "logogramId": "conceptual",
+    "nameTw": "未鑑定的新銳文理碎晶",
+    "mnemes": [
+      { "id": "wisdom-aetherweaver", "nameTw": "術士的記憶" },
+      { "id": "wisdom-martialist", "nameTw": "鬥士的記憶" },
+      { "id": "wisdom-platebearer", "nameTw": "重騎兵的記憶" },
+      { "id": "incense-l", "nameTw": "文理激怒" },
+      { "id": "cure-l", "nameTw": "文理療傷" },
+      { "id": "backstep-l", "nameTw": "文理後跳" },
+      { "id": "paralyze-l", "nameTw": "文理麻痺" }
+    ]
+  },
+  {
+    "logogramId": "fundamental",
+    "nameTw": "未鑑定的熟練文理碎晶",
+    "mnemes": [
+      { "id": "esuna-l", "nameTw": "文理復原" },
+      { "id": "raise-l", "nameTw": "文理復活" },
+      { "id": "feint-l", "nameTw": "文理虛槍" },
+      { "id": "tranquilizer-l", "nameTw": "文理鎮定" },
+      { "id": "protect-l", "nameTw": "文理物防護" }
+    ]
+  },
+  {
+    "logogramId": "curative",
+    "nameTw": "未鑑定的治癒文理碎晶",
+    "mnemes": [
+      { "id": "wisdom-ordained", "nameTw": "祭司的記憶" },
+      { "id": "cure-l-ii", "nameTw": "文理中療傷" }
+    ]
+  },
+  {
+    "logogramId": "offensive",
+    "nameTw": "未鑑定的攻勢文理碎晶",
+    "mnemes": [
+      { "id": "wisdom-skirmisher", "nameTw": "武人的記憶" },
+      { "id": "bloodbath-l", "nameTw": "文理浴血" }
+    ]
+  },
+  {
+    "logogramId": "protective",
+    "nameTw": "未鑑定的守勢文理碎晶",
+    "mnemes": [
+      { "id": "wisdom-guardian", "nameTw": "守護者的記憶" },
+      { "id": "spirit-remembered", "nameTw": "英傑的加護" }
+    ]
+  },
+  {
+    "logogramId": "tactical",
+    "nameTw": "未鑑定的斥候文理碎晶",
+    "mnemes": [
+      { "id": "featherfoot-l", "nameTw": "文理飄羽步" },
+      { "id": "stealth-l", "nameTw": "文理潛行" }
+    ]
+  },
+  {
+    "logogramId": "mitigative",
+    "nameTw": "未鑑定的支援文理碎晶",
+    "mnemes": [
+      { "id": "shell-l", "nameTw": "文理魔防殼" },
+      { "id": "stoneskin-l", "nameTw": "文理石膚" }
+    ]
+  },
+  {
+    "logogramId": "inimical",
+    "nameTw": "未鑑定的妨礙文理碎晶",
+    "mnemes": [
+      { "id": "spirit-dart-l", "nameTw": "文理精神鏢" },
+      { "id": "dispel-l", "nameTw": "文理驅魔" }
+    ]
+  },
+  {
+    "logogramId": "obscure",
+    "nameTw": "未鑑定的封印文理碎晶",
+    "mnemes": [
+      { "id": "magic-burst-l", "nameTw": "文理魔法爆發" },
+      { "id": "eagle-eye-shot-l", "nameTw": "文理銳眼追擊" },
+      { "id": "double-edge-l", "nameTw": "文理雙刃劍" },
+      { "id": "wisdom-breathtaker", "nameTw": "盜賊的記憶" }
+    ]
+  }
+]
