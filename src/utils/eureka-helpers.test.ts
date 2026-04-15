@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateRecipeCost } from './eureka-helpers';
+import { calculateRecipeCost, calculateRecipeCost95, logogramsNeeded95 } from './eureka-helpers';
 import type { LogogramPrice } from '@/types/eureka';
 
 const mockPrices: LogogramPrice[] = [
@@ -51,5 +51,53 @@ describe('calculateRecipeCost', () => {
       noPrices
     );
     expect(cost).toBeNull();
+  });
+});
+
+describe('logogramsNeeded95', () => {
+  it('should return needed when only 1 mneme type', () => {
+    expect(logogramsNeeded95(1, 1)).toBe(1);
+    expect(logogramsNeeded95(3, 1)).toBe(3);
+  });
+
+  it('should match known values for 1 from 6 (expect 17)', () => {
+    expect(logogramsNeeded95(1, 6)).toBe(17);
+  });
+
+  it('should match known values for 1 from 7 (expect 20)', () => {
+    expect(logogramsNeeded95(1, 7)).toBe(20);
+  });
+
+  it('should require more logograms for higher quantity', () => {
+    const n1 = logogramsNeeded95(1, 7);
+    const n2 = logogramsNeeded95(2, 7);
+    expect(n2).toBeGreaterThan(n1);
+  });
+});
+
+describe('calculateRecipeCost95', () => {
+  it('should be higher than base cost for multi-mneme logograms', () => {
+    const baseCost = calculateRecipeCost(
+      [{ mnemeId: 'wisdom-aetherweaver', quantity: 1 }],
+      mockPrices
+    );
+    const cost95 = calculateRecipeCost95(
+      [{ mnemeId: 'wisdom-aetherweaver', quantity: 1 }],
+      mockPrices
+    );
+    expect(baseCost).not.toBeNull();
+    expect(cost95).not.toBeNull();
+    expect(cost95!).toBeGreaterThan(baseCost!);
+  });
+
+  it('should equal base cost for single-mneme logograms', () => {
+    // curative has only 2 mnemes, but let's test with a hypothetical 1-mneme case
+    // All real logograms have 2+ mnemes, so cost95 will always be > base
+    const cost95 = calculateRecipeCost95(
+      [{ mnemeId: 'wisdom-aetherweaver', quantity: 1 }],
+      mockPrices
+    );
+    // conceptual has 7 mnemes, need 20 logograms at 95%
+    expect(cost95).toBe(500 * 20);
   });
 });

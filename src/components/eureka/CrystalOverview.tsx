@@ -1,7 +1,7 @@
 // src/components/eureka/CrystalOverview.tsx
 import { useState, useMemo } from 'react';
 import type { LogogramPrice, LogogramListing } from '@/types/eureka';
-import { eurekaData } from '@/data/eureka-data';
+import { eurekaData, getMneme } from '@/data/eureka-data';
 import { computeCrystalNeeds, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import { cn } from '@/lib/utils';
 
@@ -83,11 +83,21 @@ export default function CrystalOverview({
   );
 
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [mnemeInfoRows, setMnemeInfoRows] = useState<Set<string>>(new Set());
 
   const expandAll = () => setExpandedRows(new Set(LOGOGRAM_FIXED_ORDER));
   const collapseAll = () => setExpandedRows(new Set());
   const toggleRow = (id: string) => {
     setExpandedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleMnemeInfo = (id: string) => {
+    setMnemeInfoRows((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -151,6 +161,18 @@ export default function CrystalOverview({
               >
                 <span className="text-xs text-foreground truncate flex items-center gap-1">
                   {logogram.nameTw}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleMnemeInfo(logogramId); }}
+                    className={cn(
+                      'shrink-0 w-4 h-4 rounded-full text-[9px] flex items-center justify-center cursor-pointer transition-colors',
+                      mnemeInfoRows.has(logogramId)
+                        ? 'bg-primary/30 text-primary'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                    )}
+                    title="查看可鑑定的記憶"
+                  >
+                    i
+                  </button>
                   {remaining > 0 && plan && !plan.fulfilled && (
                     <span className="text-[9px] text-red-400" title="市場供應不足">⚠</span>
                   )}
@@ -203,6 +225,21 @@ export default function CrystalOverview({
                       : '—'}
                 </span>
               </div>
+
+              {/* Mneme info — list of mnemes this logogram can produce */}
+              {mnemeInfoRows.has(logogramId) && (
+                <div className="text-[10px] text-muted-foreground pl-3 py-1 flex flex-wrap gap-x-3 gap-y-0.5">
+                  <span className="text-muted-foreground/60">可鑑定：</span>
+                  {logogram.mnemeIds.map((mnemeId) => {
+                    const mneme = getMneme(mnemeId);
+                    return (
+                      <span key={mnemeId} className="text-foreground">
+                        {mneme?.nameTw ?? mnemeId}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Purchase plan detail — single inline row */}
               {isExpanded && plan && (
