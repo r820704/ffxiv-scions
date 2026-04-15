@@ -12,10 +12,14 @@ interface LogosActionCardProps {
   priceLoading: boolean;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
+  /** When set, only show the recipe at this index (guide mode) */
+  guideRecipeIdx?: number;
+  /** When true, hide all price/cost information (guide mode) */
+  hidePrice?: boolean;
 }
 
 export default function LogosActionCard({
-  action, prices, priceLoading, isExpanded, onToggleExpand,
+  action, prices, priceLoading, isExpanded, onToggleExpand, guideRecipeIdx, hidePrice,
 }: LogosActionCardProps) {
   const [internalExpanded, setInternalExpanded] = useState(false);
   const expanded = isExpanded !== undefined ? isExpanded : internalExpanded;
@@ -146,21 +150,25 @@ export default function LogosActionCard({
 
       {/* Recipes - collapsible */}
       {expanded && (() => {
-        const hasMultiple = action.recipes.length > 1;
-        const maxCols = Math.max(...action.recipes.map((r) => r.ingredients.length));
-        const templateCols = `repeat(${maxCols}, max-content) auto`;
+        const isGuide = guideRecipeIdx != null;
+        const recipesToShow = isGuide
+          ? [{ recipe: action.recipes[guideRecipeIdx]!, ri: guideRecipeIdx }]
+          : action.recipes.map((recipe, ri) => ({ recipe, ri }));
+        const hasMultiple = !isGuide && action.recipes.length > 1;
+        const maxCols = Math.max(...recipesToShow.map((r) => r.recipe.ingredients.length));
+        const templateCols = `repeat(${maxCols}, max-content)${hidePrice ? '' : ' auto'}`;
         return (
         <div
           className="mt-2 pt-2 border-t border-border/50 grid text-xs"
           style={{ gridTemplateColumns: templateCols }}
         >
-          {action.recipes.map((recipe, ri) => {
-            const cost = calculateRecipeCost(recipe.ingredients, prices);
-            const cost95 = calculateRecipeCost95(recipe.ingredients, prices);
+          {recipesToShow.map(({ recipe, ri }, idx) => {
+            const cost = hidePrice ? null : calculateRecipeCost(recipe.ingredients, prices);
+            const cost95 = hidePrice ? null : calculateRecipeCost95(recipe.ingredients, prices);
             const isCheapest = hasMultiple && cheapestIdx === ri;
             return (
               <Fragment key={ri}>
-                {hasMultiple && ri > 0 && (
+                {hasMultiple && idx > 0 && (
                   <div className="flex items-center gap-2 my-1.5" style={{ gridColumn: '1 / -1' }}>
                     <div className="flex-1 border-t border-border/50" />
                     <span className="text-[0.6rem] text-muted-foreground/60 shrink-0">或</span>
@@ -174,7 +182,7 @@ export default function LogosActionCard({
                   {recipe.ingredients.map((ing, ii) => {
                     const mneme = getMneme(ing.mnemeId);
                     const logogram = getLogogramForMneme(ing.mnemeId);
-                    const logogramPrice = logogram
+                    const logogramPrice = !hidePrice && logogram
                       ? prices.find((p) => p.itemId === logogram.itemId)
                       : undefined;
                     return (
@@ -193,19 +201,21 @@ export default function LogosActionCard({
                         {logogram && (
                           <span className="text-[0.65rem] text-muted-foreground leading-tight flex">
                             <span className="shrink-0">{logogram.nameTw}</span>
-                            {priceLoading ? (
-                              <span className="inline-block h-3 w-16 bg-muted animate-pulse rounded ml-1" />
-                            ) : logogramPrice?.price != null ? (
-                              <>
-                                <span className="text-amber-400 font-medium tabular-nums min-w-[4.5rem] text-right ml-0.5">
-                                  {logogramPrice.price.toLocaleString()} gil
-                                </span>
-                                {logogramPrice.worldName && (
-                                  <span className="ml-1">@ {logogramPrice.worldName}</span>
-                                )}
-                              </>
-                            ) : (
-                              <span className="ml-1">價格未知</span>
+                            {!hidePrice && (
+                              priceLoading ? (
+                                <span className="inline-block h-3 w-16 bg-muted animate-pulse rounded ml-1" />
+                              ) : logogramPrice?.price != null ? (
+                                <>
+                                  <span className="text-amber-400 font-medium tabular-nums min-w-[4.5rem] text-right ml-0.5">
+                                    {logogramPrice.price.toLocaleString()} gil
+                                  </span>
+                                  {logogramPrice.worldName && (
+                                    <span className="ml-1">@ {logogramPrice.worldName}</span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="ml-1">價格未知</span>
+                              )
                             )}
                           </span>
                         )}
@@ -215,31 +225,33 @@ export default function LogosActionCard({
                   {Array.from({ length: maxCols - recipe.ingredients.length }, (_, i) => (
                     <div key={`empty-${i}`} />
                   ))}
-                  <div className="text-right justify-self-end flex flex-col items-end gap-0.5">
-                    {priceLoading ? (
-                      <span className="text-muted-foreground">計算中...</span>
-                    ) : cost != null ? (
-                      <>
-                        {cost95 != null && cost95 !== cost ? (
-                          <>
+                  {!hidePrice && (
+                    <div className="text-right justify-self-end flex flex-col items-end gap-0.5">
+                      {priceLoading ? (
+                        <span className="text-muted-foreground">計算中...</span>
+                      ) : cost != null ? (
+                        <>
+                          {cost95 != null && cost95 !== cost ? (
+                            <>
+                              <span className="font-medium text-amber-400">
+                                95% 機率成本 {cost95.toLocaleString()} gil
+                              </span>
+                              <span className="text-[0.6rem] text-muted-foreground">
+                                單價合計{' '}
+                                <span className="text-amber-400/50">{cost.toLocaleString()} gil</span>
+                              </span>
+                            </>
+                          ) : (
                             <span className="font-medium text-amber-400">
-                              95% 機率成本 {cost95.toLocaleString()} gil
+                              單價合計 {cost.toLocaleString()} gil
                             </span>
-                            <span className="text-[0.6rem] text-muted-foreground">
-                              單價合計{' '}
-                              <span className="text-amber-400/50">{cost.toLocaleString()} gil</span>
-                            </span>
-                          </>
-                        ) : (
-                          <span className="font-medium text-amber-400">
-                            單價合計 {cost.toLocaleString()} gil
-                          </span>
-                        )}
-                      </>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </div>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </Fragment>
             );

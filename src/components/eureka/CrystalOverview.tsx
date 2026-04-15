@@ -2,7 +2,8 @@
 import { useState, useMemo } from 'react';
 import type { LogogramPrice, LogogramListing } from '@/types/eureka';
 import { eurekaData, getMneme } from '@/data/eureka-data';
-import { computeCrystalNeeds, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
+import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
+import type { OptimizationResult } from '@/utils/recipe-optimizer';
 import { cn } from '@/lib/utils';
 
 const logogramMap = new Map(eurekaData.logograms.map((l) => [l.id, l]));
@@ -61,22 +62,20 @@ function groupEntriesByWorld(entries: PurchasePlan['entries']): GroupedEntry[] {
 }
 
 interface CrystalOverviewProps {
-  learnedSkills: Set<string>;
   inventory: Record<string, number>;
   onSetCount: (logogramId: string, count: number) => void;
   prices: LogogramPrice[];
   priceLoading: boolean;
+  optimizationResult: OptimizationResult | null;
 }
 
 export default function CrystalOverview({
-  learnedSkills,
   inventory,
   onSetCount,
   prices,
   priceLoading,
+  optimizationResult,
 }: CrystalOverviewProps) {
-  const needs = useMemo(() => computeCrystalNeeds(learnedSkills), [learnedSkills]);
-
   const listingsMap = useMemo(
     () => new Map(prices.map((p) => [p.itemId, p.listings])),
     [prices]
@@ -110,7 +109,7 @@ export default function CrystalOverview({
       {/* Crystal table */}
       <div className="bg-card border border-border rounded-lg p-3">
         <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-          <span className="text-sm font-medium text-primary">碎晶成本總覽</span>
+          <span className="text-sm font-medium text-primary">95% 機率成本總覽</span>
           <div className="flex gap-2">
             <button
               onClick={expandAll}
@@ -140,24 +139,29 @@ export default function CrystalOverview({
         {LOGOGRAM_FIXED_ORDER.map((logogramId) => {
           const logogram = logogramMap.get(logogramId);
           if (!logogram) return null;
-          const need = needs[logogramId] || 0;
+          const hasOptResult = optimizationResult != null;
+          const need = hasOptResult ? (optimizationResult.opensNeeded[logogramId] || 0) : 0;
           const owned = inventory[logogramId] || 0;
-          const remaining = Math.max(0, need - owned);
+          const remaining = hasOptResult ? Math.max(0, need - owned) : 0;
 
           const listings = listingsMap.get(logogram.itemId) ?? [];
-          const plan = remaining > 0 ? buildPurchasePlan(listings, remaining) : null;
+          const plan = hasOptResult && remaining > 0 ? buildPurchasePlan(listings, remaining) : null;
           const lineCost = plan ? plan.totalCost : 0;
           const isExpanded = expandedRows.has(logogramId);
           const totalAvailable = listings.reduce((sum, l) => sum + l.quantity, 0);
+
+          // Mneme requirements from optimizer
+          const mnemeReqs = optimizationResult?.mnemeNeeds[logogramId];
+          const hasMnemeReqs = mnemeReqs && Object.keys(mnemeReqs).length > 0;
 
           return (
             <div key={logogramId}>
               <div
                 className={cn(
                   'grid grid-cols-[1fr_60px_30px_30px_72px] gap-1 items-center py-1 text-xs border-b border-border/30',
-                  remaining > 0 && 'cursor-pointer hover:bg-secondary/50'
+                  hasOptResult && remaining > 0 && 'cursor-pointer hover:bg-secondary/50'
                 )}
-                onClick={() => remaining > 0 && toggleRow(logogramId)}
+                onClick={() => hasOptResult && remaining > 0 && toggleRow(logogramId)}
               >
                 <span className="text-xs text-foreground truncate flex items-center gap-1">
                   {logogram.nameTw}
@@ -173,10 +177,10 @@ export default function CrystalOverview({
                   >
                     i
                   </button>
-                  {remaining > 0 && plan && !plan.fulfilled && (
+                  {hasOptResult && remaining > 0 && plan && !plan.fulfilled && (
                     <span className="text-[9px] text-red-400" title="市場供應不足">⚠</span>
                   )}
-                  {remaining > 0 && (
+                  {hasOptResult && remaining > 0 && (
                     <span className={cn(
                       'text-[8px]',
                       isExpanded ? 'text-muted-foreground/50' : 'text-primary/60'
@@ -208,27 +212,47 @@ export default function CrystalOverview({
                     +
                   </button>
                 </div>
-                <span className="text-primary text-right">x{need}</span>
+                <span className="text-primary text-right">
+                  {hasOptResult ? `x${need}` : '—'}
+                </span>
                 <span
                   className={cn(
                     'text-right font-semibold',
-                    remaining === 0 ? 'text-green-400' : 'text-red-400'
+                    !hasOptResult ? 'text-muted-foreground' : remaining === 0 ? 'text-green-400' : 'text-red-400'
                   )}
                 >
-                  {remaining}
+                  {hasOptResult ? remaining : '—'}
                 </span>
                 <span className="text-amber-400 text-right">
-                  {priceLoading
-                    ? '...'
-                    : lineCost > 0
-                      ? lineCost.toLocaleString()
-                      : '—'}
+                  {!hasOptResult
+                    ? '—'
+                    : priceLoading
+                      ? '...'
+                      : lineCost > 0
+                        ? lineCost.toLocaleString()
+                        : '—'}
                 </span>
               </div>
 
-              {/* Mneme info — list of mnemes this logogram can produce */}
+              {/* Mneme requirements from optimizer — always visible */}
+              {hasMnemeReqs && (
+                <div className="text-[10px] text-muted-foreground pl-3 py-0.5 flex flex-wrap gap-x-2 gap-y-0.5">
+                  <span className="text-muted-foreground/60">需要：</span>
+                  {Object.entries(mnemeReqs).map(([mnemeId, qty]) => {
+                    const mneme = getMneme(mnemeId);
+                    return (
+                      <span key={mnemeId} className="text-foreground">
+                        {mneme?.nameTw ?? mnemeId}
+                        {qty > 1 && <span className="text-primary"> ×{qty}</span>}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Mneme info — list of all mnemes this logogram can produce */}
               {mnemeInfoRows.has(logogramId) && (
-                <div className="text-[10px] text-muted-foreground pl-3 py-1 flex flex-wrap gap-x-3 gap-y-0.5">
+                <div className="text-[10px] text-muted-foreground pl-3 py-0.5 flex flex-wrap gap-x-3 gap-y-0.5">
                   <span className="text-muted-foreground/60">可鑑定：</span>
                   {logogram.mnemeIds.map((mnemeId) => {
                     const mneme = getMneme(mnemeId);

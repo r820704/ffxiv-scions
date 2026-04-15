@@ -4,6 +4,7 @@ import { ALBUM_ORDER } from '@/data/album-order';
 import type { LogosAction, LogogramPrice, Role } from '@/types/eureka';
 import { eurekaData } from '@/data/eureka-data';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
+import type { OptimizationResult } from '@/utils/recipe-optimizer';
 import LogosActionCard from './LogosActionCard';
 import { cn } from '@/lib/utils';
 
@@ -30,13 +31,14 @@ function getActionTags(descriptionTw: string): string[] {
 
 const FILTERABLE_ROLES: Role[] = ['tank', 'healer', 'melee', 'ranged', 'caster'];
 
-type LearnedFilter = 'all' | 'unlearned' | 'learned';
+type LearnedFilter = 'all' | 'unlearned' | 'learned' | 'guide';
 
 interface AlbumRecipeListProps {
   learnedSkills: Set<string>;
   onToggle: (skillId: string) => void;
   prices: LogogramPrice[];
   priceLoading: boolean;
+  optimizationResult: OptimizationResult | null;
 }
 
 const actionMap = new Map(eurekaData.logosActions.map((a) => [a.id, a]));
@@ -46,6 +48,7 @@ export default function AlbumRecipeList({
   onToggle,
   prices,
   priceLoading,
+  optimizationResult,
 }: AlbumRecipeListProps) {
   const [search, setSearch] = useState('');
   const [selectedRoles, setSelectedRoles] = useState<Set<Role>>(new Set());
@@ -73,8 +76,8 @@ export default function AlbumRecipeList({
         const tags = getActionTags(action.descriptionTw);
         if (!tags.some((t) => selectedTags.has(t))) return false;
       }
-      // Learned filter
-      if (learnedFilter === 'unlearned' && learnedSkills.has(action.id)) return false;
+      // Learned filter (guide mode acts as unlearned filter)
+      if ((learnedFilter === 'unlearned' || learnedFilter === 'guide') && learnedSkills.has(action.id)) return false;
       if (learnedFilter === 'learned' && !learnedSkills.has(action.id)) return false;
       // Search
       if (search) {
@@ -149,7 +152,7 @@ export default function AlbumRecipeList({
       />
 
       {/* Learned filter */}
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-1.5 items-center">
         {([['all', '全部'], ['unlearned', '未習得'], ['learned', '已習得']] as const).map(([value, label]) => (
           <button
             key={value}
@@ -164,6 +167,20 @@ export default function AlbumRecipeList({
             {label}
           </button>
         ))}
+        <span className="text-border mx-0.5">|</span>
+        <button
+          onClick={() => setLearnedFilter(learnedFilter === 'guide' ? 'all' : 'guide')}
+          disabled={!optimizationResult}
+          className={cn(
+            'text-xs px-2 py-1 rounded transition-colors',
+            learnedFilter === 'guide'
+              ? 'bg-amber-600 text-amber-50'
+              : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+            !optimizationResult && 'opacity-50 cursor-not-allowed'
+          )}
+        >
+          合成指南
+        </button>
       </div>
 
       {/* Role filter (multi-select) */}
@@ -240,15 +257,19 @@ export default function AlbumRecipeList({
         ) : (
           filtered.map((action) => {
             const isLearned = learnedSkills.has(action.id);
+            const isGuideMode = learnedFilter === 'guide';
+            const guideIdx = isGuideMode ? optimizationResult?.selectedRecipes[action.id] : undefined;
             return (
               <div key={action.id} className="flex items-start gap-2">
-                <div className={cn('flex-1 min-w-0', !isLearned && 'opacity-60')}>
+                <div className={cn('flex-1 min-w-0', !isLearned && !isGuideMode && 'opacity-60')}>
                   <LogosActionCard
                     action={action}
                     prices={prices}
                     priceLoading={priceLoading}
-                    isExpanded={expandedSet.has(action.id)}
-                    onToggleExpand={() => toggleCardExpand(action.id)}
+                    isExpanded={isGuideMode ? true : expandedSet.has(action.id)}
+                    onToggleExpand={isGuideMode ? undefined : () => toggleCardExpand(action.id)}
+                    guideRecipeIdx={guideIdx}
+                    hidePrice={isGuideMode}
                   />
                 </div>
                 <button
