@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect, Fragment } from 'react';
+import { createPortal } from 'react-dom';
 import type { LogosAction, LogogramPrice } from '@/types/eureka';
 import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
 import { calculateRecipeCost } from '@/utils/eureka-helpers';
@@ -20,7 +21,7 @@ export default function LogosActionCard({
   const expanded = isExpanded !== undefined ? isExpanded : internalExpanded;
   const toggleExpand = onToggleExpand ?? (() => setInternalExpanded((prev) => !prev));
   const [showTooltip, setShowTooltip] = useState(false);
-  const [flipUp, setFlipUp] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number; flipUp: boolean } | null>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -38,17 +39,22 @@ export default function LogosActionCard({
     return () => document.removeEventListener('click', handleClick);
   }, [showTooltip]);
 
-  const updateFlip = () => {
+  const updatePosition = () => {
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
     const spaceBelow = window.innerHeight - rect.bottom;
-    setFlipUp(spaceBelow < 320);
+    const flipUp = spaceBelow < 320;
+    setTooltipPos({
+      top: flipUp ? rect.top : rect.bottom,
+      left: rect.left,
+      flipUp,
+    });
   };
 
   const handleMouseEnter = () => {
     if (window.matchMedia('(pointer: coarse)').matches) return;
     clearTimeout(hoverTimeoutRef.current);
-    updateFlip();
+    updatePosition();
     setShowTooltip(true);
   };
 
@@ -61,7 +67,7 @@ export default function LogosActionCard({
     // On touch devices, let the click bubble up to toggle expand instead
     if (window.matchMedia('(pointer: coarse)').matches) return;
     e.stopPropagation();
-    updateFlip();
+    updatePosition();
     setShowTooltip((prev) => !prev);
   };
 
@@ -104,15 +110,22 @@ export default function LogosActionCard({
                 {action.nameTw}
               </span>
             </div>
-            {showTooltip && (
+            {showTooltip && tooltipPos && createPortal(
               <div
                 ref={tooltipRef}
-                className={`absolute left-0 z-50 ${flipUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}
+                className="fixed z-50"
+                style={{
+                  left: tooltipPos.left,
+                  ...(tooltipPos.flipUp
+                    ? { bottom: window.innerHeight - tooltipPos.top + 4 }
+                    : { top: tooltipPos.top + 4 }),
+                }}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
                 <ActionDetailTooltip action={action} />
-              </div>
+              </div>,
+              document.body,
             )}
           </div>
         </div>
