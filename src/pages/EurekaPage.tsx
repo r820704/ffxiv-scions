@@ -6,7 +6,8 @@ import AlbumGrid from '@/components/eureka/AlbumGrid';
 import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
 import { useAlbumState } from '@/hooks/useAlbumState';
-import { computeCrystalNeeds, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
+import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
+import { optimizeRecipes } from '@/utils/recipe-optimizer';
 
 export default function EurekaPage() {
   const [prices, setPrices] = useState<LogogramPrice[]>([]);
@@ -16,16 +17,19 @@ export default function EurekaPage() {
 
   const { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount } = useAlbumState();
 
-  const remainingCost = useMemo(() => {
+  const optimizationResult = useMemo(() => {
     if (prices.length === 0) return null;
-    const priceMap = new Map(prices.map((p) => [p.itemId, p.price]));
-    const albumNeeds = computeCrystalNeeds(learnedSkills);
-    let total = 0;
+    return optimizeRecipes(learnedSkills, prices);
+  }, [learnedSkills, prices]);
 
+  const remainingCost95 = useMemo(() => {
+    if (!optimizationResult || prices.length === 0) return null;
+    const priceMap = new Map(prices.map((p) => [p.itemId, p.price]));
+    let total = 0;
     for (const logogramId of LOGOGRAM_FIXED_ORDER) {
-      const need = albumNeeds[logogramId] || 0;
+      const opens = optimizationResult.opensNeeded[logogramId] || 0;
       const owned = inventory[logogramId] || 0;
-      const remaining = Math.max(0, need - owned);
+      const remaining = Math.max(0, opens - owned);
       if (remaining === 0) continue;
       const logogram = eurekaData.logograms.find((l) => l.id === logogramId);
       if (!logogram) continue;
@@ -34,7 +38,7 @@ export default function EurekaPage() {
       total += remaining * price;
     }
     return total;
-  }, [learnedSkills, inventory, prices]);
+  }, [optimizationResult, inventory, prices]);
 
   const loadPrices = useCallback(async () => {
     setPriceLoading(true);
@@ -125,15 +129,15 @@ export default function EurekaPage() {
                 learnedSkills={learnedSkills}
                 onToggle={toggleLearned}
               />
-              {/* 還需花費 */}
+              {/* 95%成功機率約需花費 */}
               <div className="bg-secondary rounded-lg p-3">
                 <div className="flex justify-between items-baseline">
-                  <span className="text-xs text-muted-foreground">還需花費</span>
+                  <span className="text-xs text-muted-foreground">95%成功機率約需花費</span>
                   <span className="text-lg font-bold text-amber-400">
                     {priceLoading
                       ? '...'
-                      : remainingCost != null
-                        ? `${remainingCost.toLocaleString()} Gil`
+                      : remainingCost95 != null
+                        ? `${remainingCost95.toLocaleString()} Gil`
                         : '價格未知'}
                   </span>
                 </div>
@@ -149,6 +153,7 @@ export default function EurekaPage() {
                 onSetCount={setItemCount}
                 prices={prices}
                 priceLoading={priceLoading}
+                optimizationResult={optimizationResult}
               />
             </div>
           </div>
@@ -159,6 +164,7 @@ export default function EurekaPage() {
             onToggle={toggleLearned}
             prices={prices}
             priceLoading={priceLoading}
+            optimizationResult={optimizationResult}
           />
         </div>
       </div>
