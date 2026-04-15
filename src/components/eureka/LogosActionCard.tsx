@@ -226,13 +226,13 @@ export default function LogosActionCard({
                               95% 機率成本 {cost95.toLocaleString()} gil
                             </span>
                             <span className="text-[0.6rem] text-muted-foreground">
-                              合計{' '}
+                              單價合計{' '}
                               <span className="text-amber-400/50">{cost.toLocaleString()} gil</span>
                             </span>
                           </>
                         ) : (
                           <span className="font-medium text-amber-400">
-                            合計 {cost.toLocaleString()} gil
+                            單價合計 {cost.toLocaleString()} gil
                           </span>
                         )}
                       </>
