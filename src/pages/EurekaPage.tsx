@@ -8,6 +8,7 @@ import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
 import { useAlbumState } from '@/hooks/useAlbumState';
 import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import { optimizeRecipes } from '@/utils/recipe-optimizer';
+import type { OptimizationResult } from '@/utils/recipe-optimizer';
 
 export default function EurekaPage() {
   const [prices, setPrices] = useState<LogogramPrice[]>([]);
@@ -17,9 +18,18 @@ export default function EurekaPage() {
 
   const { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount } = useAlbumState();
 
-  const optimizationResult = useMemo(() => {
-    if (prices.length === 0) return null;
-    return optimizeRecipes(learnedSkills, prices);
+  const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
+  const [optimizing, setOptimizing] = useState(false);
+
+  const runOptimizer = useCallback(() => {
+    if (prices.length === 0) return;
+    setOptimizing(true);
+    // Use setTimeout to let the UI update with loading state before blocking
+    setTimeout(() => {
+      const result = optimizeRecipes(learnedSkills, prices);
+      setOptimizationResult(result);
+      setOptimizing(false);
+    }, 50);
   }, [learnedSkills, prices]);
 
   const remainingCost95 = useMemo(() => {
@@ -131,24 +141,32 @@ export default function EurekaPage() {
               />
               {/* 95%成功機率約需花費 */}
               <div className="bg-secondary rounded-lg p-3">
-                <div className="flex justify-between items-baseline">
+                <div className="flex justify-between items-baseline gap-2">
                   <span className="text-xs text-muted-foreground">95%成功機率約需花費</span>
                   <span className="text-lg font-bold text-amber-400">
-                    {priceLoading
-                      ? '...'
+                    {optimizing
+                      ? '計算中...'
                       : remainingCost95 != null
                         ? `${remainingCost95.toLocaleString()} Gil`
-                        : '價格未知'}
+                        : '—'}
                   </span>
                 </div>
-                <div className="text-[10px] text-muted-foreground">
-                  {56 - learnedSkills.size} 個技能未習得
+                <div className="flex justify-between items-center">
+                  <div className="text-[10px] text-muted-foreground">
+                    {56 - learnedSkills.size} 個技能未習得
+                  </div>
+                  <button
+                    onClick={runOptimizer}
+                    disabled={optimizing || priceLoading || prices.length === 0}
+                    className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {optimizing ? '計算中...' : optimizationResult ? '重新計算' : '計算最佳合成'}
+                  </button>
                 </div>
               </div>
             </div>
             <div className="w-full md:flex-1">
               <CrystalOverview
-                learnedSkills={learnedSkills}
                 inventory={inventory}
                 onSetCount={setItemCount}
                 prices={prices}

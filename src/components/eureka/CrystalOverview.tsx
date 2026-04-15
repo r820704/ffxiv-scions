@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react';
 import type { LogogramPrice, LogogramListing } from '@/types/eureka';
 import { eurekaData, getMneme } from '@/data/eureka-data';
-import { computeCrystalNeeds, LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
+import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import type { OptimizationResult } from '@/utils/recipe-optimizer';
 import { cn } from '@/lib/utils';
 
@@ -62,7 +62,6 @@ function groupEntriesByWorld(entries: PurchasePlan['entries']): GroupedEntry[] {
 }
 
 interface CrystalOverviewProps {
-  learnedSkills: Set<string>;
   inventory: Record<string, number>;
   onSetCount: (logogramId: string, count: number) => void;
   prices: LogogramPrice[];
@@ -71,15 +70,12 @@ interface CrystalOverviewProps {
 }
 
 export default function CrystalOverview({
-  learnedSkills,
   inventory,
   onSetCount,
   prices,
   priceLoading,
   optimizationResult,
 }: CrystalOverviewProps) {
-  const needs = useMemo(() => computeCrystalNeeds(learnedSkills), [learnedSkills]);
-
   const listingsMap = useMemo(
     () => new Map(prices.map((p) => [p.itemId, p.listings])),
     [prices]
@@ -143,15 +139,13 @@ export default function CrystalOverview({
         {LOGOGRAM_FIXED_ORDER.map((logogramId) => {
           const logogram = logogramMap.get(logogramId);
           if (!logogram) return null;
-          // Use optimizer opensNeeded when available, fallback to naive needs
-          const need = optimizationResult
-            ? (optimizationResult.opensNeeded[logogramId] || 0)
-            : (needs[logogramId] || 0);
+          const hasOptResult = optimizationResult != null;
+          const need = hasOptResult ? (optimizationResult.opensNeeded[logogramId] || 0) : 0;
           const owned = inventory[logogramId] || 0;
-          const remaining = Math.max(0, need - owned);
+          const remaining = hasOptResult ? Math.max(0, need - owned) : 0;
 
           const listings = listingsMap.get(logogram.itemId) ?? [];
-          const plan = remaining > 0 ? buildPurchasePlan(listings, remaining) : null;
+          const plan = hasOptResult && remaining > 0 ? buildPurchasePlan(listings, remaining) : null;
           const lineCost = plan ? plan.totalCost : 0;
           const isExpanded = expandedRows.has(logogramId);
           const totalAvailable = listings.reduce((sum, l) => sum + l.quantity, 0);
@@ -165,9 +159,9 @@ export default function CrystalOverview({
               <div
                 className={cn(
                   'grid grid-cols-[1fr_60px_30px_30px_72px] gap-1 items-center py-1 text-xs border-b border-border/30',
-                  remaining > 0 && 'cursor-pointer hover:bg-secondary/50'
+                  hasOptResult && remaining > 0 && 'cursor-pointer hover:bg-secondary/50'
                 )}
-                onClick={() => remaining > 0 && toggleRow(logogramId)}
+                onClick={() => hasOptResult && remaining > 0 && toggleRow(logogramId)}
               >
                 <span className="text-xs text-foreground truncate flex items-center gap-1">
                   {logogram.nameTw}
@@ -183,10 +177,10 @@ export default function CrystalOverview({
                   >
                     i
                   </button>
-                  {remaining > 0 && plan && !plan.fulfilled && (
+                  {hasOptResult && remaining > 0 && plan && !plan.fulfilled && (
                     <span className="text-[9px] text-red-400" title="市場供應不足">⚠</span>
                   )}
-                  {remaining > 0 && (
+                  {hasOptResult && remaining > 0 && (
                     <span className={cn(
                       'text-[8px]',
                       isExpanded ? 'text-muted-foreground/50' : 'text-primary/60'
@@ -218,21 +212,25 @@ export default function CrystalOverview({
                     +
                   </button>
                 </div>
-                <span className="text-primary text-right">x{need}</span>
+                <span className="text-primary text-right">
+                  {hasOptResult ? `x${need}` : '—'}
+                </span>
                 <span
                   className={cn(
                     'text-right font-semibold',
-                    remaining === 0 ? 'text-green-400' : 'text-red-400'
+                    !hasOptResult ? 'text-muted-foreground' : remaining === 0 ? 'text-green-400' : 'text-red-400'
                   )}
                 >
-                  {remaining}
+                  {hasOptResult ? remaining : '—'}
                 </span>
                 <span className="text-amber-400 text-right">
-                  {priceLoading
-                    ? '...'
-                    : lineCost > 0
-                      ? lineCost.toLocaleString()
-                      : '—'}
+                  {!hasOptResult
+                    ? '—'
+                    : priceLoading
+                      ? '...'
+                      : lineCost > 0
+                        ? lineCost.toLocaleString()
+                        : '—'}
                 </span>
               </div>
 
