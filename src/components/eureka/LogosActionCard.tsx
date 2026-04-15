@@ -76,7 +76,7 @@ export default function LogosActionCard({
     let minCost = Infinity;
     let minIdx = -1;
     action.recipes.forEach((recipe, i) => {
-      const cost = calculateRecipeCost(recipe.ingredients, prices);
+      const cost = calculateRecipeCost95(recipe.ingredients, prices);
       if (cost != null && cost < minCost) {
         minCost = cost;
         minIdx = i;
@@ -220,13 +220,19 @@ export default function LogosActionCard({
                       <span className="text-muted-foreground">計算中...</span>
                     ) : cost != null ? (
                       <>
-                        <span className="font-medium text-amber-400">
-                          合計 {cost.toLocaleString()} gil
-                        </span>
-                        {cost95 != null && cost95 !== cost && (
-                          <span className="text-[0.6rem] text-muted-foreground">
-                            95% 機率成本{' '}
-                            <span className="text-amber-400/70">{cost95.toLocaleString()} gil</span>
+                        {cost95 != null && cost95 !== cost ? (
+                          <>
+                            <span className="font-medium text-amber-400">
+                              95% 機率成本 {cost95.toLocaleString()} gil
+                            </span>
+                            <span className="text-[0.6rem] text-muted-foreground">
+                              合計{' '}
+                              <span className="text-amber-400/50">{cost.toLocaleString()} gil</span>
+                            </span>
+                          </>
+                        ) : (
+                          <span className="font-medium text-amber-400">
+                            合計 {cost.toLocaleString()} gil
                           </span>
                         )}
                       </>
