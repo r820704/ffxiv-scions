@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect, Fragment } from 'react';
 import { createPortal } from 'react-dom';
 import type { LogosAction, LogogramPrice } from '@/types/eureka';
 import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
-import { calculateRecipeCost } from '@/utils/eureka-helpers';
+import { calculateRecipeCost, calculateRecipeCost95 } from '@/utils/eureka-helpers';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 import ActionDetailTooltip from './ActionDetailTooltip';
 
@@ -156,6 +156,7 @@ export default function LogosActionCard({
         >
           {action.recipes.map((recipe, ri) => {
             const cost = calculateRecipeCost(recipe.ingredients, prices);
+            const cost95 = calculateRecipeCost95(recipe.ingredients, prices);
             const isCheapest = hasMultiple && cheapestIdx === ri;
             return (
               <Fragment key={ri}>
@@ -214,13 +215,21 @@ export default function LogosActionCard({
                   {Array.from({ length: maxCols - recipe.ingredients.length }, (_, i) => (
                     <div key={`empty-${i}`} />
                   ))}
-                  <div className="text-right justify-self-end">
+                  <div className="text-right justify-self-end flex flex-col items-end gap-0.5">
                     {priceLoading ? (
                       <span className="text-muted-foreground">計算中...</span>
                     ) : cost != null ? (
-                      <span className="font-medium text-amber-400">
-                        合計 {cost.toLocaleString()} gil
-                      </span>
+                      <>
+                        <span className="font-medium text-amber-400">
+                          合計 {cost.toLocaleString()} gil
+                        </span>
+                        {cost95 != null && cost95 !== cost && (
+                          <span className="text-[0.6rem] text-muted-foreground">
+                            95% 機率成本{' '}
+                            <span className="text-amber-400/70">{cost95.toLocaleString()} gil</span>
+                          </span>
+                        )}
+                      </>
                     ) : (
                       <span className="text-muted-foreground">—</span>
                     )}
