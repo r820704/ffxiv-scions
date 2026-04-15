@@ -242,7 +242,7 @@ export default function AlbumRecipeList({
             const isLearned = learnedSkills.has(action.id);
             return (
               <div key={action.id} className="flex items-start gap-2">
-                <div className="flex-1 min-w-0">
+                <div className={cn('flex-1 min-w-0', !isLearned && 'opacity-60')}>
                   <LogosActionCard
                     action={action}
                     prices={prices}
