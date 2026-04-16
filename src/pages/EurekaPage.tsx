@@ -178,6 +178,7 @@ export default function EurekaPage() {
                 prices={prices}
                 priceLoading={priceLoading}
                 optimizationResult={optimizationResult}
+                mcCosts={mcCosts}
               />
             </div>
           </div>
