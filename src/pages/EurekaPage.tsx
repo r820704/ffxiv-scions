@@ -9,6 +9,7 @@ import { useAlbumState } from '@/hooks/useAlbumState';
 import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import { optimizeRecipes } from '@/utils/recipe-optimizer';
 import type { OptimizationResult } from '@/utils/recipe-optimizer';
+import { deriveMcCosts, type McDerivedCosts } from '@/utils/mc-analysis';
 
 export default function EurekaPage() {
   const [prices, setPrices] = useState<LogogramPrice[]>([]);
@@ -32,37 +33,24 @@ export default function EurekaPage() {
     }, 50);
   }, [learnedSkills, prices]);
 
-  const remainingCost95 = useMemo(() => {
-    if (!optimizationResult || prices.length === 0) return null;
-    const priceMap = new Map(prices.map((p) => [p.itemId, p.price]));
-
-    // Map each logogram in fixed order to its price; if any is missing, we can't compute.
-    const logogramPrices: (number | null)[] = LOGOGRAM_FIXED_ORDER.map((logogramId) => {
-      const logogram = eurekaData.logograms.find((l) => l.id === logogramId);
-      if (!logogram) return null;
-      return priceMap.get(logogram.itemId) ?? null;
-    });
-    if (logogramPrices.some((p) => p == null)) return null;
-
-    // Recompute per-iteration cost applying current inventory, then take 95th percentile.
-    const { mcOpensPerIter } = optimizationResult;
-    const totals = new Array<number>(mcOpensPerIter.length);
-    for (let i = 0; i < mcOpensPerIter.length; i++) {
-      const row = mcOpensPerIter[i]!;
-      let total = 0;
-      for (let j = 0; j < row.length; j++) {
-        const logogramId = LOGOGRAM_FIXED_ORDER[j]!;
-        const opens = row[j]!;
-        const owned = inventory[logogramId] ?? 0;
-        const remaining = Math.max(0, opens - owned);
-        total += remaining * (logogramPrices[j] as number);
-      }
-      totals[i] = total;
+  const listingsMap = useMemo(() => {
+    const m = new Map<string, LogogramPrice['listings']>();
+    for (const p of prices) {
+      const logogram = eurekaData.logograms.find((l) => l.itemId === p.itemId);
+      if (logogram) m.set(logogram.id, p.listings);
     }
-    totals.sort((a, b) => a - b);
-    const idx = Math.floor(totals.length * 0.95);
-    return totals[idx] ?? 0;
-  }, [optimizationResult, inventory, prices]);
+    return m;
+  }, [prices]);
+
+  const mcCosts: McDerivedCosts | null = useMemo(() => {
+    if (!optimizationResult || prices.length === 0) return null;
+    return deriveMcCosts({
+      mcOpensPerIter: optimizationResult.mcOpensPerIter,
+      logogramOrder: LOGOGRAM_FIXED_ORDER,
+      inventory,
+      listingsByLogogramId: listingsMap,
+    });
+  }, [optimizationResult, prices, inventory, listingsMap]);
 
   const loadPrices = useCallback(async () => {
     setPriceLoading(true);
@@ -153,20 +141,21 @@ export default function EurekaPage() {
                 learnedSkills={learnedSkills}
                 onToggle={toggleLearned}
               />
-              {/* 整體 95% 機率約需花費 */}
+              {/* 整體花費 */}
               <div className="bg-secondary rounded-lg p-3">
                 <div className="flex justify-between items-baseline gap-2">
-                  <span className="text-xs text-muted-foreground">整體 95% 機率約需花費</span>
-                  <span className="text-lg font-bold text-amber-400">
-                    {optimizing
-                      ? '計算中...'
-                      : remainingCost95 != null
-                        ? `${remainingCost95.toLocaleString()} Gil`
-                        : '—'}
-                  </span>
+                  <span className="text-xs text-muted-foreground">整體花費</span>
+                  <div className="flex flex-col items-end gap-0.5">
+                    <span className="text-base font-semibold text-amber-400">
+                      保底 {optimizing ? '計算中...' : mcCosts ? `${Math.round(mcCosts.totalCost95).toLocaleString()} Gil` : '—'}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      一般 {optimizing ? '計算中...' : mcCosts ? `${Math.round(mcCosts.totalCost50).toLocaleString()} Gil` : '—'}
+                    </span>
+                  </div>
                 </div>
                 <div className="text-[10px] text-muted-foreground/80 mt-0.5">
-                  Monte Carlo 聯合模擬，會小於下表各列 95% 相加
+                  保底：Monte Carlo 95% 分位；一般：50% 分位（中位數）
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="text-[10px] text-muted-foreground">
