@@ -1,38 +1,14 @@
 // src/components/eureka/CrystalOverview.tsx
 import { useState, useMemo } from 'react';
-import type { LogogramPrice, LogogramListing } from '@/types/eureka';
+import type { LogogramPrice } from '@/types/eureka';
 import { eurekaData, getMneme } from '@/data/eureka-data';
 import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import type { OptimizationResult } from '@/utils/recipe-optimizer';
 import { cn } from '@/lib/utils';
+import { buildPurchasePlan } from '@/utils/purchase-plan';
+import type { PurchasePlan } from '@/utils/purchase-plan';
 
 const logogramMap = new Map(eurekaData.logograms.map((l) => [l.id, l]));
-
-interface PurchasePlan {
-  entries: { worldName: string; quantity: number; pricePerUnit: number }[];
-  totalCost: number;
-  fulfilled: boolean;
-}
-
-function buildPurchasePlan(listings: LogogramListing[], need: number): PurchasePlan {
-  const entries: PurchasePlan['entries'] = [];
-  let remaining = need;
-  let totalCost = 0;
-
-  for (const listing of listings) {
-    if (remaining <= 0) break;
-    const take = Math.min(listing.quantity, remaining);
-    entries.push({
-      worldName: listing.worldName,
-      quantity: take,
-      pricePerUnit: listing.pricePerUnit,
-    });
-    totalCost += take * listing.pricePerUnit;
-    remaining -= take;
-  }
-
-  return { entries, totalCost, fulfilled: remaining <= 0 };
-}
 
 interface GroupedEntry {
   worldName: string;
