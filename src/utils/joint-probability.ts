@@ -126,6 +126,110 @@ export function jointLogogramsNeeded95(
 /** Clear the memoization cache (useful for testing). */
 export function clearJointCache(): void {
   cache.clear();
+  curveCache.clear();
+}
+
+const curveCache = new Map<string, Float64Array>();
+
+/**
+ * Build the joint success probability curve p(n) for n in [0, maxN].
+ * p(n) = probability that, after `n` opens of the logogram, all per-mneme
+ * requirements are simultaneously satisfied. Uses the same Markov chain as
+ * jointLogogramsNeeded95.
+ *
+ * Used by Method B greedy across logograms in calculateRecipeCost95.
+ */
+export function buildProbCurve(
+  requirements: number[],
+  totalTypes: number,
+  maxN: number,
+): Float64Array {
+  const reqs = requirements.filter((r) => r > 0).sort((a, b) => b - a);
+  const len = maxN + 1;
+
+  // No requirements → already satisfied at n=0
+  if (reqs.length === 0) {
+    const out = new Float64Array(len);
+    out.fill(1);
+    return out;
+  }
+  if (totalTypes <= 0) {
+    return new Float64Array(len); // all zeros
+  }
+
+  const key = `${reqs.join(',')}_${totalTypes}_${maxN}`;
+  const cached = curveCache.get(key);
+  if (cached !== undefined) return cached;
+
+  const out = new Float64Array(len);
+  out[0] = 0; // can't satisfy non-zero requirements with 0 opens
+
+  const neededTypes = reqs.length;
+  const p = 1 / totalTypes;
+  const unneededTypes = totalTypes - neededTypes;
+  const pUnneeded = unneededTypes * p;
+
+  // Build Markov state space: each dimension goes from 0 to req[i]
+  const dims = reqs.map((r) => r + 1);
+  const totalStates = dims.reduce((a, b) => a * b, 1);
+
+  let goalIndex = 0;
+  for (let i = 0; i < neededTypes; i++) {
+    goalIndex = goalIndex * dims[i]! + reqs[i]!;
+  }
+
+  // Precompute transitions
+  const transitions: number[][] = new Array(totalStates);
+  for (let si = 0; si < totalStates; si++) {
+    let remaining = si;
+    const counts = new Array(neededTypes);
+    for (let i = neededTypes - 1; i >= 0; i--) {
+      counts[i] = remaining % dims[i]!;
+      remaining = Math.floor(remaining / dims[i]!);
+    }
+    const targets: number[] = new Array(neededTypes);
+    for (let t = 0; t < neededTypes; t++) {
+      const newCount = Math.min(counts[t]! + 1, reqs[t]!);
+      if (newCount === counts[t]) {
+        targets[t] = si;
+      } else {
+        const oldVal = counts[t]!;
+        counts[t] = newCount;
+        let newIdx = 0;
+        for (let j = 0; j < neededTypes; j++) {
+          newIdx = newIdx * dims[j]! + counts[j]!;
+        }
+        targets[t] = newIdx;
+        counts[t] = oldVal;
+      }
+    }
+    transitions[si] = targets;
+  }
+
+  let current = new Float64Array(totalStates);
+  current[0] = 1.0;
+
+  for (let n = 1; n <= maxN; n++) {
+    const next = new Float64Array(totalStates);
+    for (let si = 0; si < totalStates; si++) {
+      const prob = current[si]!;
+      if (prob < 1e-15) continue;
+
+      if (pUnneeded > 0) {
+        next[si] = (next[si] ?? 0) + prob * pUnneeded;
+      }
+      const targets = transitions[si]!;
+      for (let t = 0; t < neededTypes; t++) {
+        const targetIdx = targets[t]!;
+        next[targetIdx] = (next[targetIdx] ?? 0) + prob * p;
+      }
+    }
+    current = next;
+    out[n] = current[goalIndex]!;
+  }
+
+  curveCache.set(key, out);
+  return out;
 }
 
 /**
