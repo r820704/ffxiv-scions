@@ -1,5 +1,5 @@
 // src/components/eureka/AlbumRecipeList.tsx
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { ALBUM_ORDER } from '@/data/album-order';
 import type { LogosAction, LogogramPrice, Role } from '@/types/eureka';
 import { eurekaData } from '@/data/eureka-data';
@@ -55,6 +55,13 @@ export default function AlbumRecipeList({
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [learnedFilter, setLearnedFilter] = useState<LearnedFilter>('all');
   const [expandedSet, setExpandedSet] = useState<Set<string>>(() => new Set(ALBUM_ORDER));
+
+  // Auto-switch filter to 'guide' whenever a new optimization result arrives
+  useEffect(() => {
+    if (optimizationResult) {
+      setLearnedFilter('guide');
+    }
+  }, [optimizationResult]);
 
   const orderedActions = useMemo(() => {
     return ALBUM_ORDER.map((id) => actionMap.get(id)).filter(
@@ -168,19 +175,30 @@ export default function AlbumRecipeList({
           </button>
         ))}
         <span className="text-border mx-0.5">|</span>
-        <button
-          onClick={() => setLearnedFilter(learnedFilter === 'guide' ? 'all' : 'guide')}
-          disabled={!optimizationResult}
-          className={cn(
-            'text-xs px-2 py-1 rounded transition-colors',
-            learnedFilter === 'guide'
-              ? 'bg-amber-600 text-amber-50'
-              : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-            !optimizationResult && 'opacity-50 cursor-not-allowed'
+        <span className="relative group inline-block">
+          <button
+            onClick={() => setLearnedFilter(learnedFilter === 'guide' ? 'all' : 'guide')}
+            disabled={!optimizationResult}
+            className={cn(
+              'text-xs px-2 py-1 rounded transition-colors',
+              learnedFilter === 'guide'
+                ? 'bg-amber-600 text-amber-50'
+                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+              !optimizationResult && 'opacity-50 cursor-not-allowed'
+            )}
+          >
+            合成指南
+          </button>
+          {!optimizationResult && (
+            <span
+              role="tooltip"
+              className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 rounded bg-popover text-popover-foreground text-xs whitespace-nowrap shadow-lg border border-border opacity-0 group-hover:opacity-100 transition-opacity z-10"
+            >
+              尚未計算合成方案，請先點擊上方計算按鈕
+              <span className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-border" />
+            </span>
           )}
-        >
-          合成指南
-        </button>
+        </span>
       </div>
 
       {/* Role filter (multi-select) */}

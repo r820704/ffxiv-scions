@@ -158,7 +158,7 @@ export default function EurekaPage() {
                   <button
                     onClick={runOptimizer}
                     disabled={optimizing || priceLoading || prices.length === 0}
-                    className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-xs px-3 py-1 rounded bg-amber-600 text-amber-50 hover:bg-amber-500 transition-colors cursor-pointer disabled:bg-amber-600/40 disabled:cursor-not-allowed"
                   >
                     {optimizing ? '計算中...' : optimizationResult ? '重新計算' : '計算最佳合成'}
                   </button>
