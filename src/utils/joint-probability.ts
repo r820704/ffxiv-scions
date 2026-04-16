@@ -22,12 +22,19 @@ export function jointLogogramsNeededN(
   totalTypes: number,
   confidence: number,
 ): number {
+  if (!Number.isFinite(confidence) || confidence <= 0 || confidence > 1) {
+    throw new RangeError(
+      `confidence must be in (0, 1], got ${confidence}`,
+    );
+  }
   // Filter out zero requirements and sort for consistent cache keys
   const reqs = requirements.filter((r) => r > 0).sort((a, b) => b - a);
   if (reqs.length === 0) return 0;
   if (totalTypes <= 0) return 0;
 
-  const key = `${reqs.join(',')}_${totalTypes}_${confidence}`;
+  // Use fixed precision in cache key so small rounding differences
+  // (e.g. 0.95 vs 0.9500000000000001) collapse to the same entry.
+  const key = `${reqs.join(',')}_${totalTypes}_${confidence.toFixed(6)}`;
   const cached = cache.get(key);
   if (cached !== undefined) return cached;
 
@@ -154,7 +161,7 @@ const curveCache = new Map<string, Float64Array>();
  * requirements are simultaneously satisfied. Uses the same Markov chain as
  * jointLogogramsNeededN.
  *
- * Used by Method B greedy across logograms in calculateRecipeCost95.
+ * Used by the Method B greedy cost calculator in eureka-helpers.
  */
 export function buildProbCurve(
   requirements: number[],

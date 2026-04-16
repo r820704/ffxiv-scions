@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { jointLogogramsNeeded95, buildProbCurve } from './joint-probability';
+import {
+  jointLogogramsNeeded95,
+  jointLogogramsNeeded50,
+  jointLogogramsNeededN,
+  buildProbCurve,
+  clearJointCache,
+} from './joint-probability';
 
 describe('jointLogogramsNeeded95', () => {
   it('should return 0 for empty requirements', () => {
@@ -100,12 +106,6 @@ describe('buildProbCurve', () => {
   });
 });
 
-import {
-  jointLogogramsNeeded50,
-  jointLogogramsNeededN,
-  clearJointCache,
-} from './joint-probability';
-
 describe('jointLogogramsNeededN (parameterized)', () => {
   beforeEach(() => clearJointCache());
 
@@ -129,6 +129,14 @@ describe('jointLogogramsNeededN (parameterized)', () => {
   it('empty requirements returns 0 regardless of confidence', () => {
     expect(jointLogogramsNeededN([], 5, 0.95)).toBe(0);
     expect(jointLogogramsNeededN([], 5, 0.5)).toBe(0);
+  });
+
+  it('rejects out-of-range confidence values', () => {
+    expect(() => jointLogogramsNeededN([1], 5, 0)).toThrow(RangeError);
+    expect(() => jointLogogramsNeededN([1], 5, -0.1)).toThrow(RangeError);
+    expect(() => jointLogogramsNeededN([1], 5, 1.1)).toThrow(RangeError);
+    expect(() => jointLogogramsNeededN([1], 5, NaN)).toThrow(RangeError);
+    expect(() => jointLogogramsNeededN([1], 5, Infinity)).toThrow(RangeError);
   });
 });
 
