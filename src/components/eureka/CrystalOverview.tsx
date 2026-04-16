@@ -1,5 +1,6 @@
 // src/components/eureka/CrystalOverview.tsx
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { LogogramPrice } from '@/types/eureka';
 import { eurekaData, getMneme } from '@/data/eureka-data';
 import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
@@ -59,6 +60,35 @@ export default function CrystalOverview({
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [mnemeInfoRows, setMnemeInfoRows] = useState<Set<string>>(new Set());
 
+  const [showPopover, setShowPopover] = useState(false);
+  const popoverTriggerRef = useRef<HTMLButtonElement>(null);
+  const popoverContentRef = useRef<HTMLDivElement>(null);
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    if (!showPopover) return;
+    const handleClick = (e: MouseEvent) => {
+      if (
+        popoverTriggerRef.current?.contains(e.target as Node) ||
+        popoverContentRef.current?.contains(e.target as Node)
+      ) return;
+      setShowPopover(false);
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [showPopover]);
+
+  const togglePopover = () => {
+    if (!popoverTriggerRef.current) return;
+    if (showPopover) {
+      setShowPopover(false);
+      return;
+    }
+    const rect = popoverTriggerRef.current.getBoundingClientRect();
+    setPopoverPos({ top: rect.bottom + 6, left: rect.left });
+    setShowPopover(true);
+  };
+
   const expandAll = () => setExpandedRows(new Set(LOGOGRAM_FIXED_ORDER));
   const collapseAll = () => setExpandedRows(new Set());
   const toggleRow = (id: string) => {
@@ -84,7 +114,17 @@ export default function CrystalOverview({
       {/* Crystal table */}
       <div className="bg-card border border-border rounded-lg p-3">
         <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-          <span className="text-sm font-medium text-primary">95% 機率成本總覽</span>
+          <span className="text-sm font-medium text-primary flex items-center gap-1">
+            成本總覽
+            <button
+              ref={popoverTriggerRef}
+              onClick={(e) => { e.stopPropagation(); togglePopover(); }}
+              className="shrink-0 w-4 h-4 rounded-full text-[10px] flex items-center justify-center cursor-pointer bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-colors"
+              aria-label="查看名詞說明"
+            >
+              ?
+            </button>
+          </span>
           <div className="flex gap-2">
             <button
               onClick={expandAll}
@@ -262,6 +302,28 @@ export default function CrystalOverview({
           );
         })}
       </div>
+      {showPopover && popoverPos && createPortal(
+        <div
+          ref={popoverContentRef}
+          className="fixed z-50 max-w-xs p-3 rounded-lg bg-popover text-popover-foreground text-xs shadow-lg border border-border"
+          style={{ top: popoverPos.top, left: popoverPos.left }}
+        >
+          <div className="space-y-2">
+            <div>
+              <span className="font-semibold text-amber-400">保底</span>
+              <span className="ml-1">— 95% 的人不會超過這個金額（保險預算）</span>
+            </div>
+            <div>
+              <span className="font-semibold text-primary">一般</span>
+              <span className="ml-1">— 半數人花費在此以下（中位數）</span>
+            </div>
+            <div className="pt-2 border-t border-border/50 text-muted-foreground">
+              每列顯示的需求與花費，是在對應情境下各文理通常會開的次數與花費，加總近似總計。
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }
