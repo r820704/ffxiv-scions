@@ -129,8 +129,6 @@ export function calculateRecipeCostN(
   const groups = Array.from(groupMap.values());
   if (groups.length === 0) return 0;
 
-  const TARGET = confidence;
-
   // Build per-group probability curve. maxN per group: the n that achieves a
   // very high single-group confidence (0.99) is more than enough headroom for
   // the greedy to find a joint allocation.
@@ -150,7 +148,7 @@ export function calculateRecipeCostN(
   // Initialise each group at its minimum-feasible n (where probability first becomes > 0).
   const ns = minN.slice();
 
-  // Greedy: while joint prob < TARGET, increment the group with best Δlog p / price ratio.
+  // Greedy: while joint prob < confidence, increment the group with best Δlog p / price ratio.
   // Cap iterations as a safety net; the upper bound above guarantees feasibility.
   const maxSteps = curves.reduce((acc, c) => acc + c.length, 0);
   for (let step = 0; step < maxSteps; step++) {
@@ -163,7 +161,7 @@ export function calculateRecipeCostN(
       }
       logJoint += Math.log(p);
     }
-    if (logJoint >= Math.log(TARGET)) break;
+    if (logJoint >= Math.log(confidence)) break;
 
     // Find best group to increment
     let bestIdx = -1;
