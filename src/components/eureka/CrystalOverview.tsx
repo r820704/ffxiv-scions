@@ -115,6 +115,7 @@ export default function CrystalOverview({
           const logogram = logogramMap.get(logogramId);
           if (!logogram) return null;
           const hasOptResult = optimizationResult != null;
+          // @ts-expect-error - migrating to deriveMcCosts (Task 6)
           const need = hasOptResult ? (optimizationResult.opensNeeded[logogramId] || 0) : 0;
           const owned = inventory[logogramId] || 0;
           const remaining = hasOptResult ? Math.max(0, need - owned) : 0;

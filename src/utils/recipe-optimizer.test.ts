@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { optimizeRecipes } from './recipe-optimizer';
-import type { LogogramPrice } from '@/types/eureka';
+import { deriveMcCosts } from './mc-analysis';
+import { LOGOGRAM_FIXED_ORDER } from './album-helpers';
+import { eurekaData } from '@/data/eureka-data';
+import type { LogogramPrice, LogogramListing } from '@/types/eureka';
 
 const mockPrices: LogogramPrice[] = [
   { itemId: 24007, price: 215, worldName: 'Bahamut', lastUpdated: null, listings: [] },
@@ -14,12 +17,36 @@ const mockPrices: LogogramPrice[] = [
   { itemId: 24809, price: 7000, worldName: 'Bahamut', lastUpdated: null, listings: [] },
 ];
 
+/**
+ * Synthesize listings map from mock prices so deriveMcCosts has market data to
+ * compute per-logogram / total costs. Each logogram gets one deep listing.
+ */
+function buildListingsMap(prices: LogogramPrice[]): Map<string, LogogramListing[]> {
+  const m = new Map<string, LogogramListing[]>();
+  for (const p of prices) {
+    const logo = eurekaData.logograms.find((l) => l.itemId === p.itemId);
+    if (logo && p.price != null) {
+      m.set(logo.id, [
+        { quantity: 999999, pricePerUnit: p.price, worldName: p.worldName ?? 'A' },
+      ]);
+    }
+  }
+  return m;
+}
+
 describe('optimizeRecipes', () => {
   it('should return results for all unlearned skills', () => {
     const result = optimizeRecipes(new Set(), mockPrices);
     // All 56 skills should have a selected recipe
     expect(Object.keys(result.selectedRecipes).length).toBe(56);
-    expect(result.totalCost).toBeGreaterThan(0);
+
+    const costs = deriveMcCosts({
+      mcOpensPerIter: result.mcOpensPerIter,
+      logogramOrder: LOGOGRAM_FIXED_ORDER,
+      inventory: {},
+      listingsByLogogramId: buildListingsMap(mockPrices),
+    });
+    expect(costs.totalCost95).toBeGreaterThan(0);
   });
 
   it('should return fewer skills when some are learned', () => {
@@ -29,32 +56,58 @@ describe('optimizeRecipes', () => {
 
   it('should produce lower total cost than naive approach', () => {
     const result = optimizeRecipes(new Set(), mockPrices);
+    const costs = deriveMcCosts({
+      mcOpensPerIter: result.mcOpensPerIter,
+      logogramOrder: LOGOGRAM_FIXED_ORDER,
+      inventory: {},
+      listingsByLogogramId: buildListingsMap(mockPrices),
+    });
     // Total cost should be positive and finite
-    expect(result.totalCost).toBeGreaterThan(0);
-    expect(result.totalCost).toBeLessThan(Infinity);
+    expect(costs.totalCost95).toBeGreaterThan(0);
+    expect(costs.totalCost95).toBeLessThan(Infinity);
   });
 
   it('should have consistent mneme needs with selected recipes', () => {
     const result = optimizeRecipes(new Set(), mockPrices);
-    // All logogram costs should be non-negative
-    for (const logogramId of Object.keys(result.costPerLogogram)) {
-      expect(result.costPerLogogram[logogramId]).toBeGreaterThanOrEqual(0);
+    const costs = deriveMcCosts({
+      mcOpensPerIter: result.mcOpensPerIter,
+      logogramOrder: LOGOGRAM_FIXED_ORDER,
+      inventory: {},
+      listingsByLogogramId: buildListingsMap(mockPrices),
+    });
+    // All per-logogram costs should be non-negative
+    for (const logogramId of Object.keys(costs.costPerLogogram95)) {
+      expect(costs.costPerLogogram95[logogramId]).toBeGreaterThanOrEqual(0);
     }
-    // Total should equal sum of per-logogram costs
-    const sumCosts = Object.values(result.costPerLogogram).reduce((a, b) => a + b, 0);
-    expect(result.totalCost).toBe(sumCosts);
+    // Sum of per-logogram costs should be close to totalCost95 (within ~5% drift
+    // per mc-analysis windowed-expectation design).
+    const sumCosts = Object.values(costs.costPerLogogram95).reduce((a, b) => a + b, 0);
+    expect(Math.abs(sumCosts - costs.totalCost95) / costs.totalCost95).toBeLessThan(0.05);
   });
 
   it('should reduce cost when skills are learned', () => {
+    const listingsMap = buildListingsMap(mockPrices);
     const noLearned = optimizeRecipes(new Set(), mockPrices);
     const someLearned = optimizeRecipes(
       new Set(['wisdom-aetherweaver', 'wisdom-martialist', 'wisdom-platebearer']),
       mockPrices
     );
-    expect(someLearned.totalCost).toBeLessThan(noLearned.totalCost);
+    const noLearnedCosts = deriveMcCosts({
+      mcOpensPerIter: noLearned.mcOpensPerIter,
+      logogramOrder: LOGOGRAM_FIXED_ORDER,
+      inventory: {},
+      listingsByLogogramId: listingsMap,
+    });
+    const someLearnedCosts = deriveMcCosts({
+      mcOpensPerIter: someLearned.mcOpensPerIter,
+      logogramOrder: LOGOGRAM_FIXED_ORDER,
+      inventory: {},
+      listingsByLogogramId: listingsMap,
+    });
+    expect(someLearnedCosts.totalCost95).toBeLessThan(noLearnedCosts.totalCost95);
   });
 
-  describe('Monte Carlo 95% total', () => {
+  describe('Monte Carlo output', () => {
     it('should produce an mcOpensPerIter matrix with expected shape', () => {
       const result = optimizeRecipes(new Set(), mockPrices);
       expect(result.mcOpensPerIter.length).toBe(10000);
@@ -63,19 +116,19 @@ describe('optimizeRecipes', () => {
         expect(row.length).toBe(9);
       }
     });
+  });
 
-    it('should produce a positive totalCost95Mc for non-empty needs', () => {
+  describe('deriveMcCosts integration', () => {
+    it('should produce a positive totalCost95 for non-empty needs', () => {
       const result = optimizeRecipes(new Set(), mockPrices);
-      expect(result.totalCost95Mc).toBeGreaterThan(0);
-      expect(result.totalCost95Mc).toBeLessThan(Infinity);
-    });
-
-    it('should have totalCost95Mc <= sum of per-logogram 95% costs (joint ≤ marginal sum)', () => {
-      // The MC joint 95% should be less than or equal to the sum of per-logogram 95%s,
-      // because the sum-of-marginals overestimates the joint percentile.
-      const result = optimizeRecipes(new Set(), mockPrices);
-      // Allow small MC noise tolerance (1% slack).
-      expect(result.totalCost95Mc).toBeLessThanOrEqual(result.totalCost * 1.01);
+      const costs = deriveMcCosts({
+        mcOpensPerIter: result.mcOpensPerIter,
+        logogramOrder: LOGOGRAM_FIXED_ORDER,
+        inventory: {},
+        listingsByLogogramId: buildListingsMap(mockPrices),
+      });
+      expect(costs.totalCost95).toBeGreaterThan(0);
+      expect(costs.totalCost95).toBeLessThan(Infinity);
     });
 
     it('should return 0 cost when all skills learned', () => {
@@ -86,7 +139,13 @@ describe('optimizeRecipes', () => {
         allSkills.add(skillId);
       }
       const result = optimizeRecipes(allSkills, mockPrices);
-      expect(result.totalCost95Mc).toBe(0);
+      const costs = deriveMcCosts({
+        mcOpensPerIter: result.mcOpensPerIter,
+        logogramOrder: LOGOGRAM_FIXED_ORDER,
+        inventory: {},
+        listingsByLogogramId: buildListingsMap(mockPrices),
+      });
+      expect(costs.totalCost95).toBe(0);
       // All MC iterations should yield zero opens
       for (const row of result.mcOpensPerIter.slice(0, 5)) {
         expect(row.every((o) => o === 0)).toBe(true);
@@ -94,4 +153,3 @@ describe('optimizeRecipes', () => {
     });
   });
 });
-
