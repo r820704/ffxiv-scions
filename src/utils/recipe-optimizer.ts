@@ -22,13 +22,23 @@ export interface OptimizationResult {
   selectedRecipes: Record<string, number>;
   /** Aggregated mneme needs per logogram */
   mnemeNeeds: MnemeNeeds;
-  /** 95% opens needed per logogram */
+  /** 95% opens needed per logogram (per-logogram DP, independent) */
   opensNeeded: Record<string, number>;
-  /** 95% cost per logogram */
+  /** 95% cost per logogram (per-logogram DP) */
   costPerLogogram: Record<string, number>;
-  /** Total 95% cost */
+  /** Sum of per-logogram 95% costs (joint prob ≈ 0.95^N, not true album 95%) */
   totalCost: number;
+  /**
+   * Monte Carlo simulation: per-iteration per-logogram opens until requirements met.
+   * Shape: [iterations][LOGOGRAM_FIXED_ORDER.length].
+   * Use to compute true joint 95% percentile of total cost, including inventory-aware variants.
+   */
+  mcOpensPerIter: number[][];
+  /** 95th percentile of total cost across MC iterations (pre-inventory, true joint 95%). */
+  totalCost95Mc: number;
 }
+
+const MC_ITERATIONS = 10000;
 
 /** Get which logograms a recipe touches */
 function getRecipeLogograms(skillId: string, recipeIdx: number): Set<string> {
@@ -155,6 +165,98 @@ function calcCostWithAffectedLogograms(
   }
 
   return newTotal;
+}
+
+/**
+ * Simulate opening a single logogram until all its required mnemes are collected.
+ * Returns the number of opens needed (each open draws uniformly from mnemeIds).
+ */
+function simulateSingleLogogramOpens(
+  mnemeIds: string[],
+  mnemeReqs: Record<string, number>,
+): number {
+  const totalTypes = mnemeIds.length;
+  if (totalTypes === 0) return 0;
+
+  // Map each mneme index to remaining required quantity (0 if not required)
+  const reqByIdx = new Array(totalTypes).fill(0);
+  let remainingCount = 0;
+  for (let i = 0; i < totalTypes; i++) {
+    const id = mnemeIds[i];
+    if (id !== undefined) {
+      const qty = mnemeReqs[id] ?? 0;
+      reqByIdx[i] = qty;
+      remainingCount += qty;
+    }
+  }
+  if (remainingCount === 0) return 0;
+
+  let opens = 0;
+  while (remainingCount > 0) {
+    opens++;
+    const idx = Math.floor(Math.random() * totalTypes);
+    if (reqByIdx[idx] > 0) {
+      reqByIdx[idx]--;
+      remainingCount--;
+    }
+  }
+  return opens;
+}
+
+/**
+ * Run Monte Carlo simulation for total album cost distribution.
+ * For each iteration, simulate every logogram independently.
+ * Returns per-iteration per-logogram opens matrix.
+ */
+function runMonteCarlo(
+  needs: MnemeNeeds,
+  iterations: number = MC_ITERATIONS,
+): number[][] {
+  const orderedLogograms = LOGOGRAM_FIXED_ORDER.map((id) => {
+    const logogram = logogramMap.get(id);
+    return {
+      mnemeIds: logogram?.mnemeIds ?? [],
+      reqs: needs[id] ?? {},
+    };
+  });
+
+  const opensPerIter: number[][] = new Array(iterations);
+  for (let i = 0; i < iterations; i++) {
+    const row = new Array(orderedLogograms.length);
+    for (let j = 0; j < orderedLogograms.length; j++) {
+      const { mnemeIds, reqs } = orderedLogograms[j]!;
+      row[j] = simulateSingleLogogramOpens(mnemeIds, reqs);
+    }
+    opensPerIter[i] = row;
+  }
+  return opensPerIter;
+}
+
+/**
+ * Compute the 95th percentile of total cost from an MC opens matrix.
+ */
+function computeTotalCost95FromMc(
+  opensPerIter: number[][],
+  priceMap: Map<number, number | null>,
+): number {
+  const logogramPrices = LOGOGRAM_FIXED_ORDER.map((id) => {
+    const logogram = logogramMap.get(id);
+    if (!logogram) return 0;
+    return priceMap.get(logogram.itemId) ?? 0;
+  });
+
+  const totals = new Array(opensPerIter.length);
+  for (let i = 0; i < opensPerIter.length; i++) {
+    const row = opensPerIter[i]!;
+    let total = 0;
+    for (let j = 0; j < row.length; j++) {
+      total += row[j]! * logogramPrices[j]!;
+    }
+    totals[i] = total;
+  }
+  totals.sort((a: number, b: number) => a - b);
+  const idx = Math.floor(totals.length * 0.95);
+  return totals[idx] ?? 0;
 }
 
 /**
@@ -296,11 +398,17 @@ export function optimizeRecipes(
   // Final cost calculation (authoritative)
   const final = calculateTotalCost95(needs, priceMap);
 
+  // Monte Carlo simulation for true joint 95% percentile
+  const mcOpensPerIter = runMonteCarlo(needs);
+  const totalCost95Mc = computeTotalCost95FromMc(mcOpensPerIter, priceMap);
+
   return {
     selectedRecipes,
     mnemeNeeds: needs,
     opensNeeded: final.opensNeeded,
     costPerLogogram: final.costPerLogogram,
     totalCost: final.totalCost,
+    mcOpensPerIter,
+    totalCost95Mc,
   };
 }

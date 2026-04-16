@@ -35,19 +35,33 @@ export default function EurekaPage() {
   const remainingCost95 = useMemo(() => {
     if (!optimizationResult || prices.length === 0) return null;
     const priceMap = new Map(prices.map((p) => [p.itemId, p.price]));
-    let total = 0;
-    for (const logogramId of LOGOGRAM_FIXED_ORDER) {
-      const opens = optimizationResult.opensNeeded[logogramId] || 0;
-      const owned = inventory[logogramId] || 0;
-      const remaining = Math.max(0, opens - owned);
-      if (remaining === 0) continue;
+
+    // Map each logogram in fixed order to its price; if any is missing, we can't compute.
+    const logogramPrices: (number | null)[] = LOGOGRAM_FIXED_ORDER.map((logogramId) => {
       const logogram = eurekaData.logograms.find((l) => l.id === logogramId);
-      if (!logogram) continue;
-      const price = priceMap.get(logogram.itemId);
-      if (price == null) return null;
-      total += remaining * price;
+      if (!logogram) return null;
+      return priceMap.get(logogram.itemId) ?? null;
+    });
+    if (logogramPrices.some((p) => p == null)) return null;
+
+    // Recompute per-iteration cost applying current inventory, then take 95th percentile.
+    const { mcOpensPerIter } = optimizationResult;
+    const totals = new Array<number>(mcOpensPerIter.length);
+    for (let i = 0; i < mcOpensPerIter.length; i++) {
+      const row = mcOpensPerIter[i]!;
+      let total = 0;
+      for (let j = 0; j < row.length; j++) {
+        const logogramId = LOGOGRAM_FIXED_ORDER[j]!;
+        const opens = row[j]!;
+        const owned = inventory[logogramId] ?? 0;
+        const remaining = Math.max(0, opens - owned);
+        total += remaining * (logogramPrices[j] as number);
+      }
+      totals[i] = total;
     }
-    return total;
+    totals.sort((a, b) => a - b);
+    const idx = Math.floor(totals.length * 0.95);
+    return totals[idx] ?? 0;
   }, [optimizationResult, inventory, prices]);
 
   const loadPrices = useCallback(async () => {
@@ -139,10 +153,10 @@ export default function EurekaPage() {
                 learnedSkills={learnedSkills}
                 onToggle={toggleLearned}
               />
-              {/* 95%成功機率約需花費 */}
+              {/* 整體 95% 機率約需花費 */}
               <div className="bg-secondary rounded-lg p-3">
                 <div className="flex justify-between items-baseline gap-2">
-                  <span className="text-xs text-muted-foreground">95%成功機率約需花費</span>
+                  <span className="text-xs text-muted-foreground">整體 95% 機率約需花費</span>
                   <span className="text-lg font-bold text-amber-400">
                     {optimizing
                       ? '計算中...'
@@ -150,6 +164,9 @@ export default function EurekaPage() {
                         ? `${remainingCost95.toLocaleString()} Gil`
                         : '—'}
                   </span>
+                </div>
+                <div className="text-[10px] text-muted-foreground/80 mt-0.5">
+                  Monte Carlo 聯合模擬，會小於下表各列 95% 相加
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="text-[10px] text-muted-foreground">
