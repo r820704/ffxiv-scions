@@ -238,10 +238,6 @@ export default function LogosActionCard({
                             （保底 {cost95.toLocaleString()} gil）
                           </span>
                         </>
-                      ) : cost95 != null ? (
-                        <span className="font-medium text-amber-400">
-                          保底 {cost95.toLocaleString()} gil
-                        </span>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
