@@ -42,13 +42,17 @@ function binomialCdfAtMost(k: number, n: number, p: number): number {
 
 /**
  * Find the minimum number of logograms needed to get at least `needed`
- * of a specific mneme with >= 95% probability.
+ * of a specific mneme with >= `confidence` probability.
  * Each logogram has `totalMnemes` possible outcomes (equal probability).
+ *
+ * @throws {RangeError} if confidence is not in (0, 1]
  */
-export function logogramsNeeded95(needed: number, totalMnemes: number): number {
+export function logogramsNeededN(needed: number, totalMnemes: number, confidence: number): number {
+  if (!Number.isFinite(confidence) || confidence <= 0 || confidence > 1) {
+    throw new RangeError(`confidence must be in (0, 1], got ${confidence}`);
+  }
   if (totalMnemes <= 1) return needed;
   const p = 1 / totalMnemes;
-  const confidence = 0.95;
   // Start from the minimum possible and search upward
   for (let n = needed; n <= needed * totalMnemes * 5; n++) {
     if (1 - binomialCdfAtMost(needed - 1, n, p) >= confidence) {
@@ -59,21 +63,37 @@ export function logogramsNeeded95(needed: number, totalMnemes: number): number {
 }
 
 /**
- * Calculate recipe cost at 95% **joint** confidence (Method B greedy).
+ * Find the minimum number of logograms needed to get at least `needed`
+ * of a specific mneme with >= 95% probability.
+ * Each logogram has `totalMnemes` possible outcomes (equal probability).
+ */
+export function logogramsNeeded95(needed: number, totalMnemes: number): number {
+  return logogramsNeededN(needed, totalMnemes, 0.95);
+}
+
+/**
+ * Calculate recipe cost at the given joint `confidence` level (Method B greedy).
  *
  * Groups ingredients by source logogram, then greedily allocates opens across
  * logograms to minimise total gil spend while keeping the joint probability of
- * satisfying every ingredient requirement at >= 95%.
+ * satisfying every ingredient requirement at >= confidence.
  *
  * For single-logogram recipes this collapses to the same answer as the previous
  * per-ingredient calculation. For multi-logogram recipes it spends more — but
- * the resulting cost actually buys a true 95% chance of crafting the skill,
- * making cross-recipe cost comparison meaningful.
+ * the resulting cost actually buys a true `confidence` chance of crafting the
+ * skill, making cross-recipe cost comparison meaningful.
+ *
+ * @throws {RangeError} if confidence is not in (0, 1]
  */
-export function calculateRecipeCost95(
+export function calculateRecipeCostN(
   ingredients: RecipeIngredient[],
-  prices: LogogramPrice[]
+  prices: LogogramPrice[],
+  confidence: number,
 ): number | null {
+  if (!Number.isFinite(confidence) || confidence <= 0 || confidence > 1) {
+    throw new RangeError(`confidence must be in (0, 1], got ${confidence}`);
+  }
+
   const priceMap = new Map(prices.map((p) => [p.itemId, p.price]));
 
   // Group ingredients by source logogram
@@ -109,17 +129,17 @@ export function calculateRecipeCost95(
   const groups = Array.from(groupMap.values());
   if (groups.length === 0) return 0;
 
-  const TARGET = 0.95;
+  const TARGET = confidence;
 
   // Build per-group probability curve. maxN per group: the n that achieves a
   // very high single-group confidence (0.99) is more than enough headroom for
-  // the greedy to find a joint 0.95 allocation.
+  // the greedy to find a joint allocation.
   const curves: Float64Array[] = [];
   const minN: number[] = [];
 
   for (const g of groups) {
     // Estimate generous upper bound: enough opens for that group alone to hit ~99.9%.
-    // sum(requirements) * totalTypes * 5 mirrors the bound in jointLogogramsNeeded95.
+    // sum(requirements) * totalTypes * 5 mirrors the bound in jointLogogramsNeededN.
     const sumReqs = g.requirements.reduce((a, b) => a + b, 0);
     const upper = Math.max(sumReqs * g.totalTypes * 5, 50);
     curves.push(buildProbCurve(g.requirements, g.totalTypes, upper));
@@ -172,4 +192,26 @@ export function calculateRecipeCost95(
     total += groups[i]!.price * ns[i]!;
   }
   return total;
+}
+
+/**
+ * Calculate recipe cost at 95% joint confidence. Back-compat wrapper around
+ * {@link calculateRecipeCostN}.
+ */
+export function calculateRecipeCost95(
+  ingredients: RecipeIngredient[],
+  prices: LogogramPrice[],
+): number | null {
+  return calculateRecipeCostN(ingredients, prices, 0.95);
+}
+
+/**
+ * Calculate recipe cost at 50% joint confidence (median cost). Wrapper around
+ * {@link calculateRecipeCostN}.
+ */
+export function calculateRecipeCost50(
+  ingredients: RecipeIngredient[],
+  prices: LogogramPrice[],
+): number | null {
+  return calculateRecipeCostN(ingredients, prices, 0.5);
 }
