@@ -2,7 +2,7 @@
 //
 // Joint probability calculation for logogram mneme drops.
 // Given a logogram with N mneme types (equal probability 1/N each),
-// compute the minimum number of opens to achieve >= 95% probability
+// compute the minimum number of opens to achieve >= confidence
 // of simultaneously obtaining all required mnemes in required quantities.
 
 const cache = new Map<string, number>();
@@ -10,31 +10,32 @@ const cache = new Map<string, number>();
 /**
  * For a single logogram with `totalTypes` equally-likely mneme types,
  * and a list of required quantities for specific mneme types,
- * find the minimum opens N such that P(all requirements met) >= 0.95.
+ * find the minimum opens N such that P(all requirements met) >= confidence.
  *
  * @param requirements Array of required quantities (sorted descending for cache efficiency).
  * @param totalTypes Total number of mneme types in this logogram.
- * @returns Minimum number of opens for >= 95% joint success probability.
+ * @param confidence Probability threshold (e.g. 0.95 or 0.5).
+ * @returns Minimum number of opens for >= confidence joint success probability.
  */
-export function jointLogogramsNeeded95(
+export function jointLogogramsNeededN(
   requirements: number[],
   totalTypes: number,
+  confidence: number,
 ): number {
   // Filter out zero requirements and sort for consistent cache keys
   const reqs = requirements.filter((r) => r > 0).sort((a, b) => b - a);
   if (reqs.length === 0) return 0;
   if (totalTypes <= 0) return 0;
 
-  const key = `${reqs.join(',')}_${totalTypes}`;
+  const key = `${reqs.join(',')}_${totalTypes}_${confidence}`;
   const cached = cache.get(key);
   if (cached !== undefined) return cached;
 
-  const confidence = 0.95;
   const neededTypes = reqs.length;
 
   // Single requirement: use fast binomial calculation
   if (neededTypes === 1) {
-    const result = singleMnemeNeeded95(reqs[0]!, totalTypes);
+    const result = singleMnemeNeededN(reqs[0]!, totalTypes, confidence);
     cache.set(key, result);
     return result;
   }
@@ -85,7 +86,7 @@ export function jointLogogramsNeeded95(
     transitions[si] = targets;
   }
 
-  // Iteratively add opens until goal probability >= 95%
+  // Iteratively add opens until goal probability >= confidence
   let current = new Float64Array(totalStates);
   current[0] = 1.0;
   const maxN = Math.max(...reqs) * totalTypes * 5;
@@ -123,6 +124,22 @@ export function jointLogogramsNeeded95(
   return result;
 }
 
+/** Back-compat wrapper: 95% confidence. */
+export function jointLogogramsNeeded95(
+  requirements: number[],
+  totalTypes: number,
+): number {
+  return jointLogogramsNeededN(requirements, totalTypes, 0.95);
+}
+
+/** 50% confidence (median) variant. */
+export function jointLogogramsNeeded50(
+  requirements: number[],
+  totalTypes: number,
+): number {
+  return jointLogogramsNeededN(requirements, totalTypes, 0.5);
+}
+
 /** Clear the memoization cache (useful for testing). */
 export function clearJointCache(): void {
   cache.clear();
@@ -135,7 +152,7 @@ const curveCache = new Map<string, Float64Array>();
  * Build the joint success probability curve p(n) for n in [0, maxN].
  * p(n) = probability that, after `n` opens of the logogram, all per-mneme
  * requirements are simultaneously satisfied. Uses the same Markov chain as
- * jointLogogramsNeeded95.
+ * jointLogogramsNeededN.
  *
  * Used by Method B greedy across logograms in calculateRecipeCost95.
  */
@@ -233,13 +250,17 @@ export function buildProbCurve(
 }
 
 /**
- * Single mneme type: find N such that P(Binomial(N, 1/totalTypes) >= needed) >= 0.95.
+ * Single mneme type: find N such that P(Binomial(N, 1/totalTypes) >= needed) >= confidence.
  */
-function singleMnemeNeeded95(needed: number, totalTypes: number): number {
+function singleMnemeNeededN(
+  needed: number,
+  totalTypes: number,
+  confidence: number,
+): number {
   if (totalTypes <= 1) return needed;
   const p = 1 / totalTypes;
   for (let n = needed; n <= needed * totalTypes * 5; n++) {
-    if (1 - binomialCdfAtMost(needed - 1, n, p) >= 0.95) {
+    if (1 - binomialCdfAtMost(needed - 1, n, p) >= confidence) {
       return n;
     }
   }

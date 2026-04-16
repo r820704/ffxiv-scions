@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { jointLogogramsNeeded95, buildProbCurve } from './joint-probability';
 
 describe('jointLogogramsNeeded95', () => {
@@ -97,5 +97,57 @@ describe('buildProbCurve', () => {
     const curve = buildProbCurve(reqs, total, n95 + 5);
     expect(curve[n95]).toBeGreaterThanOrEqual(0.95);
     expect(curve[n95 - 1]).toBeLessThan(0.95);
+  });
+});
+
+import {
+  jointLogogramsNeeded50,
+  jointLogogramsNeededN,
+  clearJointCache,
+} from './joint-probability';
+
+describe('jointLogogramsNeededN (parameterized)', () => {
+  beforeEach(() => clearJointCache());
+
+  it('returns fewer opens at 50% than at 95%', () => {
+    const n95 = jointLogogramsNeededN([5, 3], 9, 0.95);
+    const n50 = jointLogogramsNeededN([5, 3], 9, 0.5);
+    expect(n50).toBeGreaterThan(0);
+    expect(n50).toBeLessThan(n95);
+  });
+
+  it('cache key includes confidence (different values produce different results from cache)', () => {
+    const n95a = jointLogogramsNeededN([5, 3], 9, 0.95);
+    const n50a = jointLogogramsNeededN([5, 3], 9, 0.5);
+    const n95b = jointLogogramsNeededN([5, 3], 9, 0.95);
+    const n50b = jointLogogramsNeededN([5, 3], 9, 0.5);
+    expect(n95b).toBe(n95a);
+    expect(n50b).toBe(n50a);
+    expect(n95a).not.toBe(n50a);
+  });
+
+  it('empty requirements returns 0 regardless of confidence', () => {
+    expect(jointLogogramsNeededN([], 5, 0.95)).toBe(0);
+    expect(jointLogogramsNeededN([], 5, 0.5)).toBe(0);
+  });
+});
+
+describe('jointLogogramsNeeded50 wrapper', () => {
+  beforeEach(() => clearJointCache());
+
+  it('matches jointLogogramsNeededN at 0.5', () => {
+    expect(jointLogogramsNeeded50([5, 3], 9)).toBe(
+      jointLogogramsNeededN([5, 3], 9, 0.5),
+    );
+  });
+});
+
+describe('jointLogogramsNeeded95 wrapper (back-compat)', () => {
+  beforeEach(() => clearJointCache());
+
+  it('matches jointLogogramsNeededN at 0.95', () => {
+    expect(jointLogogramsNeeded95([5, 3], 9)).toBe(
+      jointLogogramsNeededN([5, 3], 9, 0.95),
+    );
   });
 });
