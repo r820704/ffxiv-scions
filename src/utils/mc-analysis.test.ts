@@ -115,4 +115,46 @@ describe('deriveMcCosts', () => {
     expect(result.totalCost95).toBe(0);
     expect(result.totalCost50).toBe(0);
   });
+
+  it('handles single iteration (N=1, window fallback path)', () => {
+    // N=1 exercises the windowIndices fallback (high <= low)
+    const listings = new Map<string, LogogramListing[]>([
+      ['log1', mkListings(100)],
+      ['log2', mkListings(200)],
+      ['log3', mkListings(50)],
+    ]);
+    const result = deriveMcCosts({
+      mcOpensPerIter: [[5, 3, 2]],
+      logogramOrder: IDS,
+      inventory: {},
+      listingsByLogogramId: listings,
+    });
+    // With one iteration, both 95% and 50% windows collapse to that same iteration
+    expect(result.totalCost95).toBe(result.totalCost50);
+    // Cost = 5*100 + 3*200 + 2*50 = 1200
+    expect(result.totalCost95).toBe(1200);
+    expect(result.costPerLogogram95.log1).toBe(500);
+    expect(result.costPerLogogram95.log2).toBe(600);
+    expect(result.costPerLogogram95.log3).toBe(100);
+  });
+
+  it('falls back to empty listings when logogram id has no entry', () => {
+    // buildPurchasePlan with [] listings returns totalCost = 0 (unfulfilled).
+    // The logogram contributes 0 cost rather than crashing.
+    const listings = new Map<string, LogogramListing[]>([
+      ['log1', mkListings(100)],
+      // log2, log3 intentionally missing
+    ]);
+    const result = deriveMcCosts({
+      mcOpensPerIter: [[5, 5, 5]],
+      logogramOrder: IDS,
+      inventory: {},
+      listingsByLogogramId: listings,
+    });
+    expect(result.costPerLogogram95.log1).toBe(500);
+    expect(result.costPerLogogram95.log2).toBe(0);
+    expect(result.costPerLogogram95.log3).toBe(0);
+    // Total matches (only log1 contributes)
+    expect(result.totalCost95).toBe(500);
+  });
 });
