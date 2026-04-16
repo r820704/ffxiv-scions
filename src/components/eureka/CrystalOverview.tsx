@@ -5,8 +5,7 @@ import { eurekaData, getMneme } from '@/data/eureka-data';
 import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import type { OptimizationResult } from '@/utils/recipe-optimizer';
 import { cn } from '@/lib/utils';
-import { buildPurchasePlan } from '@/utils/purchase-plan';
-import type { PurchasePlan } from '@/utils/purchase-plan';
+import { buildPurchasePlan, type PurchasePlan } from '@/utils/purchase-plan';
 
 const logogramMap = new Map(eurekaData.logograms.map((l) => [l.id, l]));
 

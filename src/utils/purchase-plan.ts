@@ -6,6 +6,15 @@ export interface PurchasePlan {
   fulfilled: boolean;
 }
 
+/**
+ * Build a greedy purchase plan: consume listings in the given order, taking
+ * min(listing.quantity, remaining) from each until `need` is satisfied.
+ *
+ * Pre-condition: `listings` MUST already be sorted by `pricePerUnit` ASC for
+ * the plan to reflect the cheapest-first purchase. Callers are responsible
+ * for sorting; this function intentionally does not sort to keep the operation
+ * O(n) and side-effect free.
+ */
 export function buildPurchasePlan(
   listings: LogogramListing[],
   need: number,

@@ -37,6 +37,9 @@ describe('buildPurchasePlan', () => {
 
   it('marks not fulfilled when listings run out', () => {
     const plan = buildPurchasePlan([L(5, 100)], 10);
+    expect(plan.entries).toEqual([
+      { worldName: 'A', quantity: 5, pricePerUnit: 100 },
+    ]);
     expect(plan.totalCost).toBe(500);
     expect(plan.fulfilled).toBe(false);
   });
