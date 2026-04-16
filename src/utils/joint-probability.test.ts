@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { jointLogogramsNeeded95 } from './joint-probability';
+import { jointLogogramsNeeded95, buildProbCurve } from './joint-probability';
 
 describe('jointLogogramsNeeded95', () => {
   it('should return 0 for empty requirements', () => {
@@ -52,5 +52,50 @@ describe('jointLogogramsNeeded95', () => {
     expect(joint).toBeLessThan(40);
     // But more than 20 (still need both)
     expect(joint).toBeGreaterThan(20);
+  });
+});
+
+describe('buildProbCurve', () => {
+  it('should return p[0] = 0 when requirements are non-zero', () => {
+    const curve = buildProbCurve([1], 7, 5);
+    expect(curve[0]).toBe(0);
+  });
+
+  it('should return p[0] = 1 for empty requirements', () => {
+    const curve = buildProbCurve([], 7, 5);
+    expect(curve[0]).toBe(1);
+  });
+
+  it('should be monotonically non-decreasing', () => {
+    const curve = buildProbCurve([1, 1], 7, 50);
+    for (let n = 1; n < curve.length; n++) {
+      expect(curve[n]).toBeGreaterThanOrEqual(curve[n - 1]!);
+    }
+  });
+
+  it('should reach >= 0.95 at jointLogogramsNeeded95 index', () => {
+    const reqs = [1];
+    const total = 7;
+    const n95 = jointLogogramsNeeded95(reqs, total);
+    const curve = buildProbCurve(reqs, total, n95 + 5);
+    expect(curve[n95]).toBeGreaterThanOrEqual(0.95);
+    expect(curve[n95 - 1]).toBeLessThan(0.95);
+  });
+
+  it('should match binomial intuition for single-mneme single-need', () => {
+    // 1 from 2 mnemes: p(N) = 1 - (1/2)^N
+    const curve = buildProbCurve([1], 2, 6);
+    expect(curve[1]).toBeCloseTo(0.5, 6);
+    expect(curve[2]).toBeCloseTo(0.75, 6);
+    expect(curve[3]).toBeCloseTo(0.875, 6);
+  });
+
+  it('should match jointLogogramsNeeded95 for joint requirements', () => {
+    const reqs = [1, 1];
+    const total = 7;
+    const n95 = jointLogogramsNeeded95(reqs, total);
+    const curve = buildProbCurve(reqs, total, n95 + 5);
+    expect(curve[n95]).toBeGreaterThanOrEqual(0.95);
+    expect(curve[n95 - 1]).toBeLessThan(0.95);
   });
 });
