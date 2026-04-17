@@ -113,16 +113,7 @@ export default function EurekaPage() {
 
   return (
     <div className="relative">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: [
-            'radial-gradient(ellipse 60% 40% at 10% 20%, rgba(74,48,120,0.06), transparent)',
-            'radial-gradient(ellipse 50% 35% at 85% 70%, rgba(40,80,140,0.05), transparent)',
-            'radial-gradient(ellipse 45% 30% at 50% 90%, rgba(120,50,50,0.04), transparent)',
-          ].join(', '),
-        }}
-      />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 40% at 10% 20%,rgba(74,48,120,.06),transparent),radial-gradient(ellipse 50% 35% at 85% 70%,rgba(40,80,140,.05),transparent),radial-gradient(ellipse 45% 30% at 50% 90%,rgba(120,50,50,.04),transparent)' }} />
       <div className="relative">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <h1 className="font-title text-2xl font-bold text-primary">Eureka 文理技能</h1>
@@ -148,28 +139,20 @@ export default function EurekaPage() {
 
         {/* Tab switcher */}
         <div className="flex border-b-2 border-border mb-4">
-          <button
-            className={cn(
-              'px-4 py-1.5 text-sm transition-colors cursor-pointer -mb-[2px]',
-              activeTab === 'album'
-                ? 'text-primary border-b-2 border-primary-dark font-semibold'
-                : 'text-muted-foreground hover:text-foreground',
-            )}
-            onClick={() => setActiveTab('album')}
-          >
-            圖鑑模式
-          </button>
-          <button
-            className={cn(
-              'px-4 py-1.5 text-sm transition-colors cursor-pointer -mb-[2px]',
-              activeTab === 'slots'
-                ? 'text-primary border-b-2 border-primary-dark font-semibold'
-                : 'text-muted-foreground hover:text-foreground',
-            )}
-            onClick={() => setActiveTab('slots')}
-          >
-            技能格模式
-          </button>
+          {(['album', 'slots'] as const).map((tab) => (
+            <button
+              key={tab}
+              className={cn(
+                'px-4 py-1.5 text-sm transition-colors cursor-pointer -mb-[2px]',
+                activeTab === tab
+                  ? 'text-primary border-b-2 border-primary-dark font-semibold'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === 'album' ? '圖鑑模式' : '技能格模式'}
+            </button>
+          ))}
         </div>
 
         {activeTab === 'album' && (
