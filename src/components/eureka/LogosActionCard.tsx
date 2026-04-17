@@ -232,7 +232,7 @@ export default function LogosActionCard({
                       ) : cost50 != null && cost95 != null ? (
                         <>
                           <span className="font-medium text-amber-400">
-                            一般 {cost50.toLocaleString()} gil
+                            預估 {cost50.toLocaleString()} gil
                           </span>
                           <span className="text-[0.6rem] text-muted-foreground">
                             （保底 {cost95.toLocaleString()} gil）

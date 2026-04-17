@@ -151,7 +151,7 @@ export default function CrystalOverview({
           <span className="text-right">需求</span>
           <span className="text-right">還需</span>
           <span className="text-right">保底</span>
-          <span className="text-right hidden sm:block">一般</span>
+          <span className="text-right hidden sm:block">預估</span>
         </div>
 
         {/* Rows — one per logogram (9 total) */}
@@ -265,7 +265,7 @@ export default function CrystalOverview({
               </div>
               {hasOptResult && !priceLoading && lineCost50 > 0 && (
                 <div className="sm:hidden text-[10px] text-primary pl-3 text-right">
-                  一般 {Math.round(lineCost50).toLocaleString()}
+                  預估 {Math.round(lineCost50).toLocaleString()}
                 </div>
               )}
 
@@ -335,17 +335,17 @@ export default function CrystalOverview({
             </span>
           </div>
         )}
-        {/* Mobile-only stacked 總計 一般 */}
+        {/* Mobile-only stacked 總計 預估 */}
         {mcCosts && (
           <div className="sm:hidden text-[10px] text-primary pl-3 text-right font-semibold">
-            一般 {Math.round(mcCosts.totalCost50).toLocaleString()}
+            預估 {Math.round(mcCosts.totalCost50).toLocaleString()}
           </div>
         )}
       </div>
       {showPopover && popoverPos && createPortal(
         <div
           ref={popoverContentRef}
-          className="fixed z-50 max-w-xs p-3 rounded-lg bg-popover text-popover-foreground text-xs shadow-lg border border-border"
+          className="fixed z-50 max-w-xs p-3 rounded-lg bg-card text-card-foreground text-xs shadow-lg border border-border"
           style={{ top: popoverPos.top, left: popoverPos.left }}
         >
           <div className="space-y-2">
@@ -354,7 +354,7 @@ export default function CrystalOverview({
               <span className="ml-1">— 95% 的人不會超過這個金額（保險預算）</span>
             </div>
             <div>
-              <span className="font-semibold text-primary">一般</span>
+              <span className="font-semibold text-primary">預估</span>
               <span className="ml-1">— 半數人花費在此以下（中位數）</span>
             </div>
             <div className="pt-2 border-t border-border/50 text-muted-foreground">

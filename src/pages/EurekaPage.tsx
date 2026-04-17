@@ -146,16 +146,16 @@ export default function EurekaPage() {
                 <div className="flex justify-between items-baseline gap-2">
                   <span className="text-xs text-muted-foreground">整體花費</span>
                   <div className="flex flex-col items-end gap-0.5">
-                    <span className="text-base font-semibold text-amber-400">
-                      保底 {optimizing ? '計算中...' : mcCosts ? `${Math.round(mcCosts.totalCost95).toLocaleString()} Gil` : '—'}
+                    <span className="text-base font-semibold text-primary">
+                      預估 {optimizing ? '計算中...' : mcCosts ? `${Math.round(mcCosts.totalCost50).toLocaleString()} Gil` : '—'}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      一般 {optimizing ? '計算中...' : mcCosts ? `${Math.round(mcCosts.totalCost50).toLocaleString()} Gil` : '—'}
+                      保底 {optimizing ? '計算中...' : mcCosts ? `${Math.round(mcCosts.totalCost95).toLocaleString()} Gil` : '—'}
                     </span>
                   </div>
                 </div>
                 <div className="text-[10px] text-muted-foreground/80 mt-0.5">
-                  保底：Monte Carlo 95% 分位；一般：50% 分位（中位數）
+                  預估：50% 分位（中位數）；保底：95% 分位
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="text-[10px] text-muted-foreground">
