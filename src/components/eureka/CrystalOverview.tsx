@@ -1,38 +1,15 @@
 // src/components/eureka/CrystalOverview.tsx
-import { useState, useMemo } from 'react';
-import type { LogogramPrice, LogogramListing } from '@/types/eureka';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import type { LogogramPrice } from '@/types/eureka';
 import { eurekaData, getMneme } from '@/data/eureka-data';
 import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import type { OptimizationResult } from '@/utils/recipe-optimizer';
+import type { McDerivedCosts } from '@/utils/mc-analysis';
 import { cn } from '@/lib/utils';
+import { buildPurchasePlan, type PurchasePlan } from '@/utils/purchase-plan';
 
 const logogramMap = new Map(eurekaData.logograms.map((l) => [l.id, l]));
-
-interface PurchasePlan {
-  entries: { worldName: string; quantity: number; pricePerUnit: number }[];
-  totalCost: number;
-  fulfilled: boolean;
-}
-
-function buildPurchasePlan(listings: LogogramListing[], need: number): PurchasePlan {
-  const entries: PurchasePlan['entries'] = [];
-  let remaining = need;
-  let totalCost = 0;
-
-  for (const listing of listings) {
-    if (remaining <= 0) break;
-    const take = Math.min(listing.quantity, remaining);
-    entries.push({
-      worldName: listing.worldName,
-      quantity: take,
-      pricePerUnit: listing.pricePerUnit,
-    });
-    totalCost += take * listing.pricePerUnit;
-    remaining -= take;
-  }
-
-  return { entries, totalCost, fulfilled: remaining <= 0 };
-}
 
 interface GroupedEntry {
   worldName: string;
@@ -67,6 +44,7 @@ interface CrystalOverviewProps {
   prices: LogogramPrice[];
   priceLoading: boolean;
   optimizationResult: OptimizationResult | null;
+  mcCosts: McDerivedCosts | null;
 }
 
 export default function CrystalOverview({
@@ -75,6 +53,7 @@ export default function CrystalOverview({
   prices,
   priceLoading,
   optimizationResult,
+  mcCosts,
 }: CrystalOverviewProps) {
   const listingsMap = useMemo(
     () => new Map(prices.map((p) => [p.itemId, p.listings])),
@@ -83,6 +62,35 @@ export default function CrystalOverview({
 
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [mnemeInfoRows, setMnemeInfoRows] = useState<Set<string>>(new Set());
+
+  const [showPopover, setShowPopover] = useState(false);
+  const popoverTriggerRef = useRef<HTMLButtonElement>(null);
+  const popoverContentRef = useRef<HTMLDivElement>(null);
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    if (!showPopover) return;
+    const handleClick = (e: MouseEvent) => {
+      if (
+        popoverTriggerRef.current?.contains(e.target as Node) ||
+        popoverContentRef.current?.contains(e.target as Node)
+      ) return;
+      setShowPopover(false);
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [showPopover]);
+
+  const togglePopover = () => {
+    if (!popoverTriggerRef.current) return;
+    if (showPopover) {
+      setShowPopover(false);
+      return;
+    }
+    const rect = popoverTriggerRef.current.getBoundingClientRect();
+    setPopoverPos({ top: rect.bottom + 6, left: rect.left });
+    setShowPopover(true);
+  };
 
   const expandAll = () => setExpandedRows(new Set(LOGOGRAM_FIXED_ORDER));
   const collapseAll = () => setExpandedRows(new Set());
@@ -109,7 +117,17 @@ export default function CrystalOverview({
       {/* Crystal table */}
       <div className="bg-card border border-border rounded-lg p-3">
         <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-          <span className="text-sm font-medium text-primary">95% 機率成本總覽</span>
+          <span className="text-sm font-medium text-primary flex items-center gap-1">
+            成本總覽
+            <button
+              ref={popoverTriggerRef}
+              onClick={(e) => { e.stopPropagation(); togglePopover(); }}
+              className="shrink-0 w-4 h-4 rounded-full text-[10px] flex items-center justify-center cursor-pointer bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-colors"
+              aria-label="查看名詞說明"
+            >
+              ?
+            </button>
+          </span>
           <div className="flex gap-2">
             <button
               onClick={expandAll}
@@ -127,26 +145,29 @@ export default function CrystalOverview({
         </div>
 
         {/* Header */}
-        <div className="grid grid-cols-[1fr_60px_30px_30px_72px] gap-1 text-[10px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
+        <div className="grid grid-cols-[1fr_60px_30px_30px_72px] sm:grid-cols-[1fr_60px_30px_30px_72px_72px] gap-1 text-[10px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
           <span>名稱</span>
           <span className="text-center">持有</span>
           <span className="text-right">需求</span>
           <span className="text-right">還需</span>
-          <span className="text-right">花費</span>
+          <span className="text-right">保底</span>
+          <span className="text-right hidden sm:block">一般</span>
         </div>
 
         {/* Rows — one per logogram (9 total) */}
         {LOGOGRAM_FIXED_ORDER.map((logogramId) => {
           const logogram = logogramMap.get(logogramId);
           if (!logogram) return null;
-          const hasOptResult = optimizationResult != null;
-          const need = hasOptResult ? (optimizationResult.opensNeeded[logogramId] || 0) : 0;
+          const hasOptResult = optimizationResult != null && mcCosts != null;
+          const need95 = hasOptResult ? Math.round(mcCosts.opensNeeded95[logogramId] ?? 0) : 0;
           const owned = inventory[logogramId] || 0;
-          const remaining = hasOptResult ? Math.max(0, need - owned) : 0;
+          const remaining95 = hasOptResult ? Math.max(0, need95 - owned) : 0;
+
+          const lineCost95 = hasOptResult ? (mcCosts.costPerLogogram95[logogramId] ?? 0) : 0;
+          const lineCost50 = hasOptResult ? (mcCosts.costPerLogogram50[logogramId] ?? 0) : 0;
 
           const listings = listingsMap.get(logogram.itemId) ?? [];
-          const plan = hasOptResult && remaining > 0 ? buildPurchasePlan(listings, remaining) : null;
-          const lineCost = plan ? plan.totalCost : 0;
+          const plan = hasOptResult && remaining95 > 0 ? buildPurchasePlan(listings, remaining95) : null;
           const isExpanded = expandedRows.has(logogramId);
           const totalAvailable = listings.reduce((sum, l) => sum + l.quantity, 0);
 
@@ -158,10 +179,10 @@ export default function CrystalOverview({
             <div key={logogramId}>
               <div
                 className={cn(
-                  'grid grid-cols-[1fr_60px_30px_30px_72px] gap-1 items-center py-1 text-xs border-b border-border/30',
-                  hasOptResult && remaining > 0 && 'cursor-pointer hover:bg-secondary/50'
+                  'grid grid-cols-[1fr_60px_30px_30px_72px] sm:grid-cols-[1fr_60px_30px_30px_72px_72px] gap-1 items-center py-1 text-xs border-b border-border/30',
+                  hasOptResult && remaining95 > 0 && 'cursor-pointer hover:bg-secondary/50'
                 )}
-                onClick={() => hasOptResult && remaining > 0 && toggleRow(logogramId)}
+                onClick={() => hasOptResult && remaining95 > 0 && toggleRow(logogramId)}
               >
                 <span className="text-xs text-foreground truncate flex items-center gap-1">
                   {logogram.nameTw}
@@ -177,10 +198,10 @@ export default function CrystalOverview({
                   >
                     i
                   </button>
-                  {hasOptResult && remaining > 0 && plan && !plan.fulfilled && (
+                  {hasOptResult && remaining95 > 0 && plan && !plan.fulfilled && (
                     <span className="text-[9px] text-red-400" title="市場供應不足">⚠</span>
                   )}
-                  {hasOptResult && remaining > 0 && (
+                  {hasOptResult && remaining95 > 0 && (
                     <span className={cn(
                       'text-[8px]',
                       isExpanded ? 'text-muted-foreground/50' : 'text-primary/60'
@@ -213,26 +234,40 @@ export default function CrystalOverview({
                   </button>
                 </div>
                 <span className="text-primary text-right">
-                  {hasOptResult ? `x${need}` : '—'}
+                  {hasOptResult ? `x${need95}` : '—'}
                 </span>
                 <span
                   className={cn(
                     'text-right font-semibold',
-                    !hasOptResult ? 'text-muted-foreground' : remaining === 0 ? 'text-green-400' : 'text-red-400'
+                    !hasOptResult ? 'text-muted-foreground' : remaining95 === 0 ? 'text-green-400' : 'text-red-400'
                   )}
                 >
-                  {hasOptResult ? remaining : '—'}
+                  {hasOptResult ? remaining95 : '—'}
                 </span>
                 <span className="text-amber-400 text-right">
                   {!hasOptResult
                     ? '—'
                     : priceLoading
                       ? '...'
-                      : lineCost > 0
-                        ? lineCost.toLocaleString()
+                      : lineCost95 > 0
+                        ? Math.round(lineCost95).toLocaleString()
+                        : '—'}
+                </span>
+                <span className="text-primary text-right hidden sm:block">
+                  {!hasOptResult
+                    ? '—'
+                    : priceLoading
+                      ? '...'
+                      : lineCost50 > 0
+                        ? Math.round(lineCost50).toLocaleString()
                         : '—'}
                 </span>
               </div>
+              {hasOptResult && !priceLoading && lineCost50 > 0 && (
+                <div className="sm:hidden text-[10px] text-primary pl-3 text-right">
+                  一般 {Math.round(lineCost50).toLocaleString()}
+                </div>
+              )}
 
               {/* Mneme requirements from optimizer — always visible */}
               {hasMnemeReqs && (
@@ -285,7 +320,50 @@ export default function CrystalOverview({
             </div>
           );
         })}
+        {/* 總計列 */}
+        {mcCosts && (
+          <div className="grid grid-cols-[1fr_60px_30px_30px_72px] sm:grid-cols-[1fr_60px_30px_30px_72px_72px] gap-1 items-center pt-2 pb-1 text-xs font-semibold border-t-2 border-border mt-1">
+            <span className="text-foreground">總計</span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span className="text-amber-400 text-right">
+              {Math.round(mcCosts.totalCost95).toLocaleString()}
+            </span>
+            <span className="text-primary text-right hidden sm:block">
+              {Math.round(mcCosts.totalCost50).toLocaleString()}
+            </span>
+          </div>
+        )}
+        {/* Mobile-only stacked 總計 一般 */}
+        {mcCosts && (
+          <div className="sm:hidden text-[10px] text-primary pl-3 text-right font-semibold">
+            一般 {Math.round(mcCosts.totalCost50).toLocaleString()}
+          </div>
+        )}
       </div>
+      {showPopover && popoverPos && createPortal(
+        <div
+          ref={popoverContentRef}
+          className="fixed z-50 max-w-xs p-3 rounded-lg bg-popover text-popover-foreground text-xs shadow-lg border border-border"
+          style={{ top: popoverPos.top, left: popoverPos.left }}
+        >
+          <div className="space-y-2">
+            <div>
+              <span className="font-semibold text-amber-400">保底</span>
+              <span className="ml-1">— 95% 的人不會超過這個金額（保險預算）</span>
+            </div>
+            <div>
+              <span className="font-semibold text-primary">一般</span>
+              <span className="ml-1">— 半數人花費在此以下（中位數）</span>
+            </div>
+            <div className="pt-2 border-t border-border/50 text-muted-foreground">
+              每列顯示的需求與花費，是在對應情境下各文理通常會開的次數與花費，加總近似總計。
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }

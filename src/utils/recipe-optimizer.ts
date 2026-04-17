@@ -22,20 +22,13 @@ export interface OptimizationResult {
   selectedRecipes: Record<string, number>;
   /** Aggregated mneme needs per logogram */
   mnemeNeeds: MnemeNeeds;
-  /** 95% opens needed per logogram (per-logogram DP, independent) */
-  opensNeeded: Record<string, number>;
-  /** 95% cost per logogram (per-logogram DP) */
-  costPerLogogram: Record<string, number>;
-  /** Sum of per-logogram 95% costs (joint prob ≈ 0.95^N, not true album 95%) */
-  totalCost: number;
   /**
    * Monte Carlo simulation: per-iteration per-logogram opens until requirements met.
    * Shape: [iterations][LOGOGRAM_FIXED_ORDER.length].
-   * Use to compute true joint 95% percentile of total cost, including inventory-aware variants.
+   * Use with deriveMcCosts (src/utils/mc-analysis) to compute per-logogram and
+   * total costs at target percentiles, including inventory-aware variants.
    */
   mcOpensPerIter: number[][];
-  /** 95th percentile of total cost across MC iterations (pre-inventory, true joint 95%). */
-  totalCost95Mc: number;
 }
 
 const MC_ITERATIONS = 10000;
@@ -233,33 +226,6 @@ function runMonteCarlo(
 }
 
 /**
- * Compute the 95th percentile of total cost from an MC opens matrix.
- */
-function computeTotalCost95FromMc(
-  opensPerIter: number[][],
-  priceMap: Map<number, number | null>,
-): number {
-  const logogramPrices = LOGOGRAM_FIXED_ORDER.map((id) => {
-    const logogram = logogramMap.get(id);
-    if (!logogram) return 0;
-    return priceMap.get(logogram.itemId) ?? 0;
-  });
-
-  const totals = new Array(opensPerIter.length);
-  for (let i = 0; i < opensPerIter.length; i++) {
-    const row = opensPerIter[i]!;
-    let total = 0;
-    for (let j = 0; j < row.length; j++) {
-      total += row[j]! * logogramPrices[j]!;
-    }
-    totals[i] = total;
-  }
-  totals.sort((a: number, b: number) => a - b);
-  const idx = Math.floor(totals.length * 0.95);
-  return totals[idx] ?? 0;
-}
-
-/**
  * Run the greedy recipe optimizer with local search refinement.
  */
 export function optimizeRecipes(
@@ -395,20 +361,12 @@ export function optimizeRecipes(
     }
   }
 
-  // Final cost calculation (authoritative)
-  const final = calculateTotalCost95(needs, priceMap);
-
-  // Monte Carlo simulation for true joint 95% percentile
+  // Monte Carlo simulation for percentile-based cost derivation (see mc-analysis.ts)
   const mcOpensPerIter = runMonteCarlo(needs);
-  const totalCost95Mc = computeTotalCost95FromMc(mcOpensPerIter, priceMap);
 
   return {
     selectedRecipes,
     mnemeNeeds: needs,
-    opensNeeded: final.opensNeeded,
-    costPerLogogram: final.costPerLogogram,
-    totalCost: final.totalCost,
     mcOpensPerIter,
-    totalCost95Mc,
   };
 }

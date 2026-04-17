@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect, Fragment } from 'react';
 import { createPortal } from 'react-dom';
 import type { LogosAction, LogogramPrice } from '@/types/eureka';
 import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
-import { calculateRecipeCost, calculateRecipeCost95 } from '@/utils/eureka-helpers';
+import { calculateRecipeCost95, calculateRecipeCost50 } from '@/utils/eureka-helpers';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 import ActionDetailTooltip from './ActionDetailTooltip';
 
@@ -163,8 +163,8 @@ export default function LogosActionCard({
           style={{ gridTemplateColumns: templateCols }}
         >
           {recipesToShow.map(({ recipe, ri }, idx) => {
-            const cost = hidePrice ? null : calculateRecipeCost(recipe.ingredients, prices);
             const cost95 = hidePrice ? null : calculateRecipeCost95(recipe.ingredients, prices);
+            const cost50 = hidePrice ? null : calculateRecipeCost50(recipe.ingredients, prices);
             const isCheapest = hasMultiple && cheapestIdx === ri;
             return (
               <Fragment key={ri}>
@@ -229,23 +229,14 @@ export default function LogosActionCard({
                     <div className="text-right justify-self-end flex flex-col items-end gap-0.5">
                       {priceLoading ? (
                         <span className="text-muted-foreground">計算中...</span>
-                      ) : cost != null ? (
+                      ) : cost50 != null && cost95 != null ? (
                         <>
-                          {cost95 != null && cost95 !== cost ? (
-                            <>
-                              <span className="font-medium text-amber-400">
-                                95% 機率成本 {cost95.toLocaleString()} gil
-                              </span>
-                              <span className="text-[0.6rem] text-muted-foreground">
-                                單價合計{' '}
-                                <span className="text-amber-400/50">{cost.toLocaleString()} gil</span>
-                              </span>
-                            </>
-                          ) : (
-                            <span className="font-medium text-amber-400">
-                              單價合計 {cost.toLocaleString()} gil
-                            </span>
-                          )}
+                          <span className="font-medium text-amber-400">
+                            一般 {cost50.toLocaleString()} gil
+                          </span>
+                          <span className="text-[0.6rem] text-muted-foreground">
+                            （保底 {cost95.toLocaleString()} gil）
+                          </span>
                         </>
                       ) : (
                         <span className="text-muted-foreground">—</span>

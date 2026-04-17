@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { calculateRecipeCost, calculateRecipeCost95, logogramsNeeded95 } from './eureka-helpers';
+import {
+  calculateRecipeCost,
+  calculateRecipeCost95,
+  calculateRecipeCost50,
+  calculateRecipeCostN,
+  logogramsNeeded95,
+  logogramsNeededN,
+} from './eureka-helpers';
 import { buildProbCurve } from './joint-probability';
 import { getLogogramForMneme } from '@/data/eureka-data';
 import type { LogogramPrice, RecipeIngredient } from '@/types/eureka';
@@ -74,6 +81,18 @@ describe('logogramsNeeded95', () => {
     const n1 = logogramsNeeded95(1, 7);
     const n2 = logogramsNeeded95(2, 7);
     expect(n2).toBeGreaterThan(n1);
+  });
+});
+
+describe('logogramsNeededN (parameterized)', () => {
+  it('returns fewer logograms at 50% than at 95%', () => {
+    expect(logogramsNeededN(3, 7, 0.5)).toBeLessThan(logogramsNeededN(3, 7, 0.95));
+  });
+
+  it('rejects out-of-range confidence', () => {
+    expect(() => logogramsNeededN(1, 7, 0)).toThrow(RangeError);
+    expect(() => logogramsNeededN(1, 7, 1.1)).toThrow(RangeError);
+    expect(() => logogramsNeededN(1, 7, NaN)).toThrow(RangeError);
   });
 });
 
@@ -248,5 +267,49 @@ describe('calculateRecipeCost95', () => {
       }
       expect(bestJoint).toBeGreaterThanOrEqual(0.95);
     });
+  });
+});
+
+describe('calculateRecipeCostN (parameterized)', () => {
+  const ingredients: RecipeIngredient[] = [
+    { mnemeId: 'wisdom-aetherweaver', quantity: 5 },
+  ];
+
+  it('returns less cost at 50% than at 95%', () => {
+    const cost95 = calculateRecipeCostN(ingredients, mockPrices, 0.95);
+    const cost50 = calculateRecipeCostN(ingredients, mockPrices, 0.5);
+    expect(cost50).not.toBeNull();
+    expect(cost95).not.toBeNull();
+    expect(cost50!).toBeLessThan(cost95!);
+  });
+
+  it('rejects out-of-range confidence', () => {
+    expect(() => calculateRecipeCostN(ingredients, mockPrices, 0)).toThrow(RangeError);
+    expect(() => calculateRecipeCostN(ingredients, mockPrices, 1.1)).toThrow(RangeError);
+    expect(() => calculateRecipeCostN(ingredients, mockPrices, NaN)).toThrow(RangeError);
+  });
+});
+
+describe('calculateRecipeCost50 wrapper', () => {
+  const ingredients: RecipeIngredient[] = [
+    { mnemeId: 'wisdom-aetherweaver', quantity: 5 },
+  ];
+
+  it('equals calculateRecipeCostN at 0.5', () => {
+    expect(calculateRecipeCost50(ingredients, mockPrices)).toBe(
+      calculateRecipeCostN(ingredients, mockPrices, 0.5),
+    );
+  });
+});
+
+describe('calculateRecipeCost95 wrapper (back-compat)', () => {
+  const ingredients: RecipeIngredient[] = [
+    { mnemeId: 'wisdom-aetherweaver', quantity: 5 },
+  ];
+
+  it('equals calculateRecipeCostN at 0.95', () => {
+    expect(calculateRecipeCost95(ingredients, mockPrices)).toBe(
+      calculateRecipeCostN(ingredients, mockPrices, 0.95),
+    );
   });
 });
