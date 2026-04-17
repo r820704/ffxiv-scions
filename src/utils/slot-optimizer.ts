@@ -113,7 +113,7 @@ export function simulateSlotMC(
           // Open logograms for the rest
           while (remaining > 0) {
             if (prep.logogramIdx < 0) break;
-            opens[prep.logogramIdx]++;
+            opens[prep.logogramIdx]!++;
             const totalTypes = prep.logogramMnemeIds.length;
             const rolledIdx = Math.floor(Math.random() * totalTypes);
             const rolledMneme = prep.logogramMnemeIds[rolledIdx]!;
