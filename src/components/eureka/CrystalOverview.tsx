@@ -345,7 +345,7 @@ export default function CrystalOverview({
       {showPopover && popoverPos && createPortal(
         <div
           ref={popoverContentRef}
-          className="fixed z-50 max-w-xs p-3 rounded-lg bg-popover text-popover-foreground text-xs shadow-lg border border-border"
+          className="fixed z-50 max-w-xs p-3 rounded-lg bg-card text-card-foreground text-xs shadow-lg border border-border"
           style={{ top: popoverPos.top, left: popoverPos.left }}
         >
           <div className="space-y-2">
