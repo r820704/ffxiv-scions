@@ -8,6 +8,10 @@ import { optimizeRecipes } from '@/utils/recipe-optimizer';
 import type { OptimizationResult } from '@/utils/recipe-optimizer';
 import { deriveMcCosts, type McDerivedCosts } from '@/utils/mc-analysis';
 import AlbumModeView from '@/components/eureka/AlbumModeView';
+import { useSlotState } from '@/hooks/useSlotState';
+import { optimizeSlots } from '@/utils/slot-optimizer';
+import type { SlotOptimizationResult } from '@/utils/slot-optimizer';
+import SlotModeView from '@/components/eureka/SlotModeView';
 import { cn } from '@/lib/utils';
 
 type TabMode = 'album' | 'slots';
@@ -26,15 +30,19 @@ export default function EurekaPage() {
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
   const [optimizing, setOptimizing] = useState(false);
 
-  const runOptimizer = useCallback(() => {
-    if (prices.length === 0) return;
-    setOptimizing(true);
-    setTimeout(() => {
-      const result = optimizeRecipes(learnedSkills, prices);
-      setOptimizationResult(result);
-      setOptimizing(false);
-    }, 50);
-  }, [learnedSkills, prices]);
+  // Slot mode state
+  const {
+    slotConfig, selectedSlot, selectSlot,
+    addSkillToSelected, clearSlot, usedSkillIds,
+  } = useSlotState();
+  const [slotResult, setSlotResult] = useState<SlotOptimizationResult | null>(null);
+  const [slotOptimizing, setSlotOptimizing] = useState(false);
+  const [isStale, setIsStale] = useState(false);
+
+  // Mark stale when slot config changes after a calculation
+  useEffect(() => {
+    if (slotResult) setIsStale(true);
+  }, [slotConfig]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const listingsMap = useMemo(() => {
     const m = new Map<string, LogogramPrice['listings']>();
@@ -45,6 +53,16 @@ export default function EurekaPage() {
     return m;
   }, [prices]);
 
+  const runOptimizer = useCallback(() => {
+    if (prices.length === 0) return;
+    setOptimizing(true);
+    setTimeout(() => {
+      const result = optimizeRecipes(learnedSkills, prices);
+      setOptimizationResult(result);
+      setOptimizing(false);
+    }, 50);
+  }, [learnedSkills, prices]);
+
   const mcCosts: McDerivedCosts | null = useMemo(() => {
     if (!optimizationResult || prices.length === 0) return null;
     return deriveMcCosts({
@@ -54,6 +72,27 @@ export default function EurekaPage() {
       listingsByLogogramId: listingsMap,
     });
   }, [optimizationResult, prices, inventory, listingsMap]);
+
+  const runSlotOptimizer = useCallback(() => {
+    if (prices.length === 0) return;
+    setSlotOptimizing(true);
+    setTimeout(() => {
+      const result = optimizeSlots(slotConfig, prices);
+      setSlotResult(result);
+      setSlotOptimizing(false);
+      setIsStale(false);
+    }, 50);
+  }, [slotConfig, prices]);
+
+  const slotMcCosts: McDerivedCosts | null = useMemo(() => {
+    if (!slotResult || prices.length === 0) return null;
+    return deriveMcCosts({
+      mcOpensPerIter: slotResult.mcOpensPerIter,
+      logogramOrder: LOGOGRAM_FIXED_ORDER,
+      inventory,
+      listingsByLogogramId: listingsMap,
+    });
+  }, [slotResult, prices, inventory, listingsMap]);
 
   const loadPrices = useCallback(async () => {
     setPriceLoading(true);
@@ -151,9 +190,23 @@ export default function EurekaPage() {
         )}
 
         {activeTab === 'slots' && (
-          <div className="text-sm text-muted-foreground">
-            技能格模式（下一個 task 實作）
-          </div>
+          <SlotModeView
+            slotConfig={slotConfig}
+            selectedSlot={selectedSlot}
+            usedSkillIds={usedSkillIds}
+            onSelectSlot={selectSlot}
+            onAddSkill={addSkillToSelected}
+            onClearSlot={clearSlot}
+            inventory={inventory}
+            setItemCount={setItemCount}
+            prices={prices}
+            priceLoading={priceLoading}
+            slotResult={slotResult}
+            slotOptimizing={slotOptimizing}
+            slotMcCosts={slotMcCosts}
+            isStale={isStale}
+            onRunOptimizer={runSlotOptimizer}
+          />
         )}
       </div>
     </div>
