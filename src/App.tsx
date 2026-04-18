@@ -1,7 +1,7 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
 import HomePage from '@/pages/HomePage';
-import WeatherPage from '@/pages/WeatherPage';
+import EurekaWeatherPage from '@/pages/EurekaWeatherPage';
 import EurekaPage from '@/pages/EurekaPage';
 
 export default function App() {
@@ -11,7 +11,7 @@ export default function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/weather" element={<WeatherPage />} />
+          <Route path="/eureka-weather" element={<EurekaWeatherPage />} />
           <Route path="/eureka" element={<EurekaPage />} />
         </Routes>
       </div>

@@ -9,54 +9,49 @@ describe('calculateForecastTarget', () => {
   });
 
   it('should be deterministic for the same timestamp', () => {
-    const ts = 1609459200000; // 2021-01-01 00:00:00 UTC
+    const ts = 1609459200000;
     expect(calculateForecastTarget(ts)).toBe(calculateForecastTarget(ts));
   });
 
   it('should return different values for different weather periods', () => {
     const ts1 = 1609459200000;
-    const ts2 = ts1 + 1400000; // next weather period
+    const ts2 = ts1 + 1400000;
     const r1 = calculateForecastTarget(ts1);
     const r2 = calculateForecastTarget(ts2);
-    // They *could* be equal by chance, but very unlikely
-    // Just verify they are valid numbers
     expect(r1).toBeGreaterThanOrEqual(0);
     expect(r2).toBeGreaterThanOrEqual(0);
   });
 });
 
 describe('resolveWeather', () => {
-  it('should resolve Limsa Lominsa weather correctly for low target', () => {
-    // target 0-19 = Clouds
-    expect(resolveWeather('Limsa Lominsa', 0)).toBe('Clouds');
-    expect(resolveWeather('Limsa Lominsa', 19)).toBe('Clouds');
+  it('should resolve Eureka Anemos weather correctly for low target', () => {
+    expect(resolveWeather('Eureka Anemos', 0)).toBe('Fair Skies');
+    expect(resolveWeather('Eureka Anemos', 29)).toBe('Fair Skies');
   });
 
-  it('should resolve Limsa Lominsa weather correctly for mid target', () => {
-    // target 20-49 = Clear Skies
-    expect(resolveWeather('Limsa Lominsa', 20)).toBe('Clear Skies');
-    expect(resolveWeather('Limsa Lominsa', 49)).toBe('Clear Skies');
+  it('should resolve Eureka Anemos weather correctly for mid target', () => {
+    expect(resolveWeather('Eureka Anemos', 30)).toBe('Gales');
+    expect(resolveWeather('Eureka Anemos', 59)).toBe('Gales');
   });
 
   it('should resolve fallback weather for high target', () => {
-    // target 90-99 = Rain (last entry)
-    expect(resolveWeather('Limsa Lominsa', 90)).toBe('Rain');
-    expect(resolveWeather('Limsa Lominsa', 99)).toBe('Rain');
+    expect(resolveWeather('Eureka Anemos', 90)).toBe('Snow');
+    expect(resolveWeather('Eureka Anemos', 99)).toBe('Snow');
   });
 
   it('should return null for unknown zone', () => {
     expect(resolveWeather('NonExistentZone', 50)).toBeNull();
   });
 
-  it('should handle single-weather zones (Solution Nine)', () => {
-    expect(resolveWeather('Solution Nine', 0)).toBe('Fair Skies');
-    expect(resolveWeather('Solution Nine', 99)).toBe('Fair Skies');
+  it('should handle Eureka Pyros Umbral Wind band', () => {
+    expect(resolveWeather('Eureka Pyros', 64)).toBe('Umbral Wind');
+    expect(resolveWeather('Eureka Pyros', 81)).toBe('Umbral Wind');
   });
 });
 
 describe('getWeatherForZone', () => {
   it('should return a valid weather string for known zone', () => {
-    const weather = getWeatherForZone('Limsa Lominsa', Date.now());
+    const weather = getWeatherForZone('Eureka Anemos', Date.now());
     expect(weather).toBeTruthy();
     expect(typeof weather).toBe('string');
   });
@@ -68,12 +63,12 @@ describe('getWeatherForZone', () => {
 
 describe('generateForecasts', () => {
   it('should generate the requested number of forecasts', () => {
-    const forecasts = generateForecasts('Limsa Lominsa', 10);
+    const forecasts = generateForecasts('Eureka Anemos', 10);
     expect(forecasts).toHaveLength(10);
   });
 
   it('should include TC weather names', () => {
-    const forecasts = generateForecasts('Limsa Lominsa', 5);
+    const forecasts = generateForecasts('Eureka Anemos', 5);
     for (const f of forecasts) {
       expect(f.weatherTw).toBeTruthy();
       expect(f.startTime).toBeGreaterThan(0);
@@ -81,7 +76,7 @@ describe('generateForecasts', () => {
   });
 
   it('should produce sequential timestamps spaced by weather period', () => {
-    const forecasts = generateForecasts('Limsa Lominsa', 5, 1609459200000);
+    const forecasts = generateForecasts('Eureka Anemos', 5, 1609459200000);
     for (let i = 1; i < forecasts.length; i++) {
       expect(forecasts[i]!.startTime - forecasts[i - 1]!.startTime).toBe(1400000);
     }
