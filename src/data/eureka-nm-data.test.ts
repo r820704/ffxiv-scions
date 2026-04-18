@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { eurekaNms, getNmsForZoneAndWeather } from './eureka-nm-data';
+import { eurekaNms, getActiveNms, formatNmTrigger } from './eureka-nm-data';
 
 describe('eurekaNms', () => {
   it('contains entries for all 4 Eureka zones', () => {
@@ -15,25 +15,66 @@ describe('eurekaNms', () => {
       expect(nm.nameTw.length).toBeGreaterThan(0);
     }
   });
+
+  it('every entry has at least one trigger condition', () => {
+    for (const nm of eurekaNms) {
+      const { weather, timeOfDay } = nm.trigger;
+      expect(Boolean((weather && weather.length > 0) || timeOfDay)).toBe(true);
+    }
+  });
 });
 
-describe('getNmsForZoneAndWeather', () => {
-  it('returns at least one match for Anemos + Gales (Pazuzu)', () => {
-    const matches = getNmsForZoneAndWeather('Eureka Anemos', 'Gales');
-    expect(matches.length).toBeGreaterThan(0);
+describe('getActiveNms', () => {
+  it('returns Pazuzu on Anemos + Gales + night', () => {
+    const matches = getActiveNms('Eureka Anemos', 'Gales', false);
     expect(matches.some((n) => n.id === 'pazuzu')).toBe(true);
   });
 
-  it('returns only zone-matching entries', () => {
-    const matches = getNmsForZoneAndWeather('Eureka Pyros', 'Heat Waves');
+  it('does not return Pazuzu on Anemos + Gales + day (wrong time)', () => {
+    const matches = getActiveNms('Eureka Anemos', 'Gales', true);
+    expect(matches.some((n) => n.id === 'pazuzu')).toBe(false);
+  });
+
+  it('returns night-only NMs on any weather at night', () => {
+    const matches = getActiveNms('Eureka Pagos', 'Fair Skies', false);
+    expect(matches.some((n) => n.id === 'taxim')).toBe(true);
+    expect(matches.some((n) => n.id === 'louhi')).toBe(true);
+  });
+
+  it('does not return night-only NMs during the day', () => {
+    const matches = getActiveNms('Eureka Pagos', 'Fair Skies', true);
+    expect(matches.some((n) => n.id === 'taxim')).toBe(false);
+    expect(matches.some((n) => n.id === 'louhi')).toBe(false);
+  });
+
+  it('returns Copycat Cassie on Pagos + Blizzards (not Fog)', () => {
+    const fog = getActiveNms('Eureka Pagos', 'Fog', true);
+    expect(fog.some((n) => n.id === 'copycat-cassie')).toBe(false);
+    const blizzards = getActiveNms('Eureka Pagos', 'Blizzards', true);
+    expect(blizzards.some((n) => n.id === 'copycat-cassie')).toBe(true);
+  });
+
+  it('only returns NMs for the requested zone', () => {
+    const matches = getActiveNms('Eureka Pyros', 'Heat Waves', true);
     for (const nm of matches) {
       expect(nm.zone).toBe('Eureka Pyros');
     }
   });
+});
 
-  it('returns empty array for unmatched combination', () => {
-    const matches = getNmsForZoneAndWeather('Eureka Anemos', 'Snow');
-    expect(Array.isArray(matches)).toBe(true);
-    expect(matches.length).toBe(0);
+describe('formatNmTrigger', () => {
+  it('formats weather-only NM', () => {
+    const skoll = eurekaNms.find((n) => n.id === 'skoll')!;
+    expect(formatNmTrigger(skoll)).toBe('暴雪');
+  });
+
+  it('formats night-only NM', () => {
+    const taxim = eurekaNms.find((n) => n.id === 'taxim')!;
+    expect(formatNmTrigger(taxim)).toBe('夜間');
+  });
+
+  it('formats weather + night NM with +', () => {
+    const pazuzu = eurekaNms.find((n) => n.id === 'pazuzu')!;
+    expect(formatNmTrigger(pazuzu)).toBe('強風+夜間');
   });
 });
