@@ -30,7 +30,7 @@ export default function InputPanel({
 
   return (
     <div className="flex flex-col sm:flex-row gap-3 items-start">
-      <div className={cn('flex-1 min-w-0 w-full', !isAlbum && 'opacity-60')}>
+      <div className="flex-1 min-w-0 w-full">
         <CompactAlbumGrid
           mode={isAlbum ? 'learn' : 'slot-pick'}
           learnedSkills={learnedSkills}

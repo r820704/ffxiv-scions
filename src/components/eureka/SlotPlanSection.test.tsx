@@ -27,6 +27,7 @@ const baseProps = {
   slotMcCosts: null,
   isStale: false,
   onRunOptimizer: vi.fn(),
+  onResetSlots: vi.fn(),
 };
 
 describe('SlotPlanSection', () => {
@@ -57,5 +58,28 @@ describe('SlotPlanSection', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: /計算最佳合成/ }));
     expect(onRunOptimizer).toHaveBeenCalled();
+  });
+
+  it('should call onResetSlots when reset button clicked', () => {
+    const onResetSlots = vi.fn();
+    const slotConfig: [string | null, string | null][] = emptySlots.map(
+      (s) => [s[0], s[1]] as [string | null, string | null]
+    );
+    slotConfig[0] = ['skill-a', null];
+    render(
+      <SlotPlanSection
+        {...baseProps}
+        slotConfig={slotConfig}
+        onResetSlots={onResetSlots}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /重置技能格/ }));
+    expect(onResetSlots).toHaveBeenCalled();
+  });
+
+  it('should disable reset button when no slots filled', () => {
+    render(<SlotPlanSection {...baseProps} />);
+    const btn = screen.getByRole('button', { name: /重置技能格/ }) as HTMLButtonElement;
+    expect(btn.disabled).toBe(true);
   });
 });

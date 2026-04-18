@@ -19,12 +19,12 @@ export default function SlotPanel({
 }: SlotPanelProps) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[10px] text-muted-foreground">前置技能</span>
+      <span className="text-[10px] text-muted-foreground">提前使用</span>
       {slotConfig.map(([skill1, skill2], i) => {
         if (i === 2) {
           return (
             <div key={`label-${i}`}>
-              <span className="text-[10px] text-muted-foreground mt-1 block">BA 技能</span>
+              <span className="text-[10px] text-muted-foreground mt-1 block">文理技能槽</span>
               <SlotCell
                 index={i}
                 skill1={skill1}
