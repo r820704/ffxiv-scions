@@ -12,6 +12,7 @@ interface InputPanelProps {
   selectedSlot: number | null;
   onToggleLearn: (skillId: string) => void;
   onPickForSlot: (skillId: string) => void;
+  onRecentPick?: (skillId: string) => void;
   onSelectSlot: (index: number) => void;
   onClearSlot: (index: number) => void;
   recentIds?: string[];
@@ -25,6 +26,7 @@ export default function InputPanel({
   selectedSlot,
   onToggleLearn,
   onPickForSlot,
+  onRecentPick,
   onSelectSlot,
   onClearSlot,
   recentIds,
@@ -45,7 +47,7 @@ export default function InputPanel({
         {!isAlbum && recentIds && (
           <RecentSkillsRow
             recentIds={recentIds}
-            onPick={onPickForSlot}
+            onPick={onRecentPick ?? onPickForSlot}
           />
         )}
       </div>

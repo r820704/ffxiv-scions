@@ -176,6 +176,7 @@ export default function EurekaPage() {
               selectedSlot={selectedSlot}
               onToggleLearn={toggleLearned}
               onPickForSlot={handlePickForSlot}
+              onRecentPick={addSkillToSelected}
               onSelectSlot={selectSlot}
               onClearSlot={clearSlot}
               recentIds={recentIds}
