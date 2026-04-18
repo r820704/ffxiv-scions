@@ -3,7 +3,7 @@ import { generateForecasts, findWeatherMatches } from '@/utils/weather-engine';
 import { zoneNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weather-data';
 import { WEATHER_PERIOD_MS, toEorzeaTime } from '@/utils/eorzea-time';
 import { isDayTime } from '@/utils/game-day-night';
-import { getNmsForZoneAndWeather } from '@/data/eureka-nm-data';
+import { getActiveNms, formatNmTrigger } from '@/data/eureka-nm-data';
 import WeatherIcon from '@/components/WeatherIcon';
 
 interface ZoneWeatherRowProps {
@@ -108,13 +108,16 @@ export default function ZoneWeatherRow({
           const matched = selectedWeathers.has(f.weather);
           const estMid = toEorzeaTime(f.startTime + WEATHER_PERIOD_MS / 2);
           const isDay = isDayTime(estMid);
-          const nms = getNmsForZoneAndWeather(zone, f.weather);
+          const nms = getActiveNms(zone, f.weather, isDay);
+          const tooltip = nms.length > 0
+            ? `可能出現：\n${nms.map((n) => `• ${n.nameTw}（${formatNmTrigger(n)}）`).join('\n')}`
+            : undefined;
           return (
             <div
               key={f.startTime}
               data-period-cell
               data-matched={matched ? 'true' : 'false'}
-              title={nms.length > 0 ? `可能出現：${nms.map((n) => n.nameTw).join('、')}` : undefined}
+              title={tooltip}
               className={`relative flex-shrink-0 w-16 rounded p-1 text-center text-[10px] border ${
                 matched ? 'border-amber-500 bg-amber-500/10' : 'border-border/50'
               } ${isDay ? 'bg-amber-50/[.03]' : 'bg-indigo-900/[.08]'} ${
