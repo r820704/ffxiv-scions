@@ -33,7 +33,7 @@ export default function InputPanel({
 
   return (
     <div className="flex flex-col sm:flex-row gap-3 items-start">
-      <div className="flex-1 min-w-0 w-full">
+      <div className="flex-1 min-w-0 w-full flex flex-col gap-3">
         <CompactAlbumGrid
           mode={isAlbum ? 'learn' : 'slot-pick'}
           learnedSkills={learnedSkills}
@@ -42,21 +42,21 @@ export default function InputPanel({
           onToggleLearn={onToggleLearn}
           onPickForSlot={onPickForSlot}
         />
-      </div>
-
-      <div
-        className={cn(
-          'shrink-0 flex flex-col gap-2',
-          isAlbum && 'opacity-40 pointer-events-none',
-        )}
-        title={isAlbum ? '切換到「技能格計算」模式才可編輯' : undefined}
-      >
         {!isAlbum && recentIds && (
           <RecentSkillsRow
             recentIds={recentIds}
             onPick={onPickForSlot}
           />
         )}
+      </div>
+
+      <div
+        className={cn(
+          'shrink-0',
+          isAlbum && 'opacity-40 pointer-events-none',
+        )}
+        title={isAlbum ? '切換到「技能格計算」模式才可編輯' : undefined}
+      >
         <SlotPanel
           slotConfig={slotConfig}
           selectedSlot={selectedSlot}
