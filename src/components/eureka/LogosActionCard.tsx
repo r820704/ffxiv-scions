@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect, Fragment } from 'react';
 import { createPortal } from 'react-dom';
 import type { LogosAction, LogogramPrice } from '@/types/eureka';
 import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
-import { calculateRecipeCost95, calculateRecipeCost50 } from '@/utils/eureka-helpers';
+import { calculateRecipeCostsMC } from '@/utils/eureka-helpers';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 import ActionDetailTooltip from './ActionDetailTooltip';
 
@@ -75,19 +75,25 @@ export default function LogosActionCard({
     setShowTooltip((prev) => !prev);
   };
 
+  const recipeCosts = useMemo(() => {
+    if (hidePrice || prices.length === 0) return null;
+    return action.recipes.map((recipe) =>
+      calculateRecipeCostsMC(recipe.ingredients, prices)
+    );
+  }, [action.recipes, prices, hidePrice]);
+
   const cheapestIdx = useMemo(() => {
-    if (action.recipes.length <= 1) return -1;
+    if (!recipeCosts || action.recipes.length <= 1) return -1;
     let minCost = Infinity;
     let minIdx = -1;
-    action.recipes.forEach((recipe, i) => {
-      const cost = calculateRecipeCost95(recipe.ingredients, prices);
-      if (cost != null && cost < minCost) {
-        minCost = cost;
+    recipeCosts.forEach((costs, i) => {
+      if (costs != null && costs.cost95 < minCost) {
+        minCost = costs.cost95;
         minIdx = i;
       }
     });
     return minIdx;
-  }, [action.recipes, prices]);
+  }, [recipeCosts, action.recipes.length]);
 
   return (
     <div className="rounded-lg border border-border bg-card p-3">
@@ -163,8 +169,9 @@ export default function LogosActionCard({
           style={{ gridTemplateColumns: templateCols }}
         >
           {recipesToShow.map(({ recipe, ri }, idx) => {
-            const cost95 = hidePrice ? null : calculateRecipeCost95(recipe.ingredients, prices);
-            const cost50 = hidePrice ? null : calculateRecipeCost50(recipe.ingredients, prices);
+            const costs = recipeCosts?.[ri] ?? null;
+            const cost95 = costs?.cost95 ?? null;
+            const cost50 = costs?.cost50 ?? null;
             const isCheapest = hasMultiple && cheapestIdx === ri;
             return (
               <Fragment key={ri}>
