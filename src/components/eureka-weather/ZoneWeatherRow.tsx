@@ -75,7 +75,9 @@ export default function ZoneWeatherRow({ zone, selectedWeathers, now }: ZoneWeat
                 {isCurrent ? '現在' : `+${formatRelMs(f.startTime - now)}`}
               </div>
               {nms.length > 0 && (
-                <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-red-500" />
+                <div className="absolute top-0.5 right-0.5 px-1 rounded bg-red-600 text-white text-[8px] font-bold leading-[10px] shadow-sm animate-pulse">
+                  NM
+                </div>
               )}
             </div>
           );
