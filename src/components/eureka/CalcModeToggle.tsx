@@ -13,7 +13,7 @@ const OPTIONS: { value: CalcMode; label: string }[] = [
 
 export default function CalcModeToggle({ calcMode, onChange }: CalcModeToggleProps) {
   return (
-    <div className="flex gap-2 mb-4">
+    <div className="flex gap-2">
       {OPTIONS.map(({ value, label }) => {
         const active = calcMode === value;
         return (

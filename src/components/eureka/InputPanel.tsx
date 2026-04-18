@@ -29,14 +29,8 @@ export default function InputPanel({
   const isAlbum = calcMode === 'album';
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 items-start mb-4">
-      {/* Left: compact grid */}
-      <div
-        className={cn(
-          'w-full md:flex-[1_1_auto] md:min-w-0',
-          !isAlbum && 'opacity-60',
-        )}
-      >
+    <div className="flex flex-col sm:flex-row gap-3 items-start">
+      <div className={cn('flex-1 min-w-0 w-full', !isAlbum && 'opacity-60')}>
         <CompactAlbumGrid
           mode={isAlbum ? 'learn' : 'slot-pick'}
           learnedSkills={learnedSkills}
@@ -47,7 +41,6 @@ export default function InputPanel({
         />
       </div>
 
-      {/* Right: slot panel (read-only in album mode) */}
       <div
         className={cn(
           'shrink-0',
@@ -62,9 +55,6 @@ export default function InputPanel({
           onClearSlot={onClearSlot}
         />
       </div>
-
-      {/* Reserved right column for future "slot combo history" feature */}
-      <div className="hidden md:block md:w-[280px] shrink-0" aria-hidden="true" />
     </div>
   );
 }

@@ -12,10 +12,13 @@ import { optimizeSlots } from '@/utils/slot-optimizer';
 import type { SlotOptimizationResult } from '@/utils/slot-optimizer';
 import { deriveMcCosts, type McDerivedCosts } from '@/utils/mc-analysis';
 import CalcModeToggle from '@/components/eureka/CalcModeToggle';
+import AlbumStateBar from '@/components/eureka/AlbumStateBar';
 import InputPanel from '@/components/eureka/InputPanel';
 import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumPlanSection from '@/components/eureka/AlbumPlanSection';
 import SlotPlanSection from '@/components/eureka/SlotPlanSection';
+import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
+import SlotRecipeList from '@/components/eureka/SlotRecipeList';
 import LogosActionList from '@/components/eureka/LogosActionList';
 
 export default function EurekaPage() {
@@ -147,54 +150,77 @@ export default function EurekaPage() {
           <div className="text-xs text-destructive mb-3">價格查詢失敗，請稍後重試</div>
         )}
 
-        <CalcModeToggle calcMode={calcMode} onChange={setCalcMode} />
-
-        <InputPanel
-          calcMode={calcMode}
-          learnedSkills={learnedSkills}
-          usedSkillIds={usedSkillIds}
-          slotConfig={slotConfig}
-          selectedSlot={selectedSlot}
-          onToggleLearn={toggleLearned}
-          onPickForSlot={addSkillToSelected}
-          onSelectSlot={selectSlot}
-          onClearSlot={clearSlot}
-        />
-
-        <div className={`mb-4 ${calcMode === 'slots' && isStale ? 'opacity-50' : ''}`}>
-          <CrystalOverview
-            inventory={inventory}
-            onSetCount={setItemCount}
-            prices={prices}
-            priceLoading={priceLoading}
-            optimizationResult={crystalOptResult}
-            mcCosts={crystalMcCosts}
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
+          <CalcModeToggle calcMode={calcMode} onChange={setCalcMode} />
+          <AlbumStateBar
+            learnedCount={learnedSkills.size}
+            total={56}
+            disabled={calcMode === 'slots'}
+            onLearnAll={learnAll}
+            onReset={resetAll}
           />
         </div>
 
+        <div className="flex flex-col md:flex-row gap-4 items-start mb-4">
+          <div className="w-full md:flex-1 md:min-w-0 space-y-3">
+            <InputPanel
+              calcMode={calcMode}
+              learnedSkills={learnedSkills}
+              usedSkillIds={usedSkillIds}
+              slotConfig={slotConfig}
+              selectedSlot={selectedSlot}
+              onToggleLearn={toggleLearned}
+              onPickForSlot={addSkillToSelected}
+              onSelectSlot={selectSlot}
+              onClearSlot={clearSlot}
+            />
+            {calcMode === 'album' ? (
+              <AlbumPlanSection
+                prices={prices}
+                priceLoading={priceLoading}
+                optimizationResult={optimizationResult}
+                optimizing={optimizing}
+                mcCosts={albumMcCosts}
+                onRunOptimizer={runOptimizer}
+              />
+            ) : (
+              <SlotPlanSection
+                slotConfig={slotConfig}
+                prices={prices}
+                priceLoading={priceLoading}
+                slotResult={slotResult}
+                slotOptimizing={slotOptimizing}
+                slotMcCosts={slotMcCosts}
+                isStale={isStale}
+                onRunOptimizer={runSlotOptimizer}
+              />
+            )}
+          </div>
+          <div className={`w-full md:flex-1 md:min-w-0 ${calcMode === 'slots' && isStale ? 'opacity-50' : ''}`}>
+            <CrystalOverview
+              inventory={inventory}
+              onSetCount={setItemCount}
+              prices={prices}
+              priceLoading={priceLoading}
+              optimizationResult={crystalOptResult}
+              mcCosts={crystalMcCosts}
+            />
+          </div>
+        </div>
+
         {calcMode === 'album' ? (
-          <AlbumPlanSection
+          <AlbumRecipeList
             learnedSkills={learnedSkills}
-            toggleLearned={toggleLearned}
-            learnAll={learnAll}
-            resetAll={resetAll}
+            onToggle={toggleLearned}
             prices={prices}
             priceLoading={priceLoading}
             optimizationResult={optimizationResult}
-            optimizing={optimizing}
-            mcCosts={albumMcCosts}
-            onRunOptimizer={runOptimizer}
           />
         ) : (
-          <SlotPlanSection
+          <SlotRecipeList
             slotConfig={slotConfig}
-            prices={prices}
-            priceLoading={priceLoading}
             slotResult={slotResult}
-            slotOptimizing={slotOptimizing}
-            slotMcCosts={slotMcCosts}
             isStale={isStale}
-            onRunOptimizer={runSlotOptimizer}
           />
         )}
 
