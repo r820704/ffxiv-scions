@@ -15,7 +15,7 @@ describe('EurekaWeatherPage', () => {
 
   it('renders game clock label', () => {
     render(<EurekaWeatherPage />);
-    expect(screen.getByText('艾歐澤亞時間')).toBeTruthy();
+    expect(screen.getByText('艾奧傑亞時間')).toBeTruthy();
   });
 
   it('renders weather filter bar', () => {

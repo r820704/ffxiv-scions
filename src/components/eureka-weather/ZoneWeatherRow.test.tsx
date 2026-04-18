@@ -12,11 +12,11 @@ describe('ZoneWeatherRow', () => {
     expect(screen.getByText('優雷卡常風之地')).toBeTruthy();
   });
 
-  it('renders 8 period cells', () => {
+  it('renders 24 period cells', () => {
     const { container } = render(
       <ZoneWeatherRow zone="Eureka Anemos" selectedWeathers={new Set()} now={fixedNow} />
     );
-    expect(container.querySelectorAll('[data-period-cell]').length).toBe(8);
+    expect(container.querySelectorAll('[data-period-cell]').length).toBe(24);
   });
 
   it('highlights cells matching selectedWeathers filter', () => {

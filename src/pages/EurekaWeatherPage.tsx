@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { EUREKA_ZONES } from '@/data/weather-data';
 import { useGameClock } from '@/hooks/useGameClock';
 import GameClock from '@/components/eureka-weather/GameClock';
@@ -8,6 +8,8 @@ import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 export default function EurekaWeatherPage() {
   const { now } = useGameClock();
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const scrollRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const isSyncingRef = useRef(false);
 
   const toggle = (w: string) => {
     setSelected((prev) => {
@@ -18,6 +20,29 @@ export default function EurekaWeatherPage() {
     });
   };
 
+  const registerRef = (index: number) => (el: HTMLDivElement | null) => {
+    scrollRefs.current[index] = el;
+  };
+
+  const handleScroll = useCallback((index: number) => (scrollLeft: number) => {
+    if (isSyncingRef.current) return;
+    isSyncingRef.current = true;
+    scrollRefs.current.forEach((r, i) => {
+      if (r && i !== index && r.scrollLeft !== scrollLeft) {
+        r.scrollLeft = scrollLeft;
+      }
+    });
+    requestAnimationFrame(() => {
+      isSyncingRef.current = false;
+    });
+  }, []);
+
+  const jumpToNow = useCallback(() => {
+    scrollRefs.current.forEach((r) => {
+      if (r) r.scrollTo({ left: 0, behavior: 'smooth' });
+    });
+  }, []);
+
   return (
     <div>
       <h1 className="font-title text-2xl font-bold text-center text-primary mb-4">
@@ -26,9 +51,17 @@ export default function EurekaWeatherPage() {
       <div className="flex flex-col gap-3">
         <GameClock />
         <WeatherFilterBar selected={selected} onToggle={toggle} />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {EUREKA_ZONES.map((z) => (
-            <ZoneWeatherRow key={z} zone={z} selectedWeathers={selected} now={now} />
+        <div className="flex flex-col gap-3">
+          {EUREKA_ZONES.map((z, i) => (
+            <ZoneWeatherRow
+              key={z}
+              zone={z}
+              selectedWeathers={selected}
+              now={now}
+              scrollRef={registerRef(i)}
+              onScroll={handleScroll(i)}
+              onJumpToNow={jumpToNow}
+            />
           ))}
         </div>
       </div>

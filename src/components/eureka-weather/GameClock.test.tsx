@@ -5,9 +5,9 @@ import GameClock from './GameClock';
 afterEach(cleanup);
 
 describe('GameClock', () => {
-  it('renders a game time in HH:MM format', () => {
+  it('renders game and client time in HH:MM format', () => {
     render(<GameClock />);
-    expect(screen.getByText(/^\d{2}:\d{2}$/)).toBeTruthy();
+    expect(screen.getAllByText(/^\d{2}:\d{2}$/).length).toBeGreaterThanOrEqual(2);
   });
 
   it('shows day or night badge', () => {
@@ -19,6 +19,6 @@ describe('GameClock', () => {
   it('shows countdown to next transition', () => {
     render(<GameClock />);
     const text = document.body.textContent ?? '';
-    expect(/距離(白天|夜晚)\s*\d+m\s*\d{2}s/.test(text)).toBe(true);
+    expect(/距離(白天|夜晚)\s*\d+分\d{2}秒/.test(text)).toBe(true);
   });
 });
