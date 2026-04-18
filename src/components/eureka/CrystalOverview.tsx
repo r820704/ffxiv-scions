@@ -159,7 +159,7 @@ export default function CrystalOverview({
           const hasOptResult = optimizationResult != null && mcCosts != null;
           const rawNeed95 = hasOptResult ? (mcCosts.opensNeeded95[logogramId] ?? 0) : 0;
           const owned = inventory[logogramId] || 0;
-          const remaining95 = hasOptResult ? Math.max(0, Math.ceil(rawNeed95 - owned)) : 0;
+          const remaining95 = hasOptResult ? Math.max(0, Math.round(rawNeed95 - owned)) : 0;
 
           const lineCost95 = hasOptResult ? (mcCosts.costPerLogogram95[logogramId] ?? 0) : 0;
 
