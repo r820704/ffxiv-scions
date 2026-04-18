@@ -48,7 +48,7 @@ export default function SlotPlanSection({
           <button
             onClick={onResetSlots}
             disabled={filledSlotCount === 0}
-            className="text-xs px-3 py-1 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-xs px-3 py-1 rounded bg-destructive/70 text-destructive-foreground hover:bg-destructive transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             重置技能格
           </button>

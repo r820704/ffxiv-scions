@@ -88,4 +88,14 @@ describe('SlotPlanSection', () => {
     expect(screen.queryByText(/格已配置/)).toBeNull();
     expect(screen.queryByText(/格空$/)).toBeNull();
   });
+
+  it('should style reset button with destructive background (A1)', () => {
+    const slotConfig: [string | null, string | null][] = emptySlots.map(
+      (s) => [s[0], s[1]] as [string | null, string | null]
+    );
+    slotConfig[0] = ['skill-a', null];
+    render(<SlotPlanSection {...baseProps} slotConfig={slotConfig} />);
+    const btn = screen.getByRole('button', { name: /重置技能格/ });
+    expect(btn.className).toContain('bg-destructive');
+  });
 });
