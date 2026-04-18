@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import OzmaLogo from '@/components/OzmaLogo';
 
 const navItems = [
-  { to: '/weather', label: '天氣查詢' },
+  { to: '/eureka-weather', label: '優雷卡天氣' },
   { to: '/eureka', label: '文理技能' },
 ];
 

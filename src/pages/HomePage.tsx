@@ -26,15 +26,15 @@ export default function HomePage() {
       {/* Feature cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[580px]">
         <Link
-          to="/weather"
+          to="/eureka-weather"
           className="block rounded-[10px] border border-border bg-card p-7 hover:border-[#3a3252] hover:-translate-y-0.5 hover:shadow-lg transition-all relative overflow-hidden group"
         >
           <div
             className="absolute top-0 left-0 right-0 h-[3px]"
             style={{ background: 'linear-gradient(90deg, #4A9BD9, #5BAE5B, #B8922E)' }}
           />
-          <h2 className="text-lg font-semibold text-foreground mb-2">天氣查詢</h2>
-          <p className="text-sm text-muted-foreground">查詢各地區天氣預報與篩選特定天氣時段</p>
+          <h2 className="text-lg font-semibold text-foreground mb-2">優雷卡天氣</h2>
+          <p className="text-sm text-muted-foreground">優雷卡四地圖天氣時間軸、NM 出現時段與日夜指示</p>
         </Link>
         <Link
           to="/eureka"
