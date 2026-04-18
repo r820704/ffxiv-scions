@@ -82,4 +82,39 @@ describe('SlotPlanSection', () => {
     const btn = screen.getByRole('button', { name: /重置技能格/ }) as HTMLButtonElement;
     expect(btn.disabled).toBe(true);
   });
+
+  it('should not render slot count text (A2)', () => {
+    render(<SlotPlanSection {...baseProps} />);
+    expect(screen.queryByText(/格已配置/)).toBeNull();
+    expect(screen.queryByText(/格空$/)).toBeNull();
+  });
+
+  it('should style reset button with destructive background (A1)', () => {
+    const slotConfig: [string | null, string | null][] = emptySlots.map(
+      (s) => [s[0], s[1]] as [string | null, string | null]
+    );
+    slotConfig[0] = ['skill-a', null];
+    render(<SlotPlanSection {...baseProps} slotConfig={slotConfig} />);
+    const btn = screen.getByRole('button', { name: /重置技能格/ });
+    expect(btn.className).toContain('bg-destructive');
+  });
+
+  it('should keep calc and reset buttons visually enabled when stale (A3)', () => {
+    const slotConfig: [string | null, string | null][] = emptySlots.map(
+      (s) => [s[0], s[1]] as [string | null, string | null]
+    );
+    slotConfig[0] = ['skill-a', null];
+    render(
+      <SlotPlanSection
+        {...baseProps}
+        slotConfig={slotConfig}
+        prices={[fakePrice]}
+        isStale={true}
+      />
+    );
+    const resetBtn = screen.getByRole('button', { name: /重置技能格/ });
+    const calcBtn = screen.getByRole('button', { name: /重新計算|計算最佳合成/ });
+    expect(resetBtn.closest('.opacity-50')).toBeNull();
+    expect(calcBtn.closest('.opacity-50')).toBeNull();
+  });
 });
