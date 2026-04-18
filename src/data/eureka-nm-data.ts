@@ -26,7 +26,7 @@ export const eurekaNms: EurekaNm[] = [
   },
   {
     id: 'caym',
-    nameTw: '凱姆',
+    nameTw: '蓋因',
     nameEn: 'Caym',
     zone: 'Eureka Anemos',
     level: 19,
@@ -34,7 +34,7 @@ export const eurekaNms: EurekaNm[] = [
   },
   {
     id: 'louhi',
-    nameTw: '洛希',
+    nameTw: '婁希',
     nameEn: 'Louhi',
     zone: 'Eureka Pagos',
     level: 35,
@@ -42,7 +42,7 @@ export const eurekaNms: EurekaNm[] = [
   },
   {
     id: 'cassie',
-    nameTw: '卡絲蒂',
+    nameTw: '複製魔花凱西',
     nameEn: 'Cassie',
     zone: 'Eureka Pagos',
     level: 27,
@@ -66,7 +66,7 @@ export const eurekaNms: EurekaNm[] = [
   },
   {
     id: 'tristitia',
-    nameTw: '憂愁之海',
+    nameTw: '傷悲光靈魟',
     nameEn: 'Tristitia',
     zone: 'Eureka Hydatos',
     level: 60,
@@ -74,7 +74,7 @@ export const eurekaNms: EurekaNm[] = [
   },
   {
     id: 'provenance-watcher',
-    nameTw: '源母守護者',
+    nameTw: '起源守望者',
     nameEn: 'Provenance Watcher',
     zone: 'Eureka Hydatos',
     level: 60,
