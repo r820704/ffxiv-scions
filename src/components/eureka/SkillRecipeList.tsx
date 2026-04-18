@@ -300,13 +300,15 @@ export default function SkillRecipeList({
         <div className="flex gap-2">
           <button
             onClick={expandAll}
-            className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer"
+            disabled={mode === 'slots' && stateFilter === 'guide'}
+            className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-muted-foreground disabled:hover:border-border"
           >
             全部展開
           </button>
           <button
             onClick={collapseAll}
-            className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer"
+            disabled={mode === 'slots' && stateFilter === 'guide'}
+            className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-muted-foreground disabled:hover:border-border"
           >
             全部縮合
           </button>
