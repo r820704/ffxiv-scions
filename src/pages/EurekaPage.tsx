@@ -42,11 +42,9 @@ export default function EurekaPage() {
   const [isStale, setIsStale] = useState(false);
 
   const handlePickForSlot = useCallback((skillId: string) => {
-    if (learnedSkills.has(skillId)) {
-      pushRecent(skillId);
-    }
+    pushRecent(skillId);
     addSkillToSelected(skillId);
-  }, [addSkillToSelected, pushRecent, learnedSkills]);
+  }, [addSkillToSelected, pushRecent]);
 
   useEffect(() => {
     if (slotResult) setIsStale(true);

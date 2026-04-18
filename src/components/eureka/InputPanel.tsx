@@ -54,7 +54,6 @@ export default function InputPanel({
         {!isAlbum && recentIds && (
           <RecentSkillsRow
             recentIds={recentIds}
-            learnedSkills={learnedSkills}
             onPick={onPickForSlot}
           />
         )}
