@@ -145,13 +145,11 @@ export default function CrystalOverview({
         </div>
 
         {/* Header */}
-        <div className="grid grid-cols-[1fr_60px_30px_30px_72px] sm:grid-cols-[1fr_60px_30px_30px_72px_72px] gap-1 text-[10px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
+        <div className="grid grid-cols-[1fr_60px_40px_auto] gap-1 text-[10px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
           <span>名稱</span>
           <span className="text-center">持有</span>
-          <span className="text-right">還需<br/>(預估)</span>
           <span className="text-right">還需<br/>(保底)</span>
-          <span className="text-right">預估</span>
-          <span className="text-right hidden sm:block">保底</span>
+          <span className="text-right">保底</span>
         </div>
 
         {/* Rows — one per logogram (9 total) */}
@@ -159,14 +157,11 @@ export default function CrystalOverview({
           const logogram = logogramMap.get(logogramId);
           if (!logogram) return null;
           const hasOptResult = optimizationResult != null && mcCosts != null;
-          const need95 = hasOptResult ? Math.round(mcCosts.opensNeeded95[logogramId] ?? 0) : 0;
-          const need50 = hasOptResult ? Math.round(mcCosts.opensNeeded50[logogramId] ?? 0) : 0;
+          const rawNeed95 = hasOptResult ? (mcCosts.opensNeeded95[logogramId] ?? 0) : 0;
           const owned = inventory[logogramId] || 0;
-          const remaining95 = hasOptResult ? Math.max(0, need95 - owned) : 0;
-          const remaining50 = hasOptResult ? Math.max(0, need50 - owned) : 0;
+          const remaining95 = hasOptResult ? Math.max(0, Math.ceil(rawNeed95 - owned)) : 0;
 
           const lineCost95 = hasOptResult ? (mcCosts.costPerLogogram95[logogramId] ?? 0) : 0;
-          const lineCost50 = hasOptResult ? (mcCosts.costPerLogogram50[logogramId] ?? 0) : 0;
 
           const listings = listingsMap.get(logogram.itemId) ?? [];
           const plan = hasOptResult && remaining95 > 0 ? buildPurchasePlan(listings, remaining95) : null;
@@ -181,7 +176,7 @@ export default function CrystalOverview({
             <div key={logogramId}>
               <div
                 className={cn(
-                  'grid grid-cols-[1fr_60px_30px_30px_72px] sm:grid-cols-[1fr_60px_30px_30px_72px_72px] gap-1 items-center py-1 text-xs border-b border-border/30',
+                  'grid grid-cols-[1fr_60px_40px_auto] gap-1 items-center py-1 text-xs border-b border-border/30',
                   hasOptResult && remaining95 > 0 && 'cursor-pointer hover:bg-secondary/50'
                 )}
                 onClick={() => hasOptResult && remaining95 > 0 && toggleRow(logogramId)}
@@ -237,30 +232,13 @@ export default function CrystalOverview({
                 </div>
                 <span
                   className={cn(
-                    'text-right',
-                    !hasOptResult ? 'text-muted-foreground' : remaining50 === 0 ? 'text-green-400' : 'text-primary'
-                  )}
-                >
-                  {hasOptResult ? remaining50 : '—'}
-                </span>
-                <span
-                  className={cn(
                     'text-right font-semibold',
                     !hasOptResult ? 'text-muted-foreground' : remaining95 === 0 ? 'text-green-400' : 'text-red-400'
                   )}
                 >
                   {hasOptResult ? remaining95 : '—'}
                 </span>
-                <span className="text-primary text-right">
-                  {!hasOptResult
-                    ? '—'
-                    : priceLoading
-                      ? '...'
-                      : lineCost50 > 0
-                        ? Math.round(lineCost50).toLocaleString()
-                        : '—'}
-                </span>
-                <span className="text-amber-400 text-right hidden sm:block">
+                <span className="text-amber-400 text-right">
                   {!hasOptResult
                     ? '—'
                     : priceLoading
@@ -270,11 +248,6 @@ export default function CrystalOverview({
                         : '—'}
                 </span>
               </div>
-              {hasOptResult && !priceLoading && lineCost95 > 0 && (
-                <div className="sm:hidden text-[10px] text-amber-400 pl-3 text-right">
-                  保底 {Math.round(lineCost95).toLocaleString()}
-                </div>
-              )}
 
               {/* Mneme requirements from optimizer — always visible */}
               {hasMnemeReqs && (
@@ -329,23 +302,18 @@ export default function CrystalOverview({
         })}
         {/* 總計列 */}
         {mcCosts && (
-          <div className="grid grid-cols-[1fr_60px_30px_30px_72px] sm:grid-cols-[1fr_60px_30px_30px_72px_72px] gap-1 items-center pt-2 pb-1 text-xs font-semibold border-t-2 border-border mt-1">
+          <div className="grid grid-cols-[1fr_60px_40px_auto] gap-1 items-center pt-2 pb-1 text-xs font-semibold border-t-2 border-border mt-1">
             <span className="text-foreground">總計</span>
             <span></span>
             <span></span>
-            <span></span>
-            <span className="text-primary text-right">
-              {Math.round(mcCosts.totalCost50).toLocaleString()}
+            <span className="text-right flex flex-col items-end gap-0.5">
+              <span className="text-primary">
+                預估 {Math.round(mcCosts.totalCost50).toLocaleString()}
+              </span>
+              <span className="text-amber-400">
+                保底 {Math.round(mcCosts.totalCost95).toLocaleString()}
+              </span>
             </span>
-            <span className="text-amber-400 text-right hidden sm:block">
-              {Math.round(mcCosts.totalCost95).toLocaleString()}
-            </span>
-          </div>
-        )}
-        {/* Mobile-only stacked 總計 保底 */}
-        {mcCosts && (
-          <div className="sm:hidden text-[10px] text-amber-400 pl-3 text-right font-semibold">
-            保底 {Math.round(mcCosts.totalCost95).toLocaleString()}
           </div>
         )}
       </div>
@@ -357,15 +325,15 @@ export default function CrystalOverview({
         >
           <div className="space-y-2">
             <div>
-              <span className="font-semibold text-primary">預估</span>
-              <span className="ml-1">— 半數人花費在此以下（中位數）</span>
-            </div>
-            <div>
               <span className="font-semibold text-amber-400">保底</span>
               <span className="ml-1">— 95% 的人不會超過這個金額（保險預算）</span>
             </div>
+            <div>
+              <span className="font-semibold text-primary">預估</span>
+              <span className="ml-1">— 半數人花費在此以下（中位數），僅於總計顯示</span>
+            </div>
             <div className="pt-2 border-t border-border/50 text-muted-foreground">
-              每列顯示的需求與花費，是在對應情境下各文理通常會開的次數與花費，加總近似總計。
+              還需(保底)：95% 機率下需要開啟的碎晶數量。
             </div>
           </div>
         </div>,
