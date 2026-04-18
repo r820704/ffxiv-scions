@@ -46,8 +46,8 @@ export default function ZoneWeatherRow({
     return match ?? null;
   }, [zone, selectedWeathers, now]);
 
-  const firstSelectedTw = selectedWeathers.size > 0
-    ? weatherNamesTw[[...selectedWeathers][0]!] ?? [...selectedWeathers][0]!
+  const nextMatchTw = nextMatch
+    ? weatherNamesTw[nextMatch.weather] ?? nextMatch.weatherTw
     : null;
 
   useEffect(() => {
@@ -73,9 +73,9 @@ export default function ZoneWeatherRow({
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <span className="text-sm font-semibold text-foreground">{zoneNamesTw[zone]}</span>
         <div className="flex items-center gap-2">
-          {nextMatch && firstSelectedTw && (
+          {nextMatch && nextMatchTw && (
             <span className="text-xs text-amber-300">
-              下次{firstSelectedTw}：{formatRelMs(nextMatch.startTime - now)}
+              下次{nextMatchTw}：{formatRelMs(nextMatch.startTime - now)}
             </span>
           )}
           {onJumpToNow && (
@@ -92,7 +92,7 @@ export default function ZoneWeatherRow({
       <div
         ref={setRefs}
         onScroll={(e) => onScroll?.(e.currentTarget.scrollLeft)}
-        className="flex gap-1 mt-2 overflow-x-auto scroll-smooth"
+        className="flex gap-1 mt-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {forecasts.map((f, idx) => {
           const isCurrent = idx === 0;
