@@ -1,10 +1,12 @@
-// src/components/eureka/AlbumRecipeList.tsx
+// src/components/eureka/SkillRecipeList.tsx
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { ALBUM_ORDER } from '@/data/album-order';
 import type { LogosAction, LogogramPrice, Role } from '@/types/eureka';
 import { eurekaData } from '@/data/eureka-data';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 import type { OptimizationResult } from '@/utils/recipe-optimizer';
+import type { SlotConfig, SlotOptimizationResult } from '@/utils/slot-optimizer';
+import type { CalcMode } from '@/hooks/useCalcMode';
 import LogosActionCard from './LogosActionCard';
 import { cn } from '@/lib/utils';
 
@@ -31,37 +33,58 @@ function getActionTags(descriptionTw: string): string[] {
 
 const FILTERABLE_ROLES: Role[] = ['tank', 'healer', 'melee', 'ranged', 'caster'];
 
-type LearnedFilter = 'all' | 'unlearned' | 'learned' | 'guide';
+type StateFilter = 'all' | 'unlearned' | 'learned' | 'guide';
 
-interface AlbumRecipeListProps {
+interface SkillRecipeListProps {
+  mode: CalcMode;
   learnedSkills: Set<string>;
   onToggle: (skillId: string) => void;
   prices: LogogramPrice[];
   priceLoading: boolean;
-  optimizationResult: OptimizationResult | null;
+  // Album mode
+  optimizationResult?: OptimizationResult | null;
+  // Slot mode
+  slotConfig?: SlotConfig;
+  slotResult?: SlotOptimizationResult | null;
 }
 
 const actionMap = new Map(eurekaData.logosActions.map((a) => [a.id, a]));
 
-export default function AlbumRecipeList({
+export default function SkillRecipeList({
+  mode,
   learnedSkills,
   onToggle,
   prices,
   priceLoading,
   optimizationResult,
-}: AlbumRecipeListProps) {
+  slotConfig,
+  slotResult,
+}: SkillRecipeListProps) {
   const [search, setSearch] = useState('');
   const [selectedRoles, setSelectedRoles] = useState<Set<Role>>(new Set());
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
-  const [learnedFilter, setLearnedFilter] = useState<LearnedFilter>('all');
+  const [stateFilter, setStateFilter] = useState<StateFilter>('all');
   const [expandedSet, setExpandedSet] = useState<Set<string>>(() => new Set(ALBUM_ORDER));
 
-  // Auto-switch filter to 'guide' whenever a new optimization result arrives
+  // Auto-switch to 'guide' when a fresh result arrives (both modes)
   useEffect(() => {
-    if (optimizationResult) {
-      setLearnedFilter('guide');
+    if (mode === 'album' && optimizationResult) {
+      setStateFilter('guide');
     }
-  }, [optimizationResult]);
+  }, [optimizationResult, mode]);
+
+  useEffect(() => {
+    if (mode === 'slots' && slotResult) {
+      setStateFilter('guide');
+    }
+  }, [slotResult, mode]);
+
+  // When switching modes, reset state filter to a valid option
+  useEffect(() => {
+    if (mode === 'slots' && (stateFilter === 'learned' || stateFilter === 'unlearned')) {
+      setStateFilter('all');
+    }
+  }, [mode, stateFilter]);
 
   const orderedActions = useMemo(() => {
     return ALBUM_ORDER.map((id) => actionMap.get(id)).filter(
@@ -69,24 +92,36 @@ export default function AlbumRecipeList({
     );
   }, []);
 
-  const hasAnyFilter = selectedRoles.size > 0 || selectedTags.size > 0 || learnedFilter !== 'all' || search !== '';
+  const slotSkillIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (mode !== 'slots' || !slotConfig) return ids;
+    slotConfig.forEach(([s1, s2]) => {
+      if (s1) ids.add(s1);
+      if (s2) ids.add(s2);
+    });
+    return ids;
+  }, [mode, slotConfig]);
+
+  const hasAnyFilter =
+    selectedRoles.size > 0 || selectedTags.size > 0 || stateFilter !== 'all' || search !== '';
 
   const filtered = useMemo(() => {
     return orderedActions.filter((action) => {
-      // Role filter (multi-select OR)
       if (selectedRoles.size > 0) {
         const matchesRole = action.roles.includes('all') || action.roles.some((r) => selectedRoles.has(r));
         if (!matchesRole) return false;
       }
-      // Tag filter (multi-select OR)
       if (selectedTags.size > 0) {
         const tags = getActionTags(action.descriptionTw);
         if (!tags.some((t) => selectedTags.has(t))) return false;
       }
-      // Learned filter (guide mode acts as unlearned filter)
-      if ((learnedFilter === 'unlearned' || learnedFilter === 'guide') && learnedSkills.has(action.id)) return false;
-      if (learnedFilter === 'learned' && !learnedSkills.has(action.id)) return false;
-      // Search
+      if (mode === 'album') {
+        if ((stateFilter === 'unlearned' || stateFilter === 'guide') && learnedSkills.has(action.id)) return false;
+        if (stateFilter === 'learned' && !learnedSkills.has(action.id)) return false;
+      } else {
+        // slot mode: guide filter = only skills in slotConfig
+        if (stateFilter === 'guide' && !slotSkillIds.has(action.id)) return false;
+      }
       if (search) {
         const q = search.toLowerCase();
         if (
@@ -96,7 +131,7 @@ export default function AlbumRecipeList({
       }
       return true;
     });
-  }, [orderedActions, search, selectedRoles, selectedTags, learnedFilter, learnedSkills]);
+  }, [orderedActions, search, selectedRoles, selectedTags, stateFilter, learnedSkills, mode, slotSkillIds]);
 
   const availableTags = useMemo(() => {
     const tagSet = new Set<string>();
@@ -128,7 +163,7 @@ export default function AlbumRecipeList({
     setSearch('');
     setSelectedRoles(new Set());
     setSelectedTags(new Set());
-    setLearnedFilter('all');
+    setStateFilter('all');
   }, []);
 
   const toggleCardExpand = useCallback((actionId: string) => {
@@ -148,6 +183,18 @@ export default function AlbumRecipeList({
     setExpandedSet(new Set());
   }, []);
 
+  const stateButtons: { value: StateFilter; label: string }[] =
+    mode === 'album'
+      ? [
+          { value: 'all', label: '全部' },
+          { value: 'unlearned', label: '未習得' },
+          { value: 'learned', label: '已習得' },
+        ]
+      : [{ value: 'all', label: '全部' }];
+
+  const guideEnabled =
+    mode === 'album' ? !!optimizationResult : !!slotResult && slotSkillIds.size > 0;
+
   return (
     <div className="space-y-3">
       <input
@@ -158,15 +205,15 @@ export default function AlbumRecipeList({
         className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
       />
 
-      {/* Learned filter */}
+      {/* State filter */}
       <div className="flex flex-wrap gap-1.5 items-center">
-        {([['all', '全部'], ['unlearned', '未習得'], ['learned', '已習得']] as const).map(([value, label]) => (
+        {stateButtons.map(({ value, label }) => (
           <button
             key={value}
-            onClick={() => setLearnedFilter(value)}
+            onClick={() => setStateFilter(value)}
             className={cn(
               'text-xs px-2 py-1 rounded transition-colors',
-              learnedFilter === value
+              stateFilter === value
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
             )}
@@ -177,19 +224,19 @@ export default function AlbumRecipeList({
         <span className="text-border mx-0.5">|</span>
         <span className="relative group inline-block">
           <button
-            onClick={() => setLearnedFilter(learnedFilter === 'guide' ? 'all' : 'guide')}
-            disabled={!optimizationResult}
+            onClick={() => setStateFilter(stateFilter === 'guide' ? 'all' : 'guide')}
+            disabled={!guideEnabled}
             className={cn(
               'text-xs px-2 py-1 rounded transition-colors',
-              learnedFilter === 'guide'
+              stateFilter === 'guide'
                 ? 'bg-amber-600 text-amber-50'
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-              !optimizationResult && 'opacity-50 cursor-not-allowed'
+              !guideEnabled && 'opacity-50 cursor-not-allowed'
             )}
           >
             合成指南
           </button>
-          {!optimizationResult && (
+          {!guideEnabled && (
             <span
               role="tooltip"
               className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 rounded bg-popover text-popover-foreground text-xs whitespace-nowrap shadow-lg border border-border opacity-0 group-hover:opacity-100 transition-opacity z-10"
@@ -218,7 +265,7 @@ export default function AlbumRecipeList({
         ))}
       </div>
 
-      {/* Effect tag filter (multi-select) */}
+      {/* Effect tag filter */}
       <div className="flex flex-wrap gap-1.5">
         {availableTags.map((tag) => (
           <button
@@ -270,21 +317,32 @@ export default function AlbumRecipeList({
       <div className="space-y-2 min-h-[200px]">
         {filtered.length === 0 ? (
           <div className="flex items-center justify-center h-[200px] text-sm text-muted-foreground">
-            {learnedFilter === 'learned' ? '尚未習得任何技能' : '沒有符合條件的技能'}
+            {stateFilter === 'learned' ? '尚未習得任何技能' : '沒有符合條件的技能'}
           </div>
+        ) : mode === 'slots' && stateFilter === 'guide' ? (
+          renderSlotGroups({
+            filtered, slotConfig, slotResult,
+            prices, priceLoading, learnedSkills, onToggle,
+          })
         ) : (
           filtered.map((action) => {
             const isLearned = learnedSkills.has(action.id);
-            const isGuideMode = learnedFilter === 'guide';
-            const guideIdx = isGuideMode ? optimizationResult?.selectedRecipes[action.id] : undefined;
+            const isGuideMode = stateFilter === 'guide';
+            const guideIdx =
+              mode === 'album' && isGuideMode
+                ? optimizationResult?.selectedRecipes[action.id]
+                : undefined;
+            const isExpanded = isGuideMode ? true : expandedSet.has(action.id);
+            const dim = mode === 'album' && !isLearned && !isGuideMode;
+
             return (
               <div key={action.id} className="flex items-start gap-2">
-                <div className={cn('flex-1 min-w-0', !isLearned && !isGuideMode && 'opacity-60')}>
+                <div className={cn('flex-1 min-w-0', dim && 'opacity-60')}>
                   <LogosActionCard
                     action={action}
                     prices={prices}
                     priceLoading={priceLoading}
-                    isExpanded={isGuideMode ? true : expandedSet.has(action.id)}
+                    isExpanded={isExpanded}
                     onToggleExpand={isGuideMode ? undefined : () => toggleCardExpand(action.id)}
                     guideRecipeIdx={guideIdx}
                     hidePrice={isGuideMode}
@@ -306,6 +364,115 @@ export default function AlbumRecipeList({
           })
         )}
       </div>
+    </div>
+  );
+}
+
+interface RenderSlotGroupsArgs {
+  filtered: LogosAction[];
+  slotConfig: SlotConfig | undefined;
+  slotResult: SlotOptimizationResult | null | undefined;
+  prices: LogogramPrice[];
+  priceLoading: boolean;
+  learnedSkills: Set<string>;
+  onToggle: (skillId: string) => void;
+}
+
+function renderSlotGroups({
+  filtered, slotConfig, slotResult, prices, priceLoading, learnedSkills, onToggle,
+}: RenderSlotGroupsArgs) {
+  if (!slotConfig || !slotResult) return null;
+  const filteredIds = new Set(filtered.map((a) => a.id));
+
+  // Build groups sorted by slot index
+  const groups = slotConfig
+    .map((entry, slotIdx) => ({ slotIdx, skill1Id: entry[0], skill2Id: entry[1] }))
+    .filter(({ skill1Id, skill2Id }) => {
+      if (!skill1Id && !skill2Id) return false;
+      // Only include groups whose skills pass the current filter
+      return (
+        (skill1Id && filteredIds.has(skill1Id)) ||
+        (skill2Id && filteredIds.has(skill2Id))
+      );
+    });
+
+  if (groups.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-[200px] text-sm text-muted-foreground">
+        沒有符合條件的技能
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {groups.map(({ slotIdx, skill1Id, skill2Id }) => {
+        const combo = slotResult.slotCombinations[slotIdx]?.[0];
+        if (!combo) return null;
+        const skill1 = skill1Id ? actionMap.get(skill1Id) : null;
+        const skill2 = skill2Id ? actionMap.get(skill2Id) : null;
+        const skills = [
+          skill1 ? { action: skill1, recipeIdx: combo.skill1RecipeIdx } : null,
+          skill2 ? { action: skill2, recipeIdx: combo.skill2RecipeIdx } : null,
+        ].filter((x): x is { action: LogosAction; recipeIdx: number | undefined } => !!x);
+
+        return (
+          <div key={slotIdx} className="space-y-1.5">
+            {/* Slot header */}
+            <div className="flex items-center gap-2 px-1 text-xs">
+              <span className="text-muted-foreground bg-muted rounded px-1.5 py-0.5 shrink-0">
+                格 {slotIdx + 1}
+              </span>
+              <span
+                className={cn(
+                  'ml-auto shrink-0',
+                  combo.successRate >= 1.0 ? 'text-green-400' : 'text-amber-400'
+                )}
+              >
+                {Math.round(combo.successRate * 100)}% 成功
+                {combo.totalMnemes > 3 && `（${combo.totalMnemes} 記憶）`}
+              </span>
+            </div>
+
+            {/* Pair cards (1 or 2 side by side on md+) */}
+            <div
+              className={cn(
+                'grid gap-2',
+                skills.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1',
+              )}
+            >
+              {skills.map(({ action, recipeIdx }) => {
+                const isLearned = learnedSkills.has(action.id);
+                return (
+                  <div key={action.id} className="flex items-start gap-2">
+                    <div className="flex-1 min-w-0">
+                      <LogosActionCard
+                        action={action}
+                        prices={prices}
+                        priceLoading={priceLoading}
+                        isExpanded
+                        guideRecipeIdx={recipeIdx}
+                        hidePrice
+                      />
+                    </div>
+                    <button
+                      onClick={() => onToggle(action.id)}
+                      className={cn(
+                        'text-[10px] px-2 py-1 rounded border cursor-pointer transition-colors shrink-0 mt-3',
+                        isLearned
+                          ? 'border-primary-dark text-primary-dark bg-primary-dark/10 hover:bg-primary-dark/20'
+                          : 'border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      {isLearned ? '✓ 已習得' : '標記習得'}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

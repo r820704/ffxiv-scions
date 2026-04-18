@@ -6,6 +6,12 @@ import { calculateRecipeCostsMC } from '@/utils/eureka-helpers';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 import ActionDetailTooltip from './ActionDetailTooltip';
 
+export interface SlotBadgeInfo {
+  slotIdx: number;
+  successRate: number;
+  partnerSkill?: { nameTw: string; iconId: number } | null;
+}
+
 interface LogosActionCardProps {
   action: LogosAction;
   prices: LogogramPrice[];
@@ -16,10 +22,12 @@ interface LogosActionCardProps {
   guideRecipeIdx?: number;
   /** When true, hide all price/cost information (guide mode) */
   hidePrice?: boolean;
+  /** Slot context badge shown in the card header (slot-mode only) */
+  slotBadge?: SlotBadgeInfo;
 }
 
 export default function LogosActionCard({
-  action, prices, priceLoading, isExpanded, onToggleExpand, guideRecipeIdx, hidePrice,
+  action, prices, priceLoading, isExpanded, onToggleExpand, guideRecipeIdx, hidePrice, slotBadge,
 }: LogosActionCardProps) {
   const [internalExpanded, setInternalExpanded] = useState(false);
   const expanded = isExpanded !== undefined ? isExpanded : internalExpanded;
@@ -97,6 +105,30 @@ export default function LogosActionCard({
 
   return (
     <div className="rounded-lg border border-border bg-card p-3">
+      {slotBadge && (
+        <div className="flex items-center gap-2 mb-2 flex-wrap text-[11px]">
+          <span className="text-muted-foreground bg-muted rounded px-1.5 py-0.5 shrink-0">
+            格 {slotBadge.slotIdx + 1}
+          </span>
+          {slotBadge.partnerSkill && (
+            <span className="flex items-center gap-1 text-muted-foreground/80">
+              <span className="text-muted-foreground/50">+</span>
+              <img
+                src={`https://xivapi.com/i/064000/0${slotBadge.partnerSkill.iconId}.png`}
+                alt={slotBadge.partnerSkill.nameTw}
+                className="w-4 h-4 shrink-0"
+                loading="lazy"
+              />
+              <span>{slotBadge.partnerSkill.nameTw}</span>
+            </span>
+          )}
+          <span
+            className={`ml-auto shrink-0 ${slotBadge.successRate >= 1.0 ? 'text-green-400' : 'text-amber-400'}`}
+          >
+            {Math.round(slotBadge.successRate * 100)}% 成功
+          </span>
+        </div>
+      )}
       {/* Header - always visible, clickable to expand */}
       <div
         className="flex items-center justify-between gap-2 cursor-pointer select-none"

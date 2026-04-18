@@ -17,9 +17,7 @@ import InputPanel from '@/components/eureka/InputPanel';
 import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumPlanSection from '@/components/eureka/AlbumPlanSection';
 import SlotPlanSection from '@/components/eureka/SlotPlanSection';
-import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
-import SlotRecipeList from '@/components/eureka/SlotRecipeList';
-import LogosActionList from '@/components/eureka/LogosActionList';
+import SkillRecipeList from '@/components/eureka/SkillRecipeList';
 
 export default function EurekaPage() {
   const { calcMode, setCalcMode } = useCalcMode();
@@ -35,7 +33,7 @@ export default function EurekaPage() {
 
   const {
     slotConfig, selectedSlot, selectSlot,
-    addSkillToSelected, clearSlot, usedSkillIds,
+    addSkillToSelected, clearSlot, resetAllSlots, usedSkillIds,
   } = useSlotState();
   const [slotResult, setSlotResult] = useState<SlotOptimizationResult | null>(null);
   const [slotOptimizing, setSlotOptimizing] = useState(false);
@@ -193,6 +191,7 @@ export default function EurekaPage() {
                 slotMcCosts={slotMcCosts}
                 isStale={isStale}
                 onRunOptimizer={runSlotOptimizer}
+                onResetSlots={resetAllSlots}
               />
             )}
           </div>
@@ -208,25 +207,16 @@ export default function EurekaPage() {
           </div>
         </div>
 
-        {calcMode === 'album' ? (
-          <AlbumRecipeList
-            learnedSkills={learnedSkills}
-            onToggle={toggleLearned}
-            prices={prices}
-            priceLoading={priceLoading}
-            optimizationResult={optimizationResult}
-          />
-        ) : (
-          <SlotRecipeList
-            slotConfig={slotConfig}
-            slotResult={slotResult}
-            isStale={isStale}
-          />
-        )}
-
-        <div className="mt-4">
-          <LogosActionList prices={prices} priceLoading={priceLoading} />
-        </div>
+        <SkillRecipeList
+          mode={calcMode}
+          learnedSkills={learnedSkills}
+          onToggle={toggleLearned}
+          prices={prices}
+          priceLoading={priceLoading}
+          optimizationResult={optimizationResult}
+          slotConfig={slotConfig}
+          slotResult={slotResult}
+        />
       </div>
     </div>
   );

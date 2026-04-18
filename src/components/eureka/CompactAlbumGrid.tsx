@@ -87,10 +87,7 @@ export default function CompactAlbumGrid({
         {orderedActions.map((action, idx) => {
           const isLearned = learnedSkills.has(action.id);
           const isUsed = usedSkillIds.has(action.id);
-          const dim =
-            mode === 'slot-pick'
-              ? isUsed || pickDisabled
-              : !isLearned;
+          const dim = !isLearned;
           const row = Math.floor(idx / 10);
           const col = idx % 10;
           const isTapped = tappedId === action.id;
@@ -100,9 +97,10 @@ export default function CompactAlbumGrid({
               <button
                 className={cn(
                   'w-full aspect-square rounded border cursor-pointer flex items-center justify-center transition-all',
-                  mode === 'learn' && isLearned
+                  isLearned
                     ? 'border-primary-dark border-2 bg-card opacity-100'
                     : 'border-border bg-card',
+                  mode === 'slot-pick' && isUsed && 'ring-1 ring-amber-500/60',
                   dim && 'opacity-40',
                   !dim && 'hover:border-muted-foreground hover:opacity-90',
                   pickDisabled && 'cursor-default',
@@ -118,7 +116,7 @@ export default function CompactAlbumGrid({
                   loading="lazy"
                   className={cn(
                     'w-[80%] h-[80%] object-contain',
-                    mode === 'learn' && !isLearned && 'brightness-[0.35] grayscale',
+                    !isLearned && 'brightness-[0.35] grayscale',
                   )}
                 />
               </button>

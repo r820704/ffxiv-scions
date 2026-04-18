@@ -11,6 +11,7 @@ interface SlotPlanSectionProps {
   slotMcCosts: McDerivedCosts | null;
   isStale: boolean;
   onRunOptimizer: () => void;
+  onResetSlots: () => void;
 }
 
 export default function SlotPlanSection({
@@ -22,6 +23,7 @@ export default function SlotPlanSection({
   slotMcCosts,
   isStale,
   onRunOptimizer,
+  onResetSlots,
 }: SlotPlanSectionProps) {
   const filledSlotCount = slotConfig.filter(([s]) => s !== null).length;
   const emptySlotCount = 8 - filledSlotCount;
@@ -39,17 +41,29 @@ export default function SlotPlanSection({
           </span>
         </div>
       </div>
-      <div className="flex justify-between items-center mt-1">
-        <div className="text-[10px] text-muted-foreground">
-          {filledSlotCount} 格已配置，{emptySlotCount} 格空
+      <div className="flex justify-between items-center mt-1 gap-2">
+        <div className="text-[10px] text-muted-foreground/80">
+          預估：50% 分位（中位數）；保底：95% 分位
         </div>
-        <button
-          onClick={onRunOptimizer}
-          disabled={slotOptimizing || priceLoading || prices.length === 0 || filledSlotCount === 0}
-          className="text-xs px-3 py-1 rounded bg-amber-600 text-amber-50 hover:bg-amber-500 transition-colors cursor-pointer disabled:bg-amber-600/40 disabled:cursor-not-allowed"
-        >
-          {slotOptimizing ? '計算中...' : slotResult && !isStale ? '重新計算' : '計算最佳合成'}
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={onResetSlots}
+            disabled={filledSlotCount === 0}
+            className="text-xs px-3 py-1 rounded border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            重置技能格
+          </button>
+          <button
+            onClick={onRunOptimizer}
+            disabled={slotOptimizing || priceLoading || prices.length === 0 || filledSlotCount === 0}
+            className="text-xs px-3 py-1 rounded bg-amber-600 text-amber-50 hover:bg-amber-500 transition-colors cursor-pointer disabled:bg-amber-600/40 disabled:cursor-not-allowed"
+          >
+            {slotOptimizing ? '計算中...' : slotResult && !isStale ? '重新計算' : '計算最佳合成'}
+          </button>
+        </div>
+      </div>
+      <div className="text-[10px] text-muted-foreground mt-1">
+        {filledSlotCount} 格已配置，{emptySlotCount} 格空
       </div>
       {isStale && (
         <div className="text-[10px] text-amber-400 bg-amber-400/10 rounded px-2 py-1 mt-1.5">
