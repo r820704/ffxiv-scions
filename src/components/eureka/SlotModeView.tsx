@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import type { LogogramPrice } from '@/types/eureka';
 import type { SlotOptimizationResult } from '@/utils/slot-optimizer';
 import type { McDerivedCosts } from '@/utils/mc-analysis';
@@ -42,12 +42,6 @@ export default function SlotModeView({
   isStale,
   onRunOptimizer,
 }: SlotModeViewProps) {
-  const [comboOverrides, setComboOverrides] = useState<Record<number, number>>({});
-
-  const handleSelectCombo = useCallback((slotIdx: number, comboIdx: number) => {
-    setComboOverrides((prev) => ({ ...prev, [slotIdx]: comboIdx }));
-  }, []);
-
   const filledSlotCount = slotConfig.filter(([s]) => s !== null).length;
   const emptySlotCount = 8 - filledSlotCount;
 
@@ -133,11 +127,7 @@ export default function SlotModeView({
       <SlotRecipeList
         slotConfig={slotConfig}
         slotResult={slotResult}
-        prices={prices}
-        priceLoading={priceLoading}
         isStale={isStale}
-        comboOverrides={comboOverrides}
-        onSelectCombo={handleSelectCombo}
       />
     </div>
   );

@@ -1,27 +1,17 @@
 // src/components/eureka/SlotRecipeList.tsx
-import type { LogogramPrice } from '@/types/eureka';
 import type { SlotOptimizationResult } from '@/utils/slot-optimizer';
 import SlotRecipeCard from './SlotRecipeCard';
 
 interface SlotRecipeListProps {
   slotConfig: [string | null, string | null][];
   slotResult: SlotOptimizationResult | null;
-  prices: LogogramPrice[];
-  priceLoading: boolean;
   isStale: boolean;
-  /** Per-slot selected combo index overrides (for manual switching) */
-  comboOverrides: Record<number, number>;
-  onSelectCombo: (slotIdx: number, comboIdx: number) => void;
 }
 
 export default function SlotRecipeList({
   slotConfig,
   slotResult,
-  prices,
-  priceLoading,
   isStale,
-  comboOverrides,
-  onSelectCombo,
 }: SlotRecipeListProps) {
   if (!slotResult) return null;
 
@@ -37,9 +27,10 @@ export default function SlotRecipeList({
       <div className="space-y-2">
         {nonEmptySlots.map(({ slotIdx, skill1, skill2 }) => {
           const combos = slotResult.slotCombinations[slotIdx];
-          if (!combos || !skill1) return null;
+          if (!combos || combos.length === 0 || !skill1) return null;
 
-          const selectedIdx = comboOverrides[slotIdx] ?? 0;
+          // Use the best combination (first in sorted list = cheapest)
+          const bestCombo = combos[0]!;
 
           return (
             <SlotRecipeCard
@@ -47,11 +38,7 @@ export default function SlotRecipeList({
               slotIndex={slotIdx}
               skill1Id={skill1}
               skill2Id={skill2}
-              combinations={combos}
-              selectedComboIndex={selectedIdx}
-              onSelectCombo={(ci: number) => onSelectCombo(slotIdx, ci)}
-              prices={prices}
-              priceLoading={priceLoading}
+              combination={bestCombo}
             />
           );
         })}
