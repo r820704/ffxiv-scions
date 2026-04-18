@@ -3,34 +3,36 @@ import { eurekaData } from '@/data/eureka-data';
 import { fetchLogogramPrices } from '@/services/universalis';
 import type { LogogramPrice } from '@/types/eureka';
 import { useAlbumState } from '@/hooks/useAlbumState';
+import { useSlotState } from '@/hooks/useSlotState';
+import { useCalcMode } from '@/hooks/useCalcMode';
 import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import { optimizeRecipes } from '@/utils/recipe-optimizer';
 import type { OptimizationResult } from '@/utils/recipe-optimizer';
-import { deriveMcCosts, type McDerivedCosts } from '@/utils/mc-analysis';
-import AlbumModeView from '@/components/eureka/AlbumModeView';
-import { useSlotState } from '@/hooks/useSlotState';
 import { optimizeSlots } from '@/utils/slot-optimizer';
 import type { SlotOptimizationResult } from '@/utils/slot-optimizer';
-import SlotModeView from '@/components/eureka/SlotModeView';
-import { cn } from '@/lib/utils';
-
-type TabMode = 'album' | 'slots';
+import { deriveMcCosts, type McDerivedCosts } from '@/utils/mc-analysis';
+import CalcModeToggle from '@/components/eureka/CalcModeToggle';
+import AlbumStateBar from '@/components/eureka/AlbumStateBar';
+import InputPanel from '@/components/eureka/InputPanel';
+import CrystalOverview from '@/components/eureka/CrystalOverview';
+import AlbumPlanSection from '@/components/eureka/AlbumPlanSection';
+import SlotPlanSection from '@/components/eureka/SlotPlanSection';
+import AlbumRecipeList from '@/components/eureka/AlbumRecipeList';
+import SlotRecipeList from '@/components/eureka/SlotRecipeList';
+import LogosActionList from '@/components/eureka/LogosActionList';
 
 export default function EurekaPage() {
-  const [activeTab, setActiveTab] = useState<TabMode>('album');
+  const { calcMode, setCalcMode } = useCalcMode();
 
-  // Shared state
   const [prices, setPrices] = useState<LogogramPrice[]>([]);
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceError, setPriceError] = useState(false);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
-  const { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount } = useAlbumState();
 
-  // Album mode state
+  const { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount } = useAlbumState();
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
   const [optimizing, setOptimizing] = useState(false);
 
-  // Slot mode state
   const {
     slotConfig, selectedSlot, selectSlot,
     addSkillToSelected, clearSlot, usedSkillIds,
@@ -39,7 +41,6 @@ export default function EurekaPage() {
   const [slotOptimizing, setSlotOptimizing] = useState(false);
   const [isStale, setIsStale] = useState(false);
 
-  // Mark stale when slot config changes after a calculation
   useEffect(() => {
     if (slotResult) setIsStale(true);
   }, [slotConfig]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -63,16 +64,6 @@ export default function EurekaPage() {
     }, 50);
   }, [learnedSkills, prices]);
 
-  const mcCosts: McDerivedCosts | null = useMemo(() => {
-    if (!optimizationResult || prices.length === 0) return null;
-    return deriveMcCosts({
-      mcOpensPerIter: optimizationResult.mcOpensPerIter,
-      logogramOrder: LOGOGRAM_FIXED_ORDER,
-      inventory,
-      listingsByLogogramId: listingsMap,
-    });
-  }, [optimizationResult, prices, inventory, listingsMap]);
-
   const runSlotOptimizer = useCallback(() => {
     if (prices.length === 0) return;
     setSlotOptimizing(true);
@@ -84,6 +75,16 @@ export default function EurekaPage() {
     }, 50);
   }, [slotConfig, prices]);
 
+  const albumMcCosts: McDerivedCosts | null = useMemo(() => {
+    if (!optimizationResult || prices.length === 0) return null;
+    return deriveMcCosts({
+      mcOpensPerIter: optimizationResult.mcOpensPerIter,
+      logogramOrder: LOGOGRAM_FIXED_ORDER,
+      inventory,
+      listingsByLogogramId: listingsMap,
+    });
+  }, [optimizationResult, prices, inventory, listingsMap]);
+
   const slotMcCosts: McDerivedCosts | null = useMemo(() => {
     if (!slotResult || prices.length === 0) return null;
     return deriveMcCosts({
@@ -93,6 +94,18 @@ export default function EurekaPage() {
       listingsByLogogramId: listingsMap,
     });
   }, [slotResult, prices, inventory, listingsMap]);
+
+  const crystalOptResult: OptimizationResult | null = useMemo(() => {
+    if (calcMode === 'album') return optimizationResult;
+    if (!slotResult) return null;
+    return {
+      selectedRecipes: {},
+      mnemeNeeds: {},
+      mcOpensPerIter: slotResult.mcOpensPerIter,
+    };
+  }, [calcMode, optimizationResult, slotResult]);
+
+  const crystalMcCosts = calcMode === 'album' ? albumMcCosts : slotMcCosts;
 
   const loadPrices = useCallback(async () => {
     setPriceLoading(true);
@@ -137,60 +150,83 @@ export default function EurekaPage() {
           <div className="text-xs text-destructive mb-3">價格查詢失敗，請稍後重試</div>
         )}
 
-        {/* Tab switcher */}
-        <div className="flex border-b-2 border-border mb-4">
-          {(['album', 'slots'] as const).map((tab) => (
-            <button
-              key={tab}
-              className={cn(
-                'px-4 py-1.5 text-sm transition-colors cursor-pointer -mb-[2px]',
-                activeTab === tab
-                  ? 'text-primary border-b-2 border-primary-dark font-semibold'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab === 'album' ? '圖鑑模式' : '技能格模式'}
-            </button>
-          ))}
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
+          <CalcModeToggle calcMode={calcMode} onChange={setCalcMode} />
+          <AlbumStateBar
+            learnedCount={learnedSkills.size}
+            total={56}
+            disabled={calcMode === 'slots'}
+            onLearnAll={learnAll}
+            onReset={resetAll}
+          />
         </div>
 
-        {activeTab === 'album' && (
-          <AlbumModeView
+        <div className="flex flex-col md:flex-row gap-4 items-start mb-4">
+          <div className="w-full md:flex-1 md:min-w-0 space-y-3">
+            <InputPanel
+              calcMode={calcMode}
+              learnedSkills={learnedSkills}
+              usedSkillIds={usedSkillIds}
+              slotConfig={slotConfig}
+              selectedSlot={selectedSlot}
+              onToggleLearn={toggleLearned}
+              onPickForSlot={addSkillToSelected}
+              onSelectSlot={selectSlot}
+              onClearSlot={clearSlot}
+            />
+            {calcMode === 'album' ? (
+              <AlbumPlanSection
+                prices={prices}
+                priceLoading={priceLoading}
+                optimizationResult={optimizationResult}
+                optimizing={optimizing}
+                mcCosts={albumMcCosts}
+                onRunOptimizer={runOptimizer}
+              />
+            ) : (
+              <SlotPlanSection
+                slotConfig={slotConfig}
+                prices={prices}
+                priceLoading={priceLoading}
+                slotResult={slotResult}
+                slotOptimizing={slotOptimizing}
+                slotMcCosts={slotMcCosts}
+                isStale={isStale}
+                onRunOptimizer={runSlotOptimizer}
+              />
+            )}
+          </div>
+          <div className={`w-full md:flex-1 md:min-w-0 ${calcMode === 'slots' && isStale ? 'opacity-50' : ''}`}>
+            <CrystalOverview
+              inventory={inventory}
+              onSetCount={setItemCount}
+              prices={prices}
+              priceLoading={priceLoading}
+              optimizationResult={crystalOptResult}
+              mcCosts={crystalMcCosts}
+            />
+          </div>
+        </div>
+
+        {calcMode === 'album' ? (
+          <AlbumRecipeList
             learnedSkills={learnedSkills}
-            toggleLearned={toggleLearned}
-            learnAll={learnAll}
-            resetAll={resetAll}
-            inventory={inventory}
-            setItemCount={setItemCount}
+            onToggle={toggleLearned}
             prices={prices}
             priceLoading={priceLoading}
             optimizationResult={optimizationResult}
-            optimizing={optimizing}
-            mcCosts={mcCosts}
-            onRunOptimizer={runOptimizer}
+          />
+        ) : (
+          <SlotRecipeList
+            slotConfig={slotConfig}
+            slotResult={slotResult}
+            isStale={isStale}
           />
         )}
 
-        {activeTab === 'slots' && (
-          <SlotModeView
-            slotConfig={slotConfig}
-            selectedSlot={selectedSlot}
-            usedSkillIds={usedSkillIds}
-            onSelectSlot={selectSlot}
-            onAddSkill={addSkillToSelected}
-            onClearSlot={clearSlot}
-            inventory={inventory}
-            setItemCount={setItemCount}
-            prices={prices}
-            priceLoading={priceLoading}
-            slotResult={slotResult}
-            slotOptimizing={slotOptimizing}
-            slotMcCosts={slotMcCosts}
-            isStale={isStale}
-            onRunOptimizer={runSlotOptimizer}
-          />
-        )}
+        <div className="mt-4">
+          <LogosActionList prices={prices} priceLoading={priceLoading} />
+        </div>
       </div>
     </div>
   );

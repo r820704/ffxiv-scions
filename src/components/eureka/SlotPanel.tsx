@@ -78,7 +78,7 @@ function SlotCell({
   return (
     <div
       className={cn(
-        'relative w-[120px] h-9 rounded-md flex items-center justify-center text-[9px] cursor-pointer transition-all',
+        'relative w-[120px] h-12 rounded-md flex items-center justify-center text-[9px] cursor-pointer transition-all',
         isDashed ? 'border-[1.5px] border-dashed' : 'border-[1.5px] border-solid',
         isSelected
           ? 'border-blue-500 bg-blue-500/10 shadow-[0_0_6px_rgba(85,136,255,0.2)]'
@@ -110,37 +110,33 @@ function SlotCell({
       )}
 
       {hasSkill && !action2 && action1 && (
-        <div className="flex items-center gap-1 px-2">
+        <div className="flex items-center justify-center">
           <img
             src={`https://xivapi.com/i/064000/0${action1.iconId}.png`}
             alt={action1.nameTw}
-            className="w-5 h-5 shrink-0"
+            title={action1.nameTw}
+            className="w-8 h-8 shrink-0"
             loading="lazy"
           />
-          <span className="text-[8px] text-foreground truncate">{action1.nameTw}</span>
         </div>
       )}
 
       {hasSkill && action2 && action1 && (
-        <div className="flex items-center w-full h-full">
-          <div className="flex-1 flex items-center justify-center gap-0.5 border-r border-border/50 h-full px-0.5">
-            <img
-              src={`https://xivapi.com/i/064000/0${action1.iconId}.png`}
-              alt={action1.nameTw}
-              className="w-4 h-4 shrink-0"
-              loading="lazy"
-            />
-            <span className="text-[7px] text-foreground truncate">{action1.nameTw}</span>
-          </div>
-          <div className="flex-1 flex items-center justify-center gap-0.5 h-full px-0.5">
-            <img
-              src={`https://xivapi.com/i/064000/0${action2.iconId}.png`}
-              alt={action2.nameTw}
-              className="w-4 h-4 shrink-0"
-              loading="lazy"
-            />
-            <span className="text-[7px] text-foreground truncate">{action2.nameTw}</span>
-          </div>
+        <div className="flex items-center justify-center gap-1.5">
+          <img
+            src={`https://xivapi.com/i/064000/0${action1.iconId}.png`}
+            alt={action1.nameTw}
+            title={action1.nameTw}
+            className="w-8 h-8 shrink-0"
+            loading="lazy"
+          />
+          <img
+            src={`https://xivapi.com/i/064000/0${action2.iconId}.png`}
+            alt={action2.nameTw}
+            title={action2.nameTw}
+            className="w-8 h-8 shrink-0"
+            loading="lazy"
+          />
         </div>
       )}
     </div>
