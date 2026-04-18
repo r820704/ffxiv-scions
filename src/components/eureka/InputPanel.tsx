@@ -1,6 +1,7 @@
 import type { CalcMode } from '@/hooks/useCalcMode';
 import CompactAlbumGrid from './CompactAlbumGrid';
 import SlotPanel from './SlotPanel';
+import RecentSkillsRow from './RecentSkillsRow';
 import { cn } from '@/lib/utils';
 
 interface InputPanelProps {
@@ -13,6 +14,7 @@ interface InputPanelProps {
   onPickForSlot: (skillId: string) => void;
   onSelectSlot: (index: number) => void;
   onClearSlot: (index: number) => void;
+  recentIds?: string[];
 }
 
 export default function InputPanel({
@@ -25,6 +27,7 @@ export default function InputPanel({
   onPickForSlot,
   onSelectSlot,
   onClearSlot,
+  recentIds,
 }: InputPanelProps) {
   const isAlbum = calcMode === 'album';
 
@@ -43,11 +46,18 @@ export default function InputPanel({
 
       <div
         className={cn(
-          'shrink-0',
+          'shrink-0 flex flex-col gap-2',
           isAlbum && 'opacity-40 pointer-events-none',
         )}
         title={isAlbum ? '切換到「技能格計算」模式才可編輯' : undefined}
       >
+        {!isAlbum && recentIds && (
+          <RecentSkillsRow
+            recentIds={recentIds}
+            learnedSkills={learnedSkills}
+            onPick={onPickForSlot}
+          />
+        )}
         <SlotPanel
           slotConfig={slotConfig}
           selectedSlot={selectedSlot}

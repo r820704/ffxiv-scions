@@ -5,6 +5,7 @@ import type { LogogramPrice } from '@/types/eureka';
 import { useAlbumState } from '@/hooks/useAlbumState';
 import { useSlotState } from '@/hooks/useSlotState';
 import { useCalcMode } from '@/hooks/useCalcMode';
+import { useRecentSkills } from '@/hooks/useRecentSkills';
 import { LOGOGRAM_FIXED_ORDER } from '@/utils/album-helpers';
 import { optimizeRecipes } from '@/utils/recipe-optimizer';
 import type { OptimizationResult } from '@/utils/recipe-optimizer';
@@ -35,9 +36,17 @@ export default function EurekaPage() {
     slotConfig, selectedSlot, selectSlot,
     addSkillToSelected, clearSlot, resetAllSlots, usedSkillIds,
   } = useSlotState();
+  const { recentIds, pushRecent } = useRecentSkills();
   const [slotResult, setSlotResult] = useState<SlotOptimizationResult | null>(null);
   const [slotOptimizing, setSlotOptimizing] = useState(false);
   const [isStale, setIsStale] = useState(false);
+
+  const handlePickForSlot = useCallback((skillId: string) => {
+    if (learnedSkills.has(skillId)) {
+      pushRecent(skillId);
+    }
+    addSkillToSelected(skillId);
+  }, [addSkillToSelected, pushRecent, learnedSkills]);
 
   useEffect(() => {
     if (slotResult) setIsStale(true);
@@ -168,9 +177,10 @@ export default function EurekaPage() {
               slotConfig={slotConfig}
               selectedSlot={selectedSlot}
               onToggleLearn={toggleLearned}
-              onPickForSlot={addSkillToSelected}
+              onPickForSlot={handlePickForSlot}
               onSelectSlot={selectSlot}
               onClearSlot={clearSlot}
+              recentIds={recentIds}
             />
             {calcMode === 'album' ? (
               <AlbumPlanSection
