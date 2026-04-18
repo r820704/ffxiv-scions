@@ -7,21 +7,29 @@ afterEach(cleanup);
 describe('WeatherFilterBar', () => {
   it('renders all unique Eureka weathers as chips', () => {
     render(<WeatherFilterBar selected={new Set()} onToggle={vi.fn()} />);
-    expect(screen.getByRole('button', { name: '靈風' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: '熱浪' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: '晴朗' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /靈風/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /熱浪/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /晴朗/ })).toBeTruthy();
   });
 
   it('calls onToggle with English key when chip clicked', () => {
     const onToggle = vi.fn();
     render(<WeatherFilterBar selected={new Set()} onToggle={onToggle} />);
-    fireEvent.click(screen.getByRole('button', { name: '靈風' }));
+    fireEvent.click(screen.getByRole('button', { name: /靈風/ }));
     expect(onToggle).toHaveBeenCalledWith('Umbral Wind');
   });
 
   it('marks selected chips with amber background', () => {
     render(<WeatherFilterBar selected={new Set(['Gales'])} onToggle={vi.fn()} />);
-    const btn = screen.getByRole('button', { name: '強風' });
+    const btn = screen.getByRole('button', { name: /強風/ });
     expect(btn.className).toContain('bg-amber-600');
+  });
+
+  it('renders a weather icon in each chip', () => {
+    const { container } = render(<WeatherFilterBar selected={new Set()} onToggle={vi.fn()} />);
+    const buttons = container.querySelectorAll('button');
+    buttons.forEach((b) => {
+      expect(b.querySelector('img, span[aria-hidden="true"]')).toBeTruthy();
+    });
   });
 });
