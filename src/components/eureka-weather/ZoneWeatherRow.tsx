@@ -25,6 +25,15 @@ function formatRelMs(ms: number): string {
   return `${m}分${String(s).padStart(2, '0')}秒`;
 }
 
+function formatCellTime(ts: number): string {
+  const d = new Date(ts);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mi = String(d.getMinutes()).padStart(2, '0');
+  return `${mm}/${dd} ${hh}:${mi}`;
+}
+
 export default function ZoneWeatherRow({
   zone,
   selectedWeathers,
@@ -117,7 +126,7 @@ export default function ZoneWeatherRow({
               </div>
               <div className="text-muted-foreground mt-0.5">{f.weatherTw}</div>
               <div className="text-muted-foreground/70">
-                {isCurrent ? '現在' : `+${formatRelMs(f.startTime - now)}`}
+                {isCurrent ? '現在' : formatCellTime(f.startTime)}
               </div>
               {nms.length > 0 && (
                 <div className="absolute top-0.5 right-0.5 px-1 rounded bg-red-600 text-white text-[8px] font-bold leading-[10px] shadow-sm animate-pulse">
