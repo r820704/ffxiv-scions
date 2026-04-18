@@ -69,19 +69,27 @@ export function deriveMcCosts(input: DeriveMcCostsInput): McDerivedCosts {
   const N = mcOpensPerIter.length;
   const numLogograms = logogramOrder.length;
 
-  const totalsPerIter = new Array<number>(N);
+  // Compute per-logogram cost for each iteration, and sum to get total.
+  // Storing per-logogram costs lets us average them in a percentile window
+  // so that Σ(per-logogram avg) = avg(total) exactly (linearity of mean).
+  const costsPerIter = new Array<Float64Array>(N);
+  const totalsPerIter = new Float64Array(N);
   for (let i = 0; i < N; i++) {
     const row = mcOpensPerIter[i]!;
+    const logogramCosts = new Float64Array(numLogograms);
     let total = 0;
     for (let j = 0; j < numLogograms; j++) {
       const logogramId = logogramOrder[j]!;
       const opens = row[j] ?? 0;
       const owned = inventory[logogramId] ?? 0;
       const remaining = Math.max(0, opens - owned);
-      if (remaining === 0) continue;
-      const listings = listingsByLogogramId.get(logogramId) ?? [];
-      total += buildPurchasePlan(listings, remaining).totalCost;
+      if (remaining > 0) {
+        const listings = listingsByLogogramId.get(logogramId) ?? [];
+        logogramCosts[j] = buildPurchasePlan(listings, remaining).totalCost;
+      }
+      total += logogramCosts[j]!;
     }
+    costsPerIter[i] = logogramCosts;
     totalsPerIter[i] = total;
   }
 
@@ -114,27 +122,26 @@ export function deriveMcCosts(input: DeriveMcCostsInput): McDerivedCosts {
     return out;
   };
 
-  const opensNeeded95 = avgOpens(window95);
-  const opensNeeded50 = avgOpens(window50);
-
-  const costPerLogogram = (opens: Record<string, number>): Record<string, number> => {
-    const out: Record<string, number> = {};
-    for (const id of logogramOrder) {
-      const need = opens[id] ?? 0;
-      const owned = inventory[id] ?? 0;
-      const remaining = Math.max(0, need - owned);
-      if (remaining === 0) {
-        out[id] = 0;
-        continue;
+  const avgCosts = (window: number[]): Record<string, number> => {
+    const sums = new Array<number>(numLogograms).fill(0);
+    for (const idx of window) {
+      const costs = costsPerIter[idx]!;
+      for (let j = 0; j < numLogograms; j++) {
+        sums[j]! += costs[j]!;
       }
-      const listings = listingsByLogogramId.get(id) ?? [];
-      out[id] = buildPurchasePlan(listings, Math.ceil(remaining)).totalCost;
+    }
+    const out: Record<string, number> = {};
+    for (let j = 0; j < numLogograms; j++) {
+      out[logogramOrder[j]!] = sums[j]! / window.length;
     }
     return out;
   };
 
-  const costPerLogogram95 = costPerLogogram(opensNeeded95);
-  const costPerLogogram50 = costPerLogogram(opensNeeded50);
+  const opensNeeded95 = avgOpens(window95);
+  const opensNeeded50 = avgOpens(window50);
+
+  const costPerLogogram95 = avgCosts(window95);
+  const costPerLogogram50 = avgCosts(window50);
 
   const windowMean = (window: number[]): number => {
     let sum = 0;
