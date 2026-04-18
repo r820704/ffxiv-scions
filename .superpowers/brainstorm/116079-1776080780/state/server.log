@@ -1,9 +1,0 @@
-{"type":"server-started","port":51723,"host":"0.0.0.0","url_host":"localhost","url":"http://localhost:51723","screen_dir":"/workspaces/FFXIV/.superpowers/brainstorm/116079-1776080780/content","state_dir":"/workspaces/FFXIV/.superpowers/brainstorm/116079-1776080780/state"}
-{"type":"screen-added","file":"/workspaces/FFXIV/.superpowers/brainstorm/116079-1776080780/content/album-layout.html"}
-{"type":"screen-added","file":"/workspaces/FFXIV/.superpowers/brainstorm/116079-1776080780/content/album-v2.html"}
-{"type":"screen-added","file":"/workspaces/FFXIV/.superpowers/brainstorm/116079-1776080780/content/album-v3.html"}
-{"type":"screen-added","file":"/workspaces/FFXIV/.superpowers/brainstorm/116079-1776080780/content/album-v4.html"}
-{"type":"screen-added","file":"/workspaces/FFXIV/.superpowers/brainstorm/116079-1776080780/content/album-v5.html"}
-{"type":"screen-added","file":"/workspaces/FFXIV/.superpowers/brainstorm/116079-1776080780/content/album-v6.html"}
-{"type":"screen-added","file":"/workspaces/FFXIV/.superpowers/brainstorm/116079-1776080780/content/album-v7-compare.html"}
-{"type":"server-stopped","reason":"idle timeout"}
