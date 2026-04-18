@@ -82,4 +82,10 @@ describe('SlotPlanSection', () => {
     const btn = screen.getByRole('button', { name: /重置技能格/ }) as HTMLButtonElement;
     expect(btn.disabled).toBe(true);
   });
+
+  it('should not render slot count text (A2)', () => {
+    render(<SlotPlanSection {...baseProps} />);
+    expect(screen.queryByText(/格已配置/)).toBeNull();
+    expect(screen.queryByText(/格空$/)).toBeNull();
+  });
 });

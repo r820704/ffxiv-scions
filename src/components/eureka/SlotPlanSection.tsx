@@ -26,7 +26,6 @@ export default function SlotPlanSection({
   onResetSlots,
 }: SlotPlanSectionProps) {
   const filledSlotCount = slotConfig.filter(([s]) => s !== null).length;
-  const emptySlotCount = 8 - filledSlotCount;
 
   return (
     <div className={`bg-secondary rounded-lg p-3 ${isStale ? 'opacity-50' : ''}`}>
@@ -61,9 +60,6 @@ export default function SlotPlanSection({
             {slotOptimizing ? '計算中...' : slotResult && !isStale ? '重新計算' : '計算最佳合成'}
           </button>
         </div>
-      </div>
-      <div className="text-[10px] text-muted-foreground mt-1">
-        {filledSlotCount} 格已配置，{emptySlotCount} 格空
       </div>
       {isStale && (
         <div className="text-[10px] text-amber-400 bg-amber-400/10 rounded px-2 py-1 mt-1.5">
