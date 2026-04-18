@@ -213,3 +213,87 @@ export function calculateRecipeCost50(
 ): number | null {
   return calculateRecipeCostN(ingredients, prices, 0.5);
 }
+
+const MC_RECIPE_ITERATIONS = 2000;
+
+/**
+ * Calculate recipe costs using Monte Carlo simulation (adaptive purchasing model).
+ *
+ * Simulates opening each logogram one-by-one until all requirements are met,
+ * matching actual player behavior. Returns both 50% (median) and 95% (safety)
+ * percentile costs from the simulation.
+ *
+ * This gives more accurate results than the analytical {@link calculateRecipeCostN}
+ * for multi-logogram recipes, because it models independent per-logogram completion
+ * rather than joint batch pre-purchasing.
+ */
+export function calculateRecipeCostsMC(
+  ingredients: RecipeIngredient[],
+  prices: LogogramPrice[],
+): { cost50: number; cost95: number } | null {
+  const priceMap = new Map(prices.map((p) => [p.itemId, p.price]));
+
+  // Group ingredients by source logogram
+  interface Group {
+    mnemeIndices: number[];
+    quantities: number[];
+    totalTypes: number;
+    price: number;
+  }
+  const groupMap = new Map<string, Group>();
+
+  for (const ingredient of ingredients) {
+    const logogram = getLogogramForMneme(ingredient.mnemeId);
+    if (!logogram) return null;
+    const price = priceMap.get(logogram.itemId);
+    if (price == null) return null;
+
+    let group = groupMap.get(logogram.id);
+    if (!group) {
+      group = {
+        mnemeIndices: [],
+        quantities: [],
+        totalTypes: logogram.mnemeIds.length,
+        price,
+      };
+      groupMap.set(logogram.id, group);
+    }
+    const mnemeIdx = logogram.mnemeIds.indexOf(ingredient.mnemeId);
+    group.mnemeIndices.push(mnemeIdx);
+    group.quantities.push(ingredient.quantity);
+  }
+
+  const groups = Array.from(groupMap.values());
+  if (groups.length === 0) return { cost50: 0, cost95: 0 };
+
+  const iterations = MC_RECIPE_ITERATIONS;
+  const costs = new Float64Array(iterations);
+
+  for (let iter = 0; iter < iterations; iter++) {
+    let totalCost = 0;
+    for (const group of groups) {
+      const remaining = group.quantities.slice();
+      let totalRemaining = remaining.reduce((a, b) => a + b, 0);
+      let opens = 0;
+      while (totalRemaining > 0) {
+        opens++;
+        const rolledIdx = Math.floor(Math.random() * group.totalTypes);
+        for (let i = 0; i < group.mnemeIndices.length; i++) {
+          if (group.mnemeIndices[i] === rolledIdx && remaining[i]! > 0) {
+            remaining[i]!--;
+            totalRemaining--;
+            break;
+          }
+        }
+      }
+      totalCost += opens * group.price;
+    }
+    costs[iter] = totalCost;
+  }
+
+  costs.sort();
+  return {
+    cost50: costs[Math.floor(iterations * 0.5)]!,
+    cost95: costs[Math.min(Math.floor(iterations * 0.95), iterations - 1)]!,
+  };
+}
