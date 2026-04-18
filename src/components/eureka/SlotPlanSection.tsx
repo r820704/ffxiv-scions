@@ -28,8 +28,8 @@ export default function SlotPlanSection({
   const filledSlotCount = slotConfig.filter(([s]) => s !== null).length;
 
   return (
-    <div className={`bg-secondary rounded-lg p-3 ${isStale ? 'opacity-50' : ''}`}>
-      <div className="flex justify-between items-baseline gap-2">
+    <div className="bg-secondary rounded-lg p-3">
+      <div className={`flex justify-between items-baseline gap-2 ${isStale ? 'opacity-50' : ''}`}>
         <span className="text-xs text-muted-foreground">整體花費</span>
         <div className="flex flex-col items-end gap-0.5">
           <span className="text-base font-semibold text-primary">
@@ -41,7 +41,7 @@ export default function SlotPlanSection({
         </div>
       </div>
       <div className="flex justify-between items-center mt-1 gap-2">
-        <div className="text-[10px] text-muted-foreground/80">
+        <div className={`text-[10px] text-muted-foreground/80 ${isStale ? 'opacity-50' : ''}`}>
           預估：50% 分位（中位數）；保底：95% 分位
         </div>
         <div className="flex items-center gap-2 shrink-0">
