@@ -145,7 +145,7 @@ export default function CrystalOverview({
         </div>
 
         {/* Header */}
-        <div className="grid grid-cols-[1fr_60px_40px_auto] gap-1 text-[10px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
+        <div className="grid grid-cols-[1fr_60px_40px_90px] gap-x-3 gap-y-1 text-[10px] text-muted-foreground/60 pb-1 border-b border-border mb-1">
           <span>名稱</span>
           <span className="text-center">持有</span>
           <span className="text-right">還需<br/>(保底)</span>
@@ -176,7 +176,7 @@ export default function CrystalOverview({
             <div key={logogramId}>
               <div
                 className={cn(
-                  'grid grid-cols-[1fr_60px_40px_auto] gap-1 items-center py-1 text-xs border-b border-border/30',
+                  'grid grid-cols-[1fr_60px_40px_90px] gap-x-3 gap-y-1 items-center py-1 text-xs border-b border-border/30',
                   hasOptResult && remaining95 > 0 && 'cursor-pointer hover:bg-secondary/50'
                 )}
                 onClick={() => hasOptResult && remaining95 > 0 && toggleRow(logogramId)}
@@ -302,7 +302,7 @@ export default function CrystalOverview({
         })}
         {/* 總計列 */}
         {mcCosts && (
-          <div className="grid grid-cols-[1fr_60px_40px_auto] gap-1 items-center pt-2 pb-1 text-xs font-semibold border-t-2 border-border mt-1">
+          <div className="grid grid-cols-[1fr_60px_40px_90px] gap-x-3 gap-y-1 items-center pt-2 pb-1 text-xs font-semibold border-t-2 border-border mt-1">
             <span className="text-foreground">總計</span>
             <span></span>
             <span></span>
