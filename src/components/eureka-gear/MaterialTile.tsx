@@ -10,7 +10,7 @@ export default function MaterialTile({ material, count, onChange }: MaterialTile
   return (
     <div className="flex flex-col items-center gap-1 w-20 rounded border border-border/50 p-2 bg-card">
       <span className="text-xs text-foreground text-center truncate w-full">
-        {material.name}
+        {material.tcName}
       </span>
       <input
         type="number"

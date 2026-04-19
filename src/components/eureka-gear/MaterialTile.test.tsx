@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MaterialTile from './MaterialTile';
 
-const material = { id: 1, name: '常風水晶', iconId: 0, category: 'crystal' as const };
+const material = { id: 1, tcName: '常風水晶', enName: 'Anemos Crystal', iconId: 0, category: 'crystal' as const };
 
 describe('MaterialTile', () => {
   it('renders name and count', () => {
