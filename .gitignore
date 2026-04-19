@@ -28,3 +28,4 @@ docs/
 .env
 .env.local
 .env.*.local
+docs/eureka-weapons-review.csv
