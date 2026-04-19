@@ -3,8 +3,9 @@ import { generateForecasts, findWeatherMatches } from '@/utils/weather-engine';
 import { zoneNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weather-data';
 import { WEATHER_PERIOD_MS, toEorzeaTime } from '@/utils/eorzea-time';
 import { isDayTime } from '@/utils/game-day-night';
-import { getActiveNms, formatNmTrigger } from '@/data/eureka-nm-data';
+import { getActiveNms } from '@/data/eureka-nm-data';
 import WeatherIcon from '@/components/WeatherIcon';
+import NmTooltip from './NmTooltip';
 
 interface ZoneWeatherRowProps {
   zone: EurekaZone;
@@ -111,39 +112,36 @@ export default function ZoneWeatherRow({
           const nms = getActiveNms(zone, f.weather, isDay);
           const weatherNms = nms.filter((n) => (n.trigger.weather?.length ?? 0) > 0);
           const nightOnlyNms = nms.filter((n) => !n.trigger.weather?.length);
-          const tooltip = nms.length > 0
-            ? `可能出現：\n${nms.map((n) => `• ${n.nameTw}（${formatNmTrigger(n)}）`).join('\n')}`
-            : undefined;
           return (
-            <div
-              key={f.startTime}
-              data-period-cell
-              data-matched={matched ? 'true' : 'false'}
-              title={tooltip}
-              className={`relative flex-shrink-0 w-16 rounded p-1 text-center text-[10px] border ${
-                matched ? 'border-amber-500 bg-amber-500/10' : 'border-border/50'
-              } ${isDay ? 'bg-amber-50/[.03]' : 'bg-indigo-900/[.08]'} ${
-                isCurrent ? 'ring-1 ring-primary' : ''
-              }`}
-            >
-              <div className="flex justify-center">
-                <WeatherIcon weatherEn={f.weather} weatherTw={f.weatherTw} size={20} />
-              </div>
-              <div className="text-muted-foreground mt-0.5">{f.weatherTw}</div>
-              <div className="text-muted-foreground/70">
-                {isCurrent ? '現在' : formatCellTime(f.startTime)}
-              </div>
-              {weatherNms.length > 0 && (
-                <div className="absolute top-0.5 right-0.5 px-1 rounded bg-red-600 text-white text-[8px] font-bold leading-[10px] shadow-sm animate-pulse">
-                  NM
+            <NmTooltip key={f.startTime} nms={nms}>
+              <div
+                data-period-cell
+                data-matched={matched ? 'true' : 'false'}
+                className={`relative flex-shrink-0 w-16 rounded p-1 text-center text-[10px] border ${
+                  matched ? 'border-amber-500 bg-amber-500/10' : 'border-border/50'
+                } ${isDay ? 'bg-amber-50/[.03]' : 'bg-indigo-900/[.08]'} ${
+                  isCurrent ? 'ring-1 ring-primary' : ''
+                }`}
+              >
+                <div className="flex justify-center">
+                  <WeatherIcon weatherEn={f.weather} weatherTw={f.weatherTw} size={20} />
                 </div>
-              )}
-              {nightOnlyNms.length > 0 && (
-                <div className="absolute top-0.5 left-0.5 px-1 rounded bg-indigo-500/60 text-indigo-50 text-[8px] font-bold leading-[10px] shadow-sm">
-                  夜
+                <div className="text-muted-foreground mt-0.5">{f.weatherTw}</div>
+                <div className="text-muted-foreground/70">
+                  {isCurrent ? '現在' : formatCellTime(f.startTime)}
                 </div>
-              )}
-            </div>
+                {weatherNms.length > 0 && (
+                  <div className="absolute top-0.5 right-0.5 px-1 rounded bg-red-600 text-white text-[8px] font-bold leading-[10px] shadow-sm animate-pulse">
+                    NM
+                  </div>
+                )}
+                {nightOnlyNms.length > 0 && (
+                  <div className="absolute top-0.5 left-0.5 px-1 rounded bg-indigo-500/60 text-indigo-50 text-[8px] font-bold leading-[10px] shadow-sm">
+                    夜
+                  </div>
+                )}
+              </div>
+            </NmTooltip>
           );
         })}
       </div>
