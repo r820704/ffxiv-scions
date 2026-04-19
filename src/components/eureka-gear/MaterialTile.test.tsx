@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import MaterialTile from './MaterialTile';
 
 const material = { id: 1, name: '常風水晶', iconId: 0, category: 'crystal' as const };
