@@ -75,5 +75,12 @@
     "enName": "Hydatos Crystal",
     "iconId": 20037,
     "category": "crystal"
+  },
+  {
+    "id": 24808,
+    "tcName": "優雷卡的斷片",
+    "enName": "Eureka Fragment",
+    "iconId": 26544,
+    "category": "token"
   }
 ]

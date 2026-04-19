@@ -99,6 +99,7 @@ const MATERIAL_IDS = {
   24123: { category: 'other',   en: "Penthesilea's Flame" },
   24807: { category: 'crystal', en: 'Hydatos Crystal' },
   24806: { category: 'other',   en: 'Crystalline Scale' },
+  24808: { category: 'token',   en: 'Eureka Fragment' },
 };
 
 function detectStage(enName, itemLevel) {
