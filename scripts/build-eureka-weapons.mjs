@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -6,12 +6,15 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..');
 
 const ITEM_TC_URL = 'https://raw.githubusercontent.com/thewakingsands/ffxiv-datamining-tc/main/Item.csv';
-const ITEM_EN_URL = 'https://raw.githubusercontent.com/xivapi/ffxiv-datamining/master/csv/Item.csv';
+const ITEM_EN_URL = 'https://raw.githubusercontent.com/xivapi/ffxiv-datamining/master/csv/en/Item.csv';
 
-// ItemUICategory: 1..11 為武器類（主手）、84 為盾（PLD）
+// ItemUICategory:
+//   1..10  = main-hand weapons
+//   11     = shields (PLD off-hand)
+//   84     = daggers/throwing weapons (NIN) — NOT shields
 // 實作時以 datamining-tc ItemUICategory.csv 驗證一次，若範圍不對依實際值調整
 const WEAPON_CATEGORIES = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 84]);
-const SHIELD_CATEGORY = 84;
+const SHIELD_CATEGORY = 11;
 
 async function fetchCsv(url) {
   const res = await fetch(url);
@@ -33,19 +36,26 @@ function parseRow(line) {
   return out;
 }
 
-function parseItemCsv(text) {
+function parseItemCsv(text, variant) {
+  // variant === 'tc'  → line0 numeric keys, line1 field names, line2 types, data from line3
+  // variant === 'en'  → line0 field names, data from line1
   const lines = text.split(/\r?\n/);
-  if (lines.length < 4) throw new Error('CSV too short');
-  const cols = parseRow(lines[1]);
+  if (lines.length < 3) throw new Error('CSV too short');
+
+  const headerLineIdx = variant === 'en' ? 0 : 1;
+  const dataStartIdx = variant === 'en' ? 1 : 3;
+  const ilvName = variant === 'en' ? 'LevelItem' : 'Level{Item}';
+
+  const cols = parseRow(lines[headerLineIdx]);
   const nameCol = cols.indexOf('Name');
-  const ilvCol = cols.indexOf('Level{Item}');
+  const ilvCol = cols.indexOf(ilvName);
   const iconCol = cols.indexOf('Icon');
   const categoryCol = cols.indexOf('ItemUICategory');
   if (nameCol < 0 || ilvCol < 0 || iconCol < 0 || categoryCol < 0) {
-    throw new Error(`Missing required cols: name=${nameCol} ilv=${ilvCol} icon=${iconCol} cat=${categoryCol}`);
+    throw new Error(`Missing required cols (${variant}): name=${nameCol} ilv=${ilvCol} icon=${iconCol} cat=${categoryCol}`);
   }
   const map = new Map();
-  for (let i = 3; i < lines.length; i++) {
+  for (let i = dataStartIdx; i < lines.length; i++) {
     const line = lines[i];
     if (!line || !line.trim()) continue;
     const row = parseRow(line);
@@ -63,24 +73,52 @@ function parseItemCsv(text) {
   return map;
 }
 
+// Families hand-identified by inspecting CSV stage outputs. These anchor the
+// ambiguous stages (anemos-base plain names, base-eureka plain names) so we
+// don't pull in unrelated raid/event weapons with the same ilv.
+const ANEMOS_FAMILIES = new Set([
+  'Aymur', 'Evalach', 'Failnaught', 'Farsha', 'Galatyn',
+  'Lemegeton', 'Nagi', 'Ryunohige', 'Vanargand',
+  'Sudarshana Chakra', // antiquated only; no confirmed chain continuation
+]);
+const EUREKA_FAMILIES = new Set([
+  'Antea', 'Bellerophon', 'Circinae', 'Daboya', 'Dumuzis',
+  'Kasasagi', 'Paikea', 'Rose Couverte', 'Shamash', 'Tuah',
+]);
+
 function detectStage(enName, itemLevel) {
   const name = enName.trim();
-  if (name.startsWith('Antiquated ')) return 'antiquated';
-  if (/ Anemos\b/.test(name)) return 'anemos';
-  if (/ Pagos \+1$/.test(name)) return 'pagos+1';
-  if (/ Pagos$/.test(name)) return 'pagos';
-  if (/^Elemental .* \+2$/.test(name)) return 'elemental+2';
-  if (/^Elemental .* \+1$/.test(name)) return 'elemental+1';
-  if (/^Elemental /.test(name)) return 'elemental';
-  if (/^Pyros /.test(name)) return 'pyros';
-  if (/^Hydatos .* \+1$/.test(name)) return 'hydatos+1';
-  if (/^Hydatos /.test(name)) return 'hydatos';
-  if (/ Physeos\b/.test(name) || /^Physeos /.test(name)) return 'physeos';
-  if (/^Eurekan /.test(name) && itemLevel === 405) return 'eureka';
-  if (/^Eurekan /.test(name) && itemLevel === 400) return 'base-eureka';
-  if (/ \+2$/.test(name) && itemLevel === 345) return 'anemos+2';
-  if (/ \+1$/.test(name) && itemLevel === 340) return 'anemos+1';
-  if (itemLevel === 335) return 'anemos-base';
+  if (/\bReplica\b/.test(name)) return null; // ilv 1 glamour replicas
+
+  if (name.startsWith('Antiquated ') && itemLevel === 290) return 'antiquated';
+
+  // Anemos family chain (plain → +1 → +2 → Anemos → Pagos → Pagos+1)
+  if (itemLevel === 355 && / Anemos$/.test(name)) return 'anemos';
+  if (itemLevel === 365 && / Pagos \+1$/.test(name)) return 'pagos+1';
+  if (itemLevel === 360 && / Pagos$/.test(name)) return 'pagos';
+  if (itemLevel === 345 && / \+2$/.test(name)) {
+    const base = name.replace(/ \+2$/, '');
+    if (ANEMOS_FAMILIES.has(base)) return 'anemos+2';
+  }
+  if (itemLevel === 340 && / \+1$/.test(name)) {
+    const base = name.replace(/ \+1$/, '');
+    if (ANEMOS_FAMILIES.has(base)) return 'anemos+1';
+  }
+  if (itemLevel === 335 && ANEMOS_FAMILIES.has(name)) return 'anemos-base';
+
+  // Elemental chain (generic weapon-type names)
+  if (itemLevel === 380 && /^Elemental .* \+2$/.test(name)) return 'elemental+2';
+  if (itemLevel === 375 && /^Elemental .* \+1$/.test(name)) return 'elemental+1';
+  if (itemLevel === 370 && /^Elemental /.test(name)) return 'elemental';
+  if (itemLevel === 385 && /^Pyros /.test(name)) return 'pyros';
+  if (itemLevel === 395 && /^Hydatos .* \+1$/.test(name)) return 'hydatos+1';
+  if (itemLevel === 390 && /^Hydatos /.test(name)) return 'hydatos';
+
+  // Eureka/Physeos family chain
+  if (itemLevel === 405 && / Physeos$/.test(name)) return 'physeos';
+  if (itemLevel === 405 && / Eureka$/.test(name)) return 'eureka';
+  if (itemLevel === 400 && EUREKA_FAMILIES.has(name)) return 'base-eureka';
+
   return null;
 }
 
@@ -97,7 +135,72 @@ function extractFamilyKey(enName) {
     .replace(/^-|-$/g, '');
 }
 
+// family-key (lowercased, hyphenated per extractFamilyKey) → job
+const FAMILY_TO_JOB = {
+  // Stormblood antiquated / anemos series
+  'galatyn': 'PLD', 'evalach': 'PLD',
+  'farsha': 'WAR',
+  'ryunohige': 'DRG',
+  'sudarshana-chakra': 'MNK',
+  'nagi': 'NIN',
+  'failnaught': 'BRD',
+  'vanargand': 'BLM',
+  'lemegeton': 'SMN',
+  'aymur': 'WHM',
+  // Elemental/Pyros/Hydatos series (generic weapon-type names)
+  'sword': 'PLD', 'shield': 'PLD',
+  'battleaxe': 'WAR',
+  'lance': 'DRG',
+  'knives': 'NIN',
+  'harp-bow': 'BRD',
+  'rod': 'BLM',
+  'grimoire': 'SMN',
+  'cane': 'WHM',
+  // Eureka/Physeos series
+  'antea': 'PLD', 'bellerophon': 'PLD',
+  'shamash': 'WAR',
+  'daboya': 'DRG',
+  'dumuzis': 'MNK',
+  'kasasagi': 'NIN',
+  'circinae': 'BRD',
+  'paikea': 'BLM',
+  'tuah': 'SMN',
+  'rose-couverte': 'WHM',
+  // '-eureka' suffixed keys (antea-eureka, bellerophon-eureka, etc.)
+  // Add '-eureka' suffixed keys as a fallback below.
+};
+
+// Same job → same chainId across all generations. Key by job + Stormblood family.
+const STORMBLOOD_FAMILY_BY_JOB = {
+  PLD: 'galatyn', WAR: 'farsha', DRG: 'ryunohige',
+  MNK: 'sudarshana-chakra', NIN: 'nagi',
+  BRD: 'failnaught', BLM: 'vanargand',
+  SMN: 'lemegeton', WHM: 'aymur',
+};
+
+function deriveJob(familyKey, isShield) {
+  if (!familyKey) return null;
+  // Try raw family first
+  if (FAMILY_TO_JOB[familyKey]) return FAMILY_TO_JOB[familyKey];
+  // Strip a trailing '-eureka' (handles antea-eureka, bellerophon-eureka, etc.)
+  const stripped = familyKey.replace(/-eureka$/, '');
+  if (FAMILY_TO_JOB[stripped]) return FAMILY_TO_JOB[stripped];
+  return null;
+}
+
+function deriveChainId(familyKey, isShield) {
+  const job = deriveJob(familyKey, isShield);
+  if (!job) return null;
+  const base = STORMBLOOD_FAMILY_BY_JOB[job];
+  if (!base) return null;
+  return isShield ? `${job.toLowerCase()}-${base}-shield` : `${job.toLowerCase()}-${base}`;
+}
+
 async function main() {
+  // Load human-override file (empty object by default)
+  const overridesPath = resolve(__dirname, 'eureka-weapon-overrides.json');
+  const overrides = JSON.parse(readFileSync(overridesPath, 'utf8'));
+
   console.log('Fetching TC Item.csv...');
   const tcText = await fetchCsv(ITEM_TC_URL);
   console.log(`TC CSV: ${tcText.length} bytes`);
@@ -105,8 +208,8 @@ async function main() {
   const enText = await fetchCsv(ITEM_EN_URL);
   console.log(`EN CSV: ${enText.length} bytes`);
 
-  const tcMap = parseItemCsv(tcText);
-  const enMap = parseItemCsv(enText);
+  const tcMap = parseItemCsv(tcText, 'tc');
+  const enMap = parseItemCsv(enText, 'en');
   console.log(`TC items: ${tcMap.size}, EN items: ${enMap.size}`);
 
   const weapons = [];
@@ -118,14 +221,20 @@ async function main() {
     const tcName = tc?.name ?? '';
     const family = extractFamilyKey(en.name);
     const isShield = en.category === SHIELD_CATEGORY;
+
+    // Derive job and chainId from family key, then apply overrides
+    const derivedJob = deriveJob(family, isShield);
+    const derivedChainId = deriveChainId(family, isShield);
+    const ov = overrides[String(id)] ?? {};
+
     weapons.push({
       id,
-      chainId: null,
-      job: null,
+      chainId: 'chainId' in ov ? ov.chainId : derivedChainId,
+      job: 'job' in ov ? ov.job : derivedJob,
       isShield,
-      stage,
+      stage: 'stage' in ov ? ov.stage : stage,
       itemLevel: en.itemLevel,
-      tcName,
+      tcName: 'tcName' in ov ? ov.tcName : tcName,
       enName: en.name,
       iconId: en.iconId,
       _familyKey: family,
