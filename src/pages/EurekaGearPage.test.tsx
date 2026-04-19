@@ -1,6 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import EurekaGearPage from './EurekaGearPage';
+
+afterEach(() => cleanup());
 
 const gearFixture = [
   {
@@ -41,30 +43,24 @@ describe('EurekaGearPage', () => {
     expect(screen.getByText('帕格斯頭盔')).toBeInTheDocument();
   });
 
-  it('switching display to 可兌換 filters items correctly', async () => {
+  it('switching display to 可兌換 with enough inventory keeps only the affordable one', async () => {
     localStorage.setItem(
       'eureka-gear-inventory-v1',
       JSON.stringify({ materials: { 9: 5 }, ownedGear: {}, updatedAt: '' }),
     );
     render(<EurekaGearPage />);
     await waitFor(() => expect(screen.getByText('阿涅摩斯之刀')).toBeInTheDocument());
-    const radios = screen.getAllByRole('radio', { name: '可兌換' });
-    fireEvent.click(radios[0]);
-    await waitFor(() => {
-      expect(screen.getByText('阿涅摩斯之刀')).toBeInTheDocument();
-    });
+    fireEvent.click(screen.getByRole('radio', { name: '可兌換' }));
+    expect(screen.getByText('阿涅摩斯之刀')).toBeInTheDocument();
+    expect(screen.queryByText('帕格斯頭盔')).toBeNull();
   });
 
-  it('toggling 已持有 checkbox on a card marks it as owned', async () => {
+  it('toggling 已持有 checkbox on a card + switching to 未持有 hides it', async () => {
     render(<EurekaGearPage />);
     await waitFor(() => expect(screen.getByText('阿涅摩斯之刀')).toBeInTheDocument());
-    const checkboxes = screen.getAllByRole('checkbox', { name: /阿涅摩斯之刀 已持有/ });
-    fireEvent.click(checkboxes[0]);
-    const unownedRadios = screen.getAllByRole('radio', { name: '未持有' });
-    fireEvent.click(unownedRadios[0]);
-    await waitFor(() => {
-      const items = screen.getAllByText('帕格斯頭盔');
-      expect(items.length).toBeGreaterThan(0);
-    });
+    fireEvent.click(screen.getByRole('checkbox', { name: /阿涅摩斯之刀 已持有/ }));
+    fireEvent.click(screen.getByRole('radio', { name: '未持有' }));
+    expect(screen.queryByText('阿涅摩斯之刀')).toBeNull();
+    expect(screen.getByText('帕格斯頭盔')).toBeInTheDocument();
   });
 });
