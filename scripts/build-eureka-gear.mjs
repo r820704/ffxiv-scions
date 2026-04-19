@@ -7,7 +7,8 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const REPO_ROOT = resolve(__dirname, '..');
 const OUT_DIR = resolve(REPO_ROOT, 'public/data');
 
@@ -22,7 +23,7 @@ const CSV_FILES = {
   placeName: 'PlaceName.csv',
 };
 
-async function fetchCsv(name) {
+async function fetchText(name) {
   const url = `${CSV_BASE}/${name}`;
   process.stdout.write(`fetching ${name} ... `);
   const res = await fetch(url);
@@ -91,42 +92,6 @@ function parseCsvLine(line) {
   return out;
 }
 
-function indexBy(rows, headers, keyCol) {
-  const keyIdx = headers.indexOf(keyCol);
-  if (keyIdx < 0) throw new Error(`header ${keyCol} not found`);
-  const map = new Map();
-  for (const r of rows) map.set(r[keyIdx], r);
-  return { map, keyIdx };
-}
-
-const CURRENCY_TO_STAGE = {
-  21803: 'anemos',    // 常風水晶
-  22976: 'pagos',     // 恆冰水晶
-  24122: 'pyros',     // 大火焰亂屬性水晶
-  24124: 'pyros',     // 湧火水晶
-  24807: 'hydatos',   // 豐水水晶
-  24808: 'eureka',    // 優雷卡的斷片 — stage TBD
-  24015: 'elemental', // 術士的記憶
-  24016: 'elemental', // 鬥士的記憶
-  24017: 'elemental', // 重騎兵的記憶
-  24018: 'elemental', // 守護者的記憶
-  24019: 'elemental', // 祭司的記憶
-  24020: 'elemental', // 武人的記憶
-  24021: 'physeos',   // 英傑的加護
-};
-
-function detectStageFromCost(costItemIds) {
-  for (const id of costItemIds) {
-    const s = CURRENCY_TO_STAGE[id];
-    if (s) return s;
-  }
-  return null;
-}
-
-function detectAntiqueByName(name) {
-  return /^古代/.test(name) ? 'antique' : null;
-}
-
 // Datamining-tc (TC) ItemUICategory IDs verified empirically against 元素/古代
 // Eureka items in Item.csv. These differ from the generic XIVAPI numbering
 // the plan used; the plan's table was off by ~3 for armour and missed some
@@ -163,18 +128,41 @@ function lookupSlot(itemUiCat) {
   return UI_CAT_TO_SLOT[itemUiCat] ?? null;
 }
 
-function pathToFileUrl(p) {
-  return new URL(`file://${p}`);
+// Name-pattern → stage. First match wins. More-specific patterns must come
+// before less-specific ones (e.g. `+2` must be matched before the plain prefix).
+const STAGE_PATTERNS = [
+  { stage: 'physeos',     test: (n) => /^元素.+?\+2$/.test(n) },
+  { stage: 'elemental+1', test: (n) => /^元素.+?\+1$/.test(n) },
+  { stage: 'elemental',   test: (n) => /^元素/.test(n) && !/\+\d$/.test(n) },
+  { stage: 'hydatos+1',   test: (n) => /^豐水.+?\+1$/.test(n) },
+  { stage: 'hydatos',     test: (n) => /^豐水/.test(n) && !/\+\d$/.test(n) },
+  { stage: 'pyros',       test: (n) => /^湧火/.test(n) },
+  { stage: 'pagos+1',     test: (n) => /·恆冰\+1$/.test(n) },
+  { stage: 'pagos',       test: (n) => /·恆冰$/.test(n) },
+  { stage: 'anemos',      test: (n) => /·常風$/.test(n) || (/^常風/.test(n) && !/·/.test(n)) },
+  { stage: 'antique',     test: (n) => /^古代/.test(n) },
+];
+
+function detectStage(name) {
+  // skip glamour dupes
+  if (/（複製品）$/.test(name)) return null;
+  // skip crystals themselves
+  if (/水晶$/.test(name) || /晶簇$/.test(name)) return null;
+  for (const p of STAGE_PATTERNS) {
+    if (p.test(name)) return p.stage;
+  }
+  return null;
 }
 
 async function main() {
   const csvs = {};
   for (const [key, filename] of Object.entries(CSV_FILES)) {
-    const text = await fetchCsv(filename);
+    const text = await fetchText(filename);
     csvs[key] = parseCsv(text);
     console.log(`  ${key}: ${csvs[key].rows.length} rows, ${csvs[key].headers.length} cols`);
   }
 
+  // ===== Item lookup =====
   const itemHeaders = csvs.item.headers;
   const itemIdIdx = itemHeaders.indexOf('#');
   const itemNameIdx = itemHeaders.indexOf('Name');
@@ -182,56 +170,47 @@ async function main() {
   const itemIlvIdx = itemHeaders.indexOf('Level{Item}');
   const itemUiCatIdx = itemHeaders.indexOf('ItemUICategory');
 
+  // itemById keyed by string id (as it comes from CSV)
   const itemById = new Map();
   for (const r of csvs.item.rows) {
-    itemById.set(r[itemIdIdx], {
-      id: Number(r[itemIdIdx]),
-      name: r[itemNameIdx],
+    const id = r[itemIdIdx];
+    if (!id) continue;
+    itemById.set(id, {
+      id: Number(id),
+      name: r[itemNameIdx] ?? '',
       iconId: Number(r[itemIconIdx] ?? 0),
       itemLevel: Number(r[itemIlvIdx] ?? 0),
-      uiCat: r[itemUiCatIdx],
+      uiCat: r[itemUiCatIdx] ?? '',
     });
   }
 
-  const placeNameIdx = csvs.placeName.headers.indexOf('#');
-  const placeTextIdx = csvs.placeName.headers.indexOf('Name');
-  const placeNameById = new Map(
-    csvs.placeName.rows.map((r) => [r[placeNameIdx], r[placeTextIdx]]),
-  );
-
-  const npcResIdx = csvs.eNpcResident.headers.indexOf('#');
-  const npcResNameIdx = csvs.eNpcResident.headers.indexOf('Singular');
-  const npcNameById = new Map(
-    csvs.eNpcResident.rows.map((r) => [r[npcResIdx], r[npcResNameIdx]]),
-  );
-
-  const specialShopIds = new Set(
-    csvs.specialShop.rows.map((r) => r[csvs.specialShop.headers.indexOf('#')]),
-  );
-  const npcBaseRowIdIdx = csvs.eNpcBase.headers.indexOf('#');
-  const npcDataCols = csvs.eNpcBase.headers
-    .map((h, i) => ({ h, i }))
-    .filter((x) => /^ENpcData\[\d+\]$/.test(x.h))
-    .map((x) => x.i);
-  const shopsByNpc = new Map();
-  for (const r of csvs.eNpcBase.rows) {
-    const npcId = r[npcBaseRowIdIdx];
-    const shops = new Set();
-    for (const c of npcDataCols) {
-      const v = r[c];
-      if (specialShopIds.has(v)) shops.add(v);
-    }
-    if (shops.size) shopsByNpc.set(npcId, shops);
+  // ===== Pass 1: find every gear item by name from Item.csv =====
+  const gearIndex = new Map(); // itemId (number) -> gear base record (no cost yet)
+  for (const [idStr, item] of itemById) {
+    const stage = detectStage(item.name);
+    if (!stage) continue;
+    const slot = lookupSlot(item.uiCat);
+    if (!slot) continue; // drop non-gear items that happen to match (e.g. 古代附魔墨水)
+    gearIndex.set(item.id, {
+      id: item.id,
+      name: item.name,
+      iconId: item.iconId,
+      stage,
+      slot,
+      jobs: [],
+      itemLevel: item.itemLevel,
+      source: {
+        npcId: 0,
+        npcName: '',
+        zone: '',
+        specialShopId: 0,
+      },
+      cost: { materials: [] },
+      tags: [],
+    });
   }
 
-  const npcByShop = new Map();
-  for (const [npcId, shops] of shopsByNpc) {
-    for (const s of shops) {
-      if (!npcByShop.has(s)) npcByShop.set(s, []);
-      npcByShop.get(s).push(npcId);
-    }
-  }
-
+  // ===== SpecialShop scan to enrich gear entries with cost + source =====
   const shopHeaders = csvs.specialShop.headers;
   const shopIdIdx = shopHeaders.indexOf('#');
   const recIdxs = [];
@@ -249,133 +228,81 @@ async function main() {
     );
   }
 
-  // collect cost currency set for quick lookup
-  const currencyStage = CURRENCY_TO_STAGE;
-
-  const gearOut = [];
-  const materialIds = new Set();
-  const capturedIds = new Set(); // prevent duplicate antique emission
-  let slotMisses = 0;
-  const fragmentSamples = [];
-  const disagreements = [];
-
-  for (const row of csvs.specialShop.rows) {
-    const shopId = row[shopIdIdx];
-    const npcIds = npcByShop.get(shopId) ?? [];
-    for (const r of recIdxs) {
-      const recvId = row[r.itemCol];
-      if (!recvId || recvId === '0') continue;
-      const item = itemById.get(recvId);
-      if (!item) continue;
-
-      // gather costs for this receive slot
-      const costs = [];
-      for (let k = 0; k < 3; k++) {
-        const cId = row[r.costItemCols[k]];
-        const cQty = row[r.costCountCols[k]];
-        if (!cId || cId === '0') continue;
-        costs.push({ materialId: Number(cId), quantity: Number(cQty) });
-      }
-      if (!costs.length) continue;
-
-      // determine stage from cost currency (first match in cost list)
-      let stage = null;
-      for (const c of costs) {
-        const s = currencyStage[c.materialId];
-        if (s) { stage = s; break; }
-      }
-      if (!stage) continue;
-
-      // slot check
-      const slot = lookupSlot(item.uiCat);
-      if (!slot) { slotMisses++; continue; }
-
-      // elemental/physeos name cross-check
-      let finalStage = stage;
-      if (stage === 'elemental' || stage === 'physeos') {
-        const endsPlusOne = /\+1$/.test(item.name);
-        const nameStage = endsPlusOne ? 'physeos' : 'elemental';
-        if (nameStage !== stage) {
-          disagreements.push(`currency→${stage} name→${nameStage} for '${item.name}'`);
-          finalStage = nameStage;
-        }
-      }
-
-      // temporary tag for 優雷卡的斷片 — stage classification TBD
-      if (stage === 'eureka') {
-        finalStage = 'fragment';
-        fragmentSamples.push({ ilv: item.itemLevel, name: item.name });
-      }
-
-      capturedIds.add(item.id);
-
-      const materials = costs;
-      for (const m of materials) materialIds.add(String(m.materialId));
-
-      const npcId = npcIds[0];
-      gearOut.push({
-        id: item.id,
-        name: item.name,
-        iconId: item.iconId,
-        stage: finalStage,
-        slot,
-        jobs: [],
-        itemLevel: item.itemLevel,
-        source: {
-          npcId: npcId ? Number(npcId) : 0,
-          npcName: npcNameById.get(npcId) ?? '',
-          zone: '',
-          specialShopId: Number(shopId),
-        },
-        cost: { materials },
-        tags: [],
-      });
+  // shopId → npcId list (for source info)
+  const specialShopIds = new Set(
+    csvs.specialShop.rows.map((r) => r[shopIdIdx]),
+  );
+  const npcBaseRowIdIdx = csvs.eNpcBase.headers.indexOf('#');
+  const npcDataCols = csvs.eNpcBase.headers
+    .map((h, i) => ({ h, i }))
+    .filter((x) => /^ENpcData\[\d+\]$/.test(x.h))
+    .map((x) => x.i);
+  const shopsByNpc = new Map();
+  for (const r of csvs.eNpcBase.rows) {
+    const npcId = r[npcBaseRowIdIdx];
+    const shops = new Set();
+    for (const c of npcDataCols) {
+      const v = r[c];
+      if (specialShopIds.has(v)) shops.add(v);
+    }
+    if (shops.size) shopsByNpc.set(npcId, shops);
+  }
+  const npcByShop = new Map();
+  for (const [npcId, shops] of shopsByNpc) {
+    for (const s of shops) {
+      if (!npcByShop.has(s)) npcByShop.set(s, []);
+      npcByShop.get(s).push(npcId);
     }
   }
 
-  // antique name-prefix fallback
+  const npcResIdx = csvs.eNpcResident.headers.indexOf('#');
+  const npcResNameIdx = csvs.eNpcResident.headers.indexOf('Singular');
+  const npcNameById = new Map(
+    csvs.eNpcResident.rows.map((r) => [r[npcResIdx], r[npcResNameIdx]]),
+  );
+
+  // Walk every SpecialShop row × every receive slot; if received item is in
+  // our gearIndex and we haven't filled its cost yet, fill it.
+  let shopMatched = 0;
   for (const row of csvs.specialShop.rows) {
     const shopId = row[shopIdIdx];
     const npcIds = npcByShop.get(shopId) ?? [];
     for (const r of recIdxs) {
       const recvId = row[r.itemCol];
       if (!recvId || recvId === '0') continue;
-      if (capturedIds.has(Number(recvId))) continue;
-      const item = itemById.get(recvId);
-      if (!item) continue;
-      if (!detectAntiqueByName(item.name)) continue;
-      const slot = lookupSlot(item.uiCat);
-      if (!slot) continue;
+      const gearEntry = gearIndex.get(Number(recvId));
+      if (!gearEntry) continue;
+      if (gearEntry.source.specialShopId !== 0) continue; // first match wins
+
       const materials = [];
       for (let k = 0; k < 3; k++) {
         const mId = row[r.costItemCols[k]];
         const mQty = row[r.costCountCols[k]];
         if (!mId || mId === '0') continue;
         materials.push({ materialId: Number(mId), quantity: Number(mQty) });
-        materialIds.add(mId);
       }
       const npcId = npcIds[0];
-      capturedIds.add(item.id);
-      gearOut.push({
-        id: item.id,
-        name: item.name,
-        iconId: item.iconId,
-        stage: 'antique',
-        slot,
-        jobs: [],
-        itemLevel: item.itemLevel,
-        source: {
-          npcId: npcId ? Number(npcId) : 0,
-          npcName: npcNameById.get(npcId) ?? '',
-          zone: '',
-          specialShopId: Number(shopId),
-        },
-        cost: { materials },
-        tags: [],
-      });
+      gearEntry.cost.materials = materials;
+      gearEntry.source = {
+        npcId: npcId ? Number(npcId) : 0,
+        npcName: npcNameById.get(npcId) ?? '',
+        zone: '',
+        specialShopId: Number(shopId),
+      };
+      shopMatched++;
     }
   }
 
+  // ===== Emit =====
+  const gearOut = Array.from(gearIndex.values()).sort((a, b) => a.id - b.id);
+
+  // Build materials table from all cost materials across all gear entries
+  const materialIds = new Set();
+  for (const g of gearOut) {
+    for (const m of g.cost.materials) {
+      materialIds.add(String(m.materialId));
+    }
+  }
   const materialsOut = [];
   for (const mid of materialIds) {
     const item = itemById.get(mid);
@@ -399,26 +326,19 @@ async function main() {
     JSON.stringify(materialsOut, null, 2),
   );
 
-  console.log(
-    `\nemitted ${gearOut.length} gear entries, ${materialsOut.length} materials` +
-      (slotMisses ? ` (${slotMisses} slot misses)` : ''),
-  );
-
-  const stageCount = {};
-  for (const e of gearOut) stageCount[e.stage] = (stageCount[e.stage] || 0) + 1;
-  console.log('\nstage distribution:', stageCount);
-  if (fragmentSamples.length) {
-    console.log('\n=== 優雷卡的斷片 gear (stage=fragment, needs classification) ===');
-    for (const s of fragmentSamples.slice(0, 30)) {
-      console.log(`  ilv ${s.ilv}\t${s.name}`);
+  // Summary logs
+  const byStage = {};
+  const sourceUnknownByStage = {};
+  for (const g of gearOut) {
+    byStage[g.stage] = (byStage[g.stage] || 0) + 1;
+    if (g.source.specialShopId === 0) {
+      sourceUnknownByStage[g.stage] = (sourceUnknownByStage[g.stage] || 0) + 1;
     }
-    console.log(`  (total ${fragmentSamples.length} fragment-cost items)`);
   }
-  if (disagreements.length) {
-    console.log('\nstage/name disagreements:');
-    for (const d of disagreements) console.log('  ' + d);
-  }
-
+  console.log(`\nemitted ${gearOut.length} gear entries, ${materialsOut.length} materials`);
+  console.log(`shop-matched (have cost): ${shopMatched}`);
+  console.log('by stage:', byStage);
+  console.log('source unknown (not in SpecialShop) by stage:', sourceUnknownByStage);
   console.log('done.');
 }
 
