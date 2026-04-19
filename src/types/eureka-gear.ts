@@ -2,9 +2,12 @@ export type EurekaStage =
   | 'antique'
   | 'anemos'
   | 'pagos'
+  | 'pagos+1'
   | 'pyros'
   | 'hydatos'
+  | 'hydatos+1'
   | 'elemental'
+  | 'elemental+1'
   | 'physeos';
 
 export type EquipSlot =
