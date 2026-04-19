@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { getNextStage, canUpgrade, deductMaterials, findCost } from './eurekaGear';
+import { getNextStage, canUpgrade, deductMaterials, findCost, filterChains } from './eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../data/eureka-stage-costs';
+import type { EurekaChain, GearFilterState, EurekaStage } from '../types/eureka-gear';
 
 describe('getNextStage', () => {
   it('returns next stage for mid chain', () => {
@@ -56,5 +57,54 @@ describe('deductMaterials', () => {
     const inv = { 21801: 5 };
     const next = deductMaterials(inv, [{ materialId: 21801, quantity: 100 }]);
     expect(next[21801]).toBe(0);
+  });
+});
+
+const sampleChains: EurekaChain[] = [
+  { chainId: 'drg-ryunohige', job: 'DRG', isShield: false, displayName: '龍騎士 · 龍鬚' },
+  { chainId: 'pld-galatyn', job: 'PLD', isShield: false, displayName: '騎士 · 神聖劍' },
+  { chainId: 'pld-galatyn-shield', job: 'PLD', isShield: true, displayName: '騎士 · 神聖盾' },
+];
+
+function emptyFilter(): GearFilterState {
+  return {
+    search: '', jobs: new Set(), stages: new Set(),
+    onlyUpgradable: false, onlyCompleted: false, sort: 'role',
+  };
+}
+
+describe('filterChains', () => {
+  it('returns all when filter is empty', () => {
+    expect(filterChains(sampleChains, emptyFilter(), {}, {}, []).length).toBe(3);
+  });
+  it('filters by search match on displayName', () => {
+    const f: GearFilterState = { ...emptyFilter(), search: '龍鬚' };
+    const out = filterChains(sampleChains, f, {}, {}, []);
+    expect(out).toHaveLength(1);
+    expect(out[0]?.chainId).toBe('drg-ryunohige');
+  });
+  it('filters by job set', () => {
+    const f: GearFilterState = { ...emptyFilter(), jobs: new Set(['PLD']) };
+    const out = filterChains(sampleChains, f, {}, {}, []);
+    expect(out).toHaveLength(2);
+  });
+  it('filters by stage set (matches current progress)', () => {
+    const progress: Record<string, EurekaStage | null> = {
+      'drg-ryunohige': 'pagos',
+      'pld-galatyn': 'anemos',
+    };
+    const f: GearFilterState = { ...emptyFilter(), stages: new Set(['pagos']) };
+    const out = filterChains(sampleChains, f, progress, {}, []);
+    expect(out).toHaveLength(1);
+    expect(out[0]?.chainId).toBe('drg-ryunohige');
+  });
+  it('onlyCompleted filters physeos only', () => {
+    const progress: Record<string, EurekaStage | null> = {
+      'drg-ryunohige': 'physeos',
+      'pld-galatyn': 'eureka',
+    };
+    const f: GearFilterState = { ...emptyFilter(), onlyCompleted: true };
+    const out = filterChains(sampleChains, f, progress, {}, []);
+    expect(out).toHaveLength(1);
   });
 });

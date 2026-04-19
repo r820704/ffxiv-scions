@@ -1,4 +1,4 @@
-import type { EurekaStage, MaterialCost, StageUpgradeCost } from '../types/eureka-gear';
+import type { EurekaStage, MaterialCost, StageUpgradeCost, EurekaChain, GearFilterState, ChainProgress } from '../types/eureka-gear';
 import { EUREKA_STAGES } from '../types/eureka-gear';
 
 export function getNextStage(stage: EurekaStage): EurekaStage | null {
@@ -36,4 +36,26 @@ export function deductMaterials(
     next[m.materialId] = Math.max(0, cur - m.quantity);
   }
   return next;
+}
+
+export function filterChains(
+  chains: EurekaChain[],
+  filter: GearFilterState,
+  progress: ChainProgress,
+  inventory: Record<number, number>,
+  costs: StageUpgradeCost[],
+): EurekaChain[] {
+  const q = filter.search.trim().toLowerCase();
+  return chains.filter((c) => {
+    if (q && !c.displayName.toLowerCase().includes(q) && !c.chainId.toLowerCase().includes(q)) return false;
+    if (filter.jobs.size > 0 && !filter.jobs.has(c.job)) return false;
+    const cur = progress[c.chainId] ?? 'antiquated';
+    if (filter.stages.size > 0 && !filter.stages.has(cur)) return false;
+    if (filter.onlyCompleted && cur !== 'physeos') return false;
+    if (filter.onlyUpgradable) {
+      if (cur === 'physeos') return false;
+      if (!canUpgrade(cur, inventory, costs)) return false;
+    }
+    return true;
+  });
 }
