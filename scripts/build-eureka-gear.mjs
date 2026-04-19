@@ -99,21 +99,32 @@ function indexBy(rows, headers, keyCol) {
   return { map, keyIdx };
 }
 
-const STAGE_PREFIX = [
-  { stage: 'antique',   match: /^古代/ },
-  { stage: 'anemos',    match: /^阿涅摩斯/ },
-  { stage: 'pagos',     match: /^帕格斯/ },
-  { stage: 'pyros',     match: /^皮洛斯/ },
-  { stage: 'hydatos',   match: /^海達托斯/ },
-  { stage: 'elemental', match: /^元素/ },
-  { stage: 'physeos',   match: /^菲塞歐斯/ },
-];
+const CURRENCY_TO_STAGE = {
+  21803: 'anemos',    // 常風水晶
+  22976: 'pagos',     // 恆冰水晶
+  24122: 'pyros',     // 大火焰亂屬性水晶
+  24124: 'pyros',     // 湧火水晶
+  24807: 'hydatos',   // 豐水水晶
+  24808: 'eureka',    // 優雷卡的斷片 — stage TBD
+  24015: 'elemental', // 術士的記憶
+  24016: 'elemental', // 鬥士的記憶
+  24017: 'elemental', // 重騎兵的記憶
+  24018: 'elemental', // 守護者的記憶
+  24019: 'elemental', // 祭司的記憶
+  24020: 'elemental', // 武人的記憶
+  24021: 'physeos',   // 英傑的加護
+};
 
-function detectStage(name) {
-  for (const { stage, match } of STAGE_PREFIX) {
-    if (match.test(name)) return stage;
+function detectStageFromCost(costItemIds) {
+  for (const id of costItemIds) {
+    const s = CURRENCY_TO_STAGE[id];
+    if (s) return s;
   }
   return null;
+}
+
+function detectAntiqueByName(name) {
+  return /^古代/.test(name) ? 'antique' : null;
 }
 
 // Datamining-tc (TC) ItemUICategory IDs verified empirically against 元素/古代
@@ -238,14 +249,15 @@ async function main() {
     );
   }
 
-  const tagsModule = await import(
-    pathToFileUrl(resolve(REPO_ROOT, 'src/data/eureka-gear-tags.ts'))
-  ).catch(() => ({ GEAR_TAGS: [] }));
-  const gearTags = tagsModule.GEAR_TAGS ?? [];
+  // collect cost currency set for quick lookup
+  const currencyStage = CURRENCY_TO_STAGE;
 
   const gearOut = [];
   const materialIds = new Set();
+  const capturedIds = new Set(); // prevent duplicate antique emission
   let slotMisses = 0;
+  const fragmentSamples = [];
+  const disagreements = [];
 
   for (const row of csvs.specialShop.rows) {
     const shopId = row[shopIdIdx];
@@ -255,28 +267,57 @@ async function main() {
       if (!recvId || recvId === '0') continue;
       const item = itemById.get(recvId);
       if (!item) continue;
-      const stage = detectStage(item.name);
-      if (!stage) continue;
-      const slot = lookupSlot(item.uiCat);
-      if (!slot) {
-        slotMisses++;
-        console.warn(`  slot miss: ${item.name} (UI cat ${item.uiCat})`);
-        continue;
-      }
-      const materials = [];
+
+      // gather costs for this receive slot
+      const costs = [];
       for (let k = 0; k < 3; k++) {
-        const mId = row[r.costItemCols[k]];
-        const mQty = row[r.costCountCols[k]];
-        if (!mId || mId === '0') continue;
-        materials.push({ materialId: Number(mId), quantity: Number(mQty) });
-        materialIds.add(mId);
+        const cId = row[r.costItemCols[k]];
+        const cQty = row[r.costCountCols[k]];
+        if (!cId || cId === '0') continue;
+        costs.push({ materialId: Number(cId), quantity: Number(cQty) });
       }
+      if (!costs.length) continue;
+
+      // determine stage from cost currency (first match in cost list)
+      let stage = null;
+      for (const c of costs) {
+        const s = currencyStage[c.materialId];
+        if (s) { stage = s; break; }
+      }
+      if (!stage) continue;
+
+      // slot check
+      const slot = lookupSlot(item.uiCat);
+      if (!slot) { slotMisses++; continue; }
+
+      // elemental/physeos name cross-check
+      let finalStage = stage;
+      if (stage === 'elemental' || stage === 'physeos') {
+        const endsPlusOne = /\+1$/.test(item.name);
+        const nameStage = endsPlusOne ? 'physeos' : 'elemental';
+        if (nameStage !== stage) {
+          disagreements.push(`currency→${stage} name→${nameStage} for '${item.name}'`);
+          finalStage = nameStage;
+        }
+      }
+
+      // temporary tag for 優雷卡的斷片 — stage classification TBD
+      if (stage === 'eureka') {
+        finalStage = 'fragment';
+        fragmentSamples.push({ ilv: item.itemLevel, name: item.name });
+      }
+
+      capturedIds.add(item.id);
+
+      const materials = costs;
+      for (const m of materials) materialIds.add(String(m.materialId));
+
       const npcId = npcIds[0];
-      const entry = {
+      gearOut.push({
         id: item.id,
         name: item.name,
         iconId: item.iconId,
-        stage,
+        stage: finalStage,
         slot,
         jobs: [],
         itemLevel: item.itemLevel,
@@ -288,14 +329,50 @@ async function main() {
         },
         cost: { materials },
         tags: [],
-      };
-      const tagEntry = gearTags.find((t) => t.itemId === entry.id);
-      if (tagEntry) {
-        entry.tags = tagEntry.tags;
-        if (tagEntry.setName) entry.setName = tagEntry.setName;
-        if (tagEntry.stageOverride) entry.stage = tagEntry.stageOverride;
+      });
+    }
+  }
+
+  // antique name-prefix fallback
+  for (const row of csvs.specialShop.rows) {
+    const shopId = row[shopIdIdx];
+    const npcIds = npcByShop.get(shopId) ?? [];
+    for (const r of recIdxs) {
+      const recvId = row[r.itemCol];
+      if (!recvId || recvId === '0') continue;
+      if (capturedIds.has(Number(recvId))) continue;
+      const item = itemById.get(recvId);
+      if (!item) continue;
+      if (!detectAntiqueByName(item.name)) continue;
+      const slot = lookupSlot(item.uiCat);
+      if (!slot) continue;
+      const materials = [];
+      for (let k = 0; k < 3; k++) {
+        const mId = row[r.costItemCols[k]];
+        const mQty = row[r.costCountCols[k]];
+        if (!mId || mId === '0') continue;
+        materials.push({ materialId: Number(mId), quantity: Number(mQty) });
+        materialIds.add(mId);
       }
-      gearOut.push(entry);
+      const npcId = npcIds[0];
+      capturedIds.add(item.id);
+      gearOut.push({
+        id: item.id,
+        name: item.name,
+        iconId: item.iconId,
+        stage: 'antique',
+        slot,
+        jobs: [],
+        itemLevel: item.itemLevel,
+        source: {
+          npcId: npcId ? Number(npcId) : 0,
+          npcName: npcNameById.get(npcId) ?? '',
+          zone: '',
+          specialShopId: Number(shopId),
+        },
+        cost: { materials },
+        tags: [],
+      });
     }
   }
 
@@ -326,6 +403,22 @@ async function main() {
     `\nemitted ${gearOut.length} gear entries, ${materialsOut.length} materials` +
       (slotMisses ? ` (${slotMisses} slot misses)` : ''),
   );
+
+  const stageCount = {};
+  for (const e of gearOut) stageCount[e.stage] = (stageCount[e.stage] || 0) + 1;
+  console.log('\nstage distribution:', stageCount);
+  if (fragmentSamples.length) {
+    console.log('\n=== 優雷卡的斷片 gear (stage=fragment, needs classification) ===');
+    for (const s of fragmentSamples.slice(0, 30)) {
+      console.log(`  ilv ${s.ilv}\t${s.name}`);
+    }
+    console.log(`  (total ${fragmentSamples.length} fragment-cost items)`);
+  }
+  if (disagreements.length) {
+    console.log('\nstage/name disagreements:');
+    for (const d of disagreements) console.log('  ' + d);
+  }
+
   console.log('done.');
 }
 

@@ -1,23 +1,2099 @@
 [
   {
-    "id": 2309,
-    "name": "古代小圓盾",
-    "iconId": 30090,
-    "stage": "antique",
-    "slot": "weapon",
+    "id": 22231,
+    "name": "俠義頭冠·常風",
+    "iconId": 40741,
+    "stage": "anemos",
+    "slot": "head",
     "jobs": [],
-    "itemLevel": 90,
+    "itemLevel": 350,
     "source": {
-      "npcId": 1008118,
-      "npcName": "艾里娜",
+      "npcId": 0,
+      "npcName": "",
       "zone": "",
-      "specialShopId": 1769724
+      "specialShopId": 1769820
     },
     "cost": {
       "materials": [
         {
-          "materialId": 7004,
+          "materialId": 22156,
           "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22232,
+    "name": "俠義戰甲·常風",
+    "iconId": 48133,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769820
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22157,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22233,
+    "name": "俠義手鎧·常風",
+    "iconId": 48594,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769820
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22158,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22234,
+    "name": "俠義腿甲·常風",
+    "iconId": 45897,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769820
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22159,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22235,
+    "name": "俠義鎖甲靴·常風",
+    "iconId": 47091,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769820
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22160,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22241,
+    "name": "殘暴面罩·常風",
+    "iconId": 40262,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769821
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22166,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22242,
+    "name": "殘暴兜甲·常風",
+    "iconId": 48135,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769821
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22167,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22243,
+    "name": "殘暴手鎧·常風",
+    "iconId": 48596,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769821
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22168,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22244,
+    "name": "殘暴馬褲·常風",
+    "iconId": 45908,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769821
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22169,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22245,
+    "name": "殘暴鎖甲靴·常風",
+    "iconId": 47093,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769821
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22170,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22281,
+    "name": "深淵輕盔·常風",
+    "iconId": 40261,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769822
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22206,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22282,
+    "name": "深淵胸甲·常風",
+    "iconId": 48134,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769822
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22207,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22283,
+    "name": "深淵手鎧·常風",
+    "iconId": 48595,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769822
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22208,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22284,
+    "name": "深淵重足鎧·常風",
+    "iconId": 45899,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769822
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22209,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22285,
+    "name": "深淵鎖甲靴·常風",
+    "iconId": 47092,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769822
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22210,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22246,
+    "name": "真血戰盔·常風",
+    "iconId": 40263,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769823
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22171,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22247,
+    "name": "真血戰鎧·常風",
+    "iconId": 48136,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769823
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22172,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22248,
+    "name": "真血手鎧·常風",
+    "iconId": 48597,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769823
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22173,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22249,
+    "name": "真血長褲·常風",
+    "iconId": 45911,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769823
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22174,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22250,
+    "name": "真血脛甲·常風",
+    "iconId": 47095,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769823
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22175,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22236,
+    "name": "和平頭冠·常風",
+    "iconId": 40742,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769824
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22161,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22237,
+    "name": "和平坎肩·常風",
+    "iconId": 43327,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769824
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22162,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22238,
+    "name": "和平護臂·常風",
+    "iconId": 44518,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769824
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22163,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22239,
+    "name": "和平短褲·常風",
+    "iconId": 45898,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769824
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22164,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22240,
+    "name": "和平筒靴·常風",
+    "iconId": 46689,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769824
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22165,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22276,
+    "name": "影隱總面·常風",
+    "iconId": 40503,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769825
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22201,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22277,
+    "name": "影隱鎖帷子·常風",
+    "iconId": 43330,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769825
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22202,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22278,
+    "name": "影隱手甲·常風",
+    "iconId": 44519,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769825
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22203,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22279,
+    "name": "影隱袴·常風",
+    "iconId": 45909,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769825
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22204,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22280,
+    "name": "影隱纏足·常風",
+    "iconId": 47094,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769825
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22205,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22296,
+    "name": "明珍陣笠·常風",
+    "iconId": 40743,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769826
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22221,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22297,
+    "name": "明珍羽織·常風",
+    "iconId": 43329,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769826
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22222,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22298,
+    "name": "明珍手甲·常風",
+    "iconId": 44525,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769826
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22223,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22299,
+    "name": "明珍袴·常風",
+    "iconId": 45904,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769826
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22224,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22300,
+    "name": "明珍木屐·常風",
+    "iconId": 49847,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769826
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22225,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22251,
+    "name": "述事禮帽·常風",
+    "iconId": 41354,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769827
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22176,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22252,
+    "name": "述事外套·常風",
+    "iconId": 43772,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769827
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22177,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22253,
+    "name": "述事手套·常風",
+    "iconId": 44520,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769827
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22178,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22254,
+    "name": "述事打底褲·常風",
+    "iconId": 45902,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769827
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22179,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22255,
+    "name": "述事長靴·常風",
+    "iconId": 46695,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769827
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22180,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22286,
+    "name": "砲手護目鏡·常風",
+    "iconId": 40967,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769828
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22211,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22287,
+    "name": "砲手外套·常風",
+    "iconId": 43328,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769828
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22212,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22288,
+    "name": "砲手手套·常風",
+    "iconId": 44524,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769828
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22213,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22289,
+    "name": "砲手馬褲·常風",
+    "iconId": 45901,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769828
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22214,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22290,
+    "name": "砲手長靴·常風",
+    "iconId": 46694,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769828
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22215,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22261,
+    "name": "七獄闊邊帽·常風",
+    "iconId": 41355,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769829
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22186,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22262,
+    "name": "七獄外套·常風",
+    "iconId": 43773,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769829
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22187,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22263,
+    "name": "七獄手套·常風",
+    "iconId": 44522,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769829
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22188,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22264,
+    "name": "七獄馬褲·常風",
+    "iconId": 45903,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769829
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22189,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22265,
+    "name": "七獄長靴·常風",
+    "iconId": 46692,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769829
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22190,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22266,
+    "name": "通靈長角·常風",
+    "iconId": 40744,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769830
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22191,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22267,
+    "name": "通靈坎肩·常風",
+    "iconId": 43774,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769830
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22192,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22268,
+    "name": "通靈護臂·常風",
+    "iconId": 48268,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769830
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22193,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22269,
+    "name": "通靈五分褲·常風",
+    "iconId": 45905,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769830
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22194,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22270,
+    "name": "通靈筒靴·常風",
+    "iconId": 46693,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769830
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22195,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22301,
+    "name": "鬥劍禮帽·常風",
+    "iconId": 41356,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769831
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22226,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22302,
+    "name": "鬥劍罩衣·常風",
+    "iconId": 43775,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769831
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22227,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22303,
+    "name": "鬥劍手套·常風",
+    "iconId": 44526,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769831
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22228,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22304,
+    "name": "鬥劍馬褲·常風",
+    "iconId": 45906,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769831
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22229,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22305,
+    "name": "鬥劍長靴·常風",
+    "iconId": 46696,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769831
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22230,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22256,
+    "name": "七天頭冠·常風",
+    "iconId": 40745,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769832
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22181,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22257,
+    "name": "七天上裝·常風",
+    "iconId": 43777,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769832
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22182,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22258,
+    "name": "七天半指護手·常風",
+    "iconId": 44521,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769832
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22183,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22259,
+    "name": "七天打底褲·常風",
+    "iconId": 45910,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769832
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22184,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22260,
+    "name": "七天長靴·常風",
+    "iconId": 46691,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769832
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22185,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22271,
+    "name": "雄辯方帽·常風",
+    "iconId": 41353,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769833
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22196,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22272,
+    "name": "雄辯外套·常風",
+    "iconId": 43771,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769833
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22197,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22273,
+    "name": "雄辯護袖·常風",
+    "iconId": 44523,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769833
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22198,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22274,
+    "name": "雄辯打底褲·常風",
+    "iconId": 45900,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769833
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22199,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22275,
+    "name": "雄辯皮靴·常風",
+    "iconId": 46690,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769833
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22200,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22291,
+    "name": "星座包頭巾·常風",
+    "iconId": 41674,
+    "stage": "anemos",
+    "slot": "head",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769834
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22216,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22292,
+    "name": "星座上裝·常風",
+    "iconId": 43776,
+    "stage": "anemos",
+    "slot": "body",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769834
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22217,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22293,
+    "name": "星座護臂·常風",
+    "iconId": 48269,
+    "stage": "anemos",
+    "slot": "hands",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769834
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22218,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22294,
+    "name": "星座長褲·常風",
+    "iconId": 45907,
+    "stage": "anemos",
+    "slot": "legs",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769834
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22219,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 22295,
+    "name": "星座涼鞋·常風",
+    "iconId": 46697,
+    "stage": "anemos",
+    "slot": "feet",
+    "jobs": [],
+    "itemLevel": 350,
+    "source": {
+      "npcId": 0,
+      "npcName": "",
+      "zone": "",
+      "specialShopId": 1769834
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 22220,
+          "quantity": 1
+        },
+        {
+          "materialId": 21803,
+          "quantity": 150
         }
       ]
     },
@@ -27,7 +2103,7 @@
     "id": 24087,
     "name": "元素禦敵頭盔",
     "iconId": 40318,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "head",
     "jobs": [],
     "itemLevel": 380,
@@ -51,7 +2127,7 @@
     "id": 24088,
     "name": "元素禦敵戰甲",
     "iconId": 43421,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "body",
     "jobs": [],
     "itemLevel": 380,
@@ -75,7 +2151,7 @@
     "id": 24089,
     "name": "元素禦敵手鎧",
     "iconId": 48740,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 380,
@@ -99,7 +2175,7 @@
     "id": 24090,
     "name": "元素禦敵軟甲褲",
     "iconId": 47454,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 380,
@@ -123,7 +2199,7 @@
     "id": 24091,
     "name": "元素禦敵皮靴",
     "iconId": 47163,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 380,
@@ -147,7 +2223,7 @@
     "id": 24092,
     "name": "元素制敵頭盔",
     "iconId": 40319,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "head",
     "jobs": [],
     "itemLevel": 380,
@@ -171,7 +2247,7 @@
     "id": 24093,
     "name": "元素制敵戰甲",
     "iconId": 43422,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "body",
     "jobs": [],
     "itemLevel": 380,
@@ -195,7 +2271,7 @@
     "id": 24094,
     "name": "元素制敵手鎧",
     "iconId": 48741,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 380,
@@ -219,7 +2295,7 @@
     "id": 24095,
     "name": "元素制敵軟甲褲",
     "iconId": 47456,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 380,
@@ -243,7 +2319,7 @@
     "id": 24096,
     "name": "元素制敵皮靴",
     "iconId": 47164,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 380,
@@ -267,7 +2343,7 @@
     "id": 24097,
     "name": "元素強襲狩獵帽",
     "iconId": 41417,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "head",
     "jobs": [],
     "itemLevel": 380,
@@ -291,7 +2367,7 @@
     "id": 24098,
     "name": "元素強襲短衣",
     "iconId": 43832,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "body",
     "jobs": [],
     "itemLevel": 380,
@@ -315,7 +2391,7 @@
     "id": 24099,
     "name": "元素強襲手套",
     "iconId": 44644,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 380,
@@ -339,7 +2415,7 @@
     "id": 24100,
     "name": "元素強襲馬褲",
     "iconId": 47457,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 380,
@@ -363,7 +2439,7 @@
     "id": 24101,
     "name": "元素強襲長靴",
     "iconId": 47165,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 380,
@@ -387,7 +2463,7 @@
     "id": 24102,
     "name": "元素精準狩獵帽",
     "iconId": 41418,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "head",
     "jobs": [],
     "itemLevel": 380,
@@ -411,7 +2487,7 @@
     "id": 24103,
     "name": "元素精準短衣",
     "iconId": 43833,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "body",
     "jobs": [],
     "itemLevel": 380,
@@ -435,7 +2511,7 @@
     "id": 24104,
     "name": "元素精準手套",
     "iconId": 44645,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 380,
@@ -459,7 +2535,7 @@
     "id": 24105,
     "name": "元素精準馬褲",
     "iconId": 47458,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 380,
@@ -483,7 +2559,7 @@
     "id": 24106,
     "name": "元素精準長靴",
     "iconId": 47166,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 380,
@@ -507,7 +2583,7 @@
     "id": 24107,
     "name": "元素游擊頭冠",
     "iconId": 40807,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "head",
     "jobs": [],
     "itemLevel": 380,
@@ -531,7 +2607,7 @@
     "id": 24108,
     "name": "元素游擊短衣",
     "iconId": 43834,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "body",
     "jobs": [],
     "itemLevel": 380,
@@ -555,7 +2631,7 @@
     "id": 24109,
     "name": "元素游擊手套",
     "iconId": 44646,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 380,
@@ -579,7 +2655,7 @@
     "id": 24110,
     "name": "元素游擊馬褲",
     "iconId": 47459,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 380,
@@ -603,7 +2679,7 @@
     "id": 24111,
     "name": "元素游擊長靴",
     "iconId": 47167,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 380,
@@ -627,7 +2703,7 @@
     "id": 24112,
     "name": "元素治癒頭冠",
     "iconId": 40806,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "head",
     "jobs": [],
     "itemLevel": 380,
@@ -651,7 +2727,7 @@
     "id": 24113,
     "name": "元素治癒長衣",
     "iconId": 42613,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "body",
     "jobs": [],
     "itemLevel": 380,
@@ -675,7 +2751,7 @@
     "id": 24114,
     "name": "元素治癒手套",
     "iconId": 44643,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 380,
@@ -699,7 +2775,7 @@
     "id": 24115,
     "name": "元素治癒打底褲",
     "iconId": 47455,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 380,
@@ -723,7 +2799,7 @@
     "id": 24116,
     "name": "元素治癒皮靴",
     "iconId": 49181,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 380,
@@ -747,7 +2823,7 @@
     "id": 24117,
     "name": "元素詠咒頭冠",
     "iconId": 40805,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "head",
     "jobs": [],
     "itemLevel": 380,
@@ -771,7 +2847,7 @@
     "id": 24118,
     "name": "元素詠咒長衣",
     "iconId": 42612,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "body",
     "jobs": [],
     "itemLevel": 380,
@@ -795,7 +2871,7 @@
     "id": 24119,
     "name": "元素詠咒手套",
     "iconId": 44642,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 380,
@@ -819,7 +2895,7 @@
     "id": 24120,
     "name": "元素詠咒打底褲",
     "iconId": 47453,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 380,
@@ -843,7 +2919,7 @@
     "id": 24121,
     "name": "元素詠咒皮靴",
     "iconId": 49180,
-    "stage": "elemental",
+    "stage": "pyros",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 380,
@@ -867,7 +2943,7 @@
     "id": 24723,
     "name": "元素禦敵頭盔+1",
     "iconId": 40324,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -895,7 +2971,7 @@
     "id": 24724,
     "name": "元素禦敵戰甲+1",
     "iconId": 43429,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -923,7 +2999,7 @@
     "id": 24725,
     "name": "元素禦敵手鎧+1",
     "iconId": 48746,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -951,7 +3027,7 @@
     "id": 24726,
     "name": "元素禦敵軟甲褲+1",
     "iconId": 47497,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -979,7 +3055,7 @@
     "id": 24727,
     "name": "元素禦敵皮靴+1",
     "iconId": 47174,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -1007,7 +3083,7 @@
     "id": 24728,
     "name": "元素制敵頭盔+1",
     "iconId": 40325,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -1035,7 +3111,7 @@
     "id": 24729,
     "name": "元素制敵戰甲+1",
     "iconId": 43430,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -1063,7 +3139,7 @@
     "id": 24730,
     "name": "元素制敵手鎧+1",
     "iconId": 48747,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -1091,7 +3167,7 @@
     "id": 24731,
     "name": "元素制敵軟甲褲+1",
     "iconId": 47499,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -1119,7 +3195,7 @@
     "id": 24732,
     "name": "元素制敵皮靴+1",
     "iconId": 47175,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -1147,7 +3223,7 @@
     "id": 24733,
     "name": "元素強襲狩獵帽+1",
     "iconId": 41427,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -1175,7 +3251,7 @@
     "id": 24734,
     "name": "元素強襲短衣+1",
     "iconId": 43854,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -1203,7 +3279,7 @@
     "id": 24735,
     "name": "元素強襲手套+1",
     "iconId": 44669,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -1231,7 +3307,7 @@
     "id": 24736,
     "name": "元素強襲馬褲+1",
     "iconId": 47293,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -1259,7 +3335,7 @@
     "id": 24737,
     "name": "元素強襲長靴+1",
     "iconId": 47176,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -1287,7 +3363,7 @@
     "id": 24738,
     "name": "元素精準狩獵帽+1",
     "iconId": 41428,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -1315,7 +3391,7 @@
     "id": 24739,
     "name": "元素精準短衣+1",
     "iconId": 43855,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -1343,7 +3419,7 @@
     "id": 24740,
     "name": "元素精準手套+1",
     "iconId": 44670,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -1371,7 +3447,7 @@
     "id": 24741,
     "name": "元素精準馬褲+1",
     "iconId": 47294,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -1399,7 +3475,7 @@
     "id": 24742,
     "name": "元素精準長靴+1",
     "iconId": 47177,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -1427,7 +3503,7 @@
     "id": 24743,
     "name": "元素游擊頭冠+1",
     "iconId": 40822,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -1455,7 +3531,7 @@
     "id": 24744,
     "name": "元素游擊短衣+1",
     "iconId": 43856,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -1483,7 +3559,7 @@
     "id": 24745,
     "name": "元素游擊手套+1",
     "iconId": 44671,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -1511,7 +3587,7 @@
     "id": 24746,
     "name": "元素游擊馬褲+1",
     "iconId": 47295,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -1539,7 +3615,7 @@
     "id": 24747,
     "name": "元素游擊長靴+1",
     "iconId": 47178,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -1567,7 +3643,7 @@
     "id": 24748,
     "name": "元素治癒頭冠+1",
     "iconId": 40821,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -1595,7 +3671,7 @@
     "id": 24749,
     "name": "元素治癒長衣+1",
     "iconId": 42626,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -1623,7 +3699,7 @@
     "id": 24750,
     "name": "元素治癒手套+1",
     "iconId": 44668,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -1651,7 +3727,7 @@
     "id": 24751,
     "name": "元素治癒打底褲+1",
     "iconId": 47498,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -1679,7 +3755,7 @@
     "id": 24752,
     "name": "元素治癒皮靴+1",
     "iconId": 49108,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -1707,7 +3783,7 @@
     "id": 24753,
     "name": "元素詠咒頭冠+1",
     "iconId": 40820,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -1735,7 +3811,7 @@
     "id": 24754,
     "name": "元素詠咒長衣+1",
     "iconId": 42625,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -1763,7 +3839,7 @@
     "id": 24755,
     "name": "元素詠咒手套+1",
     "iconId": 44667,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -1791,7 +3867,7 @@
     "id": 24756,
     "name": "元素詠咒打底褲+1",
     "iconId": 47496,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -1819,7 +3895,7 @@
     "id": 24757,
     "name": "元素詠咒皮靴+1",
     "iconId": 49107,
-    "stage": "elemental",
+    "stage": "hydatos",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -1847,7 +3923,7 @@
     "id": 24758,
     "name": "元素禦敵頭盔+2",
     "iconId": 40324,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -1875,7 +3951,7 @@
     "id": 24759,
     "name": "元素禦敵戰甲+2",
     "iconId": 43429,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -1903,7 +3979,7 @@
     "id": 24760,
     "name": "元素禦敵手鎧+2",
     "iconId": 48746,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -1931,7 +4007,7 @@
     "id": 24761,
     "name": "元素禦敵軟甲褲+2",
     "iconId": 47497,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -1959,7 +4035,7 @@
     "id": 24762,
     "name": "元素禦敵皮靴+2",
     "iconId": 47174,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -1987,7 +4063,7 @@
     "id": 24763,
     "name": "元素制敵頭盔+2",
     "iconId": 40325,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -2015,7 +4091,7 @@
     "id": 24764,
     "name": "元素制敵戰甲+2",
     "iconId": 43430,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -2043,7 +4119,7 @@
     "id": 24765,
     "name": "元素制敵手鎧+2",
     "iconId": 48747,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -2071,7 +4147,7 @@
     "id": 24766,
     "name": "元素制敵軟甲褲+2",
     "iconId": 47499,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -2099,7 +4175,7 @@
     "id": 24767,
     "name": "元素制敵皮靴+2",
     "iconId": 47175,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -2127,7 +4203,7 @@
     "id": 24768,
     "name": "元素強襲狩獵帽+2",
     "iconId": 41427,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -2155,7 +4231,7 @@
     "id": 24769,
     "name": "元素強襲短衣+2",
     "iconId": 43854,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -2183,7 +4259,7 @@
     "id": 24770,
     "name": "元素強襲手套+2",
     "iconId": 44669,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -2211,7 +4287,7 @@
     "id": 24771,
     "name": "元素強襲馬褲+2",
     "iconId": 47293,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -2239,7 +4315,7 @@
     "id": 24772,
     "name": "元素強襲長靴+2",
     "iconId": 47176,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -2267,7 +4343,7 @@
     "id": 24773,
     "name": "元素精準狩獵帽+2",
     "iconId": 41428,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -2295,7 +4371,7 @@
     "id": 24774,
     "name": "元素精準短衣+2",
     "iconId": 43855,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -2323,7 +4399,7 @@
     "id": 24775,
     "name": "元素精準手套+2",
     "iconId": 44670,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -2351,7 +4427,7 @@
     "id": 24776,
     "name": "元素精準馬褲+2",
     "iconId": 47294,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -2379,7 +4455,7 @@
     "id": 24777,
     "name": "元素精準長靴+2",
     "iconId": 47177,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -2407,7 +4483,7 @@
     "id": 24778,
     "name": "元素游擊頭冠+2",
     "iconId": 40822,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -2435,7 +4511,7 @@
     "id": 24779,
     "name": "元素游擊短衣+2",
     "iconId": 43856,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -2463,7 +4539,7 @@
     "id": 24780,
     "name": "元素游擊手套+2",
     "iconId": 44671,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -2491,7 +4567,7 @@
     "id": 24781,
     "name": "元素游擊馬褲+2",
     "iconId": 47295,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -2519,7 +4595,7 @@
     "id": 24782,
     "name": "元素游擊長靴+2",
     "iconId": 47178,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -2547,7 +4623,7 @@
     "id": 24783,
     "name": "元素治癒頭冠+2",
     "iconId": 40821,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -2575,7 +4651,7 @@
     "id": 24784,
     "name": "元素治癒長衣+2",
     "iconId": 42626,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -2603,7 +4679,7 @@
     "id": 24785,
     "name": "元素治癒手套+2",
     "iconId": 44668,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -2631,7 +4707,7 @@
     "id": 24786,
     "name": "元素治癒打底褲+2",
     "iconId": 47498,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -2659,7 +4735,7 @@
     "id": 24787,
     "name": "元素治癒皮靴+2",
     "iconId": 49108,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -2687,7 +4763,7 @@
     "id": 24788,
     "name": "元素詠咒頭冠+2",
     "iconId": 40820,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "head",
     "jobs": [],
     "itemLevel": 390,
@@ -2715,7 +4791,7 @@
     "id": 24789,
     "name": "元素詠咒長衣+2",
     "iconId": 42625,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "body",
     "jobs": [],
     "itemLevel": 390,
@@ -2743,7 +4819,7 @@
     "id": 24790,
     "name": "元素詠咒手套+2",
     "iconId": 44667,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "hands",
     "jobs": [],
     "itemLevel": 390,
@@ -2771,7 +4847,7 @@
     "id": 24791,
     "name": "元素詠咒打底褲+2",
     "iconId": 47496,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "legs",
     "jobs": [],
     "itemLevel": 390,
@@ -2799,7 +4875,7 @@
     "id": 24792,
     "name": "元素詠咒皮靴+2",
     "iconId": 49107,
-    "stage": "elemental",
+    "stage": "fragment",
     "slot": "feet",
     "jobs": [],
     "itemLevel": 390,
@@ -2818,6 +4894,30 @@
         {
           "materialId": 24808,
           "quantity": 21
+        }
+      ]
+    },
+    "tags": []
+  },
+  {
+    "id": 2309,
+    "name": "古代小圓盾",
+    "iconId": 30090,
+    "stage": "antique",
+    "slot": "weapon",
+    "jobs": [],
+    "itemLevel": 90,
+    "source": {
+      "npcId": 1008118,
+      "npcName": "艾里娜",
+      "zone": "",
+      "specialShopId": 1769724
+    },
+    "cost": {
+      "materials": [
+        {
+          "materialId": 7004,
+          "quantity": 1
         }
       ]
     },
