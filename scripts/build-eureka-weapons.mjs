@@ -86,6 +86,21 @@ const EUREKA_FAMILIES = new Set([
   'Kasasagi', 'Paikea', 'Rose Couverte', 'Shamash', 'Tuah',
 ]);
 
+// Eureka upgrade materials. IDs verified against EN CSV.
+const MATERIAL_IDS = {
+  21801: { category: 'crystal', en: 'Protean Crystal' },
+  21803: { category: 'crystal', en: "Anemos Crystal" },
+  21802: { category: 'other',   en: "Pazuzu's Feather" },
+  23309: { category: 'crystal', en: 'Frosted Protean Crystal' },
+  22976: { category: 'crystal', en: 'Pagos Crystal' },
+  22975: { category: 'other',   en: "Louhi's Ice" },
+  24122: { category: 'crystal', en: 'Smoldering Protean Crystal' },
+  24124: { category: 'crystal', en: 'Pyros Crystal' },
+  24123: { category: 'other',   en: "Penthesilea's Flame" },
+  24807: { category: 'crystal', en: 'Hydatos Crystal' },
+  24806: { category: 'other',   en: 'Crystalline Scale' },
+};
+
 function detectStage(enName, itemLevel) {
   const name = enName.trim();
   if (/\bReplica\b/.test(name)) return null; // ilv 1 glamour replicas
@@ -212,6 +227,16 @@ async function main() {
   const enMap = parseItemCsv(enText, 'en');
   console.log(`TC items: ${tcMap.size}, EN items: ${enMap.size}`);
 
+  // Verify material IDs against EN CSV
+  for (const [idStr, meta] of Object.entries(MATERIAL_IDS)) {
+    const id = Number(idStr);
+    const en = enMap.get(id);
+    if (!en) { console.warn(`[materials] id ${id} missing from EN CSV`); continue; }
+    if (en.name !== meta.en) {
+      console.warn(`[materials] id ${id} EN mismatch: expected "${meta.en}", actual "${en.name}"`);
+    }
+  }
+
   const weapons = [];
   for (const [id, en] of enMap) {
     if (!WEAPON_CATEGORIES.has(en.category)) continue;
@@ -264,6 +289,27 @@ async function main() {
   const jsonOut = weapons.map(({ _familyKey, _categoryId, ...rest }) => rest);
   writeFileSync(jsonPath, JSON.stringify(jsonOut, null, 2));
   console.log(`Wrote ${jsonOut.length} weapons to ${jsonPath}`);
+
+  // Output materials JSON
+  const materials = [];
+  for (const [idStr, meta] of Object.entries(MATERIAL_IDS)) {
+    const id = Number(idStr);
+    const tc = tcMap.get(id);
+    const en = enMap.get(id);
+    if (!tc || !en) continue; // warning already logged above
+    materials.push({
+      id,
+      tcName: tc.name,
+      enName: en.name,
+      iconId: tc.iconId,
+      category: meta.category,
+    });
+  }
+  writeFileSync(
+    resolve(REPO_ROOT, 'public/data/eureka-materials.json'),
+    JSON.stringify(materials, null, 2),
+  );
+  console.log(`Wrote ${materials.length} materials`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
