@@ -5,6 +5,7 @@ import OzmaLogo from '@/components/OzmaLogo';
 const navItems = [
   { to: '/eureka-weather', label: '優雷卡天氣' },
   { to: '/eureka', label: '文理技能' },
+  { to: '/eureka-gear', label: '禁地兵裝' },
 ];
 
 export default function NavBar() {

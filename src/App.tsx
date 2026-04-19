@@ -3,6 +3,7 @@ import NavBar from '@/components/NavBar';
 import HomePage from '@/pages/HomePage';
 import EurekaWeatherPage from '@/pages/EurekaWeatherPage';
 import EurekaPage from '@/pages/EurekaPage';
+import EurekaGearPage from '@/pages/EurekaGearPage';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/eureka-weather" element={<EurekaWeatherPage />} />
           <Route path="/eureka" element={<EurekaPage />} />
+          <Route path="/eureka-gear" element={<EurekaGearPage />} />
         </Routes>
       </div>
     </HashRouter>
