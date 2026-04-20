@@ -59,25 +59,25 @@ describe('ZoneWeatherRow', () => {
   });
 
   it('shows "超過三小時前" fallback when W has not occurred in the last 9 periods', () => {
-    const candidates = [
-      { zone: 'Eureka Anemos' as const, weather: 'Snow' },
-      { zone: 'Eureka Pagos' as const, weather: 'Thunder' },
-      { zone: 'Eureka Pyros' as const, weather: 'Blizzards' },
-      { zone: 'Eureka Hydatos' as const, weather: 'Snow' },
-    ];
-    const scenario = candidates.find(
-      (c) => findLastEndedWeather(c.zone, c.weather, fixedNow) === null
-        && generateForecasts(c.zone, 500, fixedNow).some((f) => f.weather === c.weather),
-    );
-    if (!scenario) {
-      return;
-    }
-    const tw = weatherNamesTw[scenario.weather] ?? scenario.weather;
+    // Deterministic fixture: at 2026-04-19T07:00:00Z, "Fair Skies" in Eureka Anemos
+    // has not appeared in the preceding 9 weather periods, so findLastEndedWeather
+    // returns null — triggering the "超過三小時前" fallback.
+    // The weather IS reachable in the next 500 periods, so the info line renders.
+    // (Triple found via brute-force exploration script, hard-coded here for speed.)
+    const fallbackNow = new Date('2026-04-19T07:00:00Z').getTime(); // 1776582000000
+    const fallbackZone = 'Eureka Anemos' as const;
+    const fallbackWeather = 'Fair Skies';
+
+    // Sanity-check the fixture invariants at test time (fast, ~9 iterations each).
+    expect(findLastEndedWeather(fallbackZone, fallbackWeather, fallbackNow, 9)).toBeNull();
+    expect(generateForecasts(fallbackZone, 500, fallbackNow).some((f) => f.weather === fallbackWeather)).toBe(true);
+
+    const tw = weatherNamesTw[fallbackWeather] ?? fallbackWeather;
     render(
       <ZoneWeatherRow
-        zone={scenario.zone}
-        selectedWeathers={new Set([scenario.weather])}
-        now={fixedNow}
+        zone={fallbackZone}
+        selectedWeathers={new Set([fallbackWeather])}
+        now={fallbackNow}
       />,
     );
     expect(screen.getByText(new RegExp(`上次${tw}.*超過三小時前`))).toBeTruthy();
