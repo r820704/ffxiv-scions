@@ -110,7 +110,7 @@ export function findWeatherMatches(
   const now = fromTimestamp ?? Date.now();
   let periodStart = getWeatherPeriodStart(now);
   const results: WeatherForecast[] = [];
-  const maxIterations = count * 20; // safety limit
+  const maxIterations = Math.max(count * 20, 500); // safety limit; rare weathers (e.g. Fair Skies in Hydatos at 12%) may not appear in ~20 periods
 
   for (let i = 0; i < maxIterations && results.length < count; i++) {
     const target = calculateForecastTarget(periodStart);

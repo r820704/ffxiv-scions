@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateForecastTarget, resolveWeather, getWeatherForZone, generateForecasts, findLastEndedWeather } from './weather-engine';
+import { calculateForecastTarget, resolveWeather, getWeatherForZone, generateForecasts, findLastEndedWeather, findWeatherMatches } from './weather-engine';
 import { WEATHER_PERIOD_MS, getWeatherPeriodStart } from './eorzea-time';
 
 describe('calculateForecastTarget', () => {
@@ -81,6 +81,17 @@ describe('generateForecasts', () => {
     for (let i = 1; i < forecasts.length; i++) {
       expect(forecasts[i]!.startTime - forecasts[i - 1]!.startTime).toBe(1400000);
     }
+  });
+});
+
+describe('findWeatherMatches', () => {
+  it('finds rare weather beyond the old 20-period safety limit', () => {
+    // Deterministic fixture: at 2026-04-01T00:00:00Z, Fair Skies in Eureka Hydatos
+    // (12% rate) is ~24 periods away — outside the original count*20 safety cap.
+    const fixedNow = new Date('2026-04-01T00:00:00Z').getTime();
+    const [match] = findWeatherMatches('Eureka Hydatos', new Set(['Fair Skies']), 1, fixedNow);
+    expect(match).toBeDefined();
+    expect(match!.weather).toBe('Fair Skies');
   });
 });
 
