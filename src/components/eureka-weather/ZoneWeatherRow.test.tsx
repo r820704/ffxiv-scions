@@ -33,13 +33,12 @@ describe('ZoneWeatherRow', () => {
     expect(highlighted.length).toBeGreaterThanOrEqual(0);
   });
 
-  it('when filter is empty, shows "上次 {currentWeather} 結束" + "目前 ... 進行中（剩 ...）"', () => {
+  it('when filter is empty, shows "上次 {currentWeather} 結束" + "目前 {currentWeather} 剩 ..."', () => {
     render(<ZoneWeatherRow zone="Eureka Anemos" selectedWeathers={new Set()} now={fixedNow} />);
     const currentWeather = generateForecasts('Eureka Anemos', 1, fixedNow)[0]!;
     const tw = weatherNamesTw[currentWeather.weather] ?? currentWeather.weather;
     expect(screen.getByText(new RegExp(`上次${tw}`))).toBeTruthy();
-    expect(screen.getByText(new RegExp(`目前${tw}進行中`))).toBeTruthy();
-    expect(screen.getByText(/剩/)).toBeTruthy();
+    expect(screen.getByText(new RegExp(`目前${tw}剩`))).toBeTruthy();
   });
 
   it('when filter has a weather NOT currently active, shows "上次 ... ・ 下次 ... 後"', () => {
@@ -55,7 +54,7 @@ describe('ZoneWeatherRow', () => {
       />,
     );
     expect(screen.getByText(new RegExp(`下次${tw}`))).toBeTruthy();
-    expect(screen.queryByText(/目前.*進行中/)).toBeNull();
+    expect(screen.queryByText(/目前.*剩/)).toBeNull();
   });
 
   it('shows "超過三小時前" fallback when W has not occurred in the last 9 periods', () => {
@@ -93,6 +92,6 @@ describe('ZoneWeatherRow', () => {
     );
     expect(screen.queryByText(/上次/)).toBeNull();
     expect(screen.queryByText(/下次/)).toBeNull();
-    expect(screen.queryByText(/目前.*進行中/)).toBeNull();
+    expect(screen.queryByText(/目前.*剩/)).toBeNull();
   });
 });

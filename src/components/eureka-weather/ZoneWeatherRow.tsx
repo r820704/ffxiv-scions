@@ -111,9 +111,9 @@ export default function ZoneWeatherRow({
     targetWeatherTw === null
       ? null
       : inProgress && currentPeriodStart !== null
-        ? `目前${targetWeatherTw}進行中（剩 ${formatRelMs(
+        ? `目前${targetWeatherTw}剩 ${formatRelMs(
             currentPeriodStart + WEATHER_PERIOD_MS - now,
-          )}）`
+          )}`
         : nextMatch
           ? `下次${targetWeatherTw}：${formatRelMs(nextMatch.startTime - now)}後`
           : null;
