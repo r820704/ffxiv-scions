@@ -1,6 +1,8 @@
 import { weatherRates, weatherNamesTw } from '../data/weather-data';
 import { WEATHER_PERIOD_MS, getWeatherPeriodStart } from './eorzea-time';
 
+export const DEFAULT_LOOKBACK_PERIODS = 9;
+
 // SaintCoinach weather calculation algorithm
 export function calculateForecastTarget(timestamp: number): number {
   const unix = Math.trunc(timestamp / 1000);
@@ -71,6 +73,33 @@ export function generateForecasts(zone: string, count: number, fromTimestamp?: n
   return results;
 }
 
+// Look back up to `maxLookbackPeriods` weather periods from `now` to find the
+// most recent period with the given `weather` whose end time is already <= now.
+// Returns null if no match or if the zone is unknown.
+export function findLastEndedWeather(
+  zone: string,
+  weather: string,
+  now: number,
+  maxLookbackPeriods: number = DEFAULT_LOOKBACK_PERIODS,
+): WeatherForecast | null {
+  if (!weatherRates[zone]) return null;
+
+  const currentStart = getWeatherPeriodStart(now);
+  for (let i = 1; i <= maxLookbackPeriods; i++) {
+    const candidateStart = currentStart - i * WEATHER_PERIOD_MS;
+    const target = calculateForecastTarget(candidateStart);
+    const w = resolveWeather(zone, target);
+    if (w === weather) {
+      return {
+        startTime: candidateStart,
+        weather: w,
+        weatherTw: getWeatherTw(w),
+      };
+    }
+  }
+  return null;
+}
+
 // Find weather matches with optional filter
 export function findWeatherMatches(
   zone: string,
@@ -81,7 +110,7 @@ export function findWeatherMatches(
   const now = fromTimestamp ?? Date.now();
   let periodStart = getWeatherPeriodStart(now);
   const results: WeatherForecast[] = [];
-  const maxIterations = count * 20; // safety limit
+  const maxIterations = Math.max(count * 20, 500); // safety limit; rare weathers (e.g. Fair Skies in Hydatos at 12%) may not appear in ~20 periods
 
   for (let i = 0; i < maxIterations && results.length < count; i++) {
     const target = calculateForecastTarget(periodStart);

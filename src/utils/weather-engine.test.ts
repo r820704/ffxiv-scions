@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { calculateForecastTarget, resolveWeather, getWeatherForZone, generateForecasts } from './weather-engine';
+import { calculateForecastTarget, resolveWeather, getWeatherForZone, generateForecasts, findLastEndedWeather, findWeatherMatches } from './weather-engine';
+import { WEATHER_PERIOD_MS, getWeatherPeriodStart } from './eorzea-time';
 
 describe('calculateForecastTarget', () => {
   it('should return a number between 0 and 99', () => {
@@ -80,5 +81,93 @@ describe('generateForecasts', () => {
     for (let i = 1; i < forecasts.length; i++) {
       expect(forecasts[i]!.startTime - forecasts[i - 1]!.startTime).toBe(1400000);
     }
+  });
+});
+
+describe('findWeatherMatches', () => {
+  it('finds rare weather beyond the old 20-period safety limit', () => {
+    // Deterministic fixture: at 2026-04-01T00:00:00Z, Fair Skies in Eureka Hydatos
+    // (12% rate) is ~24 periods away — outside the original count*20 safety cap.
+    const fixedNow = new Date('2026-04-01T00:00:00Z').getTime();
+    const [match] = findWeatherMatches('Eureka Hydatos', new Set(['Fair Skies']), 1, fixedNow);
+    expect(match).toBeDefined();
+    expect(match!.weather).toBe('Fair Skies');
+  });
+});
+
+describe('findLastEndedWeather', () => {
+  const fixedNow = 1734000000000; // deterministic anchor
+
+  it('returns null when the weather never appears in lookback window', () => {
+    // "Fog" does not exist in Eureka Anemos rate table
+    const result = findLastEndedWeather('Eureka Anemos', 'Fog', fixedNow);
+    expect(result).toBeNull();
+  });
+
+  it('returns null for unknown zone', () => {
+    expect(findLastEndedWeather('NonExistentZone', 'Fair Skies', fixedNow)).toBeNull();
+  });
+
+  it('excludes the currently in-progress period (endTime must be <= now)', () => {
+    const currentStart = getWeatherPeriodStart(fixedNow);
+    const nowInsideCurrent = currentStart + 100;
+    const result = findLastEndedWeather('Eureka Anemos', 'Fair Skies', nowInsideCurrent);
+    expect(result).not.toBeNull();
+    if (result) {
+      expect(result.startTime + WEATHER_PERIOD_MS).toBeLessThanOrEqual(nowInsideCurrent);
+    }
+  });
+
+  it('returns the most recent ended period matching the weather', () => {
+    const currentStart = getWeatherPeriodStart(fixedNow);
+    let expected: number | null = null;
+    for (let i = 1; i <= 9; i++) {
+      const candidateStart = currentStart - i * WEATHER_PERIOD_MS;
+      const forecast = generateForecasts('Eureka Anemos', 1, candidateStart)[0];
+      if (forecast && forecast.weather === 'Fair Skies') {
+        expected = candidateStart;
+        break;
+      }
+    }
+
+    const result = findLastEndedWeather('Eureka Anemos', 'Fair Skies', fixedNow);
+    if (expected === null) {
+      expect(result).toBeNull();
+    } else {
+      expect(result).not.toBeNull();
+      expect(result!.startTime).toBe(expected);
+      expect(result!.weather).toBe('Fair Skies');
+    }
+  });
+
+  it('respects maxLookbackPeriods limit', () => {
+    const currentStart = getWeatherPeriodStart(fixedNow);
+    const prevStart = currentStart - WEATHER_PERIOD_MS;
+    const prevForecast = generateForecasts('Eureka Anemos', 1, prevStart)[0];
+
+    const result = findLastEndedWeather(
+      'Eureka Anemos',
+      prevForecast!.weather,
+      fixedNow,
+      1,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.startTime).toBe(prevStart);
+  });
+
+  it('returns null when lookback=1 and previous period does not match', () => {
+    const currentStart = getWeatherPeriodStart(fixedNow);
+    const prevStart = currentStart - WEATHER_PERIOD_MS;
+    const prevForecast = generateForecasts('Eureka Anemos', 1, prevStart)[0];
+    const otherWeather =
+      prevForecast!.weather === 'Fair Skies' ? 'Gales' : 'Fair Skies';
+
+    const result = findLastEndedWeather(
+      'Eureka Anemos',
+      otherWeather,
+      fixedNow,
+      1,
+    );
+    expect(result).toBeNull();
   });
 });

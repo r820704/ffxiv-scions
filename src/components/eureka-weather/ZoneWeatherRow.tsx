@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { generateForecasts, findWeatherMatches } from '@/utils/weather-engine';
+import {
+  generateForecasts,
+  findWeatherMatches,
+  findLastEndedWeather,
+  DEFAULT_LOOKBACK_PERIODS,
+} from '@/utils/weather-engine';
 import { zoneNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weather-data';
 import { WEATHER_PERIOD_MS, toEorzeaTime } from '@/utils/eorzea-time';
 import { isDayTime } from '@/utils/game-day-night';
@@ -56,9 +61,24 @@ export default function ZoneWeatherRow({
     return match ?? null;
   }, [zone, selectedWeathers, now]);
 
-  const nextMatchTw = nextMatch
-    ? weatherNamesTw[nextMatch.weather] ?? nextMatch.weatherTw
+  const targetWeather = useMemo<string | null>(() => {
+    if (selectedWeathers.size === 0) {
+      return forecasts[0]?.weather ?? null;
+    }
+    return nextMatch?.weather ?? null;
+  }, [selectedWeathers, forecasts, nextMatch]);
+
+  const targetWeatherTw = targetWeather
+    ? weatherNamesTw[targetWeather] ?? targetWeather
     : null;
+
+  const currentPeriodWeather = forecasts[0]?.weather ?? null;
+  const currentPeriodStart = forecasts[0]?.startTime ?? null;
+
+  const lastEnded = useMemo(() => {
+    if (!targetWeather) return null;
+    return findLastEndedWeather(zone, targetWeather, now, DEFAULT_LOOKBACK_PERIODS);
+  }, [zone, targetWeather, now]);
 
   useEffect(() => {
     const el = localRef.current;
@@ -78,14 +98,38 @@ export default function ZoneWeatherRow({
     scrollRef?.(el);
   };
 
+  const inProgress =
+    targetWeather !== null && currentPeriodWeather === targetWeather;
+
+  const lastLabel = targetWeatherTw
+    ? lastEnded
+      ? `上次${targetWeatherTw}結束：${formatRelMs(now - (lastEnded.startTime + WEATHER_PERIOD_MS))}前`
+      : `上次${targetWeatherTw}超過三小時前`
+    : null;
+
+  const rightLabel =
+    targetWeatherTw === null
+      ? null
+      : inProgress && currentPeriodStart !== null
+        ? `目前${targetWeatherTw}剩 ${formatRelMs(
+            currentPeriodStart + WEATHER_PERIOD_MS - now,
+          )}`
+        : nextMatch
+          ? `下次${targetWeatherTw}：${formatRelMs(nextMatch.startTime - now)}後`
+          : null;
+
+  const showInfoLine = targetWeatherTw !== null && (lastLabel !== null || rightLabel !== null);
+
   return (
     <div className="border border-border rounded-lg p-3 bg-card">
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <span className="text-sm font-semibold text-foreground">{zoneNamesTw[zone]}</span>
         <div className="flex items-center gap-2">
-          {nextMatch && nextMatchTw && (
+          {showInfoLine && (
             <span className="text-xs text-amber-300">
-              下次{nextMatchTw}：{formatRelMs(nextMatch.startTime - now)}
+              {lastLabel}
+              {lastLabel && rightLabel && ' ・ '}
+              {rightLabel}
             </span>
           )}
           {onJumpToNow && (
