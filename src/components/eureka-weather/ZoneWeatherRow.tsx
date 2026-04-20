@@ -3,6 +3,7 @@ import {
   generateForecasts,
   findWeatherMatches,
   findLastEndedWeather,
+  DEFAULT_LOOKBACK_PERIODS,
 } from '@/utils/weather-engine';
 import { zoneNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weather-data';
 import { WEATHER_PERIOD_MS, toEorzeaTime } from '@/utils/eorzea-time';
@@ -21,7 +22,6 @@ interface ZoneWeatherRowProps {
 }
 
 const FORECAST_COUNT = 24;
-const LOOKBACK_PERIODS = 9;
 
 function formatRelMs(ms: number): string {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -77,7 +77,7 @@ export default function ZoneWeatherRow({
 
   const lastEnded = useMemo(() => {
     if (!targetWeather) return null;
-    return findLastEndedWeather(zone, targetWeather, now, LOOKBACK_PERIODS);
+    return findLastEndedWeather(zone, targetWeather, now, DEFAULT_LOOKBACK_PERIODS);
   }, [zone, targetWeather, now]);
 
   useEffect(() => {

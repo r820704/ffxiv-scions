@@ -1,6 +1,8 @@
 import { weatherRates, weatherNamesTw } from '../data/weather-data';
 import { WEATHER_PERIOD_MS, getWeatherPeriodStart } from './eorzea-time';
 
+export const DEFAULT_LOOKBACK_PERIODS = 9;
+
 // SaintCoinach weather calculation algorithm
 export function calculateForecastTarget(timestamp: number): number {
   const unix = Math.trunc(timestamp / 1000);
@@ -78,7 +80,7 @@ export function findLastEndedWeather(
   zone: string,
   weather: string,
   now: number,
-  maxLookbackPeriods: number = 9,
+  maxLookbackPeriods: number = DEFAULT_LOOKBACK_PERIODS,
 ): WeatherForecast | null {
   if (!weatherRates[zone]) return null;
 
