@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { calculateForecastTarget, resolveWeather, getWeatherForZone, generateForecasts } from './weather-engine';
+import { calculateForecastTarget, resolveWeather, getWeatherForZone, generateForecasts, findLastEndedWeather } from './weather-engine';
+import { WEATHER_PERIOD_MS, getWeatherPeriodStart } from './eorzea-time';
 
 describe('calculateForecastTarget', () => {
   it('should return a number between 0 and 99', () => {
@@ -83,9 +84,6 @@ describe('generateForecasts', () => {
   });
 });
 
-import { findLastEndedWeather } from './weather-engine';
-import { WEATHER_PERIOD_MS, getWeatherPeriodStart } from './eorzea-time';
-
 describe('findLastEndedWeather', () => {
   const fixedNow = 1734000000000; // deterministic anchor
 
@@ -103,6 +101,7 @@ describe('findLastEndedWeather', () => {
     const currentStart = getWeatherPeriodStart(fixedNow);
     const nowInsideCurrent = currentStart + 100;
     const result = findLastEndedWeather('Eureka Anemos', 'Fair Skies', nowInsideCurrent);
+    expect(result).not.toBeNull();
     if (result) {
       expect(result.startTime + WEATHER_PERIOD_MS).toBeLessThanOrEqual(nowInsideCurrent);
     }
