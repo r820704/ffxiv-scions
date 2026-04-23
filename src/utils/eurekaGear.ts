@@ -1,5 +1,7 @@
-import type { EurekaStage, MaterialCost, StageUpgradeCost, EurekaChain, GearFilterState, ChainProgress } from '../types/eureka-gear';
+import type { EurekaStage, MaterialCost, StageUpgradeCost, EurekaChain, GearFilterState, ChainProgress, ArmorSetId, ArmorSlot, EurekaInventoryV3, SlotProgress } from '../types/eureka-gear';
 import { EUREKA_STAGES } from '../types/eureka-gear';
+import { EUREKA_CHAINS } from '../data/eureka-chains';
+import { ARMOR_SET_FOR_JOB } from '../data/eureka-armor-sets';
 
 export function getNextStage(stage: EurekaStage): EurekaStage | null {
   const idx = EUREKA_STAGES.indexOf(stage);
@@ -80,4 +82,28 @@ export function costBetween(
     }
   }
   return Array.from(totals, ([materialId, quantity]) => ({ materialId, quantity }));
+}
+
+export type JobProgress = {
+  weapons: { chainId: string; progress: SlotProgress }[];
+  armor: {
+    set: ArmorSetId;
+    pieces: Partial<Record<ArmorSlot, SlotProgress>>;
+  };
+};
+
+type JobId = keyof typeof ARMOR_SET_FOR_JOB;
+
+export function getJobProgress(job: JobId, inv: EurekaInventoryV3): JobProgress {
+  const weapons = EUREKA_CHAINS
+    .filter((c) => c.job === job)
+    .map((c) => ({
+      chainId: c.chainId,
+      progress: inv.weapons[c.chainId] ?? { currentStage: 'antiquated' as const },
+    }));
+  const set = ARMOR_SET_FOR_JOB[job];
+  return {
+    weapons,
+    armor: { set, pieces: inv.armor[set] ?? {} },
+  };
 }
