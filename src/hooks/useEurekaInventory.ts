@@ -1,106 +1,156 @@
-import { useCallback, useState } from 'react';
-import type { GearInventoryState, EurekaStage, StageUpgradeCost, ChainProgress } from '../types/eureka-gear';
-import { hasEnoughMaterials, deductMaterials, getNextStage, findCost } from '../utils/eurekaGear';
+import { useCallback, useEffect, useState } from 'react';
+import type {
+  ArmorSetId,
+  ArmorSlot,
+  EurekaInventoryV3,
+  EurekaStage,
+  MaterialCost,
+} from '../types/eureka-gear';
+import { emptyInventoryV3, migrateInventory } from '../utils/eureka-gear-migrate';
+import { STAGE_UPGRADE_COSTS } from '../data/eureka-stage-costs';
+import {
+  costBetween,
+  deductMaterials,
+  hasEnoughMaterials,
+} from '../utils/eurekaGear';
 
-const KEY = 'eureka-inventory-v2';
+const KEY_V3 = 'eureka-inventory-v3';
+const KEY_V2 = 'eureka-inventory-v2';
 
-function empty(): GearInventoryState {
-  return { materials: {}, chainProgress: {}, updatedAt: '' };
-}
+export type ChainRef =
+  | { kind: 'weapon'; chainId: string }
+  | { kind: 'armor'; set: ArmorSetId; slot: ArmorSlot };
 
-function loadState(): GearInventoryState {
+export type UpgradeOutcome = {
+  from: EurekaStage;
+  to: EurekaStage;
+  materials: MaterialCost[];
+  hadEnough: boolean;
+};
+
+function loadInitial(): EurekaInventoryV3 {
+  if (typeof window === 'undefined') return emptyInventoryV3();
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return empty();
-    const p = JSON.parse(raw);
-    return {
-      materials: p.materials ?? {},
-      chainProgress: p.chainProgress ?? {},
-      updatedAt: p.updatedAt ?? '',
-    };
+    const v3Raw = localStorage.getItem(KEY_V3);
+    if (v3Raw) return migrateInventory(v3Raw);
+    const v2Raw = localStorage.getItem(KEY_V2);
+    if (v2Raw) {
+      const migrated = migrateInventory(v2Raw);
+      localStorage.setItem(KEY_V3, JSON.stringify(migrated));
+      localStorage.removeItem(KEY_V2);
+      return migrated;
+    }
   } catch {
-    return empty();
+    // ignore, fallback to empty
   }
+  return emptyInventoryV3();
 }
 
-function save(s: GearInventoryState): void {
-  localStorage.setItem(KEY, JSON.stringify(s));
+function getSlotFromRef(inv: EurekaInventoryV3, ref: ChainRef) {
+  if (ref.kind === 'weapon') return inv.weapons[ref.chainId];
+  return inv.armor[ref.set][ref.slot];
+}
+
+function setSlotInInventory(
+  inv: EurekaInventoryV3,
+  ref: ChainRef,
+  update: (prev: { currentStage: EurekaStage; targetStage?: EurekaStage } | undefined) => { currentStage: EurekaStage; targetStage?: EurekaStage },
+): EurekaInventoryV3 {
+  if (ref.kind === 'weapon') {
+    return {
+      ...inv,
+      weapons: { ...inv.weapons, [ref.chainId]: update(inv.weapons[ref.chainId]) },
+    };
+  }
+  const prev = inv.armor[ref.set][ref.slot];
+  return {
+    ...inv,
+    armor: {
+      ...inv.armor,
+      [ref.set]: { ...inv.armor[ref.set], [ref.slot]: update(prev) },
+    },
+  };
 }
 
 export function useEurekaInventory() {
-  const [state, setState] = useState<GearInventoryState>(loadState);
+  const [inventory, setInventory] = useState<EurekaInventoryV3>(loadInitial);
 
-  const setMaterial = useCallback((id: number, count: number) => {
-    setState((prev) => {
-      const next: GearInventoryState = {
-        ...prev,
-        materials: { ...prev.materials, [id]: Math.max(0, count) },
-        updatedAt: new Date().toISOString(),
-      };
-      save(next);
-      return next;
-    });
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(KEY_V3, JSON.stringify(inventory));
+  }, [inventory]);
+
+  const setMaterial = useCallback((materialId: number, qty: number) => {
+    setInventory((prev) => ({
+      ...prev,
+      materials: { ...prev.materials, [materialId]: Math.max(0, qty) },
+    }));
   }, []);
 
-  const adjustMaterial = useCallback((id: number, delta: number) => {
-    setState((prev) => {
-      const cur = prev.materials[id] ?? 0;
-      const next: GearInventoryState = {
-        ...prev,
-        materials: { ...prev.materials, [id]: Math.max(0, cur + delta) },
-        updatedAt: new Date().toISOString(),
-      };
-      save(next);
-      return next;
-    });
+  const setCurrent = useCallback((ref: ChainRef, stage: EurekaStage) => {
+    setInventory((prev) =>
+      setSlotInInventory(prev, ref, () => ({ currentStage: stage })),
+    );
   }, []);
 
-  const setChainStage = useCallback((chainId: string, stage: EurekaStage | null) => {
-    setState((prev) => {
-      const nextProgress: ChainProgress = { ...prev.chainProgress };
-      if (stage === null) delete nextProgress[chainId];
-      else nextProgress[chainId] = stage;
-      const next: GearInventoryState = {
-        ...prev,
-        chainProgress: nextProgress,
-        updatedAt: new Date().toISOString(),
-      };
-      save(next);
-      return next;
-    });
+  const setTarget = useCallback((ref: ChainRef, stage: EurekaStage | undefined) => {
+    setInventory((prev) =>
+      setSlotInInventory(prev, ref, (p) => ({
+        currentStage: p?.currentStage ?? 'antiquated',
+        targetStage: stage,
+      })),
+    );
   }, []);
 
-  const upgradeChain = useCallback((chainId: string, costs: StageUpgradeCost[]) => {
-    setState((prev) => {
-      const cur = prev.chainProgress[chainId] ?? 'antiquated';
-      if (!hasEnoughMaterials(cur, prev.materials, costs)) return prev;
-      const to = getNextStage(cur);
-      if (!to) return prev;
-      const costEntry = findCost(cur, costs);
-      if (!costEntry) return prev;
-      const next: GearInventoryState = {
-        materials: deductMaterials(prev.materials, costEntry.materials),
-        chainProgress: { ...prev.chainProgress, [chainId]: to },
-        updatedAt: new Date().toISOString(),
-      };
-      save(next);
-      return next;
-    });
-  }, []);
+  const performUpgrade = useCallback(
+    (ref: ChainRef): UpgradeOutcome | null => {
+      let outcome: UpgradeOutcome | null = null;
+      // Compute outcome directly from current inventory state without reading from state setter
+      const slot = getSlotFromRef(inventory, ref);
+      if (slot?.targetStage) {
+        const from = slot.currentStage;
+        const to = slot.targetStage;
+        if (from !== to) {
+          const materials = costBetween(from, to, STAGE_UPGRADE_COSTS);
+          const hadEnough = materials.every(
+            (m) => (inventory.materials[m.materialId] ?? 0) >= m.quantity,
+          );
+          outcome = { from, to, materials, hadEnough };
+        }
+      }
+
+      // Now apply the state update
+      setInventory((prev) => {
+        const slot = getSlotFromRef(prev, ref);
+        if (!slot?.targetStage) return prev;
+        const from = slot.currentStage;
+        const to = slot.targetStage;
+        if (from === to) return prev;
+        const materials = costBetween(from, to, STAGE_UPGRADE_COSTS);
+        const nextMaterials = deductMaterials(prev.materials, materials);
+        return setSlotInInventory(
+          { ...prev, materials: nextMaterials },
+          ref,
+          () => ({ currentStage: to }),
+        );
+      });
+      return outcome;
+    },
+    [inventory],
+  );
 
   const clearAll = useCallback(() => {
-    const next = empty();
-    save(next);
-    setState(next);
+    setInventory(emptyInventoryV3());
   }, []);
 
   return {
-    materials: state.materials,
-    chainProgress: state.chainProgress,
+    inventory,
     setMaterial,
-    adjustMaterial,
-    setChainStage,
-    upgradeChain,
+    setCurrent,
+    setTarget,
+    performUpgrade,
     clearAll,
+    hasEnoughMaterials: (stage: EurekaStage) =>
+      hasEnoughMaterials(stage, inventory.materials, STAGE_UPGRADE_COSTS),
   };
 }

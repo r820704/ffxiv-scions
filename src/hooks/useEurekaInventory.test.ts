@@ -1,61 +1,95 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { renderHook, act, cleanup } from '@testing-library/react';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
 import { useEurekaInventory } from './useEurekaInventory';
-import { STAGE_UPGRADE_COSTS } from '../data/eureka-stage-costs';
 
-afterEach(() => cleanup());
+const KEY_V3 = 'eureka-inventory-v3';
+const KEY_V2 = 'eureka-inventory-v2';
 
-describe('useEurekaInventory', () => {
-  beforeEach(() => localStorage.clear());
-
-  it('starts with empty materials and progress', () => {
-    const { result } = renderHook(() => useEurekaInventory());
-    expect(result.current.materials).toEqual({});
-    expect(result.current.chainProgress).toEqual({});
+describe('useEurekaInventory (v3)', () => {
+  beforeEach(() => {
+    localStorage.clear();
   });
 
-  it('setMaterial stores the value', () => {
+  it('returns empty inventory on first mount', () => {
     const { result } = renderHook(() => useEurekaInventory());
-    act(() => result.current.setMaterial(21801, 50));
-    expect(result.current.materials[21801]).toBe(50);
+    expect(result.current.inventory.schemaVersion).toBe(3);
+    expect(result.current.inventory.weapons).toEqual({});
   });
 
-  it('setChainStage advances a chain', () => {
+  it('migrates v2 → v3 on first read', () => {
+    localStorage.setItem(KEY_V2, JSON.stringify({
+      materials: { 21801: 100 },
+      chains: { 'pld-galatyn': { stage: 'anemos' } },
+    }));
     const { result } = renderHook(() => useEurekaInventory());
-    act(() => result.current.setChainStage('drg-ryunohige', 'anemos'));
-    expect(result.current.chainProgress['drg-ryunohige']).toBe('anemos');
+    expect(result.current.inventory.weapons['pld-galatyn']?.currentStage).toBe('anemos');
+    expect(result.current.inventory.materials[21801]).toBe(100);
+    expect(localStorage.getItem(KEY_V2)).toBeNull();
+    expect(localStorage.getItem(KEY_V3)).toBeTruthy();
   });
 
-  it('upgradeChain advances stage and deducts materials', () => {
+  it('setCurrent updates weapon currentStage and clears target', () => {
+    const { result } = renderHook(() => useEurekaInventory());
+    act(() => {
+      result.current.setCurrent({ kind: 'weapon', chainId: 'pld-galatyn' }, 'anemos');
+    });
+    expect(result.current.inventory.weapons['pld-galatyn']?.currentStage).toBe('anemos');
+    expect(result.current.inventory.weapons['pld-galatyn']?.targetStage).toBeUndefined();
+  });
+
+  it('setTarget updates weapon targetStage', () => {
+    const { result } = renderHook(() => useEurekaInventory());
+    act(() => {
+      result.current.setTarget({ kind: 'weapon', chainId: 'pld-galatyn' }, 'pyros');
+    });
+    expect(result.current.inventory.weapons['pld-galatyn']?.targetStage).toBe('pyros');
+  });
+
+  it('performUpgrade advances current, clears target, deducts materials', () => {
     const { result } = renderHook(() => useEurekaInventory());
     act(() => {
       result.current.setMaterial(21801, 100);
-      result.current.setChainStage('drg-ryunohige', 'antiquated');
+      result.current.setCurrent({ kind: 'weapon', chainId: 'pld-galatyn' }, 'antiquated');
+      result.current.setTarget({ kind: 'weapon', chainId: 'pld-galatyn' }, 'anemos-base');
     });
-    act(() => result.current.upgradeChain('drg-ryunohige', STAGE_UPGRADE_COSTS));
-    expect(result.current.chainProgress['drg-ryunohige']).toBe('anemos-base');
-    expect(result.current.materials[21801]).toBe(0);
+    let outcome: ReturnType<typeof result.current.performUpgrade> | undefined;
+    act(() => {
+      outcome = result.current.performUpgrade({ kind: 'weapon', chainId: 'pld-galatyn' });
+    });
+    expect(result.current.inventory.weapons['pld-galatyn']?.currentStage).toBe('anemos-base');
+    expect(result.current.inventory.weapons['pld-galatyn']?.targetStage).toBeUndefined();
+    expect(result.current.inventory.materials[21801]).toBe(0);
+    expect(outcome?.hadEnough).toBe(true);
   });
 
-  it('upgradeChain refuses when materials insufficient', () => {
+  it('performUpgrade still works when materials insufficient (no block)', () => {
+    const { result } = renderHook(() => useEurekaInventory());
+    act(() => {
+      result.current.setCurrent({ kind: 'weapon', chainId: 'pld-galatyn' }, 'antiquated');
+      result.current.setTarget({ kind: 'weapon', chainId: 'pld-galatyn' }, 'anemos-base');
+    });
+    let outcome: ReturnType<typeof result.current.performUpgrade> | undefined;
+    act(() => {
+      outcome = result.current.performUpgrade({ kind: 'weapon', chainId: 'pld-galatyn' });
+    });
+    expect(result.current.inventory.weapons['pld-galatyn']?.currentStage).toBe('anemos-base');
+    expect(outcome?.hadEnough).toBe(false);
+  });
+
+  it('setCurrent on armor slot targets armor set, not job', () => {
+    const { result } = renderHook(() => useEurekaInventory());
+    act(() => {
+      result.current.setCurrent({ kind: 'armor', set: 'fending', slot: 'head' }, 'pagos');
+    });
+    expect(result.current.inventory.armor.fending.head?.currentStage).toBe('pagos');
+  });
+
+  it('clearAll resets inventory to empty', () => {
     const { result } = renderHook(() => useEurekaInventory());
     act(() => {
       result.current.setMaterial(21801, 50);
-      result.current.setChainStage('drg-ryunohige', 'antiquated');
+      result.current.clearAll();
     });
-    act(() => result.current.upgradeChain('drg-ryunohige', STAGE_UPGRADE_COSTS));
-    expect(result.current.chainProgress['drg-ryunohige']).toBe('antiquated');
-    expect(result.current.materials[21801]).toBe(50);
-  });
-
-  it('clearAll wipes state', () => {
-    const { result } = renderHook(() => useEurekaInventory());
-    act(() => {
-      result.current.setMaterial(21801, 100);
-      result.current.setChainStage('pld-galatyn', 'pagos');
-    });
-    act(() => result.current.clearAll());
-    expect(result.current.materials).toEqual({});
-    expect(result.current.chainProgress).toEqual({});
+    expect(result.current.inventory.materials).toEqual({});
   });
 });
