@@ -2,21 +2,21 @@ import { useState } from 'react';
 import type { EurekaMaterial } from '@/types/eureka-gear';
 import MaterialTile from './MaterialTile';
 
-interface InventoryPanelProps {
+interface InventorySidebarProps {
   materials: EurekaMaterial[];
   inventory: Record<number, number>;
   onMaterialChange: (id: number, next: number) => void;
   onClear: () => void;
 }
 
-export default function InventoryPanel({
+export default function InventorySidebar({
   materials, inventory, onMaterialChange, onClear,
-}: InventoryPanelProps) {
+}: InventorySidebarProps) {
   const [expanded, setExpanded] = useState(false);
   const registered = materials.filter((m) => (inventory[m.id] ?? 0) > 0).length;
 
   return (
-    <div className="rounded-lg border border-border bg-card p-3">
+    <div className="rounded-lg border border-border bg-card p-3 md:sticky md:top-4">
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="text-sm text-foreground">素材：{registered}/{materials.length}</div>
         <div className="flex gap-2">
