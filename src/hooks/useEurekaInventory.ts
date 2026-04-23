@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import type { GearInventoryState, EurekaStage, StageUpgradeCost, ChainProgress } from '../types/eureka-gear';
-import { canUpgrade, deductMaterials, getNextStage, findCost } from '../utils/eurekaGear';
+import { hasEnoughMaterials, deductMaterials, getNextStage, findCost } from '../utils/eurekaGear';
 
 const KEY = 'eureka-inventory-v2';
 
@@ -73,7 +73,7 @@ export function useEurekaInventory() {
   const upgradeChain = useCallback((chainId: string, costs: StageUpgradeCost[]) => {
     setState((prev) => {
       const cur = prev.chainProgress[chainId] ?? 'antiquated';
-      if (!canUpgrade(cur, prev.materials, costs)) return prev;
+      if (!hasEnoughMaterials(cur, prev.materials, costs)) return prev;
       const to = getNextStage(cur);
       if (!to) return prev;
       const costEntry = findCost(cur, costs);

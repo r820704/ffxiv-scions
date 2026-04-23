@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getNextStage, canUpgrade, deductMaterials, findCost, filterChains, costBetween } from './eurekaGear';
+import { getNextStage, hasEnoughMaterials, deductMaterials, findCost, filterChains, costBetween } from './eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../data/eureka-stage-costs';
 import type { EurekaChain, GearFilterState, EurekaStage } from '../types/eureka-gear';
 
@@ -27,23 +27,23 @@ describe('findCost', () => {
   });
 });
 
-describe('canUpgrade', () => {
+describe('hasEnoughMaterials', () => {
   it('returns true when all materials present', () => {
     // antiquated → anemos-base needs PROTEAN_CRYSTAL (21801) × 100
     const inv = { 21801: 100 };
-    expect(canUpgrade('antiquated', inv, STAGE_UPGRADE_COSTS)).toBe(true);
+    expect(hasEnoughMaterials('antiquated', inv, STAGE_UPGRADE_COSTS)).toBe(true);
   });
   it('returns false when insufficient', () => {
     const inv = { 21801: 99 };
-    expect(canUpgrade('antiquated', inv, STAGE_UPGRADE_COSTS)).toBe(false);
+    expect(hasEnoughMaterials('antiquated', inv, STAGE_UPGRADE_COSTS)).toBe(false);
   });
   it('returns false at physeos (no next stage)', () => {
-    expect(canUpgrade('physeos', {}, STAGE_UPGRADE_COSTS)).toBe(false);
+    expect(hasEnoughMaterials('physeos', {}, STAGE_UPGRADE_COSTS)).toBe(false);
   });
   it('requires ALL materials for multi-material upgrades', () => {
     // pagos → pagos+1 needs FROSTED_PROTEAN (23309) × 10 AND PAGOS_CRYSTAL (22976) × 500
-    expect(canUpgrade('pagos', { 23309: 10, 22976: 499 }, STAGE_UPGRADE_COSTS)).toBe(false);
-    expect(canUpgrade('pagos', { 23309: 10, 22976: 500 }, STAGE_UPGRADE_COSTS)).toBe(true);
+    expect(hasEnoughMaterials('pagos', { 23309: 10, 22976: 499 }, STAGE_UPGRADE_COSTS)).toBe(false);
+    expect(hasEnoughMaterials('pagos', { 23309: 10, 22976: 500 }, STAGE_UPGRADE_COSTS)).toBe(true);
   });
 });
 

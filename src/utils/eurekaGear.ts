@@ -16,7 +16,7 @@ export function findCost(
   return costs.find((c) => c.from === stage && c.to === to) ?? null;
 }
 
-export function canUpgrade(
+export function hasEnoughMaterials(
   stage: EurekaStage,
   inventory: Record<number, number>,
   costs: StageUpgradeCost[],
@@ -54,7 +54,7 @@ export function filterChains(
     if (filter.onlyCompleted && cur !== 'physeos') return false;
     if (filter.onlyUpgradable) {
       if (cur === 'physeos') return false;
-      if (!canUpgrade(cur, inventory, costs)) return false;
+      if (!hasEnoughMaterials(cur, inventory, costs)) return false;
     }
     return true;
   });

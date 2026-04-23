@@ -3,7 +3,7 @@ import type {
   EurekaChain, EurekaWeapon, EurekaStage, StageUpgradeCost, EurekaMaterial,
 } from '@/types/eureka-gear';
 import { EUREKA_STAGES, STAGE_TC_LABEL, STAGE_ITEM_LEVELS } from '@/types/eureka-gear';
-import { canUpgrade, findCost, getNextStage } from '@/utils/eurekaGear';
+import { hasEnoughMaterials, findCost, getNextStage } from '@/utils/eurekaGear';
 
 interface ChainCardProps {
   chain: EurekaChain;
@@ -22,7 +22,7 @@ export default function ChainCard({
   const [expanded, setExpanded] = useState(false);
   const next = getNextStage(currentStage);
   const cost = findCost(currentStage, costs);
-  const canDo = canUpgrade(currentStage, inventory, costs);
+  const canDo = hasEnoughMaterials(currentStage, inventory, costs);
 
   const stageWeapon = (s: EurekaStage) =>
     weapons.find((w) => w.chainId === chain.chainId && w.stage === s);
