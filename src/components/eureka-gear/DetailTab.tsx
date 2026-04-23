@@ -9,6 +9,12 @@ import type { EurekaInventoryV3, EurekaStage } from '../../types/eureka-gear';
 
 const JOBS = Object.keys(ARMOR_SET_FOR_JOB);
 
+const JOB_NAME_TC: Record<string, string> = {
+  PLD: '騎士',   WAR: '戰士',   DRG: '龍騎士',
+  MNK: '武僧',   NIN: '忍者',   BRD: '吟遊詩人',
+  BLM: '黑魔法師', SMN: '召喚師', WHM: '白魔法師',
+};
+
 export type DetailTabProps = {
   inventory: EurekaInventoryV3;
   selectedJob: string;
@@ -40,7 +46,7 @@ export function DetailTab({
           className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm"
         >
           {JOBS.map((j) => (
-            <option key={j} value={j}>{j}</option>
+            <option key={j} value={j}>{JOB_NAME_TC[j] ?? j}</option>
           ))}
         </select>
       </header>

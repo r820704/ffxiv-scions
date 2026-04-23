@@ -14,9 +14,10 @@ const baseProgress: JobProgress = {
 };
 
 describe('JobCard', () => {
-  it('renders job code', () => {
+  it('renders job icon and TC name', () => {
     render(<JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />);
-    expect(screen.getByText('PLD')).toBeInTheDocument();
+    expect(screen.getByAltText('PLD')).toBeInTheDocument();
+    expect(screen.getByText('騎士')).toBeInTheDocument();
   });
 
   it('renders fingerprints for each weapon chain', () => {

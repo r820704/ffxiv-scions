@@ -6,10 +6,25 @@ interface MaterialTileProps {
   onChange: (next: number) => void;
 }
 
+const MATERIAL_ICON_MODULES = import.meta.glob('../../assets/material-icons/*.png', {
+  eager: true,
+  import: 'default',
+}) as Record<string, string>;
+const MATERIAL_ICONS: Record<number, string> = Object.fromEntries(
+  Object.entries(MATERIAL_ICON_MODULES).map(([path, url]) => {
+    const match = path.match(/(\d+)\.png$/);
+    return [match ? Number(match[1]) : 0, url];
+  }),
+);
+
 export default function MaterialTile({ material, count, onChange }: MaterialTileProps) {
+  const iconSrc = MATERIAL_ICONS[material.iconId];
   return (
     <div className="flex flex-col items-center gap-1 w-20 rounded border border-border/50 p-2 bg-card">
-      <span className="text-xs text-foreground text-center truncate w-full">
+      {iconSrc && (
+        <img src={iconSrc} alt={material.tcName} className="w-10 h-10" loading="lazy" />
+      )}
+      <span className="text-xs text-foreground text-center truncate w-full" title={material.tcName}>
         {material.tcName}
       </span>
       <input

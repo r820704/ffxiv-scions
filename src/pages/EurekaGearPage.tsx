@@ -113,7 +113,7 @@ export default function EurekaGearPage() {
       <nav role="tablist" className="flex border-b-2 border-blue-500 mb-4">
         {tabBtn('overview', '總覽')}
         {tabBtn('detail', '職業詳情')}
-        {tabBtn('farming', '農地視圖')}
+        {tabBtn('farming', '素材需求')}
       </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4">

@@ -25,7 +25,7 @@ describe('EurekaGearPage', () => {
     await waitFor(() => expect(screen.getByText(/禁地兵裝/)).toBeInTheDocument());
     expect(screen.getByRole('tab', { name: /總覽/ })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /職業詳情/ })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /農地視圖/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /素材需求/ })).toBeInTheDocument();
   });
 
   it('default tab is overview (shows job grid)', async () => {
@@ -37,7 +37,7 @@ describe('EurekaGearPage', () => {
   it('clicking farming tab switches content', async () => {
     render(<MemoryRouter><EurekaGearPage /></MemoryRouter>);
     await waitFor(() => expect(screen.getByText(/禁地兵裝/)).toBeInTheDocument());
-    fireEvent.click(screen.getByRole('tab', { name: /農地視圖/ }));
+    fireEvent.click(screen.getByRole('tab', { name: /素材需求/ }));
     expect(screen.getByText(/沒有設定 target/)).toBeInTheDocument();
   });
 });

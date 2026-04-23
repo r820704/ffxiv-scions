@@ -1,0 +1,66 @@
+#!/bin/bash
+# One-time download of job icons + material icons from xivapi CDN.
+# Run: bash scripts/download-eureka-icons.sh
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+JOB_ICON_DIR="src/assets/job-icons"
+MAT_ICON_DIR="src/assets/material-icons"
+mkdir -p "$JOB_ICON_DIR" "$MAT_ICON_DIR"
+
+# FFXIV job icons: 062000 + jobId. SB Eureka jobs:
+#   19=PLD, 20=MNK, 21=WAR, 22=DRG, 23=BRD, 24=WHM, 25=BLM, 27=SMN, 30=NIN
+declare -A JOBS=(
+  [PLD]=062019
+  [MNK]=062020
+  [WAR]=062021
+  [DRG]=062022
+  [BRD]=062023
+  [WHM]=062024
+  [BLM]=062025
+  [SMN]=062027
+  [NIN]=062030
+)
+
+for job in "${!JOBS[@]}"; do
+  icon="${JOBS[$job]}"
+  folder="062000"
+  url="https://xivapi.com/i/${folder}/${icon}.png"
+  dest="${JOB_ICON_DIR}/${job}.png"
+  if [ ! -f "$dest" ]; then
+    echo "job $job ← $url"
+    curl -sL -o "$dest" "$url"
+  fi
+done
+
+# Material icons: iconIds from public/data/eureka-materials.json
+MATERIALS=(
+  "20029 protean-crystal"
+  "21910 pazuzu-feather"
+  "20028 anemos-crystal"
+  "21266 louhi-ice"
+  "20030 pagos-crystal"
+  "20031 frosted-protean"
+  "20033 smoldering-protean"
+  "25911 penthesilea-flame"
+  "20032 pyros-crystal"
+  "22265 crystalline-scale"
+  "20037 hydatos-crystal"
+  "26544 eureka-fragment"
+)
+
+for entry in "${MATERIALS[@]}"; do
+  id="${entry%% *}"
+  name="${entry#* }"
+  folder=$(printf "%06d" $(( (id / 1000) * 1000 )))
+  padded=$(printf "%06d" "$id")
+  url="https://xivapi.com/i/${folder}/${padded}.png"
+  dest="${MAT_ICON_DIR}/${id}.png"
+  if [ ! -f "$dest" ]; then
+    echo "mat $id ($name) ← $url"
+    curl -sL -o "$dest" "$url"
+  fi
+done
+
+echo "Done. Job icons: $JOB_ICON_DIR/, material icons: $MAT_ICON_DIR/"

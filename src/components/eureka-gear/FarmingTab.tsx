@@ -54,7 +54,7 @@ export function FarmingTab({ inventory, materialsMap }: FarmingTabProps) {
   if (!hasAny) {
     return (
       <div className="text-gray-500 text-sm italic py-6 text-center">
-        沒有設定 target 的升級目標。去「職業詳情」tab 選個想達成的階段就會出現農地規劃。
+        沒有設定 target 的升級目標。去「職業詳情」tab 選個想達成的階段就會出現素材需求。
       </div>
     );
   }

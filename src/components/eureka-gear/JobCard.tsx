@@ -1,11 +1,17 @@
 import { ChainFingerprint } from './ChainFingerprint';
+import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import type { JobProgress } from '../../utils/eurekaGear';
 
-const JOB_COLOR: Record<string, string> = {
-  PLD: '#4a8fe7', WAR: '#c33',     DRG: '#85a',
-  MNK: '#c94',    NIN: '#d58',     BRD: '#9b5',
-  BLM: '#6b3',    SMN: '#6ac',     WHM: '#eee',
-};
+const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
+  eager: true,
+  import: 'default',
+}) as Record<string, string>;
+const JOB_ICONS: Record<string, string> = Object.fromEntries(
+  Object.entries(JOB_ICON_MODULES).map(([path, url]) => {
+    const match = path.match(/([A-Z]+)\.png$/);
+    return [match ? match[1] : '', url];
+  }),
+);
 
 const JOB_NAME_TC: Record<string, string> = {
   PLD: '騎士',   WAR: '戰士',   DRG: '龍騎士',
@@ -21,16 +27,18 @@ export type JobCardProps = {
 
 export function JobCard({ job, progress, onSelect }: JobCardProps) {
   const hasArmor = Object.keys(progress.armor.pieces).length > 0;
+  const iconSrc = JOB_ICONS[job];
   return (
     <article className="bg-gray-800 border border-gray-700 rounded p-3 space-y-2">
       <header className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span
-            className="w-7 h-7 rounded text-white text-xs font-bold flex items-center justify-center"
-            style={{ background: JOB_COLOR[job] ?? '#666' }}
-          >
-            {job}
-          </span>
+          {iconSrc ? (
+            <img src={iconSrc} alt={job} className="w-7 h-7 rounded" />
+          ) : (
+            <span className="w-7 h-7 rounded bg-gray-600 text-white text-xs font-bold flex items-center justify-center">
+              {job}
+            </span>
+          )}
           <span className="font-semibold text-gray-200">{JOB_NAME_TC[job] ?? job}</span>
         </div>
         <button
@@ -46,12 +54,17 @@ export function JobCard({ job, progress, onSelect }: JobCardProps) {
         <section>
           <div className="text-xs font-bold text-yellow-400 mb-1">武器</div>
           <ul className="space-y-1 text-xs">
-            {progress.weapons.map(({ chainId, progress: p }) => (
-              <li key={chainId} className="flex items-center gap-2">
-                <span className="w-20 text-gray-400 truncate">{chainId.split('-').slice(1).join('-')}</span>
-                <ChainFingerprint currentStage={p.currentStage} showLabel />
-              </li>
-            ))}
+            {progress.weapons.map(({ chainId, progress: p }) => {
+              const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
+              return (
+                <li key={chainId} className="space-y-0.5">
+                  <div className="text-gray-300 text-xs" title={chain?.displayName}>
+                    {chain?.displayName ?? chainId}
+                  </div>
+                  <ChainFingerprint currentStage={p.currentStage} showLabel />
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}

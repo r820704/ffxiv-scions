@@ -8,9 +8,9 @@ afterEach(() => cleanup());
 describe('OverviewTab', () => {
   it('renders 9 unique job cards (PLD/WAR/DRG/MNK/NIN/BRD/BLM/SMN/WHM)', () => {
     render(<OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} />);
-    expect(screen.getByText('PLD')).toBeInTheDocument();
-    expect(screen.getByText('WAR')).toBeInTheDocument();
-    expect(screen.getByText('WHM')).toBeInTheDocument();
+    expect(screen.getByAltText('PLD')).toBeInTheDocument();
+    expect(screen.getByAltText('WAR')).toBeInTheDocument();
+    expect(screen.getByAltText('WHM')).toBeInTheDocument();
   });
 
   it('onSelectJob fires with correct job when card detail button clicked', () => {
