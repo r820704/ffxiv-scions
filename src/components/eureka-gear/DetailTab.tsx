@@ -70,26 +70,23 @@ export function DetailTab({
           const currentName = weaponNameAt(weapons, chainId, p.currentStage) ?? chain?.displayName ?? chainId;
           const targetName = p.targetStage ? weaponNameAt(weapons, chainId, p.targetStage) : undefined;
           return (
-            <div key={chainId} className="space-y-2">
-              <div className="space-y-0.5">
-                <div className="text-xs text-gray-500">{chain?.displayName ?? chainId}</div>
-                <div className="text-sm text-gray-100 font-semibold">
-                  {currentName}
-                  <span className="text-xs text-gray-400 font-normal ml-2">
-                    （{STAGE_TC_LABEL[p.currentStage]}）
-                  </span>
-                  {targetName && p.targetStage && p.targetStage !== p.currentStage && (
-                    <>
-                      <span className="text-yellow-400 mx-2">→</span>
-                      <span className="text-yellow-200">
-                        {targetName}
-                        <span className="text-xs text-gray-400 font-normal ml-2">
-                          （{STAGE_TC_LABEL[p.targetStage]}）
-                        </span>
+            <div key={chainId} className="space-y-2 pt-2">
+              <div className="text-sm text-gray-100 font-semibold">
+                {currentName}
+                <span className="text-xs text-gray-400 font-normal ml-2">
+                  （{STAGE_TC_LABEL[p.currentStage]}）
+                </span>
+                {targetName && p.targetStage && p.targetStage !== p.currentStage && (
+                  <>
+                    <span className="text-yellow-400 mx-2">→</span>
+                    <span className="text-yellow-200">
+                      {targetName}
+                      <span className="text-xs text-gray-400 font-normal ml-2">
+                        （{STAGE_TC_LABEL[p.targetStage]}）
                       </span>
-                    </>
-                  )}
-                </div>
+                    </span>
+                  </>
+                )}
               </div>
               <ChainStepper
                 currentStage={p.currentStage}
