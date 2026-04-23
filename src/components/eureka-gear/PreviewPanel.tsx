@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { costBetween } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
-import { EUREKA_STAGES } from '../../types/eureka-gear';
+import { EUREKA_STAGES, STAGE_TC_LABEL } from '../../types/eureka-gear';
 import type { EurekaStage } from '../../types/eureka-gear';
 
 export type PreviewPanelProps = {
@@ -48,7 +48,7 @@ export function PreviewPanel({
       {direction === 'up' ? (
         <>
           <div className="text-yellow-400 font-semibold mb-2">
-            從 {currentStage} → {targetStage} 需要
+            從 {STAGE_TC_LABEL[currentStage]} → {targetStage ? STAGE_TC_LABEL[targetStage] : ''} 需要
           </div>
           <ul className="space-y-1 mb-3">
             {materials.map((m) => {
@@ -68,7 +68,7 @@ export function PreviewPanel({
         </>
       ) : (
         <div className="text-red-400 font-semibold mb-2">
-          stage {targetStage} — 已擁有（設為目前會捨棄中間進度）
+          {targetStage ? STAGE_TC_LABEL[targetStage] : ''} — 已擁有（設為目前會捨棄中間進度）
         </div>
       )}
       <div className="flex gap-2">
@@ -79,7 +79,7 @@ export function PreviewPanel({
             direction === 'up' ? 'bg-green-500 text-black' : 'bg-red-500 text-white'
           }`}
         >
-          {direction === 'up' ? '⬆' : '⬇'} 📍 設為目前階段 ({targetStage})
+          {direction === 'up' ? '⬆' : '⬇'} 📍 設為目前階段 ({targetStage ? STAGE_TC_LABEL[targetStage] : ''})
         </button>
         <button
           type="button"

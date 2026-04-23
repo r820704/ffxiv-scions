@@ -19,7 +19,7 @@ export default function EurekaGearPage() {
   const view = ((searchParams.get('view') as TabKey) ?? 'overview');
   const selectedJob = searchParams.get('job') ?? 'PLD';
 
-  const { materials: materialsList, loading, error } = useEurekaWeaponsData();
+  const { weapons: weaponsList, materials: materialsList, loading, error } = useEurekaWeaponsData();
   const {
     inventory,
     setMaterial,
@@ -125,6 +125,7 @@ export default function EurekaGearPage() {
             <DetailTab
               inventory={inventory}
               selectedJob={selectedJob}
+              weapons={weaponsList}
               materialsMap={materialsMap}
               onSelectJob={selectJob}
               onSetTarget={setTarget}

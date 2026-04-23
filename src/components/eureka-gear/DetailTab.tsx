@@ -5,7 +5,12 @@ import { getJobProgress } from '../../utils/eurekaGear';
 import { ARMOR_SET_FOR_JOB } from '../../data/eureka-armor-sets';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import type { ChainRef } from '../../hooks/useEurekaInventory';
-import type { EurekaInventoryV3, EurekaStage } from '../../types/eureka-gear';
+import type {
+  EurekaInventoryV3,
+  EurekaStage,
+  EurekaWeapon,
+} from '../../types/eureka-gear';
+import { STAGE_TC_LABEL } from '../../types/eureka-gear';
 
 const JOBS = Object.keys(ARMOR_SET_FOR_JOB);
 
@@ -18,15 +23,21 @@ const JOB_NAME_TC: Record<string, string> = {
 export type DetailTabProps = {
   inventory: EurekaInventoryV3;
   selectedJob: string;
+  weapons: EurekaWeapon[];
   materialsMap: Record<number, { nameTC: string; icon: number }>;
   onSelectJob: (job: string) => void;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
 };
 
+function weaponNameAt(weapons: EurekaWeapon[], chainId: string, stage: EurekaStage): string | undefined {
+  return weapons.find((w) => w.chainId === chainId && w.stage === stage)?.tcName;
+}
+
 export function DetailTab({
   inventory,
   selectedJob,
+  weapons,
   materialsMap,
   onSelectJob,
   onSetTarget,
@@ -56,9 +67,30 @@ export function DetailTab({
         {progress.weapons.map(({ chainId, progress: p }) => {
           const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
           const ref: ChainRef = { kind: 'weapon', chainId };
+          const currentName = weaponNameAt(weapons, chainId, p.currentStage) ?? chain?.displayName ?? chainId;
+          const targetName = p.targetStage ? weaponNameAt(weapons, chainId, p.targetStage) : undefined;
           return (
             <div key={chainId} className="space-y-2">
-              <div className="text-sm text-gray-300">{chain?.displayName ?? chainId}</div>
+              <div className="space-y-0.5">
+                <div className="text-xs text-gray-500">{chain?.displayName ?? chainId}</div>
+                <div className="text-sm text-gray-100 font-semibold">
+                  {currentName}
+                  <span className="text-xs text-gray-400 font-normal ml-2">
+                    （{STAGE_TC_LABEL[p.currentStage]}）
+                  </span>
+                  {targetName && p.targetStage && p.targetStage !== p.currentStage && (
+                    <>
+                      <span className="text-yellow-400 mx-2">→</span>
+                      <span className="text-yellow-200">
+                        {targetName}
+                        <span className="text-xs text-gray-400 font-normal ml-2">
+                          （{STAGE_TC_LABEL[p.targetStage]}）
+                        </span>
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
               <ChainStepper
                 currentStage={p.currentStage}
                 targetStage={p.targetStage}

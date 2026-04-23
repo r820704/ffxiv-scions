@@ -11,6 +11,7 @@ describe('DetailTab', () => {
       <DetailTab
         inventory={emptyInventoryV3()}
         selectedJob="PLD"
+        weapons={[]}
         materialsMap={{}}
         onSelectJob={() => {}}
         onSetTarget={() => {}}
@@ -26,6 +27,7 @@ describe('DetailTab', () => {
       <DetailTab
         inventory={emptyInventoryV3()}
         selectedJob="PLD"
+        weapons={[]}
         materialsMap={{}}
         onSelectJob={onSelectJob}
         onSetTarget={() => {}}
@@ -43,6 +45,7 @@ describe('DetailTab', () => {
       <DetailTab
         inventory={emptyInventoryV3()}
         selectedJob="PLD"
+        weapons={[]}
         materialsMap={{}}
         onSelectJob={() => {}}
         onSetTarget={onSetTarget}
