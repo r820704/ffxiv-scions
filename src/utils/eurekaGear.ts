@@ -59,3 +59,25 @@ export function filterChains(
     return true;
   });
 }
+
+export function costBetween(
+  from: EurekaStage,
+  to: EurekaStage,
+  costs: StageUpgradeCost[],
+): MaterialCost[] {
+  const fromIdx = EUREKA_STAGES.indexOf(from);
+  const toIdx = EUREKA_STAGES.indexOf(to);
+  if (fromIdx < 0 || toIdx < 0 || toIdx <= fromIdx) return [];
+
+  const totals = new Map<number, number>();
+  for (let i = fromIdx; i < toIdx; i++) {
+    const edge = costs.find(
+      (c) => c.from === EUREKA_STAGES[i] && c.to === EUREKA_STAGES[i + 1],
+    );
+    if (!edge) continue;
+    for (const m of edge.materials) {
+      totals.set(m.materialId, (totals.get(m.materialId) ?? 0) + m.quantity);
+    }
+  }
+  return Array.from(totals, ([materialId, quantity]) => ({ materialId, quantity }));
+}

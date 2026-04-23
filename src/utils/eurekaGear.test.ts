@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getNextStage, canUpgrade, deductMaterials, findCost, filterChains } from './eurekaGear';
+import { getNextStage, canUpgrade, deductMaterials, findCost, filterChains, costBetween } from './eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../data/eureka-stage-costs';
 import type { EurekaChain, GearFilterState, EurekaStage } from '../types/eureka-gear';
 
@@ -106,5 +106,40 @@ describe('filterChains', () => {
     const f: GearFilterState = { ...emptyFilter(), onlyCompleted: true };
     const out = filterChains(sampleChains, f, progress, {}, []);
     expect(out).toHaveLength(1);
+  });
+});
+
+describe('costBetween', () => {
+  it('returns empty array when from === to', () => {
+    expect(costBetween('anemos', 'anemos', STAGE_UPGRADE_COSTS)).toEqual([]);
+  });
+
+  it('returns single-edge cost for adjacent stages', () => {
+    const cost = costBetween('antiquated', 'anemos-base', STAGE_UPGRADE_COSTS);
+    expect(cost).toHaveLength(1);
+    expect(cost[0].quantity).toBe(100); // Protean Crystal
+  });
+
+  it('aggregates multi-edge cost antiquated → anemos+2', () => {
+    const cost = costBetween('antiquated', 'anemos+2', STAGE_UPGRADE_COSTS);
+    // 100 + 400 + 800 = 1300 Protean Crystal, all same materialId
+    const total = cost.find((c) => c.materialId === 21801)?.quantity ?? 0;
+    expect(total).toBe(1300);
+  });
+
+  it('merges different materials from multiple edges', () => {
+    // pagos → pagos+1: 10 Frosted Protean + 500 Pagos Crystal
+    // pagos+1 → elemental: 16 Frosted Protean + 5 Louhi's Ice
+    const cost = costBetween('pagos', 'elemental', STAGE_UPGRADE_COSTS);
+    const frosted = cost.find((c) => c.materialId === 23309)?.quantity ?? 0;
+    expect(frosted).toBe(26); // 10 + 16
+    const pagos = cost.find((c) => c.materialId === 22976)?.quantity ?? 0;
+    expect(pagos).toBe(500);
+    const louhi = cost.find((c) => c.materialId === 22975)?.quantity ?? 0;
+    expect(louhi).toBe(5);
+  });
+
+  it('handles reverse direction by returning empty (rollback has 0 cost)', () => {
+    expect(costBetween('pyros', 'anemos', STAGE_UPGRADE_COSTS)).toEqual([]);
   });
 });
