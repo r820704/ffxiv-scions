@@ -29,3 +29,6 @@ docs/
 .env.local
 .env.*.local
 docs/eureka-weapons-review.csv
+
+# Ephemeral verification artifacts (screenshots, snapshots)
+tmp/

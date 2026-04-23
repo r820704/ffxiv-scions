@@ -114,3 +114,61 @@ export const JOB_TC_LABEL: Record<FFXIVJob, string> = {
   BLM: '黑魔法師', SMN: '召喚師', RDM: '赤魔法師',
   WHM: '白魔法師', SCH: '學者', AST: '占星術士',
 };
+
+// ============ v3 schema ============
+
+export type SlotProgress = {
+  currentStage: EurekaStage;
+  targetStage?: EurekaStage;
+};
+
+export const ARMOR_SLOTS = ['head', 'body', 'hands', 'legs', 'feet'] as const;
+export type ArmorSlot = typeof ARMOR_SLOTS[number];
+
+export const ARMOR_SET_IDS = [
+  'fending',
+  'maiming',
+  'striking',
+  'scouting',
+  'aiming',
+  'healing',
+  'casting',
+] as const;
+export type ArmorSetId = typeof ARMOR_SET_IDS[number];
+
+export type EurekaInventoryV3 = {
+  schemaVersion: 3;
+  weapons: Record<string, SlotProgress>;
+  armor: Record<ArmorSetId, Partial<Record<ArmorSlot, SlotProgress>>>;
+  materials: Record<number, number>;
+};
+
+// ============ zone grouping ============
+
+export type EurekaZone = 'anemos' | 'pagos' | 'pyros' | 'hydatos';
+
+export const ZONE_OF_STAGE: Record<EurekaStage, EurekaZone | null> = {
+  antiquated: null,
+  'anemos-base': 'anemos',
+  'anemos+1': 'anemos',
+  'anemos+2': 'anemos',
+  anemos: 'anemos',
+  pagos: 'pagos',
+  'pagos+1': 'pagos',
+  elemental: 'pyros',
+  'elemental+1': 'pyros',
+  'elemental+2': 'pyros',
+  pyros: 'pyros',
+  hydatos: 'hydatos',
+  'hydatos+1': 'hydatos',
+  'base-eureka': 'hydatos',
+  eureka: 'hydatos',
+  physeos: null,
+};
+
+export const ZONE_TC_NAME: Record<EurekaZone, string> = {
+  anemos: '常風之地',
+  pagos: '恆冰之地',
+  pyros: '湧火之地',
+  hydatos: '豐水之地',
+};
