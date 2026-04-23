@@ -1,6 +1,7 @@
 import { ChainFingerprint } from './ChainFingerprint';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import type { JobProgress } from '../../utils/eurekaGear';
+import type { EurekaStage, EurekaWeapon } from '../../types/eureka-gear';
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,
@@ -22,10 +23,15 @@ const JOB_NAME_TC: Record<string, string> = {
 export type JobCardProps = {
   job: string;
   progress: JobProgress;
+  weapons?: EurekaWeapon[];
   onSelect: (job: string) => void;
 };
 
-export function JobCard({ job, progress, onSelect }: JobCardProps) {
+function weaponNameAt(weapons: EurekaWeapon[] | undefined, chainId: string, stage: EurekaStage): string | undefined {
+  return weapons?.find((w) => w.chainId === chainId && w.stage === stage)?.tcName;
+}
+
+export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
   const hasArmor = Object.keys(progress.armor.pieces).length > 0;
   const iconSrc = JOB_ICONS[job];
   return (
@@ -56,10 +62,11 @@ export function JobCard({ job, progress, onSelect }: JobCardProps) {
           <ul className="space-y-1 text-xs">
             {progress.weapons.map(({ chainId, progress: p }) => {
               const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
+              const name = weaponNameAt(weapons, chainId, p.currentStage) ?? chain?.displayName ?? chainId;
               return (
                 <li key={chainId} className="space-y-0.5">
-                  <div className="text-gray-300 text-xs" title={chain?.displayName}>
-                    {chain?.displayName ?? chainId}
+                  <div className="text-gray-300 text-xs" title={name}>
+                    {name}
                   </div>
                   <ChainFingerprint currentStage={p.currentStage} showLabel />
                 </li>

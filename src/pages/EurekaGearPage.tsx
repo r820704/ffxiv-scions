@@ -119,7 +119,7 @@ export default function EurekaGearPage() {
       <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4">
         <main>
           {view === 'overview' && (
-            <OverviewTab inventory={inventory} onSelectJob={selectJob} />
+            <OverviewTab inventory={inventory} weapons={weaponsList} onSelectJob={selectJob} />
           )}
           {view === 'detail' && (
             <DetailTab
