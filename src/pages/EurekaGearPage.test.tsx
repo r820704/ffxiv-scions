@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor, fireEvent, cleanup } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import EurekaGearPage from './EurekaGearPage';
 
 afterEach(() => cleanup());
@@ -19,18 +20,24 @@ beforeEach(() => {
 });
 
 describe('EurekaGearPage', () => {
-  it('renders all chains by default', async () => {
-    render(<EurekaGearPage />);
+  it('renders three tabs', async () => {
+    render(<MemoryRouter><EurekaGearPage /></MemoryRouter>);
     await waitFor(() => expect(screen.getByText(/禁地兵裝/)).toBeInTheDocument());
-    // 10 chain cards from EUREKA_CHAINS registry
-    expect(screen.getAllByRole('button', { name: /展開|收合/ }).length).toBeGreaterThanOrEqual(10);
+    expect(screen.getByRole('tab', { name: /總覽/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /職業詳情/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /農地視圖/ })).toBeInTheDocument();
   });
 
-  it('filters to DRG only when DRG job chip clicked', async () => {
-    render(<EurekaGearPage />);
+  it('default tab is overview (shows job grid)', async () => {
+    render(<MemoryRouter><EurekaGearPage /></MemoryRouter>);
     await waitFor(() => expect(screen.getByText(/禁地兵裝/)).toBeInTheDocument());
-    fireEvent.click(screen.getByRole('button', { name: '龍騎士' }));
-    expect(screen.getByText('龍騎士 · 龍鬚')).toBeInTheDocument();
-    expect(screen.queryByText('騎士 · 嘉拉汀')).toBeNull();
+    expect(screen.getByTestId('job-grid')).toBeInTheDocument();
+  });
+
+  it('clicking farming tab switches content', async () => {
+    render(<MemoryRouter><EurekaGearPage /></MemoryRouter>);
+    await waitFor(() => expect(screen.getByText(/禁地兵裝/)).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('tab', { name: /農地視圖/ }));
+    expect(screen.getByText(/沒有設定 target/)).toBeInTheDocument();
   });
 });

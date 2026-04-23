@@ -32,6 +32,7 @@ describe('InventorySidebar', () => {
     const { container } = render(
       <InventorySidebar materials={mats} inventory={{}} onMaterialChange={() => {}} onClear={() => {}} />,
     );
-    expect(container.firstChild?.className).toContain('md:sticky');
+    const root = container.firstChild as HTMLElement | null;
+    expect(root?.className).toContain('md:sticky');
   });
 });

@@ -20,7 +20,7 @@ describe('UpgradeDialog', () => {
       <UpgradeDialog isOpen direction="up" targetStage="pyros" sharedJobs={[]} onConfirm={onConfirm} onCancel={() => {}} />,
     );
     const buttons = screen.getAllByRole('button', { name: /確定/ });
-    fireEvent.click(buttons[0]);
+    fireEvent.click(buttons[0]!);
     expect(onConfirm).toHaveBeenCalledOnce();
   });
 
