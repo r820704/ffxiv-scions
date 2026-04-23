@@ -117,7 +117,7 @@ describe('costBetween', () => {
   it('returns single-edge cost for adjacent stages', () => {
     const cost = costBetween('antiquated', 'anemos-base', STAGE_UPGRADE_COSTS);
     expect(cost).toHaveLength(1);
-    expect(cost[0].quantity).toBe(100); // Protean Crystal
+    expect(cost[0]?.quantity).toBe(100); // Protean Crystal
   });
 
   it('aggregates multi-edge cost antiquated → anemos+2', () => {

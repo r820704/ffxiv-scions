@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type {
-  SlotProgress,
-  EurekaInventoryV3,
-  ArmorSetId,
-  ArmorSlot,
-} from './eureka-gear';
+import type { SlotProgress, EurekaInventoryV3 } from './eureka-gear';
 import {
   EUREKA_STAGES, EUREKA_JOBS, STAGE_ITEM_LEVELS, STAGE_TC_LABEL, JOB_TC_LABEL,
   ARMOR_SLOTS, ARMOR_SET_IDS, ZONE_OF_STAGE, ZONE_TC_NAME,
