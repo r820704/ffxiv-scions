@@ -20,11 +20,14 @@ const MATERIAL_ICONS: Record<number, string> = Object.fromEntries(
 export default function MaterialTile({ material, count, onChange }: MaterialTileProps) {
   const iconSrc = MATERIAL_ICONS[material.iconId];
   return (
-    <div className="flex flex-col items-center gap-1 w-20 rounded border border-border/50 p-2 bg-card">
+    <div
+      className="flex flex-col items-center gap-0.5 w-full rounded border border-border/50 p-1 bg-card"
+      title={material.tcName}
+    >
       {iconSrc && (
-        <img src={iconSrc} alt={material.tcName} className="w-10 h-10" loading="lazy" />
+        <img src={iconSrc} alt={material.tcName} className="w-7 h-7" loading="lazy" />
       )}
-      <span className="text-xs text-foreground text-center truncate w-full" title={material.tcName}>
+      <span className="text-[10px] text-foreground text-center truncate w-full leading-tight">
         {material.tcName}
       </span>
       <input
@@ -32,14 +35,14 @@ export default function MaterialTile({ material, count, onChange }: MaterialTile
         min={0}
         value={count}
         onChange={(e) => onChange(Math.max(0, Number(e.target.value) || 0))}
-        className="w-full text-center text-sm bg-transparent border-b border-border/50 outline-none"
+        className="w-full text-center text-xs bg-transparent border-b border-border/50 outline-none"
       />
-      <div className="flex gap-1">
+      <div className="flex gap-0.5 w-full">
         <button
           type="button"
           aria-label="-1"
           onClick={() => onChange(Math.max(0, count - 1))}
-          className="px-2 rounded bg-muted text-xs hover:bg-muted/80"
+          className="flex-1 rounded bg-muted text-[10px] hover:bg-muted/80 leading-tight"
         >
           −
         </button>
@@ -47,7 +50,7 @@ export default function MaterialTile({ material, count, onChange }: MaterialTile
           type="button"
           aria-label="+1"
           onClick={() => onChange(count + 1)}
-          className="px-2 rounded bg-muted text-xs hover:bg-muted/80"
+          className="flex-1 rounded bg-muted text-[10px] hover:bg-muted/80 leading-tight"
         >
           +
         </button>
