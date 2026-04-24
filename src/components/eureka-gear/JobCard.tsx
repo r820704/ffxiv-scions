@@ -1,6 +1,7 @@
 import { ChainFingerprint } from './ChainFingerprint';
+import { Tooltip } from '../ui/Tooltip';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
-import { isArmorSetShared, sharedJobNames, JOBS_FOR_ARMOR_SET, JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
+import { isArmorSetShared, JOBS_FOR_ARMOR_SET, JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
 import type { JobProgress } from '../../utils/eurekaGear';
 import type { EurekaStage, EurekaWeapon, ArmorSlot } from '../../types/eureka-gear';
 import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK } from '../../types/eureka-gear';
@@ -36,16 +37,19 @@ function SharedJobIcons({ set }: { set: string }) {
   const jobs = JOBS_FOR_ARMOR_SET[setId] ?? [];
   if (jobs.length <= 1) return null;
   return (
-    <span className="inline-flex items-center gap-0.5 ml-2" title={sharedJobNames(setId).join(' / ')}>
+    <span className="inline-flex items-center gap-0.5 ml-2">
       <span className="text-[10px] text-blue-200">共用</span>
       {jobs.map((j) => {
+        const tcName = JOB_TC_NAME[j as JobId] ?? j;
         const icon = JOB_ICONS[j];
-        return icon ? (
-          <img key={j} src={icon} alt={j} title={JOB_TC_NAME[j as JobId] ?? j} className="w-3.5 h-3.5 rounded" />
-        ) : (
-          <span key={j} className="text-[9px] px-1 py-0.5 bg-gray-700 rounded" title={JOB_TC_NAME[j as JobId] ?? j}>
-            {j}
-          </span>
+        return (
+          <Tooltip key={j} label={tcName}>
+            {icon ? (
+              <img src={icon} alt={j} className="w-3.5 h-3.5 rounded" />
+            ) : (
+              <span className="text-[9px] px-1 py-0.5 bg-gray-700 rounded">{j}</span>
+            )}
+          </Tooltip>
         );
       })}
     </span>
