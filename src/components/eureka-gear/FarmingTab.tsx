@@ -5,7 +5,7 @@ import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { EUREKA_STAGES, ZONE_OF_STAGE } from '../../types/eureka-gear';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import type {
-  EurekaInventoryV3,
+  EurekaInventoryV4,
   EurekaZone,
   SlotProgress,
 } from '../../types/eureka-gear';
@@ -15,13 +15,13 @@ const MIRROR_CHAIN_IDS = new Set(
 );
 
 export type FarmingTabProps = {
-  inventory: EurekaInventoryV3;
+  inventory: EurekaInventoryV4;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
 };
 
 type AggregatedMaterial = { materialId: number; totalNeeded: number; shortage: number };
 
-function aggregateMaterialsByZone(inv: EurekaInventoryV3) {
+function aggregateMaterialsByZone(inv: EurekaInventoryV4) {
   const zoneAgg: Record<EurekaZone, Map<number, number>> = {
     anemos: new Map(),
     pagos: new Map(),

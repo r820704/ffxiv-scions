@@ -6,7 +6,7 @@ import { ARMOR_SET_FOR_JOB } from '../../data/eureka-armor-sets';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import type { ChainRef } from '../../hooks/useEurekaInventory';
 import type {
-  EurekaInventoryV3,
+  EurekaInventoryV4,
   EurekaStage,
   EurekaWeapon,
 } from '../../types/eureka-gear';
@@ -21,7 +21,7 @@ const JOB_NAME_TC: Record<string, string> = {
 };
 
 export type DetailTabProps = {
-  inventory: EurekaInventoryV3;
+  inventory: EurekaInventoryV4;
   selectedJob: string;
   weapons: EurekaWeapon[];
   materialsMap: Record<number, { nameTC: string; icon: number }>;

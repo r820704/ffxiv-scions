@@ -2,15 +2,20 @@ import { useCallback, useEffect, useState } from 'react';
 import type {
   ArmorSetId,
   ArmorSlot,
-  EurekaInventoryV3,
+  ArmorTrack,
+  EurekaInventoryV4,
   EurekaStage,
   MaterialCost,
+  StageUpgradeCost,
 } from '../types/eureka-gear';
-import { emptyInventoryV3, migrateInventory } from '../utils/eureka-gear-migrate';
+import { ARMOR_STAGES_BY_TRACK } from '../types/eureka-gear';
+import { emptyInventoryV4, migrateInventory } from '../utils/eureka-gear-migrate';
 import { STAGE_UPGRADE_COSTS } from '../data/eureka-stage-costs';
+import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../data/eureka-armor-costs';
 import { EUREKA_CHAINS } from '../data/eureka-chains';
 import {
   costBetween,
+  costBetweenInSequence,
   deductMaterials,
   hasEnoughMaterials,
 } from '../utils/eurekaGear';
@@ -23,12 +28,13 @@ function getSyncedChainIds(chainId: string): string[] {
   return [primaryId, ...mirrors];
 }
 
+const KEY_V4 = 'eureka-inventory-v4';
 const KEY_V3 = 'eureka-inventory-v3';
 const KEY_V2 = 'eureka-inventory-v2';
 
 export type ChainRef =
   | { kind: 'weapon'; chainId: string }
-  | { kind: 'armor'; set: ArmorSetId; slot: ArmorSlot };
+  | { kind: 'armor'; set: ArmorSetId; slot: ArmorSlot; track: ArmorTrack };
 
 export type UpgradeOutcome = {
   from: EurekaStage;
@@ -37,41 +43,50 @@ export type UpgradeOutcome = {
   hadEnough: boolean;
 };
 
-function loadInitial(): EurekaInventoryV3 {
-  if (typeof window === 'undefined') return emptyInventoryV3();
+function loadInitial(): EurekaInventoryV4 {
+  if (typeof window === 'undefined') return emptyInventoryV4();
   try {
+    const v4Raw = localStorage.getItem(KEY_V4);
+    if (v4Raw) return migrateInventory(v4Raw);
     const v3Raw = localStorage.getItem(KEY_V3);
-    if (v3Raw) return migrateInventory(v3Raw);
+    if (v3Raw) {
+      const migrated = migrateInventory(v3Raw);
+      localStorage.setItem(KEY_V4, JSON.stringify(migrated));
+      localStorage.removeItem(KEY_V3);
+      return migrated;
+    }
     const v2Raw = localStorage.getItem(KEY_V2);
     if (v2Raw) {
       const migrated = migrateInventory(v2Raw);
-      localStorage.setItem(KEY_V3, JSON.stringify(migrated));
+      localStorage.setItem(KEY_V4, JSON.stringify(migrated));
       localStorage.removeItem(KEY_V2);
       return migrated;
     }
   } catch {
     // ignore, fallback to empty
   }
-  return emptyInventoryV3();
+  return emptyInventoryV4();
 }
 
-function getSlotFromRef(inv: EurekaInventoryV3, ref: ChainRef) {
+function costsForTrack(track: ArmorTrack): StageUpgradeCost[] {
+  return track === 'anemos' ? ANEMOS_ARMOR_COSTS : ELEMENTAL_ARMOR_COSTS;
+}
+
+function getSlotFromRef(inv: EurekaInventoryV4, ref: ChainRef) {
   if (ref.kind === 'weapon') {
-    // For mirrored chains, read the primary's state so pair stays synced.
     const chain = EUREKA_CHAINS.find((c) => c.chainId === ref.chainId);
     const primaryId = chain?.mirrorsChainId ?? ref.chainId;
     return inv.weapons[primaryId];
   }
-  return inv.armor[ref.set][ref.slot];
+  return inv.armor[ref.set][ref.slot]?.[ref.track];
 }
 
 function setSlotInInventory(
-  inv: EurekaInventoryV3,
+  inv: EurekaInventoryV4,
   ref: ChainRef,
   update: (prev: { currentStage: EurekaStage; targetStage?: EurekaStage } | undefined) => { currentStage: EurekaStage; targetStage?: EurekaStage },
-): EurekaInventoryV3 {
+): EurekaInventoryV4 {
   if (ref.kind === 'weapon') {
-    // For paired chains (e.g. PLD sword+shield), apply same update to all synced chainIds.
     const chainIds = getSyncedChainIds(ref.chainId);
     let weapons = inv.weapons;
     for (const id of chainIds) {
@@ -79,22 +94,36 @@ function setSlotInInventory(
     }
     return { ...inv, weapons };
   }
-  const prev = inv.armor[ref.set][ref.slot];
+  const prevSlot = inv.armor[ref.set][ref.slot] ?? {};
+  const prevTrack = prevSlot[ref.track];
   return {
     ...inv,
     armor: {
       ...inv.armor,
-      [ref.set]: { ...inv.armor[ref.set], [ref.slot]: update(prev) },
+      [ref.set]: {
+        ...inv.armor[ref.set],
+        [ref.slot]: { ...prevSlot, [ref.track]: update(prevTrack) },
+      },
     },
   };
 }
 
+function costsForRef(ref: ChainRef, slot?: ArmorSlot, from?: EurekaStage, to?: EurekaStage): MaterialCost[] {
+  if (!from || !to || from === to) return [];
+  if (ref.kind === 'weapon') {
+    return costBetween(from, to, STAGE_UPGRADE_COSTS);
+  }
+  const costs = costsForTrack(ref.track);
+  const sequence = ARMOR_STAGES_BY_TRACK[ref.track];
+  return costBetweenInSequence(from, to, sequence, costs, slot);
+}
+
 export function useEurekaInventory() {
-  const [inventory, setInventory] = useState<EurekaInventoryV3>(loadInitial);
+  const [inventory, setInventory] = useState<EurekaInventoryV4>(loadInitial);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    localStorage.setItem(KEY_V3, JSON.stringify(inventory));
+    localStorage.setItem(KEY_V4, JSON.stringify(inventory));
   }, [inventory]);
 
   const setMaterial = useCallback((materialId: number, qty: number) => {
@@ -122,13 +151,13 @@ export function useEurekaInventory() {
   const performUpgrade = useCallback(
     (ref: ChainRef): UpgradeOutcome | null => {
       let outcome: UpgradeOutcome | null = null;
-      // Compute outcome directly from current inventory state without reading from state setter
       const slot = getSlotFromRef(inventory, ref);
       if (slot?.targetStage) {
         const from = slot.currentStage;
         const to = slot.targetStage;
         if (from !== to) {
-          const materials = costBetween(from, to, STAGE_UPGRADE_COSTS);
+          const armorSlot = ref.kind === 'armor' ? ref.slot : undefined;
+          const materials = costsForRef(ref, armorSlot, from, to);
           const hadEnough = materials.every(
             (m) => (inventory.materials[m.materialId] ?? 0) >= m.quantity,
           );
@@ -136,14 +165,14 @@ export function useEurekaInventory() {
         }
       }
 
-      // Now apply the state update
       setInventory((prev) => {
-        const slot = getSlotFromRef(prev, ref);
-        if (!slot?.targetStage) return prev;
-        const from = slot.currentStage;
-        const to = slot.targetStage;
+        const s = getSlotFromRef(prev, ref);
+        if (!s?.targetStage) return prev;
+        const from = s.currentStage;
+        const to = s.targetStage;
         if (from === to) return prev;
-        const materials = costBetween(from, to, STAGE_UPGRADE_COSTS);
+        const armorSlot = ref.kind === 'armor' ? ref.slot : undefined;
+        const materials = costsForRef(ref, armorSlot, from, to);
         const nextMaterials = deductMaterials(prev.materials, materials);
         return setSlotInInventory(
           { ...prev, materials: nextMaterials },
@@ -157,7 +186,7 @@ export function useEurekaInventory() {
   );
 
   const clearAll = useCallback(() => {
-    setInventory(emptyInventoryV3());
+    setInventory(emptyInventoryV4());
   }, []);
 
   return {

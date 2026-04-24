@@ -1,4 +1,4 @@
-import type { EurekaStage, MaterialCost, StageUpgradeCost, EurekaChain, GearFilterState, ChainProgress, ArmorSetId, ArmorSlot, EurekaInventoryV3, SlotProgress } from '../types/eureka-gear';
+import type { EurekaStage, MaterialCost, StageUpgradeCost, EurekaChain, GearFilterState, ChainProgress, ArmorSetId, ArmorSlot, ArmorSlotState, EurekaInventoryV4, SlotProgress } from '../types/eureka-gear';
 import { EUREKA_STAGES } from '../types/eureka-gear';
 import { EUREKA_CHAINS } from '../data/eureka-chains';
 import { ARMOR_SET_FOR_JOB } from '../data/eureka-armor-sets';
@@ -67,15 +67,33 @@ export function costBetween(
   to: EurekaStage,
   costs: StageUpgradeCost[],
 ): MaterialCost[] {
-  const fromIdx = EUREKA_STAGES.indexOf(from);
-  const toIdx = EUREKA_STAGES.indexOf(to);
+  return costBetweenInSequence(from, to, EUREKA_STAGES, costs);
+}
+
+/**
+ * Like `costBetween` but walks a custom stage sequence (used for armor tracks
+ * whose stages are a non-contiguous subset of EUREKA_STAGES). When `slot` is
+ * provided, cost entries with a `slots` restriction are filtered to match;
+ * unrestricted entries always apply.
+ */
+export function costBetweenInSequence(
+  from: EurekaStage,
+  to: EurekaStage,
+  sequence: readonly EurekaStage[],
+  costs: StageUpgradeCost[],
+  slot?: ArmorSlot,
+): MaterialCost[] {
+  const fromIdx = sequence.indexOf(from);
+  const toIdx = sequence.indexOf(to);
   if (fromIdx < 0 || toIdx < 0 || toIdx <= fromIdx) return [];
 
   const totals = new Map<number, number>();
   for (let i = fromIdx; i < toIdx; i++) {
-    const edge = costs.find(
-      (c) => c.from === EUREKA_STAGES[i] && c.to === EUREKA_STAGES[i + 1],
-    );
+    const edges = costs.filter((c) => c.from === sequence[i] && c.to === sequence[i + 1]);
+    const edge = edges.find((c) => {
+      if (!c.slots) return true; // unrestricted
+      return slot ? c.slots.includes(slot) : false;
+    });
     if (!edge) continue;
     for (const m of edge.materials) {
       totals.set(m.materialId, (totals.get(m.materialId) ?? 0) + m.quantity);
@@ -88,13 +106,13 @@ export type JobProgress = {
   weapons: { chainId: string; progress: SlotProgress }[];
   armor: {
     set: ArmorSetId;
-    pieces: Partial<Record<ArmorSlot, SlotProgress>>;
+    pieces: Partial<Record<ArmorSlot, ArmorSlotState>>;
   };
 };
 
 type JobId = keyof typeof ARMOR_SET_FOR_JOB;
 
-export function getJobProgress(job: JobId, inv: EurekaInventoryV3): JobProgress {
+export function getJobProgress(job: JobId, inv: EurekaInventoryV4): JobProgress {
   const weapons = EUREKA_CHAINS
     .filter((c) => c.job === job)
     .map((c) => ({

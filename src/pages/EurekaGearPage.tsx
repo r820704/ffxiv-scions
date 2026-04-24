@@ -76,7 +76,7 @@ export default function EurekaGearPage() {
   const handleRequestUpgrade = (ref: ChainRef) => {
     const slot = ref.kind === 'weapon'
       ? inventory.weapons[ref.chainId]
-      : inventory.armor[ref.set][ref.slot];
+      : inventory.armor[ref.set][ref.slot]?.[ref.track];
     if (!slot?.targetStage) return;
     const currentIdx = EUREKA_STAGES.indexOf(slot.currentStage);
     const targetIdx = EUREKA_STAGES.indexOf(slot.targetStage);

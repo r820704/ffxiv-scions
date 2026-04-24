@@ -1,7 +1,14 @@
 import { ChainFingerprint } from './ChainFingerprint';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
+import { JOBS_FOR_ARMOR_SET, isArmorSetShared } from '../../data/eureka-armor-sets';
 import type { JobProgress } from '../../utils/eurekaGear';
-import type { EurekaStage, EurekaWeapon } from '../../types/eureka-gear';
+import type { EurekaStage, EurekaWeapon, ArmorTrack, ArmorSlot } from '../../types/eureka-gear';
+import {
+  ARMOR_SLOTS,
+  ARMOR_TRACKS,
+  ARMOR_STAGES_BY_TRACK,
+  ARMOR_TRACK_LABEL,
+} from '../../types/eureka-gear';
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,
@@ -20,6 +27,10 @@ const JOB_NAME_TC: Record<string, string> = {
   BLM: '黑魔法師', SMN: '召喚師', WHM: '白魔法師',
 };
 
+const SLOT_TC: Record<ArmorSlot, string> = {
+  head: '頭', body: '身', hands: '手', legs: '腿', feet: '腳',
+};
+
 export type JobCardProps = {
   job: string;
   progress: JobProgress;
@@ -32,8 +43,11 @@ function weaponInfoAt(weapons: EurekaWeapon[] | undefined, chainId: string, stag
 }
 
 export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
-  const hasArmor = Object.keys(progress.armor.pieces).length > 0;
   const iconSrc = JOB_ICONS[job];
+  const armorSet = progress.armor.set;
+  const sharedJobs = JOBS_FOR_ARMOR_SET[armorSet] ?? [];
+  const shared = isArmorSetShared(armorSet);
+
   return (
     <article className="bg-gray-800 border border-gray-700 rounded p-3 space-y-2">
       <header className="flex justify-between items-center">
@@ -77,21 +91,37 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
           </ul>
         </section>
       )}
-      {hasArmor && (
-        <section>
-          <div className="text-xs font-bold text-green-400 mb-1">
-            防具 · {progress.armor.set} 系列
+      <section>
+        <div className="text-xs font-bold text-green-400 mb-1">
+          防具 · {armorSet} 系列
+          {shared && (
+            <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-blue-800 text-blue-200" title={sharedJobs.join(' / ')}>
+              共 {sharedJobs.length} 職
+            </span>
+          )}
+        </div>
+        {ARMOR_TRACKS.map((track: ArmorTrack) => (
+          <div key={track} className="ml-2 mb-1">
+            <div className="text-[10px] text-gray-500">{ARMOR_TRACK_LABEL[track]}</div>
+            <ul className="space-y-0.5">
+              {ARMOR_SLOTS.map((slot) => {
+                const p = progress.armor.pieces[slot]?.[track];
+                const stage: EurekaStage = p?.currentStage ?? 'antiquated';
+                return (
+                  <li key={slot} className="flex items-center gap-2 text-xs">
+                    <span className="w-6 text-gray-400">{SLOT_TC[slot]}</span>
+                    <ChainFingerprint
+                      currentStage={stage}
+                      stages={ARMOR_STAGES_BY_TRACK[track]}
+                      showLabel
+                    />
+                  </li>
+                );
+              })}
+            </ul>
           </div>
-          <ul className="space-y-1 text-xs">
-            {Object.entries(progress.armor.pieces).map(([slot, p]) => (
-              <li key={slot} className="flex items-center gap-2">
-                <span className="w-12 text-gray-400">{slot}</span>
-                {p && <ChainFingerprint currentStage={p.currentStage} showLabel />}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+        ))}
+      </section>
     </article>
   );
 }

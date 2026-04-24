@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { getNextStage, hasEnoughMaterials, deductMaterials, findCost, filterChains, costBetween, getJobProgress } from './eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../data/eureka-stage-costs';
-import type { EurekaChain, GearFilterState, EurekaStage, EurekaInventoryV3 } from '../types/eureka-gear';
+import type { EurekaChain, GearFilterState, EurekaStage, EurekaInventoryV4 } from '../types/eureka-gear';
 
 describe('getNextStage', () => {
   it('returns next stage for mid chain', () => {
@@ -145,15 +145,18 @@ describe('costBetween', () => {
 });
 
 describe('getJobProgress', () => {
-  const baseInv: EurekaInventoryV3 = {
-    schemaVersion: 3,
+  const baseInv: EurekaInventoryV4 = {
+    schemaVersion: 4,
     weapons: {
       'pld-galatyn': { currentStage: 'anemos', targetStage: 'pagos' },
       'pld-galatyn-shield': { currentStage: 'antiquated' },
       'war-farsha': { currentStage: 'pyros' },
     },
     armor: {
-      fending: { head: { currentStage: 'pagos' }, body: { currentStage: 'anemos' } },
+      fending: {
+        head: { anemos: { currentStage: 'anemos' } },
+        body: { elemental: { currentStage: 'elemental+1' } },
+      },
       maiming: {}, striking: {}, scouting: {}, aiming: {}, healing: {}, casting: {},
     },
     materials: {},
@@ -164,13 +167,14 @@ describe('getJobProgress', () => {
     expect(p.weapons).toHaveLength(2);
     expect(p.weapons[0]?.chainId).toBe('pld-galatyn');
     expect(p.armor.set).toBe('fending');
-    expect(p.armor.pieces.head?.currentStage).toBe('pagos');
+    expect(p.armor.pieces.head?.anemos?.currentStage).toBe('anemos');
+    expect(p.armor.pieces.body?.elemental?.currentStage).toBe('elemental+1');
   });
 
   it('WAR shares fending armor with PLD (same pieces)', () => {
     const p = getJobProgress('WAR', baseInv);
     expect(p.armor.set).toBe('fending');
-    expect(p.armor.pieces.head?.currentStage).toBe('pagos');
+    expect(p.armor.pieces.head?.anemos?.currentStage).toBe('anemos');
   });
 
   it('DRG gets maiming armor (empty in this fixture)', () => {

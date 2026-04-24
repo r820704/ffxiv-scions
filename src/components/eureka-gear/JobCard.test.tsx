@@ -35,8 +35,15 @@ describe('JobCard', () => {
     expect(onSelect).toHaveBeenCalledWith('PLD');
   });
 
-  it('does not render armor section when armor.pieces is empty (PR-1 scope)', () => {
+  it('renders armor section with both anemos and elemental tracks', () => {
     render(<JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />);
-    expect(screen.queryByText(/防具/)).toBeNull();
+    expect(screen.getByText(/防具/)).toBeInTheDocument();
+    expect(screen.getByText(/常風系列/)).toBeInTheDocument();
+    expect(screen.getByText(/元素系列/)).toBeInTheDocument();
+  });
+
+  it('shows shared-jobs badge for fending (PLD+WAR)', () => {
+    render(<JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />);
+    expect(screen.getByText(/共 2 職/)).toBeInTheDocument();
   });
 });

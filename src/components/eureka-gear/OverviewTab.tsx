@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { JobCard } from './JobCard';
 import { getJobProgress } from '../../utils/eurekaGear';
-import type { EurekaInventoryV3, EurekaWeapon } from '../../types/eureka-gear';
+import type { EurekaInventoryV4, EurekaWeapon } from '../../types/eureka-gear';
 import { ARMOR_SET_FOR_JOB } from '../../data/eureka-armor-sets';
 
 const JOBS = Object.keys(ARMOR_SET_FOR_JOB) as (keyof typeof ARMOR_SET_FOR_JOB)[];
 
 export type OverviewTabProps = {
-  inventory: EurekaInventoryV3;
+  inventory: EurekaInventoryV4;
   weapons?: EurekaWeapon[];
   onSelectJob: (job: string) => void;
 };
