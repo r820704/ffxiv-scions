@@ -3,11 +3,16 @@ import { ZoneGroup } from './ZoneGroup';
 import { costBetween } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { EUREKA_STAGES, ZONE_OF_STAGE } from '../../types/eureka-gear';
+import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import type {
   EurekaInventoryV3,
   EurekaZone,
   SlotProgress,
 } from '../../types/eureka-gear';
+
+const MIRROR_CHAIN_IDS = new Set(
+  EUREKA_CHAINS.filter((c) => c.mirrorsChainId).map((c) => c.chainId),
+);
 
 export type FarmingTabProps = {
   inventory: EurekaInventoryV3;
@@ -24,8 +29,10 @@ function aggregateMaterialsByZone(inv: EurekaInventoryV3) {
     hydatos: new Map(),
   };
 
-  const slotEntries: SlotProgress[] = Object.values(inv.weapons);
-  for (const slot of slotEntries) {
+  const slotEntries: [string, SlotProgress][] = Object.entries(inv.weapons);
+  for (const [chainId, slot] of slotEntries) {
+    // Skip mirror chains (e.g. PLD shield) — materials consumed once via the primary.
+    if (MIRROR_CHAIN_IDS.has(chainId)) continue;
     if (!slot.targetStage) continue;
     const fromIdx = EUREKA_STAGES.indexOf(slot.currentStage);
     const toIdx = EUREKA_STAGES.indexOf(slot.targetStage);

@@ -2,7 +2,7 @@ import type { EurekaChain } from '../types/eureka-gear';
 
 export const EUREKA_CHAINS: EurekaChain[] = [
   { chainId: 'pld-galatyn',            job: 'PLD', isShield: false, displayName: '騎士 · 嘉拉汀' },
-  { chainId: 'pld-galatyn-shield',     job: 'PLD', isShield: true,  displayName: '騎士 · 艾瓦拉克盾' },
+  { chainId: 'pld-galatyn-shield',     job: 'PLD', isShield: true,  displayName: '騎士 · 艾瓦拉克盾', mirrorsChainId: 'pld-galatyn' },
   { chainId: 'war-farsha',             job: 'WAR', isShield: false, displayName: '戰士 · 伐煞斧' },
   { chainId: 'drg-ryunohige',          job: 'DRG', isShield: false, displayName: '龍騎士 · 龍鬚' },
   { chainId: 'mnk-sudarshana-chakra',  job: 'MNK', isShield: false, displayName: '武僧 · 善見神輪' },

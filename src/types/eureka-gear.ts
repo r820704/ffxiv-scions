@@ -50,6 +50,12 @@ export interface EurekaChain {
   job: FFXIVJob;
   isShield: boolean;
   displayName: string;
+  /**
+   * If set, this chain's progress mirrors the referenced chain — they are always
+   * upgraded together as a pair (e.g. PLD sword + shield). Actions on either chain
+   * apply to both; materials are only consumed once (on the primary).
+   */
+  mirrorsChainId?: string;
 }
 
 export type ChainProgress = Record<string, EurekaStage | null>;

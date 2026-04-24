@@ -8,11 +8,20 @@ import type {
 } from '../types/eureka-gear';
 import { emptyInventoryV3, migrateInventory } from '../utils/eureka-gear-migrate';
 import { STAGE_UPGRADE_COSTS } from '../data/eureka-stage-costs';
+import { EUREKA_CHAINS } from '../data/eureka-chains';
 import {
   costBetween,
   deductMaterials,
   hasEnoughMaterials,
 } from '../utils/eurekaGear';
+
+/** Returns primary chainId + any mirror chainIds that should sync with it. */
+function getSyncedChainIds(chainId: string): string[] {
+  const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
+  const primaryId = chain?.mirrorsChainId ?? chainId;
+  const mirrors = EUREKA_CHAINS.filter((c) => c.mirrorsChainId === primaryId).map((c) => c.chainId);
+  return [primaryId, ...mirrors];
+}
 
 const KEY_V3 = 'eureka-inventory-v3';
 const KEY_V2 = 'eureka-inventory-v2';
@@ -47,7 +56,12 @@ function loadInitial(): EurekaInventoryV3 {
 }
 
 function getSlotFromRef(inv: EurekaInventoryV3, ref: ChainRef) {
-  if (ref.kind === 'weapon') return inv.weapons[ref.chainId];
+  if (ref.kind === 'weapon') {
+    // For mirrored chains, read the primary's state so pair stays synced.
+    const chain = EUREKA_CHAINS.find((c) => c.chainId === ref.chainId);
+    const primaryId = chain?.mirrorsChainId ?? ref.chainId;
+    return inv.weapons[primaryId];
+  }
   return inv.armor[ref.set][ref.slot];
 }
 
@@ -57,10 +71,13 @@ function setSlotInInventory(
   update: (prev: { currentStage: EurekaStage; targetStage?: EurekaStage } | undefined) => { currentStage: EurekaStage; targetStage?: EurekaStage },
 ): EurekaInventoryV3 {
   if (ref.kind === 'weapon') {
-    return {
-      ...inv,
-      weapons: { ...inv.weapons, [ref.chainId]: update(inv.weapons[ref.chainId]) },
-    };
+    // For paired chains (e.g. PLD sword+shield), apply same update to all synced chainIds.
+    const chainIds = getSyncedChainIds(ref.chainId);
+    let weapons = inv.weapons;
+    for (const id of chainIds) {
+      weapons = { ...weapons, [id]: update(weapons[id]) };
+    }
+    return { ...inv, weapons };
   }
   const prev = inv.armor[ref.set][ref.slot];
   return {
