@@ -45,6 +45,14 @@ export function DetailTab({
 }: DetailTabProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const progress = useMemo(() => getJobProgress(selectedJob as any, inventory), [selectedJob, inventory]);
+
+  // Filter to primary chains only (mirror chains like PLD shield share the
+  // primary's stepper/preview — their names are rendered inline on the header).
+  const primaryChains = progress.weapons.filter(({ chainId }) => {
+    const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
+    return !chain?.mirrorsChainId;
+  });
+
   return (
     <div className="space-y-6">
       <header className="flex items-center gap-3">
@@ -64,31 +72,69 @@ export function DetailTab({
 
       <section className="space-y-4">
         <h3 className="text-yellow-400 font-bold">武器</h3>
-        {progress.weapons.map(({ chainId, progress: p }) => {
+        {primaryChains.map(({ chainId, progress: p }) => {
           const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
           const ref: ChainRef = { kind: 'weapon', chainId };
           const currentInfo = weaponInfoAt(weapons, chainId, p.currentStage);
           const targetInfo = p.targetStage ? weaponInfoAt(weapons, chainId, p.targetStage) : undefined;
           const currentName = currentInfo?.tcName ?? chain?.displayName ?? chainId;
+
+          // Find mirror chains (e.g. PLD shield) to display their names alongside
+          const mirrorChains = EUREKA_CHAINS.filter((c) => c.mirrorsChainId === chainId);
+          const mirrorInfos = mirrorChains.map((mc) => ({
+            chainId: mc.chainId,
+            current: weaponInfoAt(weapons, mc.chainId, p.currentStage),
+            target: p.targetStage ? weaponInfoAt(weapons, mc.chainId, p.targetStage) : undefined,
+            displayName: mc.displayName,
+          }));
+
+          const stageSuffix = (info: typeof currentInfo, stage: EurekaStage) =>
+            `（${STAGE_TC_LABEL[stage]}${info ? ` · iL${info.itemLevel}` : ''}）`;
+
           return (
             <div key={chainId} className="space-y-2 pt-2">
-              <div className="text-sm text-gray-100 font-semibold">
-                {currentName}
-                <span className="text-xs text-gray-400 font-normal ml-2">
-                  （{STAGE_TC_LABEL[p.currentStage]}{currentInfo ? ` · iL${currentInfo.itemLevel}` : ''}）
-                </span>
-                {targetInfo && p.targetStage && p.targetStage !== p.currentStage && (
-                  <>
-                    <span className="text-yellow-400 mx-2">→</span>
-                    <span className="text-yellow-200">
-                      {targetInfo.tcName}
-                      <span className="text-xs text-gray-400 font-normal ml-2">
-                        （{STAGE_TC_LABEL[p.targetStage]} · iL{targetInfo.itemLevel}）
+              <div className="space-y-0.5 text-sm">
+                {/* Primary weapon row */}
+                <div className="text-gray-100 font-semibold">
+                  {currentName}
+                  <span className="text-xs text-gray-400 font-normal ml-2">
+                    {stageSuffix(currentInfo, p.currentStage)}
+                  </span>
+                  {targetInfo && p.targetStage && p.targetStage !== p.currentStage && (
+                    <>
+                      <span className="text-yellow-400 mx-2">→</span>
+                      <span className="text-yellow-200">
+                        {targetInfo.tcName}
+                        <span className="text-xs text-gray-400 font-normal ml-2">
+                          {stageSuffix(targetInfo, p.targetStage)}
+                        </span>
                       </span>
+                    </>
+                  )}
+                </div>
+
+                {/* Mirror (paired) weapon rows — e.g. PLD shield */}
+                {mirrorInfos.map((m) => (
+                  <div key={m.chainId} className="text-gray-100 font-semibold">
+                    {m.current?.tcName ?? m.displayName}
+                    <span className="text-xs text-gray-400 font-normal ml-2">
+                      {stageSuffix(m.current, p.currentStage)}
                     </span>
-                  </>
-                )}
+                    {m.target && p.targetStage && p.targetStage !== p.currentStage && (
+                      <>
+                        <span className="text-yellow-400 mx-2">→</span>
+                        <span className="text-yellow-200">
+                          {m.target.tcName}
+                          <span className="text-xs text-gray-400 font-normal ml-2">
+                            {stageSuffix(m.target, p.targetStage)}
+                          </span>
+                        </span>
+                      </>
+                    )}
+                  </div>
+                ))}
               </div>
+
               <ChainStepper
                 currentStage={p.currentStage}
                 targetStage={p.targetStage}
