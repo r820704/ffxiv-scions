@@ -1,0 +1,86 @@
+[
+  {
+    "id": 21801,
+    "tcName": "亂屬性水晶",
+    "enName": "Protean Crystal",
+    "iconId": 20029,
+    "category": "crystal"
+  },
+  {
+    "id": 21802,
+    "tcName": "帕祖祖的羽毛",
+    "enName": "Pazuzu's Feather",
+    "iconId": 21910,
+    "category": "other"
+  },
+  {
+    "id": 21803,
+    "tcName": "常風水晶",
+    "enName": "Anemos Crystal",
+    "iconId": 20028,
+    "category": "crystal"
+  },
+  {
+    "id": 22975,
+    "tcName": "婁希的冰片",
+    "enName": "Louhi's Ice",
+    "iconId": 21266,
+    "category": "other"
+  },
+  {
+    "id": 22976,
+    "tcName": "恆冰水晶",
+    "enName": "Pagos Crystal",
+    "iconId": 20030,
+    "category": "crystal"
+  },
+  {
+    "id": 23309,
+    "tcName": "結冰亂屬性水晶",
+    "enName": "Frosted Protean Crystal",
+    "iconId": 20031,
+    "category": "crystal"
+  },
+  {
+    "id": 24122,
+    "tcName": "大火焰亂屬性水晶",
+    "enName": "Smoldering Protean Crystal",
+    "iconId": 20033,
+    "category": "crystal"
+  },
+  {
+    "id": 24123,
+    "tcName": "彭忒西勒亞的火種",
+    "enName": "Penthesilea's Flame",
+    "iconId": 25911,
+    "category": "other"
+  },
+  {
+    "id": 24124,
+    "tcName": "湧火水晶",
+    "enName": "Pyros Crystal",
+    "iconId": 20032,
+    "category": "crystal"
+  },
+  {
+    "id": 24806,
+    "tcName": "水晶龍之鱗",
+    "enName": "Crystalline Scale",
+    "iconId": 22265,
+    "category": "other"
+  },
+  {
+    "id": 24807,
+    "tcName": "豐水水晶",
+    "enName": "Hydatos Crystal",
+    "iconId": 20037,
+    "category": "crystal"
+  },
+  {
+    "id": 24808,
+    "tcName": "優雷卡的斷片",
+    "enName": "Eureka Fragment",
+    "iconId": 26544,
+    "category": "token"
+  }
+]
