@@ -1,14 +1,9 @@
 import { ChainFingerprint } from './ChainFingerprint';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
-import { isArmorSetShared, sharedJobNames, JOB_TC_NAME } from '../../data/eureka-armor-sets';
+import { isArmorSetShared, sharedJobNames, JOBS_FOR_ARMOR_SET, JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
 import type { JobProgress } from '../../utils/eurekaGear';
-import type { EurekaStage, EurekaWeapon, ArmorTrack, ArmorSlot } from '../../types/eureka-gear';
-import {
-  ARMOR_SLOTS,
-  ARMOR_TRACKS,
-  ARMOR_STAGES_BY_TRACK,
-  ARMOR_TRACK_LABEL,
-} from '../../types/eureka-gear';
+import type { EurekaStage, EurekaWeapon, ArmorSlot } from '../../types/eureka-gear';
+import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK } from '../../types/eureka-gear';
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,
@@ -36,11 +31,30 @@ function weaponInfoAt(weapons: EurekaWeapon[] | undefined, chainId: string, stag
   return weapons?.find((w) => w.chainId === chainId && w.stage === stage);
 }
 
+function SharedJobIcons({ set }: { set: string }) {
+  const setId = set as keyof typeof JOBS_FOR_ARMOR_SET;
+  const jobs = JOBS_FOR_ARMOR_SET[setId] ?? [];
+  if (jobs.length <= 1) return null;
+  return (
+    <span className="inline-flex items-center gap-0.5 ml-2" title={sharedJobNames(setId).join(' / ')}>
+      <span className="text-[10px] text-blue-200">共用</span>
+      {jobs.map((j) => {
+        const icon = JOB_ICONS[j];
+        return icon ? (
+          <img key={j} src={icon} alt={j} title={JOB_TC_NAME[j as JobId] ?? j} className="w-3.5 h-3.5 rounded" />
+        ) : (
+          <span key={j} className="text-[9px] px-1 py-0.5 bg-gray-700 rounded" title={JOB_TC_NAME[j as JobId] ?? j}>
+            {j}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
 export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
   const iconSrc = JOB_ICONS[job];
-  const armorSet = progress.armor.set;
-  const sharedTCNames = sharedJobNames(armorSet);
-  const shared = isArmorSetShared(armorSet);
+  const elementalSet = progress.elemental.set;
 
   return (
     <article className="bg-gray-800 border border-gray-700 rounded p-3 space-y-2">
@@ -53,7 +67,7 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
               {job}
             </span>
           )}
-          <span className="font-semibold text-gray-200">{JOB_TC_NAME[job as keyof typeof JOB_TC_NAME] ?? job}</span>
+          <span className="font-semibold text-gray-200">{JOB_TC_NAME[job as JobId] ?? job}</span>
         </div>
         <button
           type="button"
@@ -85,36 +99,48 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
           </ul>
         </section>
       )}
+
       <section>
-        <div className="text-xs font-bold text-green-400 mb-1">
-          防具 · {armorSet} 系列
-          {shared && (
-            <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-blue-800 text-blue-200" title={sharedTCNames.join(' / ')}>
-              共 {sharedTCNames.length} 職：{sharedTCNames.join(' / ')}
-            </span>
-          )}
+        <div className="text-xs font-bold text-green-400 mb-1">常風系列（外觀）</div>
+        <ul className="space-y-0.5">
+          {ARMOR_SLOTS.map((slot) => {
+            const p = progress.anemos[slot];
+            const stage: EurekaStage = p?.currentStage ?? 'antiquated';
+            return (
+              <li key={slot} className="flex items-center gap-2 text-xs">
+                <span className="w-6 text-gray-400">{SLOT_TC[slot]}</span>
+                <ChainFingerprint
+                  currentStage={stage}
+                  stages={ARMOR_STAGES_BY_TRACK.anemos}
+                  showLabel
+                />
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section>
+        <div className="text-xs font-bold text-cyan-400 mb-1">
+          元素系列（戰鬥）
+          {isArmorSetShared(elementalSet) && <SharedJobIcons set={elementalSet} />}
         </div>
-        {ARMOR_TRACKS.map((track: ArmorTrack) => (
-          <div key={track} className="ml-2 mb-1">
-            <div className="text-[10px] text-gray-500">{ARMOR_TRACK_LABEL[track]}</div>
-            <ul className="space-y-0.5">
-              {ARMOR_SLOTS.map((slot) => {
-                const p = progress.armor.pieces[slot]?.[track];
-                const stage: EurekaStage = p?.currentStage ?? 'antiquated';
-                return (
-                  <li key={slot} className="flex items-center gap-2 text-xs">
-                    <span className="w-6 text-gray-400">{SLOT_TC[slot]}</span>
-                    <ChainFingerprint
-                      currentStage={stage}
-                      stages={ARMOR_STAGES_BY_TRACK[track]}
-                      showLabel
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+        <ul className="space-y-0.5">
+          {ARMOR_SLOTS.map((slot) => {
+            const p = progress.elemental.pieces[slot];
+            const stage: EurekaStage = p?.currentStage ?? 'antiquated';
+            return (
+              <li key={slot} className="flex items-center gap-2 text-xs">
+                <span className="w-6 text-gray-400">{SLOT_TC[slot]}</span>
+                <ChainFingerprint
+                  currentStage={stage}
+                  stages={ARMOR_STAGES_BY_TRACK.elemental}
+                  showLabel
+                />
+              </li>
+            );
+          })}
+        </ul>
       </section>
     </article>
   );

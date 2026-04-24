@@ -7,15 +7,13 @@ import {
   ARMOR_SET_IDS,
   ARMOR_SLOTS,
   ARMOR_STAGES_BY_TRACK,
-  ARMOR_TRACKS,
   EUREKA_STAGES,
   ZONE_OF_STAGE,
 } from '../../types/eureka-gear';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import type {
   ArmorSlot,
-  ArmorTrack,
-  EurekaInventoryV4,
+  EurekaInventoryV5,
   EurekaStage,
   EurekaZone,
   MaterialCost,
@@ -27,7 +25,7 @@ const MIRROR_CHAIN_IDS = new Set(
 );
 
 export type FarmingTabProps = {
-  inventory: EurekaInventoryV4;
+  inventory: EurekaInventoryV5;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
 };
 
@@ -41,7 +39,7 @@ function addMaterialsToZone(agg: ZoneAgg, zone: EurekaZone, materials: MaterialC
   }
 }
 
-function aggregateWeaponCosts(inv: EurekaInventoryV4, agg: ZoneAgg) {
+function aggregateWeaponCosts(inv: EurekaInventoryV5, agg: ZoneAgg) {
   for (const [chainId, slot] of Object.entries(inv.weapons) as [string, SlotProgress][]) {
     if (MIRROR_CHAIN_IDS.has(chainId)) continue;
     if (!slot.targetStage) continue;
@@ -59,34 +57,48 @@ function aggregateWeaponCosts(inv: EurekaInventoryV4, agg: ZoneAgg) {
   }
 }
 
-function aggregateArmorCosts(inv: EurekaInventoryV4, agg: ZoneAgg) {
-  for (const setId of ARMOR_SET_IDS) {
-    const setData = inv.armor[setId] ?? {};
+function aggregateArmorCosts(inv: EurekaInventoryV5, agg: ZoneAgg) {
+  // Anemos armor: per-job
+  for (const [_job, jobPieces] of Object.entries(inv.armor.anemos)) {
     for (const slot of ARMOR_SLOTS) {
-      const slotState = setData[slot];
-      if (!slotState) continue;
-      for (const track of ARMOR_TRACKS) {
-        const p = slotState[track];
-        if (!p?.targetStage) continue;
-        const sequence = ARMOR_STAGES_BY_TRACK[track];
-        const costs = track === 'anemos' ? ANEMOS_ARMOR_COSTS : ELEMENTAL_ARMOR_COSTS;
-        const fromIdx = sequence.indexOf(p.currentStage);
-        const toIdx = sequence.indexOf(p.targetStage);
-        if (toIdx <= fromIdx) continue;
-        for (let i = fromIdx; i < toIdx; i++) {
-          const from = sequence[i];
-          const to = sequence[i + 1];
-          if (!from || !to) continue;
-          const zone = zoneForArmorEdge(to, track);
-          if (!zone) continue;
-          addMaterialsToZone(agg, zone, costBetweenInSequence(from, to, sequence, costs, slot));
-        }
-      }
+      const p = jobPieces?.[slot];
+      if (!p?.targetStage) continue;
+      walkAndAggregate(p.currentStage, p.targetStage, ARMOR_STAGES_BY_TRACK.anemos, ANEMOS_ARMOR_COSTS, slot, agg);
+    }
+  }
+  // Elemental armor: per-role
+  for (const setId of ARMOR_SET_IDS) {
+    const setData = inv.armor.elemental[setId] ?? {};
+    for (const slot of ARMOR_SLOTS) {
+      const p = setData[slot];
+      if (!p?.targetStage) continue;
+      walkAndAggregate(p.currentStage, p.targetStage, ARMOR_STAGES_BY_TRACK.elemental, ELEMENTAL_ARMOR_COSTS, slot, agg);
     }
   }
 }
 
-function zoneForArmorEdge(to: EurekaStage, _track: ArmorTrack): EurekaZone | null {
+function walkAndAggregate(
+  from: EurekaStage,
+  to: EurekaStage,
+  sequence: EurekaStage[],
+  costs: typeof ANEMOS_ARMOR_COSTS,
+  slot: ArmorSlot,
+  agg: ZoneAgg,
+) {
+  const fromIdx = sequence.indexOf(from);
+  const toIdx = sequence.indexOf(to);
+  if (toIdx <= fromIdx) return;
+  for (let i = fromIdx; i < toIdx; i++) {
+    const f = sequence[i];
+    const t = sequence[i + 1];
+    if (!f || !t) continue;
+    const zone = zoneForArmorEdge(t);
+    if (!zone) continue;
+    addMaterialsToZone(agg, zone, costBetweenInSequence(f, t, sequence, costs, slot));
+  }
+}
+
+function zoneForArmorEdge(to: EurekaStage): EurekaZone | null {
   // Anemos track stays in anemos zone. Elemental stages (elemental / +1 / +2)
   // map via ZONE_OF_STAGE (elemental→pyros zone, which is where Pyros Crystal
   // drops; Hydatos Crystal drops in Hydatos zone; Fragment from BA in hydatos).
@@ -95,7 +107,7 @@ function zoneForArmorEdge(to: EurekaStage, _track: ArmorTrack): EurekaZone | nul
   return 'hydatos'; // fallback (physeos etc. — Eureka Fragment from BA)
 }
 
-function aggregateMaterialsByZone(inv: EurekaInventoryV4): ZoneAgg {
+function aggregateMaterialsByZone(inv: EurekaInventoryV5): ZoneAgg {
   const zoneAgg: ZoneAgg = {
     anemos: new Map(),
     pagos: new Map(),

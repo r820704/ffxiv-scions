@@ -8,9 +8,10 @@ afterEach(() => cleanup());
 describe('OverviewTab', () => {
   it('renders 9 unique job cards (PLD/WAR/DRG/MNK/NIN/BRD/BLM/SMN/WHM)', () => {
     render(<OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} />);
-    expect(screen.getByAltText('PLD')).toBeInTheDocument();
-    expect(screen.getByAltText('WAR')).toBeInTheDocument();
-    expect(screen.getByAltText('WHM')).toBeInTheDocument();
+    // Multiple PLD icons appear (card header + shared-job badge on other jobs' elemental armor)
+    expect(screen.getAllByAltText('PLD').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByAltText('WAR').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByAltText('WHM').length).toBeGreaterThanOrEqual(1);
   });
 
   it('onSelectJob fires with correct job when card detail button clicked', () => {

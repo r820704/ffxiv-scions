@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { getNextStage, hasEnoughMaterials, deductMaterials, findCost, filterChains, costBetween, getJobProgress } from './eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../data/eureka-stage-costs';
-import type { EurekaChain, GearFilterState, EurekaStage, EurekaInventoryV4 } from '../types/eureka-gear';
+import type { EurekaChain, GearFilterState, EurekaStage, EurekaInventoryV5 } from '../types/eureka-gear';
 
 describe('getNextStage', () => {
   it('returns next stage for mid chain', () => {
@@ -145,41 +145,49 @@ describe('costBetween', () => {
 });
 
 describe('getJobProgress', () => {
-  const baseInv: EurekaInventoryV4 = {
-    schemaVersion: 4,
+  const baseInv: EurekaInventoryV5 = {
+    schemaVersion: 5,
     weapons: {
       'pld-galatyn': { currentStage: 'anemos', targetStage: 'pagos' },
       'pld-galatyn-shield': { currentStage: 'antiquated' },
       'war-farsha': { currentStage: 'pyros' },
     },
     armor: {
-      fending: {
-        head: { anemos: { currentStage: 'anemos' } },
-        body: { elemental: { currentStage: 'elemental+1' } },
+      anemos: {
+        PLD: { head: { currentStage: 'anemos' } },
+        WAR: { body: { currentStage: 'anemos-base' } },
       },
-      maiming: {}, striking: {}, scouting: {}, aiming: {}, healing: {}, casting: {},
+      elemental: {
+        fending: { head: { currentStage: 'elemental+1' } },
+        maiming: {}, striking: {}, scouting: {}, aiming: {}, healing: {}, casting: {},
+      },
     },
     materials: {},
   };
 
-  it('PLD has 2 weapon chains + fending armor', () => {
+  it('PLD anemos armor is per-job (WAR sees their own, not PLD)', () => {
     const p = getJobProgress('PLD', baseInv);
     expect(p.weapons).toHaveLength(2);
-    expect(p.weapons[0]?.chainId).toBe('pld-galatyn');
-    expect(p.armor.set).toBe('fending');
-    expect(p.armor.pieces.head?.anemos?.currentStage).toBe('anemos');
-    expect(p.armor.pieces.body?.elemental?.currentStage).toBe('elemental+1');
+    expect(p.anemos.head?.currentStage).toBe('anemos');
+
+    const w = getJobProgress('WAR', baseInv);
+    expect(w.anemos.head?.currentStage).toBeUndefined();
+    expect(w.anemos.body?.currentStage).toBe('anemos-base');
   });
 
-  it('WAR shares fending armor with PLD (same pieces)', () => {
-    const p = getJobProgress('WAR', baseInv);
-    expect(p.armor.set).toBe('fending');
-    expect(p.armor.pieces.head?.anemos?.currentStage).toBe('anemos');
+  it('elemental armor is shared at the role (set) level', () => {
+    const p = getJobProgress('PLD', baseInv);
+    const w = getJobProgress('WAR', baseInv);
+    expect(p.elemental.set).toBe('fending');
+    expect(w.elemental.set).toBe('fending');
+    // Both PLD and WAR see the same fending-head state
+    expect(p.elemental.pieces.head?.currentStage).toBe('elemental+1');
+    expect(w.elemental.pieces.head?.currentStage).toBe('elemental+1');
   });
 
-  it('DRG gets maiming armor (empty in this fixture)', () => {
+  it('DRG gets maiming elemental armor (empty in this fixture)', () => {
     const p = getJobProgress('DRG', baseInv);
-    expect(p.armor.set).toBe('maiming');
-    expect(p.armor.pieces).toEqual({});
+    expect(p.elemental.set).toBe('maiming');
+    expect(p.elemental.pieces).toEqual({});
   });
 });

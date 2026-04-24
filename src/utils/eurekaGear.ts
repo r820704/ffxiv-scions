@@ -1,7 +1,7 @@
-import type { EurekaStage, MaterialCost, StageUpgradeCost, EurekaChain, GearFilterState, ChainProgress, ArmorSetId, ArmorSlot, ArmorSlotState, EurekaInventoryV4, SlotProgress } from '../types/eureka-gear';
+import type { EurekaStage, MaterialCost, StageUpgradeCost, EurekaChain, GearFilterState, ChainProgress, ArmorSetId, ArmorSlot, EurekaInventoryV5, SlotProgress } from '../types/eureka-gear';
 import { EUREKA_STAGES } from '../types/eureka-gear';
 import { EUREKA_CHAINS } from '../data/eureka-chains';
-import { ARMOR_SET_FOR_JOB } from '../data/eureka-armor-sets';
+import { ARMOR_SET_FOR_JOB, type JobId } from '../data/eureka-armor-sets';
 
 export function getNextStage(stage: EurekaStage): EurekaStage | null {
   const idx = EUREKA_STAGES.indexOf(stage);
@@ -91,7 +91,7 @@ export function costBetweenInSequence(
   for (let i = fromIdx; i < toIdx; i++) {
     const edges = costs.filter((c) => c.from === sequence[i] && c.to === sequence[i + 1]);
     const edge = edges.find((c) => {
-      if (!c.slots) return true; // unrestricted
+      if (!c.slots) return true;
       return slot ? c.slots.includes(slot) : false;
     });
     if (!edge) continue;
@@ -104,15 +104,16 @@ export function costBetweenInSequence(
 
 export type JobProgress = {
   weapons: { chainId: string; progress: SlotProgress }[];
-  armor: {
+  /** Anemos armor is per-job — this is just *this* job's anemos set. */
+  anemos: Partial<Record<ArmorSlot, SlotProgress>>;
+  /** Elemental armor is per-role — shared with all jobs in the same set. */
+  elemental: {
     set: ArmorSetId;
-    pieces: Partial<Record<ArmorSlot, ArmorSlotState>>;
+    pieces: Partial<Record<ArmorSlot, SlotProgress>>;
   };
 };
 
-type JobId = keyof typeof ARMOR_SET_FOR_JOB;
-
-export function getJobProgress(job: JobId, inv: EurekaInventoryV4): JobProgress {
+export function getJobProgress(job: JobId, inv: EurekaInventoryV5): JobProgress {
   const weapons = EUREKA_CHAINS
     .filter((c) => c.job === job)
     .map((c) => ({
@@ -122,6 +123,7 @@ export function getJobProgress(job: JobId, inv: EurekaInventoryV4): JobProgress 
   const set = ARMOR_SET_FOR_JOB[job];
   return {
     weapons,
-    armor: { set, pieces: inv.armor[set] ?? {} },
+    anemos: (inv.armor.anemos[job] ?? {}) as Partial<Record<ArmorSlot, SlotProgress>>,
+    elemental: { set, pieces: inv.armor.elemental[set] ?? {} },
   };
 }

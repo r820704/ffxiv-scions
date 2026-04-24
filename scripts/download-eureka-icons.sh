@@ -9,8 +9,8 @@ JOB_ICON_DIR="src/assets/job-icons"
 MAT_ICON_DIR="src/assets/material-icons"
 mkdir -p "$JOB_ICON_DIR" "$MAT_ICON_DIR"
 
-# FFXIV job icons: 062000 + jobId. SB Eureka jobs:
-#   19=PLD, 20=MNK, 21=WAR, 22=DRG, 23=BRD, 24=WHM, 25=BLM, 27=SMN, 30=NIN
+# FFXIV job icons: 062000 + jobId. All 15 SB-era jobs (includes weapon-less
+# jobs like DRK/SAM/MCH/SCH/AST/RDM that still share role-based armor).
 declare -A JOBS=(
   [PLD]=062019
   [MNK]=062020
@@ -21,6 +21,12 @@ declare -A JOBS=(
   [BLM]=062025
   [SMN]=062027
   [NIN]=062030
+  [DRK]=062032
+  [MCH]=062031
+  [AST]=062033
+  [SAM]=062034
+  [RDM]=062035
+  [SCH]=062028
 )
 
 for job in "${!JOBS[@]}"; do

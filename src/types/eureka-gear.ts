@@ -177,6 +177,27 @@ export type EurekaInventoryV4 = {
   materials: Record<number, number>;
 };
 
+// ============ v5 schema (splits armor into per-job Anemos vs per-role Elemental) ============
+
+/**
+ * v5 separates the two armor chains based on how they're actually tracked in-game:
+ *
+ * - **Anemos armor** (iL290-350): job-specific item, NOT shared. Each job has
+ *   its own visual set (e.g. 騎士's "嘉拉汀" set ≠ 戰士's "伐煞" set).
+ *   Tracked per JobId.
+ * - **Elemental armor** (iL380-390): role-shared item. All tanks share the
+ *   same Fending piece. Tracked per ArmorSetId (role).
+ */
+export type EurekaInventoryV5 = {
+  schemaVersion: 5;
+  weapons: Record<string, SlotProgress>;
+  armor: {
+    anemos: Partial<Record<string /* JobId */, Partial<Record<ArmorSlot, SlotProgress>>>>;
+    elemental: Record<ArmorSetId, Partial<Record<ArmorSlot, SlotProgress>>>;
+  };
+  materials: Record<number, number>;
+};
+
 /**
  * Stages available per armor track (subset of EUREKA_STAGES).
  */
