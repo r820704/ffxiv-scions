@@ -42,8 +42,8 @@ describe('JobCard', () => {
     expect(screen.getByText(/元素系列/)).toBeInTheDocument();
   });
 
-  it('shows shared-jobs badge for fending (PLD+WAR)', () => {
+  it('shows shared-jobs badge with TC names for fending (PLD+WAR+DRK)', () => {
     render(<JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />);
-    expect(screen.getByText(/共 2 職/)).toBeInTheDocument();
+    expect(screen.getByText(/共 3 職：騎士 \/ 戰士 \/ 暗黑騎士/)).toBeInTheDocument();
   });
 });

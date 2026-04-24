@@ -34,8 +34,16 @@ describe('JOBS_FOR_ARMOR_SET', () => {
     expect(JOBS_FOR_ARMOR_SET.fending).toEqual(expect.arrayContaining(['PLD', 'WAR']));
   });
 
-  it('maiming has only DRG', () => {
-    expect(JOBS_FOR_ARMOR_SET.maiming).toEqual(['DRG']);
+  it('maiming includes DRG and SAM', () => {
+    expect(JOBS_FOR_ARMOR_SET.maiming).toEqual(expect.arrayContaining(['DRG', 'SAM']));
+  });
+
+  it('fending includes DRK (weaponless-but-shares-armor)', () => {
+    expect(JOBS_FOR_ARMOR_SET.fending).toContain('DRK');
+  });
+
+  it('healing includes SCH and AST (both weaponless)', () => {
+    expect(JOBS_FOR_ARMOR_SET.healing).toEqual(expect.arrayContaining(['WHM', 'SCH', 'AST']));
   });
 });
 
@@ -44,8 +52,12 @@ describe('isArmorSetShared', () => {
     expect(isArmorSetShared('fending')).toBe(true);
   });
 
-  it('returns false for maiming (1 job)', () => {
-    expect(isArmorSetShared('maiming')).toBe(false);
+  it('returns true for maiming (DRG + SAM)', () => {
+    expect(isArmorSetShared('maiming')).toBe(true);
+  });
+
+  it('returns false for striking (MNK only)', () => {
+    expect(isArmorSetShared('striking')).toBe(false);
   });
 
   it('returns true for casting (2 jobs)', () => {

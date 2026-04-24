@@ -1,6 +1,6 @@
 import { ChainFingerprint } from './ChainFingerprint';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
-import { JOBS_FOR_ARMOR_SET, isArmorSetShared } from '../../data/eureka-armor-sets';
+import { isArmorSetShared, sharedJobNames, JOB_TC_NAME } from '../../data/eureka-armor-sets';
 import type { JobProgress } from '../../utils/eurekaGear';
 import type { EurekaStage, EurekaWeapon, ArmorTrack, ArmorSlot } from '../../types/eureka-gear';
 import {
@@ -21,12 +21,6 @@ const JOB_ICONS: Record<string, string> = Object.fromEntries(
   }),
 );
 
-const JOB_NAME_TC: Record<string, string> = {
-  PLD: '騎士',   WAR: '戰士',   DRG: '龍騎士',
-  MNK: '武僧',   NIN: '忍者',   BRD: '吟遊詩人',
-  BLM: '黑魔法師', SMN: '召喚師', WHM: '白魔法師',
-};
-
 const SLOT_TC: Record<ArmorSlot, string> = {
   head: '頭', body: '身', hands: '手', legs: '腿', feet: '腳',
 };
@@ -45,7 +39,7 @@ function weaponInfoAt(weapons: EurekaWeapon[] | undefined, chainId: string, stag
 export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
   const iconSrc = JOB_ICONS[job];
   const armorSet = progress.armor.set;
-  const sharedJobs = JOBS_FOR_ARMOR_SET[armorSet] ?? [];
+  const sharedTCNames = sharedJobNames(armorSet);
   const shared = isArmorSetShared(armorSet);
 
   return (
@@ -59,7 +53,7 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
               {job}
             </span>
           )}
-          <span className="font-semibold text-gray-200">{JOB_NAME_TC[job] ?? job}</span>
+          <span className="font-semibold text-gray-200">{JOB_TC_NAME[job as keyof typeof JOB_TC_NAME] ?? job}</span>
         </div>
         <button
           type="button"
@@ -95,8 +89,8 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
         <div className="text-xs font-bold text-green-400 mb-1">
           防具 · {armorSet} 系列
           {shared && (
-            <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-blue-800 text-blue-200" title={sharedJobs.join(' / ')}>
-              共 {sharedJobs.length} 職
+            <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-blue-800 text-blue-200" title={sharedTCNames.join(' / ')}>
+              共 {sharedTCNames.length} 職：{sharedTCNames.join(' / ')}
             </span>
           )}
         </div>

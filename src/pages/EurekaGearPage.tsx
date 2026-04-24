@@ -10,7 +10,7 @@ import InventorySidebar from '@/components/eureka-gear/InventorySidebar';
 import { UpgradeDialog } from '@/components/eureka-gear/UpgradeDialog';
 import { EUREKA_STAGES } from '@/types/eureka-gear';
 import type { EurekaStage } from '@/types/eureka-gear';
-import { JOBS_FOR_ARMOR_SET } from '@/data/eureka-armor-sets';
+import { sharedJobNames } from '@/data/eureka-armor-sets';
 
 type TabKey = 'overview' | 'detail' | 'farming';
 
@@ -81,7 +81,7 @@ export default function EurekaGearPage() {
     const currentIdx = EUREKA_STAGES.indexOf(slot.currentStage);
     const targetIdx = EUREKA_STAGES.indexOf(slot.targetStage);
     const direction: 'up' | 'down' = targetIdx < currentIdx ? 'down' : 'up';
-    const sharedJobs = ref.kind === 'armor' ? JOBS_FOR_ARMOR_SET[ref.set] : [];
+    const sharedJobs = ref.kind === 'armor' ? sharedJobNames(ref.set) : [];
     if (direction === 'down' || sharedJobs.length > 1) {
       setPendingDialog({ ref, direction, targetStage: slot.targetStage, sharedJobs });
     } else {

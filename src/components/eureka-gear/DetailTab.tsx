@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { ChainStepper } from './ChainStepper';
 import { PreviewPanel } from './PreviewPanel';
 import { getJobProgress } from '../../utils/eurekaGear';
-import { ARMOR_SET_FOR_JOB, JOBS_FOR_ARMOR_SET, isArmorSetShared } from '../../data/eureka-armor-sets';
+import { ARMOR_SET_FOR_JOB, JOB_TC_NAME, isArmorSetShared, sharedJobNames } from '../../data/eureka-armor-sets';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
 import type { ChainRef } from '../../hooks/useEurekaInventory';
@@ -26,12 +26,6 @@ const SLOT_TC: Record<ArmorSlot, string> = {
 };
 
 const JOBS = Object.keys(ARMOR_SET_FOR_JOB);
-
-const JOB_NAME_TC: Record<string, string> = {
-  PLD: '騎士',   WAR: '戰士',   DRG: '龍騎士',
-  MNK: '武僧',   NIN: '忍者',   BRD: '吟遊詩人',
-  BLM: '黑魔法師', SMN: '召喚師', WHM: '白魔法師',
-};
 
 export type DetailTabProps = {
   inventory: EurekaInventoryV4;
@@ -78,7 +72,7 @@ export function DetailTab({
           className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm"
         >
           {JOBS.map((j) => (
-            <option key={j} value={j}>{JOB_NAME_TC[j] ?? j}</option>
+            <option key={j} value={j}>{JOB_TC_NAME[j as keyof typeof JOB_TC_NAME] ?? j}</option>
           ))}
         </select>
       </header>
@@ -189,14 +183,14 @@ type ArmorSectionProps = {
 
 function ArmorSection({ set, pieces, materials, materialsMap, onSetTarget, onRequestUpgrade }: ArmorSectionProps) {
   const shared = isArmorSetShared(set);
-  const sharedJobs = JOBS_FOR_ARMOR_SET[set] ?? [];
+  const sharedTCNames = sharedJobNames(set);
   return (
     <section className="space-y-4">
       <h3 className="text-green-400 font-bold">
         防具 · {set} 系列
         {shared && (
           <span className="ml-2 text-xs font-normal text-blue-200">
-            （共用：{sharedJobs.join(' / ')}）
+            （共用：{sharedTCNames.join(' / ')}）
           </span>
         )}
       </h3>
