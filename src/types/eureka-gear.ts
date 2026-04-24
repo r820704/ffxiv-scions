@@ -89,22 +89,22 @@ export const STAGE_ITEM_LEVELS: Record<EurekaStage, number> = {
 };
 
 export const STAGE_TC_LABEL: Record<EurekaStage, string> = {
-  antiquated: '舊化',
-  'anemos-base': '起始',
-  'anemos+1': '+1',
-  'anemos+2': '+2',
-  anemos: '常風',
-  pagos: '恆冰',
-  'pagos+1': '恆冰+1',
-  elemental: '元素',
-  'elemental+1': '元素+1',
-  'elemental+2': '元素+2',
-  pyros: '湧火',
-  hydatos: '豐水',
-  'hydatos+1': '豐水+1',
-  'base-eureka': '禁地',
-  eureka: '優雷卡',
-  physeos: '改',
+  antiquated: '70級職業套裝',
+  'anemos-base': '禁地兵裝',
+  'anemos+1': '禁地兵裝+1',
+  'anemos+2': '禁地兵裝+2',
+  anemos: '禁地兵裝·常風',
+  pagos: '禁地兵裝·恆冰',
+  'pagos+1': '禁地兵裝·恆冰+1',
+  elemental: '禁地兵裝·元素',
+  'elemental+1': '禁地兵裝·元素+1',
+  'elemental+2': '禁地兵裝·元素+2',
+  pyros: '禁地兵裝·湧火',
+  hydatos: '禁地兵裝·豐水',
+  'hydatos+1': '禁地兵裝·豐水+1',
+  'base-eureka': '新禁地兵裝',
+  eureka: '禁地兵裝最終形態',
+  physeos: '禁地兵裝·改裝',
 };
 
 export const JOB_TC_LABEL: Record<FFXIVJob, string> = {
