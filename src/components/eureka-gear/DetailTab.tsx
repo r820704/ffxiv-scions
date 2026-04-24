@@ -2,15 +2,28 @@ import { useMemo } from 'react';
 import { ChainStepper } from './ChainStepper';
 import { PreviewPanel } from './PreviewPanel';
 import { getJobProgress } from '../../utils/eurekaGear';
-import { ARMOR_SET_FOR_JOB } from '../../data/eureka-armor-sets';
+import { ARMOR_SET_FOR_JOB, JOBS_FOR_ARMOR_SET, isArmorSetShared } from '../../data/eureka-armor-sets';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
+import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
 import type { ChainRef } from '../../hooks/useEurekaInventory';
 import type {
+  ArmorSlot,
+  ArmorTrack,
   EurekaInventoryV4,
   EurekaStage,
   EurekaWeapon,
 } from '../../types/eureka-gear';
-import { STAGE_TC_LABEL } from '../../types/eureka-gear';
+import {
+  ARMOR_SLOTS,
+  ARMOR_STAGES_BY_TRACK,
+  ARMOR_TRACKS,
+  ARMOR_TRACK_LABEL,
+  STAGE_TC_LABEL,
+} from '../../types/eureka-gear';
+
+const SLOT_TC: Record<ArmorSlot, string> = {
+  head: '頭', body: '身', hands: '手', legs: '腿', feet: '腳',
+};
 
 const JOBS = Object.keys(ARMOR_SET_FOR_JOB);
 
@@ -152,6 +165,89 @@ export function DetailTab({
           );
         })}
       </section>
+
+      <ArmorSection
+        set={progress.armor.set}
+        pieces={progress.armor.pieces}
+        materials={inventory.materials}
+        materialsMap={materialsMap}
+        onSetTarget={onSetTarget}
+        onRequestUpgrade={onRequestUpgrade}
+      />
     </div>
+  );
+}
+
+type ArmorSectionProps = {
+  set: ReturnType<typeof getJobProgress>['armor']['set'];
+  pieces: ReturnType<typeof getJobProgress>['armor']['pieces'];
+  materials: Record<number, number>;
+  materialsMap: Record<number, { nameTC: string; icon: number }>;
+  onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
+  onRequestUpgrade: (ref: ChainRef) => void;
+};
+
+function ArmorSection({ set, pieces, materials, materialsMap, onSetTarget, onRequestUpgrade }: ArmorSectionProps) {
+  const shared = isArmorSetShared(set);
+  const sharedJobs = JOBS_FOR_ARMOR_SET[set] ?? [];
+  return (
+    <section className="space-y-4">
+      <h3 className="text-green-400 font-bold">
+        防具 · {set} 系列
+        {shared && (
+          <span className="ml-2 text-xs font-normal text-blue-200">
+            （共用：{sharedJobs.join(' / ')}）
+          </span>
+        )}
+      </h3>
+      {ARMOR_TRACKS.map((track: ArmorTrack) => (
+        <div key={track} className="space-y-3 pl-2 border-l-2 border-gray-700">
+          <h4 className="text-sm font-bold text-gray-300">{ARMOR_TRACK_LABEL[track]}</h4>
+          {ARMOR_SLOTS.map((slot) => {
+            const p = pieces[slot]?.[track] ?? { currentStage: 'antiquated' as const };
+            const ref: ChainRef = { kind: 'armor', set, slot, track };
+            const sequence = ARMOR_STAGES_BY_TRACK[track];
+            const costs = track === 'anemos' ? ANEMOS_ARMOR_COSTS : ELEMENTAL_ARMOR_COSTS;
+            return (
+              <div key={slot} className="space-y-2">
+                <div className="text-sm text-gray-100 font-semibold">
+                  {SLOT_TC[slot]}
+                  <span className="text-xs text-gray-400 font-normal ml-2">
+                    （{STAGE_TC_LABEL[p.currentStage]}）
+                  </span>
+                  {p.targetStage && p.targetStage !== p.currentStage && (
+                    <>
+                      <span className="text-yellow-400 mx-2">→</span>
+                      <span className="text-yellow-200">
+                        {STAGE_TC_LABEL[p.targetStage]}
+                      </span>
+                    </>
+                  )}
+                </div>
+                <ChainStepper
+                  currentStage={p.currentStage}
+                  targetStage={p.targetStage}
+                  stages={sequence}
+                  onSelectTarget={(stage) =>
+                    onSetTarget(ref, stage === p.currentStage ? undefined : stage)
+                  }
+                />
+                <PreviewPanel
+                  currentStage={p.currentStage}
+                  targetStage={p.targetStage}
+                  inventory={materials}
+                  onSetCurrent={() => onRequestUpgrade(ref)}
+                  onClearTarget={() => onSetTarget(ref, undefined)}
+                  materialsMap={materialsMap}
+                  stages={sequence}
+                  costs={costs}
+                  slot={slot}
+                />
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </section>
   );
 }

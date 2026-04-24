@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { costBetween } from '../../utils/eurekaGear';
+import { costBetween, costBetweenInSequence } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { EUREKA_STAGES, STAGE_TC_LABEL } from '../../types/eureka-gear';
-import type { EurekaStage } from '../../types/eureka-gear';
+import type { ArmorSlot, EurekaStage, StageUpgradeCost } from '../../types/eureka-gear';
 
 export type PreviewPanelProps = {
   currentStage: EurekaStage;
@@ -11,6 +11,12 @@ export type PreviewPanelProps = {
   onSetCurrent: () => void;
   onClearTarget: () => void;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
+  /** Optional: armor track stage sequence (defaults to full 16 weapon stages) */
+  stages?: readonly EurekaStage[];
+  /** Optional: cost table to use (defaults to STAGE_UPGRADE_COSTS for weapons) */
+  costs?: StageUpgradeCost[];
+  /** Optional: armor slot for slot-specific cost filtering */
+  slot?: ArmorSlot;
 };
 
 export function PreviewPanel({
@@ -20,9 +26,13 @@ export function PreviewPanel({
   onSetCurrent,
   onClearTarget,
   materialsMap,
+  stages,
+  costs,
+  slot,
 }: PreviewPanelProps) {
-  const currentIdx = EUREKA_STAGES.indexOf(currentStage);
-  const targetIdx = targetStage ? EUREKA_STAGES.indexOf(targetStage) : -1;
+  const seq = stages ?? EUREKA_STAGES;
+  const currentIdx = seq.indexOf(currentStage);
+  const targetIdx = targetStage ? seq.indexOf(targetStage) : -1;
   const direction: 'up' | 'down' | 'none' =
     targetStage === undefined || targetIdx === currentIdx
       ? 'none'
@@ -31,8 +41,15 @@ export function PreviewPanel({
         : 'down';
 
   const materials = useMemo(
-    () => (targetStage && direction === 'up' ? costBetween(currentStage, targetStage, STAGE_UPGRADE_COSTS) : []),
-    [currentStage, targetStage, direction],
+    () => {
+      if (!targetStage || direction !== 'up') return [];
+      if (stages || costs) {
+        return costBetweenInSequence(currentStage, targetStage, seq, costs ?? STAGE_UPGRADE_COSTS, slot);
+      }
+      return costBetween(currentStage, targetStage, STAGE_UPGRADE_COSTS);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentStage, targetStage, direction, slot],
   );
 
   if (direction === 'none') {

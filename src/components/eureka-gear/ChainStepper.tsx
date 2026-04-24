@@ -5,6 +5,8 @@ export type ChainStepperProps = {
   currentStage: EurekaStage;
   targetStage?: EurekaStage;
   onSelectTarget: (stage: EurekaStage) => void;
+  /** Optional stage sequence for armor tracks (shorter than EUREKA_STAGES). */
+  stages?: readonly EurekaStage[];
 };
 
 function stageState(
@@ -25,12 +27,13 @@ const STATE_STYLE: Record<string, string> = {
   unowned: 'bg-gray-700 text-gray-500',
 };
 
-export function ChainStepper({ currentStage, targetStage, onSelectTarget }: ChainStepperProps) {
-  const currentIdx = EUREKA_STAGES.indexOf(currentStage);
-  const targetIdx = targetStage ? EUREKA_STAGES.indexOf(targetStage) : null;
+export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages }: ChainStepperProps) {
+  const seq = stages ?? EUREKA_STAGES;
+  const currentIdx = seq.indexOf(currentStage);
+  const targetIdx = targetStage ? seq.indexOf(targetStage) : null;
   return (
     <div data-testid="stepper-container" className="flex flex-wrap gap-1 items-center">
-      {EUREKA_STAGES.map((stage, i) => {
+      {seq.map((stage, i) => {
         const state = stageState(i, currentIdx, targetIdx);
         return (
           <button
