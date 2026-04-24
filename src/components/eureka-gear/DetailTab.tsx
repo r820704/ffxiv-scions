@@ -30,8 +30,8 @@ export type DetailTabProps = {
   onRequestUpgrade: (ref: ChainRef) => void;
 };
 
-function weaponNameAt(weapons: EurekaWeapon[], chainId: string, stage: EurekaStage): string | undefined {
-  return weapons.find((w) => w.chainId === chainId && w.stage === stage)?.tcName;
+function weaponInfoAt(weapons: EurekaWeapon[], chainId: string, stage: EurekaStage) {
+  return weapons.find((w) => w.chainId === chainId && w.stage === stage);
 }
 
 export function DetailTab({
@@ -67,22 +67,23 @@ export function DetailTab({
         {progress.weapons.map(({ chainId, progress: p }) => {
           const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
           const ref: ChainRef = { kind: 'weapon', chainId };
-          const currentName = weaponNameAt(weapons, chainId, p.currentStage) ?? chain?.displayName ?? chainId;
-          const targetName = p.targetStage ? weaponNameAt(weapons, chainId, p.targetStage) : undefined;
+          const currentInfo = weaponInfoAt(weapons, chainId, p.currentStage);
+          const targetInfo = p.targetStage ? weaponInfoAt(weapons, chainId, p.targetStage) : undefined;
+          const currentName = currentInfo?.tcName ?? chain?.displayName ?? chainId;
           return (
             <div key={chainId} className="space-y-2 pt-2">
               <div className="text-sm text-gray-100 font-semibold">
                 {currentName}
                 <span className="text-xs text-gray-400 font-normal ml-2">
-                  （{STAGE_TC_LABEL[p.currentStage]}）
+                  （{STAGE_TC_LABEL[p.currentStage]}{currentInfo ? ` · iL${currentInfo.itemLevel}` : ''}）
                 </span>
-                {targetName && p.targetStage && p.targetStage !== p.currentStage && (
+                {targetInfo && p.targetStage && p.targetStage !== p.currentStage && (
                   <>
                     <span className="text-yellow-400 mx-2">→</span>
                     <span className="text-yellow-200">
-                      {targetName}
+                      {targetInfo.tcName}
                       <span className="text-xs text-gray-400 font-normal ml-2">
-                        （{STAGE_TC_LABEL[p.targetStage]}）
+                        （{STAGE_TC_LABEL[p.targetStage]} · iL{targetInfo.itemLevel}）
                       </span>
                     </span>
                   </>

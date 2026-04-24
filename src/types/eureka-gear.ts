@@ -89,10 +89,10 @@ export const STAGE_ITEM_LEVELS: Record<EurekaStage, number> = {
 };
 
 export const STAGE_TC_LABEL: Record<EurekaStage, string> = {
-  antiquated: '古代',
-  'anemos-base': '常風基礎',
-  'anemos+1': '常風+1',
-  'anemos+2': '常風+2',
+  antiquated: '舊化',
+  'anemos-base': '起始',
+  'anemos+1': '+1',
+  'anemos+2': '+2',
   anemos: '常風',
   pagos: '恆冰',
   'pagos+1': '恆冰+1',
@@ -102,9 +102,9 @@ export const STAGE_TC_LABEL: Record<EurekaStage, string> = {
   pyros: '湧火',
   hydatos: '豐水',
   'hydatos+1': '豐水+1',
-  'base-eureka': '優雷卡基礎',
+  'base-eureka': '禁地',
   eureka: '優雷卡',
-  physeos: 'Physeos',
+  physeos: '改',
 };
 
 export const JOB_TC_LABEL: Record<FFXIVJob, string> = {

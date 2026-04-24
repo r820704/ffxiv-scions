@@ -27,8 +27,8 @@ export type JobCardProps = {
   onSelect: (job: string) => void;
 };
 
-function weaponNameAt(weapons: EurekaWeapon[] | undefined, chainId: string, stage: EurekaStage): string | undefined {
-  return weapons?.find((w) => w.chainId === chainId && w.stage === stage)?.tcName;
+function weaponInfoAt(weapons: EurekaWeapon[] | undefined, chainId: string, stage: EurekaStage) {
+  return weapons?.find((w) => w.chainId === chainId && w.stage === stage);
 }
 
 export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
@@ -62,11 +62,13 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
           <ul className="space-y-1 text-xs">
             {progress.weapons.map(({ chainId, progress: p }) => {
               const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
-              const name = weaponNameAt(weapons, chainId, p.currentStage) ?? chain?.displayName ?? chainId;
+              const info = weaponInfoAt(weapons, chainId, p.currentStage);
+              const name = info?.tcName ?? chain?.displayName ?? chainId;
               return (
                 <li key={chainId} className="space-y-0.5">
                   <div className="text-gray-300 text-xs" title={name}>
                     {name}
+                    {info && <span className="text-gray-500 ml-1">iL{info.itemLevel}</span>}
                   </div>
                   <ChainFingerprint currentStage={p.currentStage} showLabel />
                 </li>
