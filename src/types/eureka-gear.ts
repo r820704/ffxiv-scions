@@ -43,6 +43,13 @@ export interface StageUpgradeCost {
   to: EurekaStage;
   materials: MaterialCost[];
   notes?: string;
+  /**
+   * If present, this cost entry only applies to the listed armor slots.
+   * Used when armor upgrade materials differ by slot (e.g. body/legs cost
+   * more than head/hands/feet at the same stage edge).
+   * Omitted = applies to any slot (weapons use this default).
+   */
+  slots?: ArmorSlot[];
 }
 
 export interface EurekaChain {
@@ -147,6 +154,48 @@ export type EurekaInventoryV3 = {
   weapons: Record<string, SlotProgress>;
   armor: Record<ArmorSetId, Partial<Record<ArmorSlot, SlotProgress>>>;
   materials: Record<number, number>;
+};
+
+// ============ v4 schema (adds dual-track armor) ============
+
+/**
+ * Armor has two independent progression tracks per slot:
+ * - `anemos`: 5 stages (antiquated → anemos-base → +1 → +2 → anemos, glamour only, ends iL350)
+ * - `elemental`: 3 stages (elemental → +1 → +2, combat set, ends iL390)
+ *
+ * Tracks are independent — completing one does not affect the other.
+ */
+export const ARMOR_TRACKS = ['anemos', 'elemental'] as const;
+export type ArmorTrack = typeof ARMOR_TRACKS[number];
+
+export type ArmorSlotState = Partial<Record<ArmorTrack, SlotProgress>>;
+
+export type EurekaInventoryV4 = {
+  schemaVersion: 4;
+  weapons: Record<string, SlotProgress>;
+  armor: Record<ArmorSetId, Partial<Record<ArmorSlot, ArmorSlotState>>>;
+  materials: Record<number, number>;
+};
+
+/**
+ * Stages available per armor track (subset of EUREKA_STAGES).
+ */
+export const ANEMOS_ARMOR_STAGES: EurekaStage[] = [
+  'antiquated', 'anemos-base', 'anemos+1', 'anemos+2', 'anemos',
+];
+
+export const ELEMENTAL_ARMOR_STAGES: EurekaStage[] = [
+  'antiquated', 'elemental', 'elemental+1', 'elemental+2',
+];
+
+export const ARMOR_STAGES_BY_TRACK: Record<ArmorTrack, EurekaStage[]> = {
+  anemos: ANEMOS_ARMOR_STAGES,
+  elemental: ELEMENTAL_ARMOR_STAGES,
+};
+
+export const ARMOR_TRACK_LABEL: Record<ArmorTrack, string> = {
+  anemos: '常風系列（外觀）',
+  elemental: '元素系列（戰鬥）',
 };
 
 // ============ zone grouping ============
