@@ -1,7 +1,6 @@
 import { ChainFingerprint } from './ChainFingerprint';
-import { Tooltip } from '../ui/Tooltip';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
-import { isArmorSetShared, JOBS_FOR_ARMOR_SET, JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
+import { JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
 import type { JobProgress } from '../../utils/eurekaGear';
 import type { EurekaStage, EurekaWeapon, ArmorSlot } from '../../types/eureka-gear';
 import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK } from '../../types/eureka-gear';
@@ -32,33 +31,8 @@ function weaponInfoAt(weapons: EurekaWeapon[] | undefined, chainId: string, stag
   return weapons?.find((w) => w.chainId === chainId && w.stage === stage);
 }
 
-function SharedJobIcons({ set }: { set: string }) {
-  const setId = set as keyof typeof JOBS_FOR_ARMOR_SET;
-  const jobs = JOBS_FOR_ARMOR_SET[setId] ?? [];
-  if (jobs.length <= 1) return null;
-  return (
-    <span className="inline-flex items-center gap-0.5 ml-2">
-      <span className="text-[10px] text-blue-200">共用</span>
-      {jobs.map((j) => {
-        const tcName = JOB_TC_NAME[j as JobId] ?? j;
-        const icon = JOB_ICONS[j];
-        return (
-          <Tooltip key={j} label={tcName}>
-            {icon ? (
-              <img src={icon} alt={j} className="w-3.5 h-3.5 rounded" />
-            ) : (
-              <span className="text-[9px] px-1 py-0.5 bg-gray-700 rounded">{j}</span>
-            )}
-          </Tooltip>
-        );
-      })}
-    </span>
-  );
-}
-
 export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
   const iconSrc = JOB_ICONS[job];
-  const elementalSet = progress.elemental.set;
 
   return (
     <article className="bg-gray-800 border border-gray-700 rounded p-3 space-y-2">
@@ -124,28 +98,7 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
         </ul>
       </section>
 
-      <section>
-        <div className="text-xs font-bold text-cyan-400 mb-1">
-          元素系列（戰鬥）
-          {isArmorSetShared(elementalSet) && <SharedJobIcons set={elementalSet} />}
-        </div>
-        <ul className="space-y-0.5">
-          {ARMOR_SLOTS.map((slot) => {
-            const p = progress.elemental.pieces[slot];
-            const stage: EurekaStage = p?.currentStage ?? 'antiquated';
-            return (
-              <li key={slot} className="flex items-center gap-2 text-xs">
-                <span className="w-6 text-gray-400">{SLOT_TC[slot]}</span>
-                <ChainFingerprint
-                  currentStage={stage}
-                  stages={ARMOR_STAGES_BY_TRACK.elemental}
-                  showLabel
-                />
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+      {/* Elemental section removed — rendered separately in 元素防具共用區 */}
     </article>
   );
 }

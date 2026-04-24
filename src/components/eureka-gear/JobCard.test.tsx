@@ -35,16 +35,9 @@ describe('JobCard', () => {
     expect(onSelect).toHaveBeenCalledWith('PLD');
   });
 
-  it('renders two separate armor sections: 常風系列 and 元素系列', () => {
+  it('renders 常風系列 section but NOT 元素系列 (elemental moved to RoleCard)', () => {
     render(<JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />);
     expect(screen.getByText(/常風系列/)).toBeInTheDocument();
-    expect(screen.getByText(/元素系列/)).toBeInTheDocument();
-  });
-
-  it('shows shared-job icons on elemental section for Fending (3 jobs)', () => {
-    const { container } = render(<JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />);
-    // 3 job icons (PLD+WAR+DRK) on elemental section
-    const sharedImgs = container.querySelectorAll('img[alt="DRK"], img[alt="WAR"]');
-    expect(sharedImgs.length).toBeGreaterThanOrEqual(2);
+    expect(screen.queryByText(/元素系列/)).toBeNull();
   });
 });
