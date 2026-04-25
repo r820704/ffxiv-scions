@@ -205,4 +205,36 @@ describe('RoleCard', () => {
     expect(screen.getByText(/武僧 · 武士/)).toBeInTheDocument();
     expect(screen.getByText('[近戰]')).toBeInTheDocument();
   });
+
+  it('shows stage name labels for elemental armor slots (current only)', () => {
+    render(
+      <RoleCard
+        set="fending"
+        pieces={baseSlotProgress}
+        onSelect={() => {}}
+      />
+    );
+    // Should display stage labels for elemental armor
+    expect(screen.getAllByText(/禁地兵裝·常風/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/70級職業套裝/).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('shows stage name labels for elemental armor with target stage', () => {
+    const piecesWithTarget = {
+      head: { currentStage: 'elemental' as const, targetStage: 'pyros' as const },
+      body: { currentStage: 'anemos' as const },
+      hands: { currentStage: 'antiquated' as const },
+      legs: { currentStage: 'antiquated' as const },
+      feet: { currentStage: 'antiquated' as const },
+    };
+    render(
+      <RoleCard
+        set="fending"
+        pieces={piecesWithTarget}
+        onSelect={() => {}}
+      />
+    );
+    // Should show both current and target stages for head
+    expect(screen.getByText(/禁地兵裝·元素 → 禁地兵裝·湧火/)).toBeInTheDocument();
+  });
 });

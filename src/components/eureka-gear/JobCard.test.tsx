@@ -40,4 +40,47 @@ describe('JobCard', () => {
     expect(screen.getByText(/常風系列/)).toBeInTheDocument();
     expect(screen.queryByText(/元素系列/)).toBeNull();
   });
+
+  it('shows stage name label for weapon (current only, no target)', () => {
+    render(<JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />);
+    // Should display stage label for anemos weapon
+    expect(screen.getByText(/禁地兵裝·常風/)).toBeInTheDocument();
+    // Should display stage label for antiquated shield (may appear multiple times with armor)
+    expect(screen.getAllByText(/70級職業套裝/).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('shows stage name label for weapon with target stage', () => {
+    const progressWithTarget: JobProgress = {
+      weapons: [
+        {
+          chainId: 'pld-galatyn',
+          progress: { currentStage: 'anemos', targetStage: 'pagos' },
+        },
+      ],
+      anemos: {},
+      elemental: { set: 'fending', pieces: {} },
+    };
+    render(<JobCard job="PLD" progress={progressWithTarget} onSelect={() => {}} />);
+    // Should show both current and target stages
+    expect(screen.getByText(/禁地兵裝·常風 → 禁地兵裝·恆冰/)).toBeInTheDocument();
+  });
+
+  it('shows stage name labels for anemos armor slots', () => {
+    const progressWithArmor: JobProgress = {
+      weapons: [],
+      anemos: {
+        head: { currentStage: 'anemos' },
+        body: { currentStage: 'pagos', targetStage: 'elemental' },
+        hands: { currentStage: 'antiquated' },
+        legs: { currentStage: 'antiquated' },
+        feet: { currentStage: 'antiquated' },
+      },
+      elemental: { set: 'fending', pieces: {} },
+    };
+    render(<JobCard job="PLD" progress={progressWithArmor} onSelect={() => {}} />);
+    // Check for stage labels
+    expect(screen.getByText(/禁地兵裝·常風/)).toBeInTheDocument();
+    expect(screen.getByText(/禁地兵裝·恆冰 → 禁地兵裝·元素/)).toBeInTheDocument();
+    expect(screen.getAllByText(/70級職業套裝/).length).toBeGreaterThanOrEqual(1);
+  });
 });
