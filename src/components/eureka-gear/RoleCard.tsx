@@ -43,11 +43,19 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
   const primary = jobs[0];
   const roleLabel = ROLE_TC_NAME[set];
 
+  // Job names joined with full-width middle-dot
+  const jobNamesHeading = jobs
+    .map((j) => JOB_TC_NAME[j as AnyJobId] ?? j)
+    .join(' · ');
+
   return (
     <article className="bg-gray-800 border border-gray-700 rounded p-3 space-y-2">
-      <header className="flex justify-between items-center">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-semibold text-cyan-300 text-sm">{roleLabel}</span>
+      <header className="flex justify-between items-center gap-3">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-semibold text-cyan-300 text-sm">{jobNamesHeading}</span>
+            <span className="text-xs text-gray-400">[{roleLabel}]</span>
+          </div>
           <span className="inline-flex items-center gap-1">
             {jobs.map((j) => {
               const tcName = JOB_TC_NAME[j as AnyJobId] ?? j;
@@ -68,7 +76,7 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
           <button
             type="button"
             onClick={() => onSelect(primary)}
-            className="text-xs text-blue-400 hover:underline"
+            className="text-xs text-blue-400 hover:underline whitespace-nowrap"
             aria-label="查看詳情"
           >
             查看詳情 →
