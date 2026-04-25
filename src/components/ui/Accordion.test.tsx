@@ -74,4 +74,24 @@ describe('AccordionItem', () => {
     );
     expect(screen.getByRole('button').textContent).toContain('▼');
   });
+
+  it('links button to body via aria-controls', () => {
+    render(
+      <AccordionItem expanded={true} onToggle={() => {}} header={<span>H</span>}>
+        body content
+      </AccordionItem>,
+    );
+    const btn = screen.getByRole('button');
+    const region = screen.getByRole('region');
+    expect(btn.getAttribute('aria-controls')).toBe(region.id);
+  });
+
+  it('body has role="region" when expanded', () => {
+    render(
+      <AccordionItem expanded={true} onToggle={() => {}} header={<span>H</span>}>
+        body
+      </AccordionItem>,
+    );
+    expect(screen.getByRole('region')).toBeInTheDocument();
+  });
 });
