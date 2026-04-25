@@ -24,7 +24,7 @@ export default function HomePage() {
       </div>
 
       {/* Feature cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[580px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-[880px]">
         <Link
           to="/eureka-weather"
           className="block rounded-[10px] border border-border bg-card p-7 hover:border-[#3a3252] hover:-translate-y-0.5 hover:shadow-lg transition-all relative overflow-hidden group"
@@ -46,6 +46,17 @@ export default function HomePage() {
           />
           <h2 className="text-lg font-semibold text-foreground mb-2">文理技能</h2>
           <p className="text-sm text-muted-foreground">Eureka 文理技能查詢、材料反查與市場價格</p>
+        </Link>
+        <Link
+          to="/eureka-gear"
+          className="block rounded-[10px] border border-border bg-card p-7 hover:border-[#3a3252] hover:-translate-y-0.5 hover:shadow-lg transition-all relative overflow-hidden group"
+        >
+          <div
+            className="absolute top-0 left-0 right-0 h-[3px]"
+            style={{ background: 'linear-gradient(90deg, #D4AF37, #E07A2D, #B8482E)' }}
+          />
+          <h2 className="text-lg font-semibold text-foreground mb-2">禁地兵裝</h2>
+          <p className="text-sm text-muted-foreground">SB Eureka 武器與防具升級進度追蹤</p>
         </Link>
       </div>
     </div>
