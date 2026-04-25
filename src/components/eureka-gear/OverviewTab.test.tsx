@@ -6,11 +6,11 @@ import { emptyInventoryV3 } from '../../utils/eureka-gear-migrate';
 afterEach(() => cleanup());
 
 describe('OverviewTab', () => {
-  it('renders 9 unique job cards (PLD/WAR/DRG/MNK/NIN/BRD/BLM/SMN/WHM)', () => {
+  it('renders all 15 SB jobs, each with a dedicated job card', () => {
     render(<OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} />);
-    expect(screen.getByAltText('PLD')).toBeInTheDocument();
-    expect(screen.getByAltText('WAR')).toBeInTheDocument();
-    expect(screen.getByAltText('WHM')).toBeInTheDocument();
+    for (const job of ['PLD','WAR','DRK','MNK','DRG','NIN','SAM','BRD','MCH','BLM','SMN','RDM','WHM','SCH','AST']) {
+      expect(screen.getAllByAltText(job).length).toBeGreaterThanOrEqual(1);
+    }
   });
 
   it('onSelectJob fires with correct job when card detail button clicked', () => {

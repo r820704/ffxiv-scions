@@ -10,7 +10,7 @@ import InventorySidebar from '@/components/eureka-gear/InventorySidebar';
 import { UpgradeDialog } from '@/components/eureka-gear/UpgradeDialog';
 import { EUREKA_STAGES } from '@/types/eureka-gear';
 import type { EurekaStage } from '@/types/eureka-gear';
-import { JOBS_FOR_ARMOR_SET } from '@/data/eureka-armor-sets';
+import { sharedJobNames } from '@/data/eureka-armor-sets';
 
 type TabKey = 'overview' | 'detail' | 'farming';
 
@@ -74,14 +74,20 @@ export default function EurekaGearPage() {
   };
 
   const handleRequestUpgrade = (ref: ChainRef) => {
-    const slot = ref.kind === 'weapon'
-      ? inventory.weapons[ref.chainId]
-      : inventory.armor[ref.set][ref.slot];
+    let slot: { currentStage: typeof EUREKA_STAGES[number]; targetStage?: typeof EUREKA_STAGES[number] } | undefined;
+    if (ref.kind === 'weapon') {
+      slot = inventory.weapons[ref.chainId];
+    } else if (ref.kind === 'armor-anemos') {
+      slot = inventory.armor.anemos[ref.job]?.[ref.slot];
+    } else {
+      slot = inventory.armor.elemental[ref.set]?.[ref.slot];
+    }
     if (!slot?.targetStage) return;
     const currentIdx = EUREKA_STAGES.indexOf(slot.currentStage);
     const targetIdx = EUREKA_STAGES.indexOf(slot.targetStage);
     const direction: 'up' | 'down' = targetIdx < currentIdx ? 'down' : 'up';
-    const sharedJobs = ref.kind === 'armor' ? JOBS_FOR_ARMOR_SET[ref.set] : [];
+    // Only elemental armor is role-shared; anemos is per-job so no shared warning
+    const sharedJobs = ref.kind === 'armor-elemental' ? sharedJobNames(ref.set) : [];
     if (direction === 'down' || sharedJobs.length > 1) {
       setPendingDialog({ ref, direction, targetStage: slot.targetStage, sharedJobs });
     } else {

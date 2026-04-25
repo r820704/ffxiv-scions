@@ -10,13 +10,14 @@ const baseProgress: JobProgress = {
     { chainId: 'pld-galatyn', progress: { currentStage: 'anemos' } },
     { chainId: 'pld-galatyn-shield', progress: { currentStage: 'antiquated' } },
   ],
-  armor: { set: 'fending', pieces: {} },
+  anemos: {},
+  elemental: { set: 'fending', pieces: {} },
 };
 
 describe('JobCard', () => {
   it('renders job icon and TC name', () => {
     render(<JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />);
-    expect(screen.getByAltText('PLD')).toBeInTheDocument();
+    expect(screen.getAllByAltText('PLD').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('騎士')).toBeInTheDocument();
   });
 
@@ -24,7 +25,6 @@ describe('JobCard', () => {
     const { container } = render(
       <JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />,
     );
-    // 2 weapons × 16 dots = 32 dots
     expect(container.querySelectorAll('[data-dot]').length).toBeGreaterThanOrEqual(32);
   });
 
@@ -35,8 +35,9 @@ describe('JobCard', () => {
     expect(onSelect).toHaveBeenCalledWith('PLD');
   });
 
-  it('does not render armor section when armor.pieces is empty (PR-1 scope)', () => {
+  it('renders 常風系列 section but NOT 元素系列 (elemental moved to RoleCard)', () => {
     render(<JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />);
-    expect(screen.queryByText(/防具/)).toBeNull();
+    expect(screen.getByText(/常風系列/)).toBeInTheDocument();
+    expect(screen.queryByText(/元素系列/)).toBeNull();
   });
 });

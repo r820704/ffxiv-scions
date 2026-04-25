@@ -9,11 +9,16 @@ const ITEM_TC_URL = 'https://raw.githubusercontent.com/thewakingsands/ffxiv-data
 const ITEM_EN_URL = 'https://raw.githubusercontent.com/xivapi/ffxiv-datamining/master/csv/en/Item.csv';
 
 // ItemUICategory:
-//   1..10  = main-hand weapons
+//   1..10  = main-hand weapons (PLD sword=2, WAR axe=3, BRD bow=4, DRG lance=5, ...)
 //   11     = shields (PLD off-hand)
-//   84     = daggers/throwing weapons (NIN) — NOT shields
-// 實作時以 datamining-tc ItemUICategory.csv 驗證一次，若範圍不對依實際值調整
-const WEAPON_CATEGORIES = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 84]);
+//   84     = daggers/throwing weapons (NIN)
+//   87     = DRK greatsword
+//   88     = MCH firearm
+//   89     = AST star globe
+//   96     = SAM katana
+//   97     = RDM rapier
+//   98     = SCH book (codex)
+const WEAPON_CATEGORIES = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 84, 87, 88, 89, 96, 97, 98]);
 const SHIELD_CATEGORY = 11;
 
 async function fetchCsv(url) {
@@ -22,31 +27,52 @@ async function fetchCsv(url) {
   return res.text();
 }
 
-function parseRow(line) {
-  const out = [];
+// Proper CSV tokenizer that treats the text as a stream so multi-line quoted
+// fields (e.g. descriptions with embedded newlines) don't break row splitting.
+// Produces one array of cells per row.
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
   let buf = '';
   let inQ = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') { inQ = !inQ; continue; }
-    if (ch === ',' && !inQ) { out.push(buf); buf = ''; continue; }
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') { buf += '"'; i++; continue; }
+        inQ = false;
+        continue;
+      }
+      buf += ch;
+      continue;
+    }
+    if (ch === '"') { inQ = true; continue; }
+    if (ch === ',') { row.push(buf); buf = ''; continue; }
+    if (ch === '\r') continue;
+    if (ch === '\n') {
+      row.push(buf);
+      rows.push(row);
+      row = [];
+      buf = '';
+      continue;
+    }
     buf += ch;
   }
-  out.push(buf);
-  return out;
+  if (buf.length || row.length) { row.push(buf); rows.push(row); }
+  return rows;
 }
 
 function parseItemCsv(text, variant) {
-  // variant === 'tc'  → line0 numeric keys, line1 field names, line2 types, data from line3
-  // variant === 'en'  → line0 field names, data from line1
-  const lines = text.split(/\r?\n/);
-  if (lines.length < 3) throw new Error('CSV too short');
+  // variant === 'tc'  → row0 numeric keys, row1 field names, row2 types, data from row3
+  // variant === 'en'  → row0 field names, data from row1
+  const rows = parseCsv(text);
+  if (rows.length < 3) throw new Error('CSV too short');
 
   const headerLineIdx = variant === 'en' ? 0 : 1;
   const dataStartIdx = variant === 'en' ? 1 : 3;
   const ilvName = variant === 'en' ? 'LevelItem' : 'Level{Item}';
 
-  const cols = parseRow(lines[headerLineIdx]);
+  const cols = rows[headerLineIdx];
   const nameCol = cols.indexOf('Name');
   const ilvCol = cols.indexOf(ilvName);
   const iconCol = cols.indexOf('Icon');
@@ -55,10 +81,9 @@ function parseItemCsv(text, variant) {
     throw new Error(`Missing required cols (${variant}): name=${nameCol} ilv=${ilvCol} icon=${iconCol} cat=${categoryCol}`);
   }
   const map = new Map();
-  for (let i = dataStartIdx; i < lines.length; i++) {
-    const line = lines[i];
-    if (!line || !line.trim()) continue;
-    const row = parseRow(line);
+  for (let i = dataStartIdx; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.length < 2) continue;
     const id = Number(row[0]);
     if (!Number.isFinite(id)) continue;
     const name = row[nameCol] ?? '';
@@ -77,13 +102,29 @@ function parseItemCsv(text, variant) {
 // ambiguous stages (anemos-base plain names, base-eureka plain names) so we
 // don't pull in unrelated raid/event weapons with the same ilv.
 const ANEMOS_FAMILIES = new Set([
+  // Original 9 jobs' families + PLD shield
   'Aymur', 'Evalach', 'Failnaught', 'Farsha', 'Galatyn',
   'Lemegeton', 'Nagi', 'Ryunohige', 'Vanargand',
-  'Sudarshana Chakra', // antiquated only; no confirmed chain continuation
+  'Sudarshana Chakra',
+  // 6 remaining SB jobs (added 2026-04-25)
+  'Caladbolg',      // DRK
+  'Kiku-ichimonji', // SAM
+  'Outsider',       // MCH
+  'Organum',        // SCH
+  'Pleiades',       // AST
+  'Murgleis',       // RDM
 ]);
 const EUREKA_FAMILIES = new Set([
+  // Original jobs' base-eureka / eureka / physeos family names
   'Antea', 'Bellerophon', 'Circinae', 'Daboya', 'Dumuzis',
   'Kasasagi', 'Paikea', 'Rose Couverte', 'Shamash', 'Tuah',
+  // 6 remaining jobs
+  'Xiphias',    // DRK
+  'Torigashira',// SAM
+  'Mollfrith',  // MCH
+  'Jebat',      // SCH
+  'Albireo',    // AST
+  'Brunello',   // RDM
 ]);
 
 // Eureka upgrade materials. IDs verified against EN CSV.
@@ -163,15 +204,30 @@ const FAMILY_TO_JOB = {
   'vanargand': 'BLM',
   'lemegeton': 'SMN',
   'aymur': 'WHM',
+  // 6 additional SB jobs (2026-04-25)
+  'caladbolg': 'DRK',
+  'kiku-ichimonji': 'SAM',
+  'outsider': 'MCH',
+  'organum': 'SCH',
+  'pleiades': 'AST',
+  'murgleis': 'RDM',
   // Elemental/Pyros/Hydatos series (generic weapon-type names)
   'sword': 'PLD', 'shield': 'PLD',
   'battleaxe': 'WAR',
   'lance': 'DRG',
   'knives': 'NIN',
+  'knuckles': 'MNK',
   'harp-bow': 'BRD',
   'rod': 'BLM',
   'grimoire': 'SMN',
   'cane': 'WHM',
+  // (Elemental-series generic names for the 6 added jobs — verified against EN CSV)
+  'guillotine': 'DRK',
+  'handgonne': 'MCH',
+  'codex': 'SCH',
+  'astrometer': 'AST',
+  'blade': 'SAM',
+  'tuck': 'RDM',
   // Eureka/Physeos series
   'antea': 'PLD', 'bellerophon': 'PLD',
   'shamash': 'WAR',
@@ -182,8 +238,13 @@ const FAMILY_TO_JOB = {
   'paikea': 'BLM',
   'tuah': 'SMN',
   'rose-couverte': 'WHM',
-  // '-eureka' suffixed keys (antea-eureka, bellerophon-eureka, etc.)
-  // Add '-eureka' suffixed keys as a fallback below.
+  // 6 additional Eureka-form families
+  'xiphias': 'DRK',
+  'torigashira': 'SAM',
+  'mollfrith': 'MCH',
+  'jebat': 'SCH',
+  'albireo': 'AST',
+  'brunello': 'RDM',
 };
 
 // Same job → same chainId across all generations. Key by job + Stormblood family.
@@ -192,6 +253,8 @@ const STORMBLOOD_FAMILY_BY_JOB = {
   MNK: 'sudarshana-chakra', NIN: 'nagi',
   BRD: 'failnaught', BLM: 'vanargand',
   SMN: 'lemegeton', WHM: 'aymur',
+  DRK: 'caladbolg', SAM: 'kiku-ichimonji', MCH: 'outsider',
+  SCH: 'organum', AST: 'pleiades', RDM: 'murgleis',
 };
 
 function deriveJob(familyKey, isShield) {

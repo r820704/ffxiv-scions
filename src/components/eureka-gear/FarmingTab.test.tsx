@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import { FarmingTab } from './FarmingTab';
 import { emptyInventoryV3 } from '../../utils/eureka-gear-migrate';
-import type { EurekaInventoryV3 } from '../../types/eureka-gear';
+import type { EurekaInventoryV5 } from '../../types/eureka-gear';
 
 afterEach(() => cleanup());
 
@@ -19,7 +19,7 @@ describe('FarmingTab', () => {
   });
 
   it('aggregates by zone when chains have targets', () => {
-    const inv: EurekaInventoryV3 = emptyInventoryV3();
+    const inv: EurekaInventoryV5 = emptyInventoryV3();
     inv.weapons['pld-galatyn'] = { currentStage: 'pyros', targetStage: 'hydatos' };
     render(<FarmingTab inventory={inv} materialsMap={materialsMap} />);
     expect(screen.getByText(/豐水之地/)).toBeInTheDocument();

@@ -37,7 +37,7 @@ export default function InventorySidebar({
         </div>
       </div>
       {expanded && (
-        <div className="flex flex-wrap gap-2 mt-3">
+        <div className="grid grid-cols-3 gap-1 mt-2">
           {materials.map((m) => (
             <MaterialTile
               key={m.id}
