@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ChainStepper } from './ChainStepper';
 import { PreviewPanel } from './PreviewPanel';
+import { AccordionItem } from '../ui/Accordion';
 import { getJobProgress } from '../../utils/eurekaGear';
 import {
   ARMOR_SET_FOR_JOB,
@@ -249,6 +250,9 @@ function ArmorTrackSection({
   title, colorClass, pieces, stages, costs, makeRef, sharedHeader,
   materials, materialsMap, onSetTarget, onRequestUpgrade,
 }: ArmorTrackSectionProps) {
+  const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
+    head: true, body: false, hands: false, legs: false, feet: false,
+  });
   return (
     <section className="space-y-4">
       <h3 className={`${colorClass} font-bold flex items-center flex-wrap`}>
@@ -259,42 +263,51 @@ function ArmorTrackSection({
         {ARMOR_SLOTS.map((slot) => {
           const p = pieces[slot] ?? { currentStage: 'antiquated' as const };
           const ref = makeRef(slot);
-          return (
-            <div key={slot} className="space-y-2">
-              <div className="text-sm text-gray-100 font-semibold">
-                {SLOT_TC[slot]}
-                <span className="text-xs text-gray-400 font-normal ml-2">
-                  （{STAGE_TC_LABEL[p.currentStage]}）
-                </span>
-                {p.targetStage && p.targetStage !== p.currentStage && (
-                  <>
-                    <span className="text-yellow-400 mx-2">→</span>
-                    <span className="text-yellow-200">
-                      {STAGE_TC_LABEL[p.targetStage]}
-                    </span>
-                  </>
-                )}
-              </div>
-              <ChainStepper
-                currentStage={p.currentStage}
-                targetStage={p.targetStage}
-                stages={stages}
-                onSelectTarget={(stage) =>
-                  onSetTarget(ref, stage === p.currentStage ? undefined : stage)
-                }
-              />
-              <PreviewPanel
-                currentStage={p.currentStage}
-                targetStage={p.targetStage}
-                inventory={materials}
-                onSetCurrent={() => onRequestUpgrade(ref)}
-                onClearTarget={() => onSetTarget(ref, undefined)}
-                materialsMap={materialsMap}
-                stages={stages}
-                costs={costs}
-                slot={slot}
-              />
+          const header = (
+            <div className="text-sm text-gray-100 font-semibold">
+              {SLOT_TC[slot]}
+              <span className="text-xs text-gray-400 font-normal ml-2">
+                （{STAGE_TC_LABEL[p.currentStage]}）
+              </span>
+              {p.targetStage && p.targetStage !== p.currentStage && (
+                <>
+                  <span className="text-yellow-400 mx-2">→</span>
+                  <span className="text-yellow-200">
+                    {STAGE_TC_LABEL[p.targetStage]}
+                  </span>
+                </>
+              )}
             </div>
+          );
+          return (
+            <AccordionItem
+              key={slot}
+              expanded={expanded[slot]}
+              onToggle={() => setExpanded((prev) => ({ ...prev, [slot]: !prev[slot] }))}
+              header={header}
+            >
+              <div className="space-y-2">
+                <ChainStepper
+                  currentStage={p.currentStage}
+                  targetStage={p.targetStage}
+                  stages={stages}
+                  onSelectTarget={(stage) =>
+                    onSetTarget(ref, stage === p.currentStage ? undefined : stage)
+                  }
+                />
+                <PreviewPanel
+                  currentStage={p.currentStage}
+                  targetStage={p.targetStage}
+                  inventory={materials}
+                  onSetCurrent={() => onRequestUpgrade(ref)}
+                  onClearTarget={() => onSetTarget(ref, undefined)}
+                  materialsMap={materialsMap}
+                  stages={stages}
+                  costs={costs}
+                  slot={slot}
+                />
+              </div>
+            </AccordionItem>
           );
         })}
       </div>
