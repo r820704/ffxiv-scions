@@ -8,6 +8,7 @@ import { DetailTab } from '@/components/eureka-gear/DetailTab';
 import { FarmingTab } from '@/components/eureka-gear/FarmingTab';
 import InventorySidebar from '@/components/eureka-gear/InventorySidebar';
 import { UpgradeDialog } from '@/components/eureka-gear/UpgradeDialog';
+import { OnboardingBanner } from '@/components/eureka-gear/OnboardingBanner';
 import { EUREKA_STAGES } from '@/types/eureka-gear';
 import type { EurekaStage } from '@/types/eureka-gear';
 import { sharedJobNames } from '@/data/eureka-armor-sets';
@@ -136,6 +137,8 @@ export default function EurekaGearPage() {
     <div className="p-4 max-w-6xl mx-auto">
       <h1 className="text-lg font-semibold mb-2">禁地兵裝</h1>
       {error && <div className="text-red-400 text-sm mb-2">載入失敗：{error}</div>}
+
+      <OnboardingBanner />
 
       <nav role="tablist" className="flex border-b-2 border-blue-500 mb-4">
         {tabBtn('overview', '總覽')}

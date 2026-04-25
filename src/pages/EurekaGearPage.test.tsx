@@ -22,7 +22,7 @@ beforeEach(() => {
 describe('EurekaGearPage', () => {
   it('renders three tabs', async () => {
     render(<MemoryRouter><EurekaGearPage /></MemoryRouter>);
-    await waitFor(() => expect(screen.getByText(/禁地兵裝/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('heading', { name: /^禁地兵裝$/ })).toBeInTheDocument());
     expect(screen.getByRole('tab', { name: /總覽/ })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /職業詳情/ })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /素材需求/ })).toBeInTheDocument();
@@ -30,13 +30,13 @@ describe('EurekaGearPage', () => {
 
   it('default tab is overview (shows job grid)', async () => {
     render(<MemoryRouter><EurekaGearPage /></MemoryRouter>);
-    await waitFor(() => expect(screen.getByText(/禁地兵裝/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('heading', { name: /^禁地兵裝$/ })).toBeInTheDocument());
     expect(screen.getByTestId('job-grid')).toBeInTheDocument();
   });
 
   it('clicking farming tab switches content', async () => {
     render(<MemoryRouter><EurekaGearPage /></MemoryRouter>);
-    await waitFor(() => expect(screen.getByText(/禁地兵裝/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('heading', { name: /^禁地兵裝$/ })).toBeInTheDocument());
     fireEvent.click(screen.getByRole('tab', { name: /素材需求/ }));
     expect(screen.getByText(/沒有設定 target/)).toBeInTheDocument();
   });
