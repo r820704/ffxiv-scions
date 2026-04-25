@@ -1,6 +1,6 @@
 import { ChainFingerprint } from './ChainFingerprint';
 import { Tooltip } from '../ui/Tooltip';
-import { JOBS_FOR_ARMOR_SET, JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
+import { JOBS_FOR_ARMOR_SET, JOB_TC_NAME, type AnyJobId } from '../../data/eureka-armor-sets';
 import type { ArmorSetId, ArmorSlot, EurekaStage, SlotProgress } from '../../types/eureka-gear';
 import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK } from '../../types/eureka-gear';
 
@@ -38,6 +38,8 @@ export type RoleCardProps = {
 
 export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
   const jobs = JOBS_FOR_ARMOR_SET[set] ?? [];
+  // Detail tab is wired to SB jobs only, so route to the first SB job in the
+  // set (which is always position 0 in JOBS_FOR_ARMOR_SET).
   const primary = jobs[0];
   const roleLabel = ROLE_TC_NAME[set];
 
@@ -48,7 +50,7 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
           <span className="font-semibold text-cyan-300 text-sm">{roleLabel}</span>
           <span className="inline-flex items-center gap-1">
             {jobs.map((j) => {
-              const tcName = JOB_TC_NAME[j as JobId] ?? j;
+              const tcName = JOB_TC_NAME[j as AnyJobId] ?? j;
               const icon = JOB_ICONS[j];
               return (
                 <Tooltip key={j} label={tcName}>

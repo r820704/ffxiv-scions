@@ -121,11 +121,11 @@ export const STAGE_TC_LABEL: Record<EurekaStage, string> = {
 };
 
 export const JOB_TC_LABEL: Record<FFXIVJob, string> = {
-  PLD: '騎士', WAR: '斧術師', DRK: '暗黑騎士',
+  PLD: '騎士', WAR: '戰士', DRK: '暗黑騎士',
   DRG: '龍騎士', MNK: '武僧', SAM: '武士', NIN: '忍者',
   BRD: '吟遊詩人', MCH: '機工士',
-  BLM: '黑魔法師', SMN: '召喚師', RDM: '赤魔法師',
-  WHM: '白魔法師', SCH: '學者', AST: '占星術士',
+  BLM: '黑魔道士', SMN: '召喚士', RDM: '赤魔道士',
+  WHM: '白魔道士', SCH: '學者', AST: '占星術師',
 };
 
 // ============ v3 schema ============
