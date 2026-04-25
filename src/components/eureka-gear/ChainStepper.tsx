@@ -1,4 +1,4 @@
-import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME } from '../../types/eureka-gear';
+import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME, ZONE_ENDPOINT_TC_NAME } from '../../types/eureka-gear';
 import type { EurekaStage, EurekaZone } from '../../types/eureka-gear';
 
 export type ChainStepperProps = {
@@ -40,10 +40,10 @@ function groupByZone(seq: readonly EurekaStage[]): ZoneGroup[] {
       // antiquated → 起點, physeos → 最終形態
       if (stage === 'antiquated') {
         key = 'start';
-        label = '起點';
+        label = ZONE_ENDPOINT_TC_NAME.start;
       } else if (stage === 'physeos') {
         key = 'final';
-        label = '最終形態';
+        label = ZONE_ENDPOINT_TC_NAME.final;
       } else {
         key = `null-${index}`;
         label = '';
@@ -66,7 +66,7 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages
   const seq = stages ?? EUREKA_STAGES;
   const currentIdx = seq.indexOf(currentStage);
   const targetIdx = targetStage ? seq.indexOf(targetStage) : null;
-  const showZoneGroups = seq === EUREKA_STAGES || seq.length === 16;
+  const showZoneGroups = seq === EUREKA_STAGES;
 
   const renderButton = (stage: EurekaStage, i: number) => {
     const state = stageState(i, currentIdx, targetIdx);
@@ -99,9 +99,12 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages
         <div
           key={group.key}
           data-testid={`zone-group-${group.key}`}
+          role="group"
+          aria-labelledby={`zone-label-${group.key}`}
           className={`flex flex-col gap-1 ${gi > 0 ? 'pl-3 border-l border-gray-700' : ''}`}
         >
           <span
+            id={`zone-label-${group.key}`}
             data-testid={`zone-label-${group.key}`}
             className="text-xs text-gray-400"
           >

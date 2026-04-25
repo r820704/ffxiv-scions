@@ -248,3 +248,8 @@ export const ZONE_TC_NAME: Record<EurekaZone, string> = {
   pyros: '湧火之地',
   hydatos: '豐水之地',
 };
+
+export const ZONE_ENDPOINT_TC_NAME = {
+  start: '起點',
+  final: '最終形態',
+} as const;
