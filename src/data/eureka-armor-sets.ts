@@ -1,10 +1,6 @@
 import type { ArmorSetId } from '../types/eureka-gear';
 
-/**
- * All 15 SB-era jobs. Some (DRK, SAM, MCH, SCH, AST, RDM) don't have Eureka
- * weapons in Stormblood, but they DO use the role-based armor and should be
- * tracked so their gear progress is visible.
- */
+/** All 15 SB-era jobs — each has its own Eureka weapon chain. */
 export type JobId =
   | 'PLD' | 'WAR' | 'DRK'
   | 'DRG' | 'SAM'
@@ -41,16 +37,13 @@ export const JOBS_FOR_ARMOR_SET: Record<ArmorSetId, JobId[]> = {
   casting: ['BLM', 'SMN', 'RDM'],
 };
 
-/**
- * Jobs that have Eureka weapon chains in SB (9 jobs). Used to decide whether to
- * render a full job card (with weapon section) or a compact armor-only card.
- */
+/** Every SB job has its own Eureka weapon chain. Ordered by role then canonical job order. */
 export const JOBS_WITH_WEAPONS: JobId[] = [
-  'PLD', 'WAR', 'DRG', 'MNK', 'NIN', 'BRD', 'BLM', 'SMN', 'WHM',
-];
-
-export const JOBS_ARMOR_ONLY: JobId[] = [
-  'DRK', 'SAM', 'MCH', 'SCH', 'AST', 'RDM',
+  'PLD', 'WAR', 'DRK',
+  'MNK', 'DRG', 'NIN', 'SAM',
+  'BRD', 'MCH',
+  'BLM', 'SMN', 'RDM',
+  'WHM', 'SCH', 'AST',
 ];
 
 /** Traditional Chinese job names for UI display (job, not class). */

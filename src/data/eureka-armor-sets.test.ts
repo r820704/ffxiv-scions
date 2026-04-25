@@ -38,11 +38,11 @@ describe('JOBS_FOR_ARMOR_SET', () => {
     expect(JOBS_FOR_ARMOR_SET.maiming).toEqual(expect.arrayContaining(['DRG', 'SAM']));
   });
 
-  it('fending includes DRK (weaponless-but-shares-armor)', () => {
+  it('fending includes DRK', () => {
     expect(JOBS_FOR_ARMOR_SET.fending).toContain('DRK');
   });
 
-  it('healing includes SCH and AST (both weaponless)', () => {
+  it('healing includes SCH and AST', () => {
     expect(JOBS_FOR_ARMOR_SET.healing).toEqual(expect.arrayContaining(['WHM', 'SCH', 'AST']));
   });
 });

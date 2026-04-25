@@ -1,5 +1,38 @@
 [
   {
+    "id": 24687,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "base-eureka",
+    "itemLevel": 400,
+    "tcName": "輦道增七",
+    "enName": "Albireo",
+    "iconId": 34921
+  },
+  {
+    "id": 24719,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "physeos",
+    "itemLevel": 405,
+    "tcName": "輦道增七·改",
+    "enName": "Albireo Physeos",
+    "iconId": 34923
+  },
+  {
+    "id": 24703,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "eureka",
+    "itemLevel": 405,
+    "tcName": "輦道增七·優雷卡",
+    "enName": "Albireo Eureka",
+    "iconId": 34923
+  },
+  {
     "id": 24675,
     "chainId": "pld-galatyn",
     "job": "PLD",
@@ -31,6 +64,72 @@
     "tcName": "安忒亞·優雷卡",
     "enName": "Antea Eureka",
     "iconId": 30598
+  },
+  {
+    "id": 22969,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "elemental",
+    "itemLevel": 370,
+    "tcName": "元素天儀",
+    "enName": "Elemental Astrometer",
+    "iconId": 34911
+  },
+  {
+    "id": 24051,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "elemental+1",
+    "itemLevel": 375,
+    "tcName": "元素天儀+1",
+    "enName": "Elemental Astrometer +1",
+    "iconId": 34911
+  },
+  {
+    "id": 24067,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "elemental+2",
+    "itemLevel": 380,
+    "tcName": "元素天儀+2",
+    "enName": "Elemental Astrometer +2",
+    "iconId": 34911
+  },
+  {
+    "id": 24083,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "pyros",
+    "itemLevel": 385,
+    "tcName": "湧火天儀",
+    "enName": "Pyros Astrometer",
+    "iconId": 34911
+  },
+  {
+    "id": 24655,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "hydatos",
+    "itemLevel": 390,
+    "tcName": "豐水天儀",
+    "enName": "Hydatos Astrometer",
+    "iconId": 34911
+  },
+  {
+    "id": 24671,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "hydatos+1",
+    "itemLevel": 395,
+    "tcName": "豐水天儀+1",
+    "enName": "Hydatos Astrometer +1",
+    "iconId": 34911
   },
   {
     "id": 17825,
@@ -209,6 +308,182 @@
     "iconId": 30188
   },
   {
+    "id": 22970,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "elemental",
+    "itemLevel": 370,
+    "tcName": "元素武士刀",
+    "enName": "Elemental Blade",
+    "iconId": 36468
+  },
+  {
+    "id": 24052,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "elemental+1",
+    "itemLevel": 375,
+    "tcName": "元素武士刀+1",
+    "enName": "Elemental Blade +1",
+    "iconId": 36468
+  },
+  {
+    "id": 24068,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "elemental+2",
+    "itemLevel": 380,
+    "tcName": "元素武士刀+2",
+    "enName": "Elemental Blade +2",
+    "iconId": 36468
+  },
+  {
+    "id": 24084,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "pyros",
+    "itemLevel": 385,
+    "tcName": "湧火武士刀",
+    "enName": "Pyros Blade",
+    "iconId": 36468
+  },
+  {
+    "id": 24656,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "hydatos",
+    "itemLevel": 390,
+    "tcName": "豐水武士刀",
+    "enName": "Hydatos Blade",
+    "iconId": 36468
+  },
+  {
+    "id": 24672,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "hydatos+1",
+    "itemLevel": 395,
+    "tcName": "豐水武士刀+1",
+    "enName": "Hydatos Blade +1",
+    "iconId": 36468
+  },
+  {
+    "id": 24689,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "base-eureka",
+    "itemLevel": 400,
+    "tcName": "布魯奈羅",
+    "enName": "Brunello",
+    "iconId": 36779
+  },
+  {
+    "id": 24721,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "physeos",
+    "itemLevel": 405,
+    "tcName": "布魯奈羅·改",
+    "enName": "Brunello Physeos",
+    "iconId": 36781
+  },
+  {
+    "id": 24705,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "eureka",
+    "itemLevel": 405,
+    "tcName": "布魯奈羅·優雷卡",
+    "enName": "Brunello Eureka",
+    "iconId": 36781
+  },
+  {
+    "id": 17823,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "antiquated",
+    "itemLevel": 290,
+    "tcName": "舊化的裂斬劍卡拉德博爾格",
+    "enName": "Antiquated Caladbolg",
+    "iconId": 34299
+  },
+  {
+    "id": 21948,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "anemos-base",
+    "itemLevel": 335,
+    "tcName": "裂斬劍卡拉德博爾格",
+    "enName": "Caladbolg",
+    "iconId": 34299
+  },
+  {
+    "id": 21964,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "anemos+1",
+    "itemLevel": 340,
+    "tcName": "裂斬劍卡拉德博爾格+1",
+    "enName": "Caladbolg +1",
+    "iconId": 34299
+  },
+  {
+    "id": 21980,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "anemos+2",
+    "itemLevel": 345,
+    "tcName": "裂斬劍卡拉德博爾格+2",
+    "enName": "Caladbolg +2",
+    "iconId": 34299
+  },
+  {
+    "id": 21996,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "anemos",
+    "itemLevel": 355,
+    "tcName": "裂斬劍卡拉德博爾格·常風",
+    "enName": "Caladbolg Anemos",
+    "iconId": 34299
+  },
+  {
+    "id": 22931,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "pagos",
+    "itemLevel": 360,
+    "tcName": "裂斬劍卡拉德博爾格·恆冰",
+    "enName": "Caladbolg Pagos",
+    "iconId": 34299
+  },
+  {
+    "id": 22947,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "pagos+1",
+    "itemLevel": 365,
+    "tcName": "裂斬劍卡拉德博爾格·恆冰+1",
+    "enName": "Caladbolg Pagos +1",
+    "iconId": 34299
+  },
+  {
     "id": 22965,
     "chainId": "whm-aymur",
     "job": "WHM",
@@ -306,6 +581,72 @@
     "tcName": "澤鷹·優雷卡",
     "enName": "Circinae Eureka",
     "iconId": 32363
+  },
+  {
+    "id": 22968,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "elemental",
+    "itemLevel": 370,
+    "tcName": "元素魔導典",
+    "enName": "Elemental Codex",
+    "iconId": 33257
+  },
+  {
+    "id": 24050,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "elemental+1",
+    "itemLevel": 375,
+    "tcName": "元素魔導典+1",
+    "enName": "Elemental Codex +1",
+    "iconId": 33257
+  },
+  {
+    "id": 24066,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "elemental+2",
+    "itemLevel": 380,
+    "tcName": "元素魔導典+2",
+    "enName": "Elemental Codex +2",
+    "iconId": 33257
+  },
+  {
+    "id": 24082,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "pyros",
+    "itemLevel": 385,
+    "tcName": "湧火魔導典",
+    "enName": "Pyros Codex",
+    "iconId": 33257
+  },
+  {
+    "id": 24654,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "hydatos",
+    "itemLevel": 390,
+    "tcName": "豐水魔導典",
+    "enName": "Hydatos Codex",
+    "iconId": 33257
+  },
+  {
+    "id": 24670,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "hydatos+1",
+    "itemLevel": 395,
+    "tcName": "豐水魔導典+1",
+    "enName": "Hydatos Codex +1",
+    "iconId": 33257
   },
   {
     "id": 24678,
@@ -748,6 +1089,138 @@
     "iconId": 33258
   },
   {
+    "id": 22963,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "elemental",
+    "itemLevel": 370,
+    "tcName": "元素斷頭劍",
+    "enName": "Elemental Guillotine",
+    "iconId": 34314
+  },
+  {
+    "id": 24045,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "elemental+1",
+    "itemLevel": 375,
+    "tcName": "元素斷頭劍+1",
+    "enName": "Elemental Guillotine +1",
+    "iconId": 34314
+  },
+  {
+    "id": 24061,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "elemental+2",
+    "itemLevel": 380,
+    "tcName": "元素斷頭劍+2",
+    "enName": "Elemental Guillotine +2",
+    "iconId": 34314
+  },
+  {
+    "id": 24077,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "pyros",
+    "itemLevel": 385,
+    "tcName": "湧火斷頭劍",
+    "enName": "Pyros Guillotine",
+    "iconId": 34314
+  },
+  {
+    "id": 24649,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "hydatos",
+    "itemLevel": 390,
+    "tcName": "豐水斷頭劍",
+    "enName": "Hydatos Guillotine",
+    "iconId": 34314
+  },
+  {
+    "id": 24665,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "hydatos+1",
+    "itemLevel": 395,
+    "tcName": "豐水斷頭劍+1",
+    "enName": "Hydatos Guillotine +1",
+    "iconId": 34314
+  },
+  {
+    "id": 22964,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "elemental",
+    "itemLevel": 370,
+    "tcName": "元素手砲",
+    "enName": "Elemental Handgonne",
+    "iconId": 34437
+  },
+  {
+    "id": 24046,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "elemental+1",
+    "itemLevel": 375,
+    "tcName": "元素手砲+1",
+    "enName": "Elemental Handgonne +1",
+    "iconId": 34437
+  },
+  {
+    "id": 24062,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "elemental+2",
+    "itemLevel": 380,
+    "tcName": "元素手砲+2",
+    "enName": "Elemental Handgonne +2",
+    "iconId": 34437
+  },
+  {
+    "id": 24078,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "pyros",
+    "itemLevel": 385,
+    "tcName": "湧火手砲",
+    "enName": "Pyros Handgonne",
+    "iconId": 34437
+  },
+  {
+    "id": 24650,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "hydatos",
+    "itemLevel": 390,
+    "tcName": "豐水手砲",
+    "enName": "Hydatos Handgonne",
+    "iconId": 34437
+  },
+  {
+    "id": 24666,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "hydatos+1",
+    "itemLevel": 395,
+    "tcName": "豐水手砲+1",
+    "enName": "Hydatos Handgonne +1",
+    "iconId": 34437
+  },
+  {
     "id": 22961,
     "chainId": "brd-failnaught",
     "job": "BRD",
@@ -814,6 +1287,39 @@
     "iconId": 32351
   },
   {
+    "id": 24686,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "base-eureka",
+    "itemLevel": 400,
+    "tcName": "傑巴特",
+    "enName": "Jebat",
+    "iconId": 33277
+  },
+  {
+    "id": 24718,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "physeos",
+    "itemLevel": 405,
+    "tcName": "傑巴特·改",
+    "enName": "Jebat Physeos",
+    "iconId": 33281
+  },
+  {
+    "id": 24702,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "eureka",
+    "itemLevel": 405,
+    "tcName": "傑巴特·優雷卡",
+    "enName": "Jebat Eureka",
+    "iconId": 33281
+  },
+  {
     "id": 24680,
     "chainId": "nin-nagi",
     "job": "NIN",
@@ -845,6 +1351,83 @@
     "tcName": "鵲·優雷卡",
     "enName": "Kasasagi Eureka",
     "iconId": 33950
+  },
+  {
+    "id": 17830,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "antiquated",
+    "itemLevel": 290,
+    "tcName": "舊化的菊一文字",
+    "enName": "Antiquated Kiku-ichimonji",
+    "iconId": 36412
+  },
+  {
+    "id": 21955,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "anemos-base",
+    "itemLevel": 335,
+    "tcName": "菊一文字",
+    "enName": "Kiku-ichimonji",
+    "iconId": 36412
+  },
+  {
+    "id": 21971,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "anemos+1",
+    "itemLevel": 340,
+    "tcName": "菊一文字+1",
+    "enName": "Kiku-ichimonji +1",
+    "iconId": 36412
+  },
+  {
+    "id": 21987,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "anemos+2",
+    "itemLevel": 345,
+    "tcName": "菊一文字+2",
+    "enName": "Kiku-ichimonji +2",
+    "iconId": 36412
+  },
+  {
+    "id": 22003,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "anemos",
+    "itemLevel": 355,
+    "tcName": "菊一文字·常風",
+    "enName": "Kiku-ichimonji Anemos",
+    "iconId": 36412
+  },
+  {
+    "id": 22938,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "pagos",
+    "itemLevel": 360,
+    "tcName": "菊一文字·恆冰",
+    "enName": "Kiku-ichimonji Pagos",
+    "iconId": 36412
+  },
+  {
+    "id": 22954,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "pagos+1",
+    "itemLevel": 365,
+    "tcName": "菊一文字·恆冰+1",
+    "enName": "Kiku-ichimonji Pagos +1",
+    "iconId": 36412
   },
   {
     "id": 22962,
@@ -911,6 +1494,72 @@
     "tcName": "豐水匕首+1",
     "enName": "Hydatos Knives +1",
     "iconId": 33938
+  },
+  {
+    "id": 22958,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "elemental",
+    "itemLevel": 370,
+    "tcName": "元素指虎",
+    "enName": "Elemental Knuckles",
+    "iconId": 31152
+  },
+  {
+    "id": 24040,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "elemental+1",
+    "itemLevel": 375,
+    "tcName": "元素指虎+1",
+    "enName": "Elemental Knuckles +1",
+    "iconId": 31152
+  },
+  {
+    "id": 24056,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "elemental+2",
+    "itemLevel": 380,
+    "tcName": "元素指虎+2",
+    "enName": "Elemental Knuckles +2",
+    "iconId": 31152
+  },
+  {
+    "id": 24072,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "pyros",
+    "itemLevel": 385,
+    "tcName": "湧火指虎",
+    "enName": "Pyros Knuckles",
+    "iconId": 31152
+  },
+  {
+    "id": 24644,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "hydatos",
+    "itemLevel": 390,
+    "tcName": "豐水指虎",
+    "enName": "Hydatos Knuckles",
+    "iconId": 31152
+  },
+  {
+    "id": 24660,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "hydatos+1",
+    "itemLevel": 395,
+    "tcName": "豐水指虎+1",
+    "enName": "Hydatos Knuckles +1",
+    "iconId": 31152
   },
   {
     "id": 22960,
@@ -1056,6 +1705,116 @@
     "iconId": 33237
   },
   {
+    "id": 24682,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "base-eureka",
+    "itemLevel": 400,
+    "tcName": "瑪麗弗里斯",
+    "enName": "Mollfrith",
+    "iconId": 34447
+  },
+  {
+    "id": 24714,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "physeos",
+    "itemLevel": 405,
+    "tcName": "瑪麗弗里斯·改",
+    "enName": "Mollfrith Physeos",
+    "iconId": 34449
+  },
+  {
+    "id": 24698,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "eureka",
+    "itemLevel": 405,
+    "tcName": "瑪麗弗里斯·優雷卡",
+    "enName": "Mollfrith Eureka",
+    "iconId": 34449
+  },
+  {
+    "id": 17831,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "antiquated",
+    "itemLevel": 290,
+    "tcName": "舊化的死印劍",
+    "enName": "Antiquated Murgleis",
+    "iconId": 36701
+  },
+  {
+    "id": 21956,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "anemos-base",
+    "itemLevel": 335,
+    "tcName": "死印劍",
+    "enName": "Murgleis",
+    "iconId": 36701
+  },
+  {
+    "id": 21972,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "anemos+1",
+    "itemLevel": 340,
+    "tcName": "死印劍+1",
+    "enName": "Murgleis +1",
+    "iconId": 36701
+  },
+  {
+    "id": 21988,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "anemos+2",
+    "itemLevel": 345,
+    "tcName": "死印劍+2",
+    "enName": "Murgleis +2",
+    "iconId": 36701
+  },
+  {
+    "id": 22004,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "anemos",
+    "itemLevel": 355,
+    "tcName": "死印劍·常風",
+    "enName": "Murgleis Anemos",
+    "iconId": 36701
+  },
+  {
+    "id": 22939,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "pagos",
+    "itemLevel": 360,
+    "tcName": "死印劍·恆冰",
+    "enName": "Murgleis Pagos",
+    "iconId": 36701
+  },
+  {
+    "id": 22955,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "pagos+1",
+    "itemLevel": 365,
+    "tcName": "死印劍·恆冰+1",
+    "enName": "Murgleis Pagos +1",
+    "iconId": 36701
+  },
+  {
     "id": 17822,
     "chainId": "nin-nagi",
     "job": "NIN",
@@ -1133,6 +1892,160 @@
     "iconId": 33921
   },
   {
+    "id": 17828,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "antiquated",
+    "itemLevel": 290,
+    "tcName": "舊化的工具論",
+    "enName": "Antiquated Organum",
+    "iconId": 33240
+  },
+  {
+    "id": 21953,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "anemos-base",
+    "itemLevel": 335,
+    "tcName": "工具論",
+    "enName": "Organum",
+    "iconId": 33240
+  },
+  {
+    "id": 21969,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "anemos+1",
+    "itemLevel": 340,
+    "tcName": "工具論+1",
+    "enName": "Organum +1",
+    "iconId": 33240
+  },
+  {
+    "id": 21985,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "anemos+2",
+    "itemLevel": 345,
+    "tcName": "工具論+2",
+    "enName": "Organum +2",
+    "iconId": 33240
+  },
+  {
+    "id": 22001,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "anemos",
+    "itemLevel": 355,
+    "tcName": "工具論·常風",
+    "enName": "Organum Anemos",
+    "iconId": 33240
+  },
+  {
+    "id": 22936,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "pagos",
+    "itemLevel": 360,
+    "tcName": "工具論·恆冰",
+    "enName": "Organum Pagos",
+    "iconId": 33240
+  },
+  {
+    "id": 22952,
+    "chainId": "sch-organum",
+    "job": "SCH",
+    "isShield": false,
+    "stage": "pagos+1",
+    "itemLevel": 365,
+    "tcName": "工具論·恆冰+1",
+    "enName": "Organum Pagos +1",
+    "iconId": 33240
+  },
+  {
+    "id": 17824,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "antiquated",
+    "itemLevel": 290,
+    "tcName": "舊化的外來者",
+    "enName": "Antiquated Outsider",
+    "iconId": 34693
+  },
+  {
+    "id": 21949,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "anemos-base",
+    "itemLevel": 335,
+    "tcName": "外來者",
+    "enName": "Outsider",
+    "iconId": 34693
+  },
+  {
+    "id": 21965,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "anemos+1",
+    "itemLevel": 340,
+    "tcName": "外來者+1",
+    "enName": "Outsider +1",
+    "iconId": 34693
+  },
+  {
+    "id": 21981,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "anemos+2",
+    "itemLevel": 345,
+    "tcName": "外來者+2",
+    "enName": "Outsider +2",
+    "iconId": 34693
+  },
+  {
+    "id": 21997,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "anemos",
+    "itemLevel": 355,
+    "tcName": "外來者·常風",
+    "enName": "Outsider Anemos",
+    "iconId": 34693
+  },
+  {
+    "id": 22932,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "pagos",
+    "itemLevel": 360,
+    "tcName": "外來者·恆冰",
+    "enName": "Outsider Pagos",
+    "iconId": 34693
+  },
+  {
+    "id": 22948,
+    "chainId": "mch-outsider",
+    "job": "MCH",
+    "isShield": false,
+    "stage": "pagos+1",
+    "itemLevel": 365,
+    "tcName": "外來者·恆冰+1",
+    "enName": "Outsider Pagos +1",
+    "iconId": 34693
+  },
+  {
     "id": 24684,
     "chainId": "blm-vanargand",
     "job": "BLM",
@@ -1164,6 +2077,83 @@
     "tcName": "座頭鯨·優雷卡",
     "enName": "Paikea Eureka",
     "iconId": 33116
+  },
+  {
+    "id": 17829,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "antiquated",
+    "itemLevel": 290,
+    "tcName": "舊化的昴星團天儀",
+    "enName": "Antiquated Pleiades",
+    "iconId": 34900
+  },
+  {
+    "id": 21954,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "anemos-base",
+    "itemLevel": 335,
+    "tcName": "昴星團天儀",
+    "enName": "Pleiades",
+    "iconId": 34900
+  },
+  {
+    "id": 21970,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "anemos+1",
+    "itemLevel": 340,
+    "tcName": "昴星團天儀+1",
+    "enName": "Pleiades +1",
+    "iconId": 34900
+  },
+  {
+    "id": 21986,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "anemos+2",
+    "itemLevel": 345,
+    "tcName": "昴星團天儀+2",
+    "enName": "Pleiades +2",
+    "iconId": 34900
+  },
+  {
+    "id": 22002,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "anemos",
+    "itemLevel": 355,
+    "tcName": "昴星團天儀·常風",
+    "enName": "Pleiades Anemos",
+    "iconId": 34900
+  },
+  {
+    "id": 22937,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "pagos",
+    "itemLevel": 360,
+    "tcName": "昴星團天儀·恆冰",
+    "enName": "Pleiades Pagos",
+    "iconId": 34900
+  },
+  {
+    "id": 22953,
+    "chainId": "ast-pleiades",
+    "job": "AST",
+    "isShield": false,
+    "stage": "pagos+1",
+    "itemLevel": 365,
+    "tcName": "昴星團天儀·恆冰+1",
+    "enName": "Pleiades Pagos +1",
+    "iconId": 34900
   },
   {
     "id": 22966,
@@ -1452,6 +2442,72 @@
     "iconId": 31142
   },
   {
+    "id": 21943,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "anemos-base",
+    "itemLevel": 335,
+    "tcName": "善見神輪",
+    "enName": "Sudarshana Chakra",
+    "iconId": 31142
+  },
+  {
+    "id": 21959,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "anemos+1",
+    "itemLevel": 340,
+    "tcName": "善見神輪+1",
+    "enName": "Sudarshana Chakra +1",
+    "iconId": 31142
+  },
+  {
+    "id": 21975,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "anemos+2",
+    "itemLevel": 345,
+    "tcName": "善見神輪+2",
+    "enName": "Sudarshana Chakra +2",
+    "iconId": 31142
+  },
+  {
+    "id": 21991,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "anemos",
+    "itemLevel": 355,
+    "tcName": "善見神輪·常風",
+    "enName": "Sudarshana Chakra Anemos",
+    "iconId": 31142
+  },
+  {
+    "id": 22926,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "pagos",
+    "itemLevel": 360,
+    "tcName": "善見神輪·恆冰",
+    "enName": "Sudarshana Chakra Pagos",
+    "iconId": 31142
+  },
+  {
+    "id": 22942,
+    "chainId": "mnk-sudarshana-chakra",
+    "job": "MNK",
+    "isShield": false,
+    "stage": "pagos+1",
+    "itemLevel": 365,
+    "tcName": "善見神輪·恆冰+1",
+    "enName": "Sudarshana Chakra Pagos +1",
+    "iconId": 31142
+  },
+  {
     "id": 22957,
     "chainId": "pld-galatyn",
     "job": "PLD",
@@ -1518,6 +2574,39 @@
     "iconId": 30586
   },
   {
+    "id": 24688,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "base-eureka",
+    "itemLevel": 400,
+    "tcName": "鳥頭太刀",
+    "enName": "Torigashira",
+    "iconId": 36478
+  },
+  {
+    "id": 24720,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "physeos",
+    "itemLevel": 405,
+    "tcName": "鳥頭太刀·改",
+    "enName": "Torigashira Physeos",
+    "iconId": 36481
+  },
+  {
+    "id": 24704,
+    "chainId": "sam-kiku-ichimonji",
+    "job": "SAM",
+    "isShield": false,
+    "stage": "eureka",
+    "itemLevel": 405,
+    "tcName": "鳥頭太刀·優雷卡",
+    "enName": "Torigashira Eureka",
+    "iconId": 36481
+  },
+  {
     "id": 24685,
     "chainId": "smn-lemegeton",
     "job": "SMN",
@@ -1549,6 +2638,72 @@
     "tcName": "圖亞·優雷卡",
     "enName": "Tuah Eureka",
     "iconId": 33282
+  },
+  {
+    "id": 22971,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "elemental",
+    "itemLevel": 370,
+    "tcName": "元素刺劍",
+    "enName": "Elemental Tuck",
+    "iconId": 36769
+  },
+  {
+    "id": 24053,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "elemental+1",
+    "itemLevel": 375,
+    "tcName": "元素刺劍+1",
+    "enName": "Elemental Tuck +1",
+    "iconId": 36769
+  },
+  {
+    "id": 24069,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "elemental+2",
+    "itemLevel": 380,
+    "tcName": "元素刺劍+2",
+    "enName": "Elemental Tuck +2",
+    "iconId": 36769
+  },
+  {
+    "id": 24085,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "pyros",
+    "itemLevel": 385,
+    "tcName": "湧火刺劍",
+    "enName": "Pyros Tuck",
+    "iconId": 36769
+  },
+  {
+    "id": 24657,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "hydatos",
+    "itemLevel": 390,
+    "tcName": "豐水刺劍",
+    "enName": "Hydatos Tuck",
+    "iconId": 36769
+  },
+  {
+    "id": 24673,
+    "chainId": "rdm-murgleis",
+    "job": "RDM",
+    "isShield": false,
+    "stage": "hydatos+1",
+    "itemLevel": 395,
+    "tcName": "豐水刺劍+1",
+    "enName": "Hydatos Tuck +1",
+    "iconId": 36769
   },
   {
     "id": 17826,
@@ -1626,5 +2781,38 @@
     "tcName": "破壞之杖·恆冰+1",
     "enName": "Vanargand Pagos +1",
     "iconId": 33093
+  },
+  {
+    "id": 24681,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "base-eureka",
+    "itemLevel": 400,
+    "tcName": "劍魚",
+    "enName": "Xiphias",
+    "iconId": 34324
+  },
+  {
+    "id": 24713,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "physeos",
+    "itemLevel": 405,
+    "tcName": "劍魚·改",
+    "enName": "Xiphias Physeos",
+    "iconId": 34327
+  },
+  {
+    "id": 24697,
+    "chainId": "drk-caladbolg",
+    "job": "DRK",
+    "isShield": false,
+    "stage": "eureka",
+    "itemLevel": 405,
+    "tcName": "劍魚·優雷卡",
+    "enName": "Xiphias Eureka",
+    "iconId": 34327
   }
 ]
