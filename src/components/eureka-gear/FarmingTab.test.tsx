@@ -63,7 +63,7 @@ describe('FarmingTab', () => {
     render(<FarmingTab inventory={inv} materialsMap={materialsMap} />);
     const checkbox = screen.getByRole('checkbox', { name: /展開所有目標/ });
     fireEvent.click(checkbox);
-    // No further materials — empty state should be shown.
-    expect(screen.getByText(/沒有設定 target/)).toBeInTheDocument();
+    // No further materials — empty state should be shown with expandAll message.
+    expect(screen.getByText(/所有目標已達成 — 沒有需要的升級素材/)).toBeInTheDocument();
   });
 });

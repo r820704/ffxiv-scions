@@ -24,9 +24,9 @@ const MIRROR_CHAIN_IDS = new Set(
   EUREKA_CHAINS.filter((c) => c.mirrorsChainId).map((c) => c.chainId),
 );
 
-const WEAPON_ENDPOINT: EurekaStage = 'physeos';
-const ANEMOS_ENDPOINT: EurekaStage = 'anemos';
-const ELEMENTAL_ENDPOINT: EurekaStage = 'elemental+2';
+const WEAPON_ENDPOINT: EurekaStage = EUREKA_STAGES[EUREKA_STAGES.length - 1]!;
+const ANEMOS_ENDPOINT: EurekaStage = ARMOR_STAGES_BY_TRACK.anemos[ARMOR_STAGES_BY_TRACK.anemos.length - 1]!;
+const ELEMENTAL_ENDPOINT: EurekaStage = ARMOR_STAGES_BY_TRACK.elemental[ARMOR_STAGES_BY_TRACK.elemental.length - 1]!;
 
 export type FarmingTabProps = {
   inventory: EurekaInventoryV5;
@@ -152,17 +152,20 @@ export function FarmingTab({ inventory, materialsMap }: FarmingTabProps) {
           checked={showAll}
           onChange={(e) => setShowAll(e.target.checked)}
         />
-        展開所有目標（顯示完整鍊到終點所需）
+        展開所有目標（顯示完整鏈到終點所需）
       </label>
     </div>
   );
 
   if (!hasAny) {
+    const emptyMessage = showAll
+      ? '所有目標已達成 — 沒有需要的升級素材。'
+      : '沒有設定 target 的升級目標。去「職業詳情」tab 選個想達成的階段就會出現素材需求。';
     return (
       <div>
         {toggle}
         <div className="text-gray-500 text-sm italic py-6 text-center">
-          沒有設定 target 的升級目標。去「職業詳情」tab 選個想達成的階段就會出現素材需求。
+          {emptyMessage}
         </div>
       </div>
     );
