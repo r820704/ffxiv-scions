@@ -3,7 +3,7 @@ import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
 import type { JobProgress } from '../../utils/eurekaGear';
 import type { EurekaStage, EurekaWeapon, ArmorSlot } from '../../types/eureka-gear';
-import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK } from '../../types/eureka-gear';
+import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK, STAGE_TC_LABEL } from '../../types/eureka-gear';
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,
@@ -71,6 +71,10 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
                     {info && <span className="text-gray-500 ml-1">iL{info.itemLevel}</span>}
                   </div>
                   <ChainFingerprint currentStage={p.currentStage} showLabel />
+                  <div className="text-xs text-gray-400">
+                    · {STAGE_TC_LABEL[p.currentStage]}
+                    {p.targetStage && ` → ${STAGE_TC_LABEL[p.targetStage]}`}
+                  </div>
                 </li>
               );
             })}
@@ -85,13 +89,17 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
             const p = progress.anemos[slot];
             const stage: EurekaStage = p?.currentStage ?? 'antiquated';
             return (
-              <li key={slot} className="flex items-center gap-2 text-xs">
+              <li key={slot} className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="w-6 text-gray-400">{SLOT_TC[slot]}</span>
                 <ChainFingerprint
                   currentStage={stage}
                   stages={ARMOR_STAGES_BY_TRACK.anemos}
                   showLabel
                 />
+                <span className="text-gray-400">
+                  · {STAGE_TC_LABEL[stage]}
+                  {p?.targetStage && ` → ${STAGE_TC_LABEL[p.targetStage]}`}
+                </span>
               </li>
             );
           })}

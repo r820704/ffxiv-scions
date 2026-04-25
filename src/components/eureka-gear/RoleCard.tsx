@@ -2,7 +2,7 @@ import { ChainFingerprint } from './ChainFingerprint';
 import { Tooltip } from '../ui/Tooltip';
 import { JOBS_FOR_ARMOR_SET, JOB_TC_NAME, type AnyJobId } from '../../data/eureka-armor-sets';
 import type { ArmorSetId, ArmorSlot, EurekaStage, SlotProgress } from '../../types/eureka-gear';
-import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK } from '../../types/eureka-gear';
+import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK, STAGE_TC_LABEL } from '../../types/eureka-gear';
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,
@@ -88,13 +88,17 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
           const p = pieces[slot];
           const stage: EurekaStage = p?.currentStage ?? 'antiquated';
           return (
-            <li key={slot} className="flex items-center gap-2">
+            <li key={slot} className="flex flex-wrap items-center gap-2">
               <span className="w-6 text-gray-400">{SLOT_TC[slot]}</span>
               <ChainFingerprint
                 currentStage={stage}
                 stages={ARMOR_STAGES_BY_TRACK.elemental}
                 showLabel
               />
+              <span className="text-gray-400">
+                · {STAGE_TC_LABEL[stage]}
+                {p?.targetStage && ` → ${STAGE_TC_LABEL[p.targetStage]}`}
+              </span>
             </li>
           );
         })}
