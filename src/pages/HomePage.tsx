@@ -45,7 +45,7 @@ export default function HomePage() {
             style={{ background: 'linear-gradient(90deg, #C43E3E, #8B5FC7, #4A9BD9)' }}
           />
           <h2 className="text-lg font-semibold text-foreground mb-2">文理技能</h2>
-          <p className="text-sm text-muted-foreground">Eureka 文理技能查詢、材料反查與市場價格</p>
+          <p className="text-sm text-muted-foreground">優雷卡文理技能查詢、材料反查與市場價格</p>
         </Link>
         <Link
           to="/eureka-gear"
@@ -56,7 +56,7 @@ export default function HomePage() {
             style={{ background: 'linear-gradient(90deg, #D4AF37, #E07A2D, #B8482E)' }}
           />
           <h2 className="text-lg font-semibold text-foreground mb-2">禁地兵裝</h2>
-          <p className="text-sm text-muted-foreground">SB Eureka 武器與防具升級進度追蹤</p>
+          <p className="text-sm text-muted-foreground">優雷卡武器與防具升級進度追蹤</p>
         </Link>
       </div>
     </div>

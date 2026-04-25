@@ -20,8 +20,8 @@ describe('HomePage', () => {
     renderWithRouter(<HomePage />);
 
     expect(screen.getAllByText(/優雷卡四地圖天氣時間軸/).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Eureka 文理技能查詢/).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/SB Eureka 武器與防具升級進度追蹤/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/優雷卡文理技能查詢/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/優雷卡武器與防具升級進度追蹤/).length).toBeGreaterThan(0);
   });
 
   it('renders 優雷卡天氣 card with correct href', () => {
