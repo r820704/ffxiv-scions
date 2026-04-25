@@ -11,13 +11,24 @@ import { UpgradeDialog } from '@/components/eureka-gear/UpgradeDialog';
 import { EUREKA_STAGES } from '@/types/eureka-gear';
 import type { EurekaStage } from '@/types/eureka-gear';
 import { sharedJobNames } from '@/data/eureka-armor-sets';
+import type { Role } from '@/types/eureka';
 
 type TabKey = 'overview' | 'detail' | 'farming';
+
+const VALID_ROLES: ReadonlyArray<Role> = ['all', 'tank', 'melee', 'ranged', 'healer', 'caster'];
+
+function parseRole(raw: string | null): Role {
+  if (raw && (VALID_ROLES as ReadonlyArray<string>).includes(raw)) {
+    return raw as Role;
+  }
+  return 'all';
+}
 
 export default function EurekaGearPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const view = ((searchParams.get('view') as TabKey) ?? 'overview');
   const selectedJob = searchParams.get('job') ?? 'PLD';
+  const overviewRole = parseRole(searchParams.get('role'));
 
   const { weapons: weaponsList, materials: materialsList, loading, error } = useEurekaWeaponsData();
   const {
@@ -54,6 +65,16 @@ export default function EurekaGearPage() {
     const p = new URLSearchParams(searchParams);
     p.set('view', 'detail');
     p.set('job', job);
+    setSearchParams(p);
+  };
+
+  const setOverviewRole = (role: Role) => {
+    const p = new URLSearchParams(searchParams);
+    if (role === 'all') {
+      p.delete('role');
+    } else {
+      p.set('role', role);
+    }
     setSearchParams(p);
   };
 
@@ -125,7 +146,13 @@ export default function EurekaGearPage() {
       <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4">
         <main>
           {view === 'overview' && (
-            <OverviewTab inventory={inventory} weapons={weaponsList} onSelectJob={selectJob} />
+            <OverviewTab
+              inventory={inventory}
+              weapons={weaponsList}
+              onSelectJob={selectJob}
+              role={overviewRole}
+              onRoleChange={setOverviewRole}
+            />
           )}
           {view === 'detail' && (
             <DetailTab
