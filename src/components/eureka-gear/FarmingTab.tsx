@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ZoneGroup } from './ZoneGroup';
 import { costBetween, costBetweenInSequence } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
@@ -24,6 +24,10 @@ const MIRROR_CHAIN_IDS = new Set(
   EUREKA_CHAINS.filter((c) => c.mirrorsChainId).map((c) => c.chainId),
 );
 
+const WEAPON_ENDPOINT: EurekaStage = EUREKA_STAGES[EUREKA_STAGES.length - 1]!;
+const ANEMOS_ENDPOINT: EurekaStage = ARMOR_STAGES_BY_TRACK.anemos[ARMOR_STAGES_BY_TRACK.anemos.length - 1]!;
+const ELEMENTAL_ENDPOINT: EurekaStage = ARMOR_STAGES_BY_TRACK.elemental[ARMOR_STAGES_BY_TRACK.elemental.length - 1]!;
+
 export type FarmingTabProps = {
   inventory: EurekaInventoryV5;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
@@ -33,18 +37,23 @@ type AggregatedMaterial = { materialId: number; totalNeeded: number; shortage: n
 
 type ZoneAgg = Record<EurekaZone, Map<number, number>>;
 
+type AggOpts = { expandAll: boolean };
+
 function addMaterialsToZone(agg: ZoneAgg, zone: EurekaZone, materials: MaterialCost[]) {
   for (const m of materials) {
     agg[zone].set(m.materialId, (agg[zone].get(m.materialId) ?? 0) + m.quantity);
   }
 }
 
-function aggregateWeaponCosts(inv: EurekaInventoryV5, agg: ZoneAgg) {
+function aggregateWeaponCosts(inv: EurekaInventoryV5, agg: ZoneAgg, opts: AggOpts) {
   for (const [chainId, slot] of Object.entries(inv.weapons) as [string, SlotProgress][]) {
     if (MIRROR_CHAIN_IDS.has(chainId)) continue;
-    if (!slot.targetStage) continue;
+    const target: EurekaStage | undefined = opts.expandAll
+      ? WEAPON_ENDPOINT
+      : slot.targetStage;
+    if (!target) continue;
     const fromIdx = EUREKA_STAGES.indexOf(slot.currentStage);
-    const toIdx = EUREKA_STAGES.indexOf(slot.targetStage);
+    const toIdx = EUREKA_STAGES.indexOf(target);
     if (toIdx <= fromIdx) continue;
     for (let i = fromIdx; i < toIdx; i++) {
       const from = EUREKA_STAGES[i];
@@ -57,13 +66,15 @@ function aggregateWeaponCosts(inv: EurekaInventoryV5, agg: ZoneAgg) {
   }
 }
 
-function aggregateArmorCosts(inv: EurekaInventoryV5, agg: ZoneAgg) {
+function aggregateArmorCosts(inv: EurekaInventoryV5, agg: ZoneAgg, opts: AggOpts) {
   // Anemos armor: per-job
   for (const [_job, jobPieces] of Object.entries(inv.armor.anemos)) {
     for (const slot of ARMOR_SLOTS) {
       const p = jobPieces?.[slot];
-      if (!p?.targetStage) continue;
-      walkAndAggregate(p.currentStage, p.targetStage, ARMOR_STAGES_BY_TRACK.anemos, ANEMOS_ARMOR_COSTS, slot, agg);
+      if (!p) continue;
+      const target: EurekaStage | undefined = opts.expandAll ? ANEMOS_ENDPOINT : p.targetStage;
+      if (!target) continue;
+      walkAndAggregate(p.currentStage, target, ARMOR_STAGES_BY_TRACK.anemos, ANEMOS_ARMOR_COSTS, slot, agg);
     }
   }
   // Elemental armor: per-role
@@ -71,8 +82,10 @@ function aggregateArmorCosts(inv: EurekaInventoryV5, agg: ZoneAgg) {
     const setData = inv.armor.elemental[setId] ?? {};
     for (const slot of ARMOR_SLOTS) {
       const p = setData[slot];
-      if (!p?.targetStage) continue;
-      walkAndAggregate(p.currentStage, p.targetStage, ARMOR_STAGES_BY_TRACK.elemental, ELEMENTAL_ARMOR_COSTS, slot, agg);
+      if (!p) continue;
+      const target: EurekaStage | undefined = opts.expandAll ? ELEMENTAL_ENDPOINT : p.targetStage;
+      if (!target) continue;
+      walkAndAggregate(p.currentStage, target, ARMOR_STAGES_BY_TRACK.elemental, ELEMENTAL_ARMOR_COSTS, slot, agg);
     }
   }
 }
@@ -107,15 +120,15 @@ function zoneForArmorEdge(to: EurekaStage): EurekaZone | null {
   return 'hydatos'; // fallback (physeos etc. — Eureka Fragment from BA)
 }
 
-function aggregateMaterialsByZone(inv: EurekaInventoryV5): ZoneAgg {
+function aggregateMaterialsByZone(inv: EurekaInventoryV5, opts: AggOpts): ZoneAgg {
   const zoneAgg: ZoneAgg = {
     anemos: new Map(),
     pagos: new Map(),
     pyros: new Map(),
     hydatos: new Map(),
   };
-  aggregateWeaponCosts(inv, zoneAgg);
-  aggregateArmorCosts(inv, zoneAgg);
+  aggregateWeaponCosts(inv, zoneAgg, opts);
+  aggregateArmorCosts(inv, zoneAgg, opts);
   return zoneAgg;
 }
 
@@ -124,13 +137,36 @@ const _ArmorSlotHint: ArmorSlot = 'head';
 void _ArmorSlotHint;
 
 export function FarmingTab({ inventory, materialsMap }: FarmingTabProps) {
-  const zoneAgg = useMemo(() => aggregateMaterialsByZone(inventory), [inventory]);
+  const [showAll, setShowAll] = useState<boolean>(false);
+  const zoneAgg = useMemo(
+    () => aggregateMaterialsByZone(inventory, { expandAll: showAll }),
+    [inventory, showAll],
+  );
   const hasAny = Object.values(zoneAgg).some((m) => m.size > 0);
 
+  const toggle = (
+    <div className="flex items-center gap-2 mb-3">
+      <label className="text-xs text-gray-300 flex items-center gap-1">
+        <input
+          type="checkbox"
+          checked={showAll}
+          onChange={(e) => setShowAll(e.target.checked)}
+        />
+        展開所有目標（顯示完整鏈到終點所需）
+      </label>
+    </div>
+  );
+
   if (!hasAny) {
+    const emptyMessage = showAll
+      ? '所有目標已達成 — 沒有需要的升級素材。'
+      : '沒有設定 target 的升級目標。去「職業詳情」tab 選個想達成的階段就會出現素材需求。';
     return (
-      <div className="text-gray-500 text-sm italic py-6 text-center">
-        沒有設定 target 的升級目標。去「職業詳情」tab 選個想達成的階段就會出現素材需求。
+      <div>
+        {toggle}
+        <div className="text-gray-500 text-sm italic py-6 text-center">
+          {emptyMessage}
+        </div>
       </div>
     );
   }
@@ -138,19 +174,22 @@ export function FarmingTab({ inventory, materialsMap }: FarmingTabProps) {
   const zones: EurekaZone[] = ['anemos', 'pagos', 'pyros', 'hydatos'];
 
   return (
-    <div className="space-y-3">
-      {zones.map((zone) => {
-        const items: AggregatedMaterial[] = Array.from(zoneAgg[zone]).map(
-          ([materialId, totalNeeded]) => {
-            const have = inventory.materials[materialId] ?? 0;
-            return { materialId, totalNeeded, shortage: Math.max(0, totalNeeded - have) };
-          },
-        );
-        if (items.length === 0) return null;
-        return (
-          <ZoneGroup key={zone} zone={zone} items={items} materialsMap={materialsMap} />
-        );
-      })}
+    <div>
+      {toggle}
+      <div className="space-y-3">
+        {zones.map((zone) => {
+          const items: AggregatedMaterial[] = Array.from(zoneAgg[zone]).map(
+            ([materialId, totalNeeded]) => {
+              const have = inventory.materials[materialId] ?? 0;
+              return { materialId, totalNeeded, shortage: Math.max(0, totalNeeded - have) };
+            },
+          );
+          if (items.length === 0) return null;
+          return (
+            <ZoneGroup key={zone} zone={zone} items={items} materialsMap={materialsMap} />
+          );
+        })}
+      </div>
     </div>
   );
 }
