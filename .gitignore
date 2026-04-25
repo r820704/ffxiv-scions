@@ -32,3 +32,6 @@ docs/eureka-weapons-review.csv
 
 # Ephemeral verification artifacts (screenshots, snapshots)
 tmp/
+
+# Git worktrees (created by superpowers:using-git-worktrees skill)
+.worktrees/
