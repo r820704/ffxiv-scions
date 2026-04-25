@@ -35,6 +35,39 @@ describe('RoleCard', () => {
     expect(screen.getByText(/武僧 · 武士/)).toBeInTheDocument();
   });
 
+  it('renders job names joined with full-width middle-dot for maiming (melee)', () => {
+    render(
+      <RoleCard
+        set="maiming"
+        pieces={baseSlotProgress}
+        onSelect={() => {}}
+      />
+    );
+    expect(screen.getByText(/龍騎士 · 奪魂者/)).toBeInTheDocument();
+  });
+
+  it('renders job names joined with full-width middle-dot for scouting (melee)', () => {
+    render(
+      <RoleCard
+        set="scouting"
+        pieces={baseSlotProgress}
+        onSelect={() => {}}
+      />
+    );
+    expect(screen.getByText(/忍者 · 毒蛇劍士/)).toBeInTheDocument();
+  });
+
+  it('renders job names joined with full-width middle-dot for aiming (ranged)', () => {
+    render(
+      <RoleCard
+        set="aiming"
+        pieces={baseSlotProgress}
+        onSelect={() => {}}
+      />
+    );
+    expect(screen.getByText(/吟遊詩人 · 機工士 · 舞者/)).toBeInTheDocument();
+  });
+
   it('renders role label as smaller text in brackets', () => {
     render(
       <RoleCard
@@ -66,6 +99,39 @@ describe('RoleCard', () => {
       />
     );
     expect(screen.getByText('[法師]')).toBeInTheDocument();
+  });
+
+  it('renders role label as [近戰] for maiming', () => {
+    render(
+      <RoleCard
+        set="maiming"
+        pieces={baseSlotProgress}
+        onSelect={() => {}}
+      />
+    );
+    expect(screen.getByText('[近戰]')).toBeInTheDocument();
+  });
+
+  it('renders role label as [近戰] for scouting', () => {
+    render(
+      <RoleCard
+        set="scouting"
+        pieces={baseSlotProgress}
+        onSelect={() => {}}
+      />
+    );
+    expect(screen.getByText('[近戰]')).toBeInTheDocument();
+  });
+
+  it('renders role label as [遠程] for aiming', () => {
+    render(
+      <RoleCard
+        set="aiming"
+        pieces={baseSlotProgress}
+        onSelect={() => {}}
+      />
+    );
+    expect(screen.getByText('[遠程]')).toBeInTheDocument();
   });
 
   it('calls onSelect with primary job ID when detail button clicked', () => {
