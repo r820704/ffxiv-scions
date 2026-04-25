@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { ChainStepper } from './ChainStepper';
+import { ANEMOS_ARMOR_STAGES, ELEMENTAL_ARMOR_STAGES } from '../../types/eureka-gear';
 
 afterEach(() => cleanup());
 
@@ -37,5 +38,60 @@ describe('ChainStepper', () => {
     );
     const wrap = container.querySelector('[data-testid="stepper-container"]');
     expect(wrap?.className).toContain('flex-wrap');
+  });
+
+  it('renders all four zone group labels for the 16-stage stepper', () => {
+    render(<ChainStepper currentStage="anemos" targetStage={undefined} onSelectTarget={() => {}} />);
+    expect(screen.getByText('常風之地')).toBeTruthy();
+    expect(screen.getByText('恆冰之地')).toBeTruthy();
+    expect(screen.getByText('湧火之地')).toBeTruthy();
+    expect(screen.getByText('豐水之地')).toBeTruthy();
+  });
+
+  it('renders 起點 and 最終形態 labels for null-zone endpoints', () => {
+    render(<ChainStepper currentStage="anemos" targetStage={undefined} onSelectTarget={() => {}} />);
+    expect(screen.getByText('起點')).toBeTruthy();
+    expect(screen.getByText('最終形態')).toBeTruthy();
+  });
+
+  it('still renders all 16 buttons + each remains clickable when grouped', () => {
+    const onSelectTarget = vi.fn();
+    render(<ChainStepper currentStage="anemos" targetStage={undefined} onSelectTarget={onSelectTarget} />);
+    const nodes = screen.getAllByRole('button');
+    expect(nodes.length).toBe(16);
+    nodes.forEach((node) => fireEvent.click(node));
+    expect(onSelectTarget).toHaveBeenCalledTimes(16);
+  });
+
+  it('does NOT render zone labels for short 5-stage anemos armor track', () => {
+    render(
+      <ChainStepper
+        currentStage="antiquated"
+        targetStage={undefined}
+        onSelectTarget={() => {}}
+        stages={ANEMOS_ARMOR_STAGES}
+      />,
+    );
+    expect(screen.getAllByRole('button').length).toBe(5);
+    expect(screen.queryByText('常風之地')).toBeNull();
+    expect(screen.queryByText('恆冰之地')).toBeNull();
+    expect(screen.queryByText('湧火之地')).toBeNull();
+    expect(screen.queryByText('豐水之地')).toBeNull();
+    expect(screen.queryByText('起點')).toBeNull();
+    expect(screen.queryByText('最終形態')).toBeNull();
+  });
+
+  it('does NOT render zone labels for short 4-stage elemental armor track', () => {
+    render(
+      <ChainStepper
+        currentStage="antiquated"
+        targetStage={undefined}
+        onSelectTarget={() => {}}
+        stages={ELEMENTAL_ARMOR_STAGES}
+      />,
+    );
+    expect(screen.getAllByRole('button').length).toBe(4);
+    expect(screen.queryByText('常風之地')).toBeNull();
+    expect(screen.queryByText('湧火之地')).toBeNull();
   });
 });
