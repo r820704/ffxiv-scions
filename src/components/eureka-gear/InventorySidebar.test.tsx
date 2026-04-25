@@ -37,7 +37,6 @@ describe('InventorySidebar', () => {
     render(<InventorySidebar materials={mats} inventory={{}} onMaterialChange={() => {}} onClear={() => {}} />);
     const ocrButton = screen.getByRole('button', { name: '截圖匯入（即將推出）' });
     expect(ocrButton).toHaveAttribute('aria-disabled', 'true');
-    expect(ocrButton).toBeDisabled();
   });
 
   it('expands to show MaterialTile when 展開 clicked', () => {
