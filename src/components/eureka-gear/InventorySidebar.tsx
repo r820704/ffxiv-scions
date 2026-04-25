@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { EurekaMaterial } from '@/types/eureka-gear';
+import { Tooltip } from '../ui/Tooltip';
 import MaterialTile from './MaterialTile';
 
 interface InventorySidebarProps {
@@ -18,8 +19,30 @@ export default function InventorySidebar({
   return (
     <div className="rounded-lg border border-border bg-card p-3 md:sticky md:top-4">
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <div className="text-sm text-foreground">素材：{registered}/{materials.length}</div>
+        <div className="flex items-center gap-1">
+          <div className="text-sm text-foreground">素材庫存：{registered}/{materials.length} 種已輸入</div>
+          <Tooltip label="12 = 升級會用到的所有素材種類數；目前已輸入持有量的種類數">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center w-4 h-4 text-xs font-semibold text-foreground/60 hover:text-foreground/100 cursor-help"
+              aria-label="素材庫存說明"
+            >
+              ?
+            </button>
+          </Tooltip>
+        </div>
         <div className="flex gap-2">
+          <Tooltip label="未來功能：貼上道具欄截圖自動匯入持有量">
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              className="text-xs px-2 py-0.5 rounded border border-border/50 text-muted-foreground cursor-not-allowed opacity-50"
+              aria-label="截圖匯入（即將推出）"
+            >
+              📷 截圖匯入（即將推出）
+            </button>
+          </Tooltip>
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
