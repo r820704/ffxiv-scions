@@ -63,24 +63,25 @@ export function OverviewTab({
   return (
     <div className="space-y-6">
       <div
-        role="radiogroup"
+        role="group"
         aria-label="職能篩選"
         data-testid="role-filter"
         className="flex flex-wrap gap-1.5"
       >
         {FILTER_OPTIONS.map((opt) => {
           const active = opt === role;
+          // Chip uses '全部' for filter UX context;
+          // ROLE_LABELS.all is '全職業' which fits Logos pills but not single-select chips.
           const label = opt === 'all' ? '全部' : ROLE_LABELS[opt];
           return (
             <button
               key={opt}
               type="button"
-              role="radio"
-              aria-checked={active}
+              aria-pressed={active}
               onClick={() => onRoleChange?.(opt)}
               className={`text-xs px-2 py-1 rounded transition-colors ${
                 active
-                  ? ROLE_COLORS[opt]
+                  ? `${ROLE_COLORS[opt]} ring-2 ring-cyan-400`
                   : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
               }`}
             >

@@ -35,10 +35,10 @@ describe('OverviewTab', () => {
       const { container } = render(<OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} />);
       const filter = container.querySelector('[data-testid="role-filter"]');
       expect(filter).not.toBeNull();
-      const chips = within(filter as HTMLElement).getAllByRole('radio');
+      const chips = within(filter as HTMLElement).getAllByRole('button');
       expect(chips.map((c) => c.textContent)).toEqual(['全部', '坦克', '近戰', '遠程', '治療', '法師']);
-      const allChip = within(filter as HTMLElement).getByRole('radio', { name: '全部' });
-      expect(allChip.getAttribute('aria-checked')).toBe('true');
+      const allChip = within(filter as HTMLElement).getByRole('button', { name: '全部' });
+      expect(allChip.getAttribute('aria-pressed')).toBe('true');
     });
 
     it('default state shows all 15 jobs and all 7 role cards', () => {
@@ -63,7 +63,7 @@ describe('OverviewTab', () => {
       const { rerender, container } = render(
         <OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} onRoleChange={onRoleChange} />,
       );
-      fireEvent.click(screen.getByRole('radio', { name: '坦克' }));
+      fireEvent.click(screen.getByRole('button', { name: '坦克' }));
       expect(onRoleChange).toHaveBeenCalledWith('tank');
 
       // Simulate parent updating role prop
