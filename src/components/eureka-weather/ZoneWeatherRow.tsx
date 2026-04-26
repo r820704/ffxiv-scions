@@ -3,6 +3,7 @@ import {
   generateForecasts,
   findWeatherMatches,
   findLastEndedWeather,
+  currentRunRemaining,
   DEFAULT_LOOKBACK_PERIODS,
 } from '@/utils/weather-engine';
 import { zoneNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weather-data';
@@ -18,7 +19,6 @@ interface ZoneWeatherRowProps {
   now: number;
   scrollRef?: (el: HTMLDivElement | null) => void;
   onScroll?: (scrollLeft: number) => void;
-  onJumpToNow?: () => void;
 }
 
 const FORECAST_COUNT = 24;
@@ -31,12 +31,18 @@ function formatRelMs(ms: number): string {
   return `${m}分${String(s).padStart(2, '0')}秒`;
 }
 
-function formatCellTime(ts: number): string {
+export function formatCellTime(ts: number, now: number = Date.now()): string {
   const d = new Date(ts);
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
+  const n = new Date(now);
+  const sameDay =
+    d.getFullYear() === n.getFullYear() &&
+    d.getMonth() === n.getMonth() &&
+    d.getDate() === n.getDate();
   const hh = String(d.getHours()).padStart(2, '0');
   const mi = String(d.getMinutes()).padStart(2, '0');
+  if (sameDay) return `${hh}:${mi}`;
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
   return `${mm}/${dd} ${hh}:${mi}`;
 }
 
@@ -46,7 +52,6 @@ export default function ZoneWeatherRow({
   now,
   scrollRef,
   onScroll,
-  onJumpToNow,
 }: ZoneWeatherRowProps) {
   const localRef = useRef<HTMLDivElement | null>(null);
 
@@ -73,12 +78,19 @@ export default function ZoneWeatherRow({
     : null;
 
   const currentPeriodWeather = forecasts[0]?.weather ?? null;
-  const currentPeriodStart = forecasts[0]?.startTime ?? null;
 
   const lastEnded = useMemo(() => {
     if (!targetWeather) return null;
     return findLastEndedWeather(zone, targetWeather, now, DEFAULT_LOOKBACK_PERIODS);
   }, [zone, targetWeather, now]);
+
+  const inProgress =
+    targetWeather !== null && currentPeriodWeather === targetWeather;
+
+  const remainingMs = useMemo(() => {
+    if (!inProgress || targetWeather === null) return null;
+    return currentRunRemaining(zone, targetWeather, now);
+  }, [zone, targetWeather, now, inProgress]);
 
   useEffect(() => {
     const el = localRef.current;
@@ -98,9 +110,6 @@ export default function ZoneWeatherRow({
     scrollRef?.(el);
   };
 
-  const inProgress =
-    targetWeather !== null && currentPeriodWeather === targetWeather;
-
   const lastLabel = targetWeatherTw
     ? lastEnded
       ? `上次${targetWeatherTw}結束：${formatRelMs(now - (lastEnded.startTime + WEATHER_PERIOD_MS))}前`
@@ -110,10 +119,8 @@ export default function ZoneWeatherRow({
   const rightLabel =
     targetWeatherTw === null
       ? null
-      : inProgress && currentPeriodStart !== null
-        ? `目前${targetWeatherTw}剩 ${formatRelMs(
-            currentPeriodStart + WEATHER_PERIOD_MS - now,
-          )}`
+      : inProgress && remainingMs !== null
+        ? `目前${targetWeatherTw}剩 ${formatRelMs(remainingMs)}`
         : nextMatch
           ? `下次${targetWeatherTw}：${formatRelMs(nextMatch.startTime - now)}後`
           : null;
@@ -131,15 +138,6 @@ export default function ZoneWeatherRow({
               {lastLabel && rightLabel && ' ・ '}
               {rightLabel}
             </span>
-          )}
-          {onJumpToNow && (
-            <button
-              type="button"
-              onClick={onJumpToNow}
-              className="text-[10px] px-1.5 py-0.5 rounded border border-border/50 hover:border-primary transition-colors text-muted-foreground cursor-pointer"
-            >
-              ↺ 回到現在
-            </button>
           )}
         </div>
       </div>
@@ -172,7 +170,7 @@ export default function ZoneWeatherRow({
                 </div>
                 <div className="text-muted-foreground mt-0.5">{f.weatherTw}</div>
                 <div className="text-muted-foreground/70">
-                  {isCurrent ? '現在' : formatCellTime(f.startTime)}
+                  {isCurrent ? '現在' : formatCellTime(f.startTime, now)}
                 </div>
                 {weatherNms.length > 0 && (
                   <div className="absolute top-0.5 right-0.5 px-1 rounded bg-red-600 text-white text-[8px] font-bold leading-[10px] shadow-sm animate-pulse">

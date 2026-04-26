@@ -5,9 +5,12 @@ import GameClock from '@/components/eureka-weather/GameClock';
 import WeatherFilterBar from '@/components/eureka-weather/WeatherFilterBar';
 import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 
+const SCROLL_REVEAL_THRESHOLD = 80;
+
 export default function EurekaWeatherPage() {
   const { now } = useGameClock();
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [scrolledAway, setScrolledAway] = useState(false);
   const scrollRefs = useRef<Array<HTMLDivElement | null>>([]);
   const isSyncingRef = useRef(false);
 
@@ -20,11 +23,16 @@ export default function EurekaWeatherPage() {
     });
   };
 
+  const clearAll = useCallback(() => {
+    setSelected(new Set());
+  }, []);
+
   const registerRef = (index: number) => (el: HTMLDivElement | null) => {
     scrollRefs.current[index] = el;
   };
 
   const handleScroll = useCallback((index: number) => (scrollLeft: number) => {
+    setScrolledAway(scrollLeft > SCROLL_REVEAL_THRESHOLD);
     if (isSyncingRef.current) return;
     isSyncingRef.current = true;
     scrollRefs.current.forEach((r, i) => {
@@ -41,6 +49,7 @@ export default function EurekaWeatherPage() {
     scrollRefs.current.forEach((r) => {
       if (r) r.scrollTo({ left: 0, behavior: 'smooth' });
     });
+    setScrolledAway(false);
   }, []);
 
   return (
@@ -50,7 +59,12 @@ export default function EurekaWeatherPage() {
       </h1>
       <div className="flex flex-col gap-3">
         <GameClock />
-        <WeatherFilterBar selected={selected} onToggle={toggle} />
+        <WeatherFilterBar
+          selected={selected}
+          onToggle={toggle}
+          onClearAll={clearAll}
+          onJumpToNow={scrolledAway ? jumpToNow : undefined}
+        />
         <div className="flex flex-col gap-3">
           {EUREKA_ZONES.map((z, i) => (
             <ZoneWeatherRow
@@ -60,7 +74,6 @@ export default function EurekaWeatherPage() {
               now={now}
               scrollRef={registerRef(i)}
               onScroll={handleScroll(i)}
-              onJumpToNow={jumpToNow}
             />
           ))}
         </div>

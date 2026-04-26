@@ -2,6 +2,7 @@ import { weatherRates, weatherNamesTw } from '../data/weather-data';
 import { WEATHER_PERIOD_MS, getWeatherPeriodStart } from './eorzea-time';
 
 export const DEFAULT_LOOKBACK_PERIODS = 9;
+export const MAX_RUN_LOOKAHEAD_PERIODS = 12;
 
 // SaintCoinach weather calculation algorithm
 export function calculateForecastTarget(timestamp: number): number {
@@ -75,6 +76,8 @@ export function generateForecasts(zone: string, count: number, fromTimestamp?: n
 
 // Look back up to `maxLookbackPeriods` weather periods from `now` to find the
 // most recent period with the given `weather` whose end time is already <= now.
+// Skips the connected same-weather prefix preceding `now` (those periods are
+// part of the currently-ongoing run, not a "last ended" occurrence).
 // Returns null if no match or if the zone is unknown.
 export function findLastEndedWeather(
   zone: string,
@@ -85,7 +88,14 @@ export function findLastEndedWeather(
   if (!weatherRates[zone]) return null;
 
   const currentStart = getWeatherPeriodStart(now);
-  for (let i = 1; i <= maxLookbackPeriods; i++) {
+  let i = 0;
+  while (
+    i <= maxLookbackPeriods &&
+    resolveWeather(zone, calculateForecastTarget(currentStart - i * WEATHER_PERIOD_MS)) === weather
+  ) {
+    i += 1;
+  }
+  for (; i <= maxLookbackPeriods; i++) {
     const candidateStart = currentStart - i * WEATHER_PERIOD_MS;
     const target = calculateForecastTarget(candidateStart);
     const w = resolveWeather(zone, target);
@@ -98,6 +108,31 @@ export function findLastEndedWeather(
     }
   }
   return null;
+}
+
+// From `now`, scan forward across consecutive same-weather periods and return
+// the milliseconds remaining until the run ends (next period flips). Returns
+// null if the zone is unknown or the current period weather does not match.
+// Capped at MAX_RUN_LOOKAHEAD_PERIODS to bound work.
+export function currentRunRemaining(
+  zone: string,
+  weather: string,
+  now: number,
+  maxLookahead: number = MAX_RUN_LOOKAHEAD_PERIODS,
+): number | null {
+  if (!weatherRates[zone]) return null;
+  const periodStart = getWeatherPeriodStart(now);
+  const currentWeather = resolveWeather(zone, calculateForecastTarget(periodStart));
+  if (currentWeather !== weather) return null;
+
+  for (let i = 1; i <= maxLookahead; i++) {
+    const nextStart = periodStart + i * WEATHER_PERIOD_MS;
+    const nextWeather = resolveWeather(zone, calculateForecastTarget(nextStart));
+    if (nextWeather !== weather) {
+      return nextStart - now;
+    }
+  }
+  return periodStart + maxLookahead * WEATHER_PERIOD_MS - now;
 }
 
 // Find weather matches with optional filter

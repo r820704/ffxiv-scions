@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
-import ZoneWeatherRow from './ZoneWeatherRow';
+import ZoneWeatherRow, { formatCellTime } from './ZoneWeatherRow';
 import { generateForecasts, findLastEndedWeather } from '@/utils/weather-engine';
 import { weatherNamesTw } from '@/data/weather-data';
 
@@ -94,4 +94,19 @@ describe('ZoneWeatherRow', () => {
     expect(screen.queryByText(/下次/)).toBeNull();
     expect(screen.queryByText(/目前.*剩/)).toBeNull();
   });
+
+  describe('formatCellTime (M12 same-day)', () => {
+    it('shows HH:MM only when cellTime and now are on the same local day', () => {
+      const now = new Date('2026-04-25T10:00:00').getTime();
+      const cellTime = new Date('2026-04-25T15:30:00').getTime();
+      expect(formatCellTime(cellTime, now)).toBe('15:30');
+    });
+
+    it('shows MM/DD HH:MM when cellTime and now span different local days', () => {
+      const now = new Date('2026-04-25T23:00:00').getTime();
+      const cellTime = new Date('2026-04-26T01:00:00').getTime();
+      expect(formatCellTime(cellTime, now)).toBe('04/26 01:00');
+    });
+  });
+
 });

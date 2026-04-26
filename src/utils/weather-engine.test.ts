@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateForecastTarget, resolveWeather, getWeatherForZone, generateForecasts, findLastEndedWeather, findWeatherMatches } from './weather-engine';
+import { calculateForecastTarget, resolveWeather, getWeatherForZone, generateForecasts, findLastEndedWeather, findWeatherMatches, currentRunRemaining } from './weather-engine';
 import { WEATHER_PERIOD_MS, getWeatherPeriodStart } from './eorzea-time';
 
 describe('calculateForecastTarget', () => {
@@ -169,5 +169,85 @@ describe('findLastEndedWeather', () => {
       1,
     );
     expect(result).toBeNull();
+  });
+});
+
+describe('findLastEndedWeather - connected runs', () => {
+  it('skips currently-ongoing connected run when looking back', () => {
+    const zone = 'Eureka Anemos';
+    const forecasts = generateForecasts(zone, 96, 1714000000000);
+    let runStart = -1;
+    for (let i = 1; i < forecasts.length; i++) {
+      if (forecasts[i - 1]!.weather === forecasts[i]!.weather) {
+        runStart = i;
+        break;
+      }
+    }
+    if (runStart === -1) {
+      // No connected run found in 96 periods — environment-dependent, skip
+      return;
+    }
+    const targetWeather = forecasts[runStart]!.weather;
+    const now = forecasts[runStart]!.startTime + 1000;
+    const result = findLastEndedWeather(zone, targetWeather, now);
+    // Buggy version returns forecasts[runStart-1].startTime (start of the
+    // currently-ongoing connected run) — must NOT match.
+    expect(result?.startTime).not.toBe(forecasts[runStart - 1]!.startTime);
+    if (result !== null) {
+      expect(result.startTime).toBeLessThan(forecasts[runStart - 1]!.startTime);
+    }
+  });
+});
+
+describe('currentRunRemaining', () => {
+  const fixedNow = 1714000000000;
+
+  it('returns null for unknown zone', () => {
+    expect(currentRunRemaining('NonExistentZone', 'Fair Skies', fixedNow)).toBeNull();
+  });
+
+  it('returns null when current period weather does not match', () => {
+    const zone = 'Eureka Anemos';
+    const currentWeather = getWeatherForZone(zone, fixedNow)!;
+    const otherWeather = currentWeather === 'Fair Skies' ? 'Gales' : 'Fair Skies';
+    expect(currentRunRemaining(zone, otherWeather, fixedNow)).toBeNull();
+  });
+
+  it('returns time to end of current period when next period has different weather', () => {
+    const zone = 'Eureka Anemos';
+    const forecasts = generateForecasts(zone, 24, fixedNow);
+    let idx = -1;
+    for (let i = 0; i < forecasts.length - 1; i++) {
+      if (forecasts[i]!.weather !== forecasts[i + 1]!.weather) {
+        idx = i;
+        break;
+      }
+    }
+    expect(idx).toBeGreaterThanOrEqual(0);
+    const periodStart = forecasts[idx]!.startTime;
+    const now = periodStart + 1000;
+    const remaining = currentRunRemaining(zone, forecasts[idx]!.weather, now);
+    expect(remaining).toBe(WEATHER_PERIOD_MS - 1000);
+  });
+
+  it('extends remaining across consecutive same-weather periods', () => {
+    const zone = 'Eureka Anemos';
+    const forecasts = generateForecasts(zone, 96, fixedNow);
+    let runStart = -1;
+    for (let i = 0; i < forecasts.length - 1; i++) {
+      if (forecasts[i]!.weather === forecasts[i + 1]!.weather) {
+        runStart = i;
+        break;
+      }
+    }
+    if (runStart === -1) {
+      // No connected run found in 96 periods — environment-dependent, skip assertion
+      return;
+    }
+    const periodStart = forecasts[runStart]!.startTime;
+    const now = periodStart + 1000;
+    const remaining = currentRunRemaining(zone, forecasts[runStart]!.weather, now);
+    // Connected run extends into period+1, so remaining > single-period remaining
+    expect(remaining).toBeGreaterThan(WEATHER_PERIOD_MS - 1000);
   });
 });
