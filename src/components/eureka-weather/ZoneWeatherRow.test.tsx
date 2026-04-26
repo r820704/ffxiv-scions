@@ -100,6 +100,55 @@ describe('ZoneWeatherRow', () => {
     expect(screen.queryByText(/目前.*剩/)).toBeNull();
   });
 
+  describe('cell visuals (M3)', () => {
+    it('does NOT render any 夜 badge', () => {
+      const { container } = render(
+        <ZoneWeatherRow zone="Eureka Anemos" selectedWeathers={new Set()} now={fixedNow} />,
+      );
+      // No standalone 夜 badge text in any cell
+      const badges = container.querySelectorAll('[data-period-cell] > div');
+      let foundNightBadge = false;
+      badges.forEach((d) => {
+        if (d.textContent?.trim() === '夜') foundNightBadge = true;
+      });
+      expect(foundNightBadge).toBe(false);
+    });
+
+    it('renders amber now-line on the current (idx 0) cell only', () => {
+      const { container } = render(
+        <ZoneWeatherRow zone="Eureka Anemos" selectedWeathers={new Set()} now={fixedNow} />,
+      );
+      const lines = container.querySelectorAll('[data-now-line]');
+      expect(lines.length).toBe(1);
+    });
+
+    it('applies a gradient bg class to each period cell', () => {
+      const { container } = render(
+        <ZoneWeatherRow zone="Eureka Anemos" selectedWeathers={new Set()} now={fixedNow} />,
+      );
+      const cells = container.querySelectorAll('[data-period-cell]');
+      expect(cells.length).toBeGreaterThan(0);
+      cells.forEach((c) => {
+        expect(c.className).toMatch(/linear-gradient/);
+      });
+    });
+
+    it('red NM badge does NOT use animate-pulse', () => {
+      const { container } = render(
+        <ZoneWeatherRow zone="Eureka Anemos" selectedWeathers={new Set()} now={fixedNow} />,
+      );
+      const cells = container.querySelectorAll('[data-period-cell]');
+      cells.forEach((cell) => {
+        const badges = cell.querySelectorAll('div');
+        badges.forEach((b) => {
+          if (b.textContent?.trim() === 'NM') {
+            expect(b.className).not.toContain('animate-pulse');
+          }
+        });
+      });
+    });
+  });
+
   describe('formatCellTime (M12 same-day)', () => {
     it('shows HH:MM only when cellTime and now are on the same local day', () => {
       const now = new Date('2026-04-25T10:00:00').getTime();

@@ -8,9 +8,9 @@ import {
 } from '@/utils/weather-engine';
 import { zoneNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weather-data';
 import { getZoneLevelLabel } from '@/data/eureka-zone-meta';
-import { WEATHER_PERIOD_MS, toEorzeaTime } from '@/utils/eorzea-time';
-import { isDayTime } from '@/utils/game-day-night';
-import { getActiveNms } from '@/data/eureka-nm-data';
+import { WEATHER_PERIOD_MS } from '@/utils/eorzea-time';
+import { getPeriodKind, getPeriodBgClass } from '@/utils/weather-period-bg';
+import { getActiveNmsAt } from '@/data/eureka-nm-data';
 import WeatherIcon from '@/components/WeatherIcon';
 import NmTooltip from './NmTooltip';
 
@@ -155,21 +155,22 @@ export default function ZoneWeatherRow({
         {forecasts.map((f, idx) => {
           const isCurrent = idx === 0;
           const matched = selectedWeathers.has(f.weather);
-          const estMid = toEorzeaTime(f.startTime + WEATHER_PERIOD_MS / 2);
-          const isDay = isDayTime(estMid);
-          const nms = getActiveNms(zone, f.weather, isDay);
-          const weatherNms = nms.filter((n) => (n.trigger.weather?.length ?? 0) > 0);
-          const nightOnlyNms = nms.filter((n) => !n.trigger.weather?.length);
+          const nms = isCurrent
+            ? getActiveNmsAt(zone, f.weather, f.startTime, now)
+            : getActiveNmsAt(zone, f.weather, f.startTime);
+          const hasAnyNm = nms.length > 0;
+          const bgClass = getPeriodBgClass(getPeriodKind(f.startTime));
+          const nowOffsetPct = isCurrent
+            ? Math.max(0, Math.min(100, ((now - f.startTime) / WEATHER_PERIOD_MS) * 100))
+            : null;
           return (
             <NmTooltip key={f.startTime} nms={nms}>
               <div
                 data-period-cell
                 data-matched={matched ? 'true' : 'false'}
                 className={`relative flex-shrink-0 w-16 rounded p-1 text-center text-[10px] border ${
-                  matched ? 'border-amber-500 bg-amber-500/10' : 'border-border/50'
-                } ${isDay ? 'bg-amber-50/[.03]' : 'bg-indigo-900/[.08]'} ${
-                  isCurrent ? 'ring-1 ring-primary' : ''
-                }`}
+                  matched ? 'border-amber-500 bg-amber-500/10' : `border-border/50 ${bgClass}`
+                } ${isCurrent ? 'ring-1 ring-primary' : ''}`}
               >
                 <div className="flex justify-center">
                   <WeatherIcon weatherEn={f.weather} weatherTw={f.weatherTw} size={20} />
@@ -178,15 +179,17 @@ export default function ZoneWeatherRow({
                 <div className="text-muted-foreground/70">
                   {isCurrent ? '現在' : formatCellTime(f.startTime, now)}
                 </div>
-                {weatherNms.length > 0 && (
-                  <div className="absolute top-0.5 right-0.5 px-1 rounded bg-red-600 text-white text-[8px] font-bold leading-[10px] shadow-sm animate-pulse">
+                {hasAnyNm && (
+                  <div className="absolute top-0.5 right-0.5 px-1 rounded bg-red-600 text-white text-[8px] font-bold leading-[10px] shadow-[0_0_6px_rgba(220,38,38,0.6)]">
                     NM
                   </div>
                 )}
-                {nightOnlyNms.length > 0 && (
-                  <div className="absolute top-0.5 left-0.5 px-1 rounded bg-indigo-500/60 text-indigo-50 text-[8px] font-bold leading-[10px] shadow-sm">
-                    夜
-                  </div>
+                {nowOffsetPct !== null && (
+                  <div
+                    data-now-line
+                    className="absolute top-0 bottom-0 w-[2px] bg-amber-400 pointer-events-none"
+                    style={{ left: `${nowOffsetPct}%` }}
+                  />
                 )}
               </div>
             </NmTooltip>

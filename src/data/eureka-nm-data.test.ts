@@ -84,17 +84,14 @@ describe('getActiveNmsAt — current cell uses realNow not midpoint', () => {
   it('does NOT include night-only NM when realNow is ET 17 (P2 day tail) but midpoint is ET 20 (night)', () => {
     // periodStart at ET 16 (start of P2 dusk cell)
     const periodStart = findTsAtEt(16);
-    // realNow ~ 1 ET hour later → ET ~17, still day
-    const realNow = periodStart + (175 * 60 * 1000); // 1 ET hour = 175 sec * 60 = 10500s? wait
-    // Actually 1 ET hour real = 175 sec. So realNow = periodStart + 175*1000 ms = +175s. Let's use 175 sec.
-    const realNowAdjusted = periodStart + 175 * 1000;
-    const etRealNow = toEorzeaTime(realNowAdjusted);
-    // Sanity check: real-now ET hour is 17 (still day) and midpoint is ET 20 (night)
+    // 1 ET hour = 175 real seconds; realNow = periodStart + 175s puts us at ET ~17 (still day)
+    const realNow = periodStart + 175 * 1000;
+    const etRealNow = toEorzeaTime(realNow);
     const midpointEt = toEorzeaTime(periodStart + WEATHER_PERIOD_MS / 2);
     expect(etRealNow.hours).toBe(17);
     expect(midpointEt.hours).toBeGreaterThanOrEqual(18);
 
-    const nms = getActiveNmsAt('Eureka Anemos', 'Fair Skies', periodStart, realNowAdjusted);
+    const nms = getActiveNmsAt('Eureka Anemos', 'Fair Skies', periodStart, realNow);
     expect(nms.every((nm) => nm.trigger.timeOfDay !== 'night')).toBe(true);
   });
 
