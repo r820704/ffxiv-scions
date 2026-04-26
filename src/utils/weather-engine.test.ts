@@ -172,6 +172,33 @@ describe('findLastEndedWeather', () => {
   });
 });
 
+describe('findLastEndedWeather - connected runs', () => {
+  it('skips currently-ongoing connected run when looking back', () => {
+    const zone = 'Eureka Anemos';
+    const forecasts = generateForecasts(zone, 96, 1714000000000);
+    let runStart = -1;
+    for (let i = 1; i < forecasts.length; i++) {
+      if (forecasts[i - 1]!.weather === forecasts[i]!.weather) {
+        runStart = i;
+        break;
+      }
+    }
+    if (runStart === -1) {
+      // No connected run found in 96 periods — environment-dependent, skip
+      return;
+    }
+    const targetWeather = forecasts[runStart]!.weather;
+    const now = forecasts[runStart]!.startTime + 1000;
+    const result = findLastEndedWeather(zone, targetWeather, now);
+    // Buggy version returns forecasts[runStart-1].startTime (start of the
+    // currently-ongoing connected run) — must NOT match.
+    expect(result?.startTime).not.toBe(forecasts[runStart - 1]!.startTime);
+    if (result !== null) {
+      expect(result.startTime).toBeLessThan(forecasts[runStart - 1]!.startTime);
+    }
+  });
+});
+
 describe('currentRunRemaining', () => {
   const fixedNow = 1714000000000;
 

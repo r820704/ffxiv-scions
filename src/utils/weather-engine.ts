@@ -76,6 +76,8 @@ export function generateForecasts(zone: string, count: number, fromTimestamp?: n
 
 // Look back up to `maxLookbackPeriods` weather periods from `now` to find the
 // most recent period with the given `weather` whose end time is already <= now.
+// Skips the connected same-weather prefix preceding `now` (those periods are
+// part of the currently-ongoing run, not a "last ended" occurrence).
 // Returns null if no match or if the zone is unknown.
 export function findLastEndedWeather(
   zone: string,
@@ -86,7 +88,14 @@ export function findLastEndedWeather(
   if (!weatherRates[zone]) return null;
 
   const currentStart = getWeatherPeriodStart(now);
-  for (let i = 1; i <= maxLookbackPeriods; i++) {
+  let i = 0;
+  while (
+    i <= maxLookbackPeriods &&
+    resolveWeather(zone, calculateForecastTarget(currentStart - i * WEATHER_PERIOD_MS)) === weather
+  ) {
+    i += 1;
+  }
+  for (; i <= maxLookbackPeriods; i++) {
     const candidateStart = currentStart - i * WEATHER_PERIOD_MS;
     const target = calculateForecastTarget(candidateStart);
     const w = resolveWeather(zone, target);
