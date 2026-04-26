@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   generateForecasts,
   findWeatherMatches,
@@ -23,6 +23,7 @@ interface ZoneWeatherRowProps {
 }
 
 const FORECAST_COUNT = 24;
+const SCROLL_REVEAL_THRESHOLD = 80;
 
 function formatRelMs(ms: number): string {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -50,6 +51,15 @@ export default function ZoneWeatherRow({
   onJumpToNow,
 }: ZoneWeatherRowProps) {
   const localRef = useRef<HTMLDivElement | null>(null);
+  const [scrolledAway, setScrolledAway] = useState(false);
+
+  const handleScroll = useCallback(
+    (sl: number) => {
+      setScrolledAway(sl > SCROLL_REVEAL_THRESHOLD);
+      onScroll?.(sl);
+    },
+    [onScroll],
+  );
 
   const forecasts = useMemo(
     () => generateForecasts(zone, FORECAST_COUNT, now),
@@ -135,11 +145,11 @@ export default function ZoneWeatherRow({
               {rightLabel}
             </span>
           )}
-          {onJumpToNow && (
+          {onJumpToNow && scrolledAway && (
             <button
               type="button"
               onClick={onJumpToNow}
-              className="text-[10px] px-1.5 py-0.5 rounded border border-border/50 hover:border-primary transition-colors text-muted-foreground cursor-pointer"
+              className="text-[10px] px-1.5 py-0.5 rounded border border-border/50 hover:border-primary transition-colors text-muted-foreground cursor-pointer animate-in fade-in"
             >
               ↺ 回到現在
             </button>
@@ -148,7 +158,7 @@ export default function ZoneWeatherRow({
       </div>
       <div
         ref={setRefs}
-        onScroll={(e) => onScroll?.(e.currentTarget.scrollLeft)}
+        onScroll={(e) => handleScroll(e.currentTarget.scrollLeft)}
         className="flex gap-1 mt-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {forecasts.map((f, idx) => {

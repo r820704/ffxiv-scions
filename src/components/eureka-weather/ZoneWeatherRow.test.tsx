@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import ZoneWeatherRow from './ZoneWeatherRow';
 import { generateForecasts, findLastEndedWeather } from '@/utils/weather-engine';
 import { weatherNamesTw } from '@/data/weather-data';
@@ -93,5 +93,34 @@ describe('ZoneWeatherRow', () => {
     expect(screen.queryByText(/上次/)).toBeNull();
     expect(screen.queryByText(/下次/)).toBeNull();
     expect(screen.queryByText(/目前.*剩/)).toBeNull();
+  });
+
+  describe('回到現在 button visibility (Q2)', () => {
+    it('does NOT render the button when scrollLeft is 0', () => {
+      render(
+        <ZoneWeatherRow
+          zone="Eureka Anemos"
+          selectedWeathers={new Set()}
+          now={fixedNow}
+          onJumpToNow={() => {}}
+        />,
+      );
+      expect(screen.queryByText(/回到現在/)).toBeNull();
+    });
+
+    it('renders the button after scrolling past threshold', () => {
+      const { container } = render(
+        <ZoneWeatherRow
+          zone="Eureka Anemos"
+          selectedWeathers={new Set()}
+          now={fixedNow}
+          onJumpToNow={() => {}}
+        />,
+      );
+      const scrollContainer = container.querySelector('[data-period-cell]')?.parentElement;
+      expect(scrollContainer).not.toBeNull();
+      fireEvent.scroll(scrollContainer!, { target: { scrollLeft: 100 } });
+      expect(screen.getByText(/回到現在/)).toBeTruthy();
+    });
   });
 });
