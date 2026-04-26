@@ -32,4 +32,40 @@ describe('WeatherFilterBar', () => {
       expect(b.querySelector('img, span[aria-hidden="true"]')).toBeTruthy();
     });
   });
+
+  describe('clear-all button (M13)', () => {
+    it('does NOT render clear button when no weather is selected', () => {
+      render(<WeatherFilterBar selected={new Set()} onToggle={vi.fn()} onClearAll={vi.fn()} />);
+      expect(screen.queryByText(/清除全部/)).toBeNull();
+    });
+
+    it('renders clear button with selected count when at least one weather is selected', () => {
+      render(
+        <WeatherFilterBar
+          selected={new Set(['Gales', 'Showers'])}
+          onToggle={vi.fn()}
+          onClearAll={vi.fn()}
+        />,
+      );
+      expect(screen.getByText(/清除全部 \(2\)/)).toBeTruthy();
+    });
+
+    it('calls onClearAll when clear button is clicked', () => {
+      const onClearAll = vi.fn();
+      render(
+        <WeatherFilterBar
+          selected={new Set(['Gales'])}
+          onToggle={vi.fn()}
+          onClearAll={onClearAll}
+        />,
+      );
+      fireEvent.click(screen.getByText(/清除全部/));
+      expect(onClearAll).toHaveBeenCalledOnce();
+    });
+
+    it('does NOT render clear button when onClearAll prop is omitted', () => {
+      render(<WeatherFilterBar selected={new Set(['Gales'])} onToggle={vi.fn()} />);
+      expect(screen.queryByText(/清除全部/)).toBeNull();
+    });
+  });
 });

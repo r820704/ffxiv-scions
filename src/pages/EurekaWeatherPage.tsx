@@ -20,6 +20,10 @@ export default function EurekaWeatherPage() {
     });
   };
 
+  const clearAll = useCallback(() => {
+    setSelected(new Set());
+  }, []);
+
   const registerRef = (index: number) => (el: HTMLDivElement | null) => {
     scrollRefs.current[index] = el;
   };
@@ -50,7 +54,7 @@ export default function EurekaWeatherPage() {
       </h1>
       <div className="flex flex-col gap-3">
         <GameClock />
-        <WeatherFilterBar selected={selected} onToggle={toggle} />
+        <WeatherFilterBar selected={selected} onToggle={toggle} onClearAll={clearAll} />
         <div className="flex flex-col gap-3">
           {EUREKA_ZONES.map((z, i) => (
             <ZoneWeatherRow
