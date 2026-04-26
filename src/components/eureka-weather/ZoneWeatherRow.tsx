@@ -3,6 +3,7 @@ import {
   generateForecasts,
   findWeatherMatches,
   findLastEndedWeather,
+  currentRunRemaining,
   DEFAULT_LOOKBACK_PERIODS,
 } from '@/utils/weather-engine';
 import { zoneNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weather-data';
@@ -73,12 +74,19 @@ export default function ZoneWeatherRow({
     : null;
 
   const currentPeriodWeather = forecasts[0]?.weather ?? null;
-  const currentPeriodStart = forecasts[0]?.startTime ?? null;
 
   const lastEnded = useMemo(() => {
     if (!targetWeather) return null;
     return findLastEndedWeather(zone, targetWeather, now, DEFAULT_LOOKBACK_PERIODS);
   }, [zone, targetWeather, now]);
+
+  const inProgress =
+    targetWeather !== null && currentPeriodWeather === targetWeather;
+
+  const remainingMs = useMemo(() => {
+    if (!inProgress || targetWeather === null) return null;
+    return currentRunRemaining(zone, targetWeather, now);
+  }, [zone, targetWeather, now, inProgress]);
 
   useEffect(() => {
     const el = localRef.current;
@@ -98,9 +106,6 @@ export default function ZoneWeatherRow({
     scrollRef?.(el);
   };
 
-  const inProgress =
-    targetWeather !== null && currentPeriodWeather === targetWeather;
-
   const lastLabel = targetWeatherTw
     ? lastEnded
       ? `上次${targetWeatherTw}結束：${formatRelMs(now - (lastEnded.startTime + WEATHER_PERIOD_MS))}前`
@@ -110,10 +115,8 @@ export default function ZoneWeatherRow({
   const rightLabel =
     targetWeatherTw === null
       ? null
-      : inProgress && currentPeriodStart !== null
-        ? `目前${targetWeatherTw}剩 ${formatRelMs(
-            currentPeriodStart + WEATHER_PERIOD_MS - now,
-          )}`
+      : inProgress && remainingMs !== null
+        ? `目前${targetWeatherTw}剩 ${formatRelMs(remainingMs)}`
         : nextMatch
           ? `下次${targetWeatherTw}：${formatRelMs(nextMatch.startTime - now)}後`
           : null;
