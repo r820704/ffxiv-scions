@@ -2,6 +2,7 @@ import { weatherRates, weatherNamesTw } from '../data/weather-data';
 import { WEATHER_PERIOD_MS, getWeatherPeriodStart } from './eorzea-time';
 
 export const DEFAULT_LOOKBACK_PERIODS = 9;
+export const MAX_RUN_LOOKAHEAD_PERIODS = 12;
 
 // SaintCoinach weather calculation algorithm
 export function calculateForecastTarget(timestamp: number): number {
@@ -98,6 +99,31 @@ export function findLastEndedWeather(
     }
   }
   return null;
+}
+
+// From `now`, scan forward across consecutive same-weather periods and return
+// the milliseconds remaining until the run ends (next period flips). Returns
+// null if the zone is unknown or the current period weather does not match.
+// Capped at MAX_RUN_LOOKAHEAD_PERIODS to bound work.
+export function currentRunRemaining(
+  zone: string,
+  weather: string,
+  now: number,
+  maxLookahead: number = MAX_RUN_LOOKAHEAD_PERIODS,
+): number | null {
+  if (!weatherRates[zone]) return null;
+  const periodStart = getWeatherPeriodStart(now);
+  const currentWeather = resolveWeather(zone, calculateForecastTarget(periodStart));
+  if (currentWeather !== weather) return null;
+
+  for (let i = 1; i <= maxLookahead; i++) {
+    const nextStart = periodStart + i * WEATHER_PERIOD_MS;
+    const nextWeather = resolveWeather(zone, calculateForecastTarget(nextStart));
+    if (nextWeather !== weather) {
+      return nextStart - now;
+    }
+  }
+  return periodStart + maxLookahead * WEATHER_PERIOD_MS - now;
 }
 
 // Find weather matches with optional filter
