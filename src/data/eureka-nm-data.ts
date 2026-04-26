@@ -1,5 +1,7 @@
 import type { EurekaZone } from './weather-data';
 import { weatherNamesTw } from './weather-data';
+import { WEATHER_PERIOD_MS, toEorzeaTime } from '@/utils/eorzea-time';
+import { isDayTime } from '@/utils/game-day-night';
 
 export interface EurekaNm {
   id: string;
@@ -181,6 +183,21 @@ export function getActiveNms(
     if (timeOfDay === 'night' && isDay) return false;
     return true;
   });
+}
+
+// For the "current" cell (idx 0), pass realNow so day/night is decided by the
+// player's actual ET clock instead of the period midpoint. Without realNow,
+// behaviour matches getActiveNms with the midpoint heuristic — appropriate for
+// future cells where there is no real "now".
+export function getActiveNmsAt(
+  zone: EurekaZone,
+  weather: string,
+  periodStart: number,
+  realNow?: number,
+): EurekaNm[] {
+  const reference = realNow ?? periodStart + WEATHER_PERIOD_MS / 2;
+  const isDay = isDayTime(toEorzeaTime(reference));
+  return getActiveNms(zone, weather, isDay);
 }
 
 export function formatNmTrigger(nm: EurekaNm): string {
