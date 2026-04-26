@@ -68,4 +68,35 @@ describe('WeatherFilterBar', () => {
       expect(screen.queryByText(/清除全部/)).toBeNull();
     });
   });
+
+  describe('jump-to-now button (Q2)', () => {
+    it('renders the button when onJumpToNow prop is provided', () => {
+      render(
+        <WeatherFilterBar
+          selected={new Set()}
+          onToggle={vi.fn()}
+          onJumpToNow={vi.fn()}
+        />,
+      );
+      expect(screen.getByText(/回到現在/)).toBeTruthy();
+    });
+
+    it('does NOT render the button when onJumpToNow prop is omitted', () => {
+      render(<WeatherFilterBar selected={new Set()} onToggle={vi.fn()} />);
+      expect(screen.queryByText(/回到現在/)).toBeNull();
+    });
+
+    it('calls onJumpToNow when button is clicked', () => {
+      const onJumpToNow = vi.fn();
+      render(
+        <WeatherFilterBar
+          selected={new Set()}
+          onToggle={vi.fn()}
+          onJumpToNow={onJumpToNow}
+        />,
+      );
+      fireEvent.click(screen.getByText(/回到現在/));
+      expect(onJumpToNow).toHaveBeenCalledOnce();
+    });
+  });
 });
