@@ -7,6 +7,7 @@ import {
   DEFAULT_LOOKBACK_PERIODS,
 } from '@/utils/weather-engine';
 import { zoneNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weather-data';
+import { getZoneLevelLabel } from '@/data/eureka-zone-meta';
 import { WEATHER_PERIOD_MS, toEorzeaTime } from '@/utils/eorzea-time';
 import { isDayTime } from '@/utils/game-day-night';
 import { getActiveNms } from '@/data/eureka-nm-data';
@@ -130,7 +131,12 @@ export default function ZoneWeatherRow({
   return (
     <div className="border border-border rounded-lg p-3 bg-card">
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <span className="text-sm font-semibold text-foreground">{zoneNamesTw[zone]}</span>
+        <span className="text-sm font-semibold text-foreground">
+          {zoneNamesTw[zone]}
+          <span className="ml-2 text-xs font-normal text-amber-300/70">
+            · {getZoneLevelLabel(zone)}
+          </span>
+        </span>
         <div className="flex items-center gap-2">
           {showInfoLine && (
             <span className="text-xs text-amber-300">

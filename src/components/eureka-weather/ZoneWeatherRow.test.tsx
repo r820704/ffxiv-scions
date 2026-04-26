@@ -14,6 +14,11 @@ describe('ZoneWeatherRow', () => {
     expect(screen.getByText('優雷卡常風之地')).toBeTruthy();
   });
 
+  it('renders the elemental Lv range next to zone name (M5)', () => {
+    render(<ZoneWeatherRow zone="Eureka Hydatos" selectedWeathers={new Set()} now={fixedNow} />);
+    expect(screen.getByText(/Lv 50.60/)).toBeTruthy();
+  });
+
   it('renders 24 period cells', () => {
     const { container } = render(
       <ZoneWeatherRow zone="Eureka Anemos" selectedWeathers={new Set()} now={fixedNow} />,
