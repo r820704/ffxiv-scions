@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { eurekaNms, getActiveNms, formatNmTrigger } from './eureka-nm-data';
+import { eurekaNms, getActiveNms, getActiveNmsAt, formatNmTrigger } from './eureka-nm-data';
+import { WEATHER_PERIOD_MS, toEorzeaTime } from '@/utils/eorzea-time';
 
 describe('eurekaNms', () => {
   it('contains entries for all 4 Eureka zones', () => {
@@ -59,6 +60,48 @@ describe('getActiveNms', () => {
     for (const nm of matches) {
       expect(nm.zone).toBe('Eureka Pyros');
     }
+  });
+});
+
+describe('getActiveNmsAt — current cell uses realNow not midpoint', () => {
+  // Find a real-world timestamp where ET hour ≈ etHour with small minute offset
+  function findTsAtEt(etHour: number, fromTs = 1714000000000): number {
+    let best = fromTs;
+    let bestDiff = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < 4500; i += 5) {
+      const ts = fromTs + i * 1000;
+      const et = toEorzeaTime(ts);
+      if (et.hours !== etHour) continue;
+      if (et.minutes < bestDiff) {
+        bestDiff = et.minutes;
+        best = ts;
+        if (bestDiff < 1) return best;
+      }
+    }
+    return best;
+  }
+
+  it('does NOT include night-only NM when realNow is ET 17 (P2 day tail) but midpoint is ET 20 (night)', () => {
+    // periodStart at ET 16 (start of P2 dusk cell)
+    const periodStart = findTsAtEt(16);
+    // 1 ET hour = 175 real seconds; realNow = periodStart + 175s puts us at ET ~17 (still day)
+    const realNow = periodStart + 175 * 1000;
+    const etRealNow = toEorzeaTime(realNow);
+    const midpointEt = toEorzeaTime(periodStart + WEATHER_PERIOD_MS / 2);
+    expect(etRealNow.hours).toBe(17);
+    expect(midpointEt.hours).toBeGreaterThanOrEqual(18);
+
+    const nms = getActiveNmsAt('Eureka Anemos', 'Fair Skies', periodStart, realNow);
+    expect(nms.every((nm) => nm.trigger.timeOfDay !== 'night')).toBe(true);
+  });
+
+  it('falls back to midpoint isDay when realNow is omitted (parity with getActiveNms)', () => {
+    const periodStart = findTsAtEt(16);
+    const a = getActiveNmsAt('Eureka Anemos', 'Fair Skies', periodStart);
+    const midpointEt = toEorzeaTime(periodStart + WEATHER_PERIOD_MS / 2);
+    const isDay = midpointEt.hours >= 6 && midpointEt.hours < 18;
+    const b = getActiveNms('Eureka Anemos', 'Fair Skies', isDay);
+    expect(a.map((n) => n.id).sort()).toEqual(b.map((n) => n.id).sort());
   });
 });
 
