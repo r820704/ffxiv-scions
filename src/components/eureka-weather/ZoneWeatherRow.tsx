@@ -187,7 +187,7 @@ export default function ZoneWeatherRow({
                 {nowOffsetPct !== null && (
                   <div
                     data-now-line
-                    className="absolute top-0 bottom-0 w-[2px] bg-amber-400 pointer-events-none"
+                    className="absolute top-0 bottom-0 w-[2px] bg-amber-400/70 shadow-[0_0_4px_rgba(251,191,36,0.5)] pointer-events-none"
                     style={{ left: `${nowOffsetPct}%` }}
                   />
                 )}
