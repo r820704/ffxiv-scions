@@ -7,6 +7,8 @@ import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 import HelpModal from '@/components/eureka-weather/HelpModal';
 import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
 import LoadMoreButton from '@/components/eureka-weather/LoadMoreButton';
+import WeatherSummaryBar from '@/components/eureka-weather/WeatherSummaryBar';
+import type { EurekaZone } from '@/data/weather-data';
 
 const SCROLL_REVEAL_THRESHOLD = 80;
 
@@ -57,6 +59,16 @@ export default function EurekaWeatherPage() {
     setScrolledAway(false);
   }, []);
 
+  // Cell layout: w-16 (64px) + gap-1 (4px) = 68px stride. Scroll target leaves ~68px
+  // padding on the left so the target cell is visible (not flush against the edge).
+  const scrollToCell = useCallback((_zone: EurekaZone, cellIndex: number) => {
+    const cellStride = 68;
+    const left = Math.max(0, cellIndex * cellStride - cellStride);
+    scrollRefs.current.forEach((r) => {
+      if (r) r.scrollTo({ left, behavior: 'smooth' });
+    });
+  }, []);
+
   return (
     <div>
       <div className="relative flex items-center justify-center mb-4">
@@ -79,6 +91,12 @@ export default function EurekaWeatherPage() {
           onToggle={toggle}
           onClearAll={clearAll}
           onJumpToNow={scrolledAway ? jumpToNow : undefined}
+        />
+        <WeatherSummaryBar
+          selected={selected}
+          now={now}
+          forecastCount={forecastCount}
+          onScrollToCell={scrollToCell}
         />
         <div className="flex flex-col gap-3">
           {EUREKA_ZONES.map((z, i) => (
