@@ -11,14 +11,31 @@ describe('eurekaNms', () => {
     expect(zones.has('Eureka Hydatos')).toBe(true);
   });
 
+  it('has both conditional and unconditional NMs after D1 expansion', () => {
+    const conditional = eurekaNms.filter((n) => n.trigger);
+    const unconditional = eurekaNms.filter((n) => !n.trigger);
+    expect(conditional.length).toBeGreaterThanOrEqual(15);
+    expect(unconditional.length).toBeGreaterThanOrEqual(20);
+  });
+
+  it('every entry has a unique id', () => {
+    const ids = eurekaNms.map((n) => n.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('covers at least 50 NMs across all 4 zones (D1 data expansion)', () => {
+    expect(eurekaNms.length).toBeGreaterThanOrEqual(50);
+  });
+
   it('every entry has a non-empty nameTw in TC', () => {
     for (const nm of eurekaNms) {
       expect(nm.nameTw.length).toBeGreaterThan(0);
     }
   });
 
-  it('every entry has at least one trigger condition', () => {
+  it('every entry with a trigger has at least one trigger condition (weather or timeOfDay)', () => {
     for (const nm of eurekaNms) {
+      if (!nm.trigger) continue; // unconditional NMs (常駐) are allowed post-D1
       const { weather, timeOfDay } = nm.trigger;
       expect(Boolean((weather && weather.length > 0) || timeOfDay)).toBe(true);
     }
@@ -92,7 +109,7 @@ describe('getActiveNmsAt — current cell uses realNow not midpoint', () => {
     expect(midpointEt.hours).toBeGreaterThanOrEqual(18);
 
     const nms = getActiveNmsAt('Eureka Anemos', 'Fair Skies', periodStart, realNow);
-    expect(nms.every((nm) => nm.trigger.timeOfDay !== 'night')).toBe(true);
+    expect(nms.every((nm) => nm.trigger?.timeOfDay !== 'night')).toBe(true);
   });
 
   it('falls back to midpoint isDay when realNow is omitted (parity with getActiveNms)', () => {

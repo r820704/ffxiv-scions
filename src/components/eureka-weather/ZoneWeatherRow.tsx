@@ -168,7 +168,12 @@ export default function ZoneWeatherRow({
           const nms = isCurrent
             ? getActiveNmsAt(zone, f.weather, f.startTime, now)
             : getActiveNmsAt(zone, f.weather, f.startTime);
-          const hasAnyNm = nms.length > 0;
+          // Split NMs into weather-triggered (red badge) vs night-only (🌙 corner).
+          // Pazuzu-like NMs (weather + night) count as weather-triggered.
+          const hasWeatherNm = nms.some((n) => n.trigger?.weather && n.trigger.weather.length > 0);
+          const hasNightOnlyNm = nms.some(
+            (n) => !n.trigger?.weather && n.trigger?.timeOfDay === 'night',
+          );
           const bgClass = getPeriodBgClass(getPeriodKind(f.startTime));
           const nowOffsetPct = isCurrent
             ? Math.max(0, Math.min(100, ((now - f.startTime) / WEATHER_PERIOD_MS) * 100))
@@ -191,9 +196,18 @@ export default function ZoneWeatherRow({
                 <div className="text-muted-foreground/70">
                   {isCurrent ? '現在' : formatCellTime(f.startTime, now)}
                 </div>
-                {hasAnyNm && (
+                {hasWeatherNm && (
                   <div className="absolute top-0.5 right-0.5 px-1 rounded bg-red-600 text-white text-[8px] font-bold leading-[10px] shadow-[0_0_6px_rgba(220,38,38,0.6)]">
                     NM
+                  </div>
+                )}
+                {hasNightOnlyNm && !hasWeatherNm && (
+                  <div
+                    data-night-nm-indicator
+                    className="absolute top-0.5 right-0.5 text-[10px] leading-none"
+                    title="此時段有夜間 NM"
+                  >
+                    🌙
                   </div>
                 )}
                 {nowOffsetPct !== null && (
