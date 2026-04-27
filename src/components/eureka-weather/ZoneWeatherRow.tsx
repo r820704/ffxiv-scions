@@ -18,11 +18,14 @@ interface ZoneWeatherRowProps {
   zone: EurekaZone;
   selectedWeathers: Set<string>;
   now: number;
+  forecastCount?: number;
+  loadMoreStep?: number;
+  onLoadMore?: () => void;
   scrollRef?: (el: HTMLDivElement | null) => void;
   onScroll?: (scrollLeft: number) => void;
 }
 
-const FORECAST_COUNT = 24;
+const DEFAULT_FORECAST_COUNT = 48;
 
 function formatRelMs(ms: number): string {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -51,14 +54,17 @@ export default function ZoneWeatherRow({
   zone,
   selectedWeathers,
   now,
+  forecastCount = DEFAULT_FORECAST_COUNT,
+  loadMoreStep,
+  onLoadMore,
   scrollRef,
   onScroll,
 }: ZoneWeatherRowProps) {
   const localRef = useRef<HTMLDivElement | null>(null);
 
   const forecasts = useMemo(
-    () => generateForecasts(zone, FORECAST_COUNT, now),
-    [zone, now],
+    () => generateForecasts(zone, forecastCount, now),
+    [zone, now, forecastCount],
   );
 
   const nextMatch = useMemo(() => {
@@ -201,6 +207,18 @@ export default function ZoneWeatherRow({
             </NmTooltip>
           );
         })}
+        {onLoadMore && loadMoreStep && loadMoreStep > 0 && (
+          <button
+            type="button"
+            data-load-more-cell
+            onClick={onLoadMore}
+            className="flex-shrink-0 w-16 rounded p-1 text-center text-[10px] border border-dashed border-border/50 bg-muted/30 text-muted-foreground hover:border-primary hover:text-primary hover:bg-muted/60 transition-colors cursor-pointer flex flex-col items-center justify-center gap-0.5"
+          >
+            <span className="text-base leading-none">＋</span>
+            <span>{loadMoreStep}</span>
+            <span className="text-[9px]">載入</span>
+          </button>
+        )}
       </div>
     </div>
   );

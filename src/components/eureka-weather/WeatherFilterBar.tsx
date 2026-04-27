@@ -8,6 +8,7 @@ interface WeatherFilterBarProps {
   onToggle: (weather: string) => void;
   onClearAll?: () => void;
   onJumpToNow?: () => void;
+  onCopyLink?: () => void;
 }
 
 export default function WeatherFilterBar({
@@ -15,6 +16,7 @@ export default function WeatherFilterBar({
   onToggle,
   onClearAll,
   onJumpToNow,
+  onCopyLink,
 }: WeatherFilterBarProps) {
   const [generalExpanded, setGeneralExpanded] = useLocalStorageBool(
     'eureka-weather-filter-general-expanded',
@@ -84,6 +86,16 @@ export default function WeatherFilterBar({
             >
               <span>↺</span>
               <span>回到現在</span>
+            </button>
+          )}
+          {onCopyLink && (
+            <button
+              type="button"
+              onClick={onCopyLink}
+              className="flex items-center gap-1 text-xs px-2 py-0.5 rounded border border-border/50 text-muted-foreground hover:border-primary hover:text-primary transition-colors cursor-pointer"
+            >
+              <span>📋</span>
+              <span>複製連結</span>
             </button>
           )}
           {hasSelection && onClearAll && (
