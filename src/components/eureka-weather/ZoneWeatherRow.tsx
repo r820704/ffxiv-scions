@@ -9,8 +9,8 @@ import {
 import { zoneNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weather-data';
 import { getZoneLevelLabel } from '@/data/eureka-zone-meta';
 import { WEATHER_PERIOD_MS } from '@/utils/eorzea-time';
-import { getPeriodKind, getPeriodBgClass } from '@/utils/weather-period-bg';
-import { getActiveNmsAt } from '@/data/eureka-nm-data';
+import { getPeriodKind, getPeriodBgClass, isCellNight } from '@/utils/weather-period-bg';
+import { getActiveNmsAt, NIGHT_FILTER_KEY } from '@/data/eureka-nm-data';
 import WeatherIcon from '@/components/WeatherIcon';
 import NmTooltip from './NmTooltip';
 
@@ -154,7 +154,11 @@ export default function ZoneWeatherRow({
       >
         {forecasts.map((f, idx) => {
           const isCurrent = idx === 0;
-          const matched = selectedWeathers.has(f.weather);
+          const matchedByWeather = selectedWeathers.has(f.weather);
+          const matchedByNight =
+            selectedWeathers.has(NIGHT_FILTER_KEY) &&
+            isCellNight(f.startTime, isCurrent ? now : undefined);
+          const matched = matchedByWeather || matchedByNight;
           const nms = isCurrent
             ? getActiveNmsAt(zone, f.weather, f.startTime, now)
             : getActiveNmsAt(zone, f.weather, f.startTime);

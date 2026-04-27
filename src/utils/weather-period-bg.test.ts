@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getPeriodKind, getPeriodBgClass } from './weather-period-bg';
+import { getPeriodKind, getPeriodBgClass, isCellNight } from './weather-period-bg';
 import { toEorzeaTime } from './eorzea-time';
 
 function findTimestampAtEtHour(etHour: number, fromTs = 1714000000000): number {
@@ -34,6 +34,35 @@ describe('getPeriodKind', () => {
   it('returns dusk for ET 16–24', () => {
     expect(getPeriodKind(findTimestampAtEtHour(16))).toBe('dusk');
     expect(getPeriodKind(findTimestampAtEtHour(23))).toBe('dusk');
+  });
+});
+
+describe('isCellNight', () => {
+  it('returns false for day cell (ET 8-16, midpoint ET 12)', () => {
+    expect(isCellNight(findTimestampAtEtHour(8))).toBe(false);
+  });
+
+  it('returns true for dawn cell (ET 0-8, midpoint ET 4)', () => {
+    expect(isCellNight(findTimestampAtEtHour(0))).toBe(true);
+  });
+
+  it('returns true for dusk cell (ET 16-24, midpoint ET 20)', () => {
+    expect(isCellNight(findTimestampAtEtHour(16))).toBe(true);
+  });
+
+  it('uses realNow when provided (overrides midpoint heuristic)', () => {
+    // Dusk cell at ET 16; realNow ~ET 17 (still day)
+    const periodStart = findTimestampAtEtHour(16);
+    const realNow = periodStart + 175 * 1000; // +1 ET hour real-time = 175 sec
+    expect(isCellNight(periodStart)).toBe(true); // midpoint says night
+    expect(isCellNight(periodStart, realNow)).toBe(false); // realNow says day
+  });
+
+  it('returns true when realNow is in the dawn-cell night portion (ET 0-6)', () => {
+    const periodStart = findTimestampAtEtHour(0);
+    // realNow at ET 4 (still night)
+    const realNow = periodStart + 4 * 175 * 1000;
+    expect(isCellNight(periodStart, realNow)).toBe(true);
   });
 });
 

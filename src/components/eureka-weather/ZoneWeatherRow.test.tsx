@@ -3,6 +3,8 @@ import { render, screen, cleanup } from '@testing-library/react';
 import ZoneWeatherRow, { formatCellTime } from './ZoneWeatherRow';
 import { generateForecasts, findLastEndedWeather } from '@/utils/weather-engine';
 import { weatherNamesTw } from '@/data/weather-data';
+import { NIGHT_FILTER_KEY } from '@/data/eureka-nm-data';
+import { isCellNight } from '@/utils/weather-period-bg';
 
 afterEach(cleanup);
 
@@ -146,6 +148,48 @@ describe('ZoneWeatherRow', () => {
           }
         });
       });
+    });
+  });
+
+  describe('夜間 sentinel matching', () => {
+    it('marks night cells as matched when NIGHT_FILTER_KEY is selected', () => {
+      const { container } = render(
+        <ZoneWeatherRow
+          zone="Eureka Anemos"
+          selectedWeathers={new Set([NIGHT_FILTER_KEY])}
+          now={fixedNow}
+        />,
+      );
+      const cells = container.querySelectorAll('[data-period-cell]');
+      const forecasts = generateForecasts('Eureka Anemos', cells.length, fixedNow);
+      cells.forEach((cell, idx) => {
+        const f = forecasts[idx]!;
+        const expected = isCellNight(f.startTime, idx === 0 ? fixedNow : undefined);
+        expect(cell.getAttribute('data-matched')).toBe(expected ? 'true' : 'false');
+      });
+    });
+
+    it('does NOT mark day cells when only NIGHT_FILTER_KEY is selected', () => {
+      // Pick a fixedNow where there is at least one day cell in the next 24 periods
+      const { container } = render(
+        <ZoneWeatherRow
+          zone="Eureka Anemos"
+          selectedWeathers={new Set([NIGHT_FILTER_KEY])}
+          now={fixedNow}
+        />,
+      );
+      const cells = container.querySelectorAll('[data-period-cell]');
+      const forecasts = generateForecasts('Eureka Anemos', cells.length, fixedNow);
+      let foundDayUnmatched = false;
+      cells.forEach((cell, idx) => {
+        const f = forecasts[idx]!;
+        const isNight = isCellNight(f.startTime, idx === 0 ? fixedNow : undefined);
+        if (!isNight) {
+          expect(cell.getAttribute('data-matched')).toBe('false');
+          foundDayUnmatched = true;
+        }
+      });
+      expect(foundDayUnmatched).toBe(true);
     });
   });
 
