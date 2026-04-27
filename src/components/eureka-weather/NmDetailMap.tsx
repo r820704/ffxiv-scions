@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { EurekaZone } from '@/data/weather-data';
-import { mapCoordToPercent, EUREKA_ZONE_BOUNDS } from '@/utils/eureka-map-coords';
+import { zoneNamesTw } from '@/data/weather-data';
+import { mapCoordToPercent, EUREKA_ZONE_BOUNDS, ZONE_MAP_FILE_KEY } from '@/utils/eureka-map-coords';
 
 interface Pin {
   x: number;
@@ -14,24 +15,10 @@ interface NmDetailMapProps {
   pins: Pin[];
 }
 
-const ZONE_TO_KEY: Record<EurekaZone, string> = {
-  'Eureka Anemos': 'anemos',
-  'Eureka Pagos': 'pagos',
-  'Eureka Pyros': 'pyros',
-  'Eureka Hydatos': 'hydatos',
-};
-
-const ZONE_TO_TW: Record<EurekaZone, string> = {
-  'Eureka Anemos': '優雷卡常風之地',
-  'Eureka Pagos': '優雷卡恆冰之地',
-  'Eureka Pyros': '優雷卡湧火之地',
-  'Eureka Hydatos': '優雷卡豐水之地',
-};
-
 export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
   const [imgFailed, setImgFailed] = useState(false);
-  const key = ZONE_TO_KEY[zone];
-  const tw = ZONE_TO_TW[zone];
+  const key = ZONE_MAP_FILE_KEY[zone];
+  const tw = zoneNamesTw[zone] ?? zone;
   const bounds = EUREKA_ZONE_BOUNDS[zone];
   const src = `${import.meta.env.BASE_URL}data/eureka-maps/${key}.jpg`;
 

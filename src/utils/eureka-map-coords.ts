@@ -1,3 +1,5 @@
+import type { EurekaZone } from '@/data/weather-data';
+
 export interface ZoneBounds {
   xMin: number;
   xMax: number;
@@ -36,4 +38,12 @@ export const EUREKA_ZONE_BOUNDS: Record<string, ZoneBounds> = {
   'Eureka Pagos': { xMin: 1, xMax: 42, yMin: 1, yMax: 42 },
   'Eureka Pyros': { xMin: 1, xMax: 42, yMin: 1, yMax: 42 },
   'Eureka Hydatos': { xMin: 1, xMax: 42, yMin: 1, yMax: 42 },
+};
+
+// Map zones to their map file asset keys
+export const ZONE_MAP_FILE_KEY: Record<EurekaZone, string> = {
+  'Eureka Anemos': 'anemos',
+  'Eureka Pagos': 'pagos',
+  'Eureka Pyros': 'pyros',
+  'Eureka Hydatos': 'hydatos',
 };
