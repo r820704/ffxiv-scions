@@ -19,24 +19,24 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
       >
         <h2 className="text-lg font-bold text-amber-300 mb-4">優雷卡天氣 — 使用說明</h2>
         <Section title="怎麼讀格子">
-          <p className="text-muted-foreground">每格涵蓋 8 個 ET 小時（23 分 20 秒實時）。</p>
+          <p className="text-muted-foreground">每格代表 8 個遊戲時間小時（差不多現實 23 分鐘）。</p>
           <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground">
-            <li><span className="text-foreground">底色漸層</span>：左 indigo→右 amber 是黎明、純 amber 是白天、左 amber→右 indigo 是黃昏；漸層轉折線就是日出 / 日落點</li>
-            <li><span className="text-foreground">amber 垂直線</span>：現在在 cell 內的位置</li>
-            <li><span className="text-foreground">🔴 紅 NM 徽章</span>：這格有 NM 會出，hover 看名單；點一下釘住、再點取消</li>
-            <li><span className="text-foreground">Lv X–Y</span>：地圖 elemental 等級區間</li>
+            <li><span className="text-foreground">底色暗示日夜</span>：偏紫是夜晚、偏黃是白天；紫黃漸層的轉折線就是日出 / 日落</li>
+            <li><span className="text-foreground">黃色直線</span>：「現在」在這個時段裡的位置</li>
+            <li><span className="text-foreground">🔴 紅色 NM 標記</span>：這格會出 NM；移到上面看名單，點一下釘住、不會跑掉</li>
+            <li><span className="text-foreground">地圖名旁的 Lv 數字</span>：適合幾級的玩家</li>
           </ul>
         </Section>
         <Section title="怎麼用篩選">
           <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground">
-            <li><span className="text-foreground">觸發 NM</span>：6 種天氣 chip + 🌙 夜間（純夜 NM 不依天氣，自動高亮夜時段 cell）</li>
-            <li><span className="text-foreground">一般天氣</span>：點 ▸ 展開（預設折起）</li>
-            <li><span className="text-foreground">✕ 清除全部</span>：一鍵清空所有篩選</li>
+            <li><span className="text-foreground">上排「觸發 NM」</span>：6 種會出 NM 的天氣 + 🌙 夜間（純夜出的 NM 不挑天氣）</li>
+            <li><span className="text-foreground">下排「一般天氣」</span>：點 ▸ 展開，平常很少用所以默認折起</li>
+            <li><span className="text-foreground">「✕ 清除全部」</span>：一鍵把所有篩選清掉</li>
           </ul>
         </Section>
         <Section title="連續同天氣">
           <p className="text-muted-foreground">
-            遇到連續 2+ 期同天氣，「目前 X 剩」會自動跨期延伸計算，不會在期界誤截斷。
+            有時候會遇到接連兩期都是同一種天氣，「目前 X 剩」會自動把整段加起來、不會在期界硬切。
           </p>
         </Section>
         <button
