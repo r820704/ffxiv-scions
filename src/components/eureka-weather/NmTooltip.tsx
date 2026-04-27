@@ -5,9 +5,10 @@ import { formatNmTrigger, type EurekaNm } from '@/data/eureka-nm-data';
 interface NmTooltipProps {
   nms: EurekaNm[];
   children: ReactNode;
+  onOpenDetail?: (nmId: string) => void;
 }
 
-export default function NmTooltip({ nms, children }: NmTooltipProps) {
+export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProps) {
   const [pinned, setPinned] = useState(false);
   const [hovering, setHovering] = useState(false);
   const open = pinned || hovering;
@@ -44,7 +45,22 @@ export default function NmTooltip({ nms, children }: NmTooltipProps) {
           <ul className="flex flex-col gap-1">
             {nms.map((nm) => (
               <li key={nm.id} className="flex items-center gap-2 whitespace-nowrap">
-                <span className="text-foreground">{nm.nameTw}</span>
+                {onOpenDetail ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenDetail(nm.id);
+                      setPinned(false);
+                      setHovering(false);
+                    }}
+                    className="text-foreground underline-offset-2 hover:underline hover:text-primary cursor-pointer text-left"
+                  >
+                    {nm.nameTw}
+                  </button>
+                ) : (
+                  <span className="text-foreground">{nm.nameTw}</span>
+                )}
                 <span className="text-muted-foreground">Lv.{nm.level}</span>
                 <span className="text-amber-300/80 ml-auto">{formatNmTrigger(nm)}</span>
               </li>
