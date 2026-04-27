@@ -5,6 +5,7 @@ import GameClock from '@/components/eureka-weather/GameClock';
 import WeatherFilterBar from '@/components/eureka-weather/WeatherFilterBar';
 import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 import HelpModal from '@/components/eureka-weather/HelpModal';
+import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
 
 const SCROLL_REVEAL_THRESHOLD = 80;
 
@@ -70,6 +71,7 @@ export default function EurekaWeatherPage() {
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
       <div className="flex flex-col gap-3">
         <GameClock />
+        <OnboardingHint />
         <WeatherFilterBar
           selected={selected}
           onToggle={toggle}
