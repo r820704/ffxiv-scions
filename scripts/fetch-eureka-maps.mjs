@@ -20,8 +20,8 @@ const OUT_DIR = resolve(REPO_ROOT, 'public/data/eureka-maps');
 // Eureka Hydatos : territory 827 -> map 515, /m/z3fd/z3fd.01.jpg
 //
 // XIVAPI hosts the unpacked client image at https://xivapi.com<MapFilename>.
-// Source format is JPEG; we save bytes as <zone>.png so downstream UI code
-// can use a single .png convention — browsers detect format by content, not
+// Source format is JPEG; we save bytes as <zone>.jpg so downstream UI code
+// can use a single .jpg convention — browsers detect format by content, not
 // by extension. If a URL fails, we log a clear manual-download fallback.
 const ZONES = [
   { id: 'anemos',  url: 'https://xivapi.com/m/z3fa/z3fa.00.jpg' },
@@ -31,9 +31,9 @@ const ZONES = [
 ];
 
 async function fetchMap(zone) {
-  const outPath = resolve(OUT_DIR, `${zone.id}.png`);
+  const outPath = resolve(OUT_DIR, `${zone.id}.jpg`);
   if (existsSync(outPath)) {
-    console.log(`[skip] ${zone.id}.png already exists at ${outPath}`);
+    console.log(`[skip] ${zone.id}.jpg already exists at ${outPath}`);
     return { zone: zone.id, status: 'skipped' };
   }
 
@@ -41,18 +41,18 @@ async function fetchMap(zone) {
     const res = await fetch(zone.url);
     if (!res.ok) {
       console.warn(
-        `[warn] failed to fetch ${zone.id}.png: HTTP ${res.status} from ${zone.url}.\n` +
+        `[warn] failed to fetch ${zone.id}.jpg: HTTP ${res.status} from ${zone.url}.\n` +
         `       Manually download from ${zone.url} and save to ${outPath}`,
       );
       return { zone: zone.id, status: 'failed' };
     }
     const buf = Buffer.from(await res.arrayBuffer());
     writeFileSync(outPath, buf);
-    console.log(`[ok]   ${zone.id}.png  ${buf.length} bytes  -> ${outPath}`);
+    console.log(`[ok]   ${zone.id}.jpg  ${buf.length} bytes  -> ${outPath}`);
     return { zone: zone.id, status: 'ok', bytes: buf.length };
   } catch (err) {
     console.warn(
-      `[warn] failed to fetch ${zone.id}.png: ${err?.message ?? err}.\n` +
+      `[warn] failed to fetch ${zone.id}.jpg: ${err?.message ?? err}.\n` +
       `       Manually download from ${zone.url} and save to ${outPath}`,
     );
     return { zone: zone.id, status: 'error' };
