@@ -8,21 +8,30 @@ interface NmTooltipProps {
 }
 
 export default function NmTooltip({ nms, children }: NmTooltipProps) {
-  const [open, setOpen] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const [hovering, setHovering] = useState(false);
+  const open = pinned || hovering;
 
   if (nms.length === 0) return <>{children}</>;
 
+  const handleOpenChange = (next: boolean) => {
+    if (!next) {
+      setPinned(false);
+      setHovering(false);
+    }
+  };
+
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
+    <Popover.Root open={open} onOpenChange={handleOpenChange}>
+      <Popover.Anchor asChild>
         <div
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
-          onClick={() => setOpen((v) => !v)}
+          onMouseEnter={() => setHovering(true)}
+          onMouseLeave={() => setHovering(false)}
+          onClick={() => setPinned((p) => !p)}
         >
           {children}
         </div>
-      </Popover.Trigger>
+      </Popover.Anchor>
       <Popover.Portal>
         <Popover.Content
           side="top"
