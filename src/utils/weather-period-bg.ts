@@ -1,4 +1,5 @@
-import { toEorzeaTime } from './eorzea-time';
+import { WEATHER_PERIOD_MS, toEorzeaTime } from './eorzea-time';
+import { isDayTime } from './game-day-night';
 
 export type PeriodKind = 'dawn' | 'day' | 'dusk';
 
@@ -7,6 +8,15 @@ export type PeriodKind = 'dawn' | 'day' | 'dusk';
 //   dawn cell (ET 0-8): ET 0-6 night (75%) → ET 6-8 day (25%)
 //   day cell  (ET 8-16): all day
 //   dusk cell (ET 16-24): ET 16-18 day (25%) → ET 18-24 night (75%)
+// Whether a cell is "night-time" for filtering purposes. Without realNow, uses
+// the cell midpoint (matches getActiveNms heuristic). With realNow, uses the
+// player's actual ET hour — useful for the current cell where midpoint can lie
+// across the day/night boundary (cf. M3 sub-fix in Phase 2).
+export function isCellNight(periodStart: number, realNow?: number): boolean {
+  const reference = realNow ?? periodStart + WEATHER_PERIOD_MS / 2;
+  return !isDayTime(toEorzeaTime(reference));
+}
+
 export function getPeriodKind(periodStart: number): PeriodKind {
   const et = toEorzeaTime(periodStart);
   if (et.hours < 8) return 'dawn';
