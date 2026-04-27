@@ -6,6 +6,7 @@ import WeatherFilterBar from '@/components/eureka-weather/WeatherFilterBar';
 import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 import HelpModal from '@/components/eureka-weather/HelpModal';
 import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
+import LoadMoreButton from '@/components/eureka-weather/LoadMoreButton';
 
 const SCROLL_REVEAL_THRESHOLD = 80;
 
@@ -14,6 +15,7 @@ export default function EurekaWeatherPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [scrolledAway, setScrolledAway] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [forecastCount, setForecastCount] = useState(48);
   const scrollRefs = useRef<Array<HTMLDivElement | null>>([]);
   const isSyncingRef = useRef(false);
 
@@ -85,10 +87,17 @@ export default function EurekaWeatherPage() {
               zone={z}
               selectedWeathers={selected}
               now={now}
+              forecastCount={forecastCount}
               scrollRef={registerRef(i)}
               onScroll={handleScroll(i)}
             />
           ))}
+          <LoadMoreButton
+            count={forecastCount}
+            step={24}
+            max={96}
+            onLoadMore={setForecastCount}
+          />
         </div>
       </div>
     </div>
