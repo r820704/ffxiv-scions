@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { eurekaNms, getActiveNms, getActiveNmsAt, formatNmTrigger } from './eureka-nm-data';
+import { eurekaNms, getActiveNms, getActiveNmsAt, formatNmTrigger, getNmTriggeringWeathers, NIGHT_FILTER_KEY } from './eureka-nm-data';
 import { WEATHER_PERIOD_MS, toEorzeaTime } from '@/utils/eorzea-time';
 
 describe('eurekaNms', () => {
@@ -102,6 +102,40 @@ describe('getActiveNmsAt — current cell uses realNow not midpoint', () => {
     const isDay = midpointEt.hours >= 6 && midpointEt.hours < 18;
     const b = getActiveNms('Eureka Anemos', 'Fair Skies', isDay);
     expect(a.map((n) => n.id).sort()).toEqual(b.map((n) => n.id).sort());
+  });
+});
+
+describe('getNmTriggeringWeathers', () => {
+  it('returns distinct weathers that trigger at least one NM', () => {
+    const list = getNmTriggeringWeathers();
+    expect(list).toContain('Gales');
+    expect(list).toContain('Fog');
+    expect(list).toContain('Thunder');
+    expect(list).toContain('Heat Waves');
+    expect(list).toContain('Blizzards');
+    expect(list).toContain('Umbral Wind');
+  });
+
+  it('does NOT include weathers without NM', () => {
+    const list = getNmTriggeringWeathers();
+    expect(list).not.toContain('Fair Skies');
+    expect(list).not.toContain('Showers');
+    expect(list).not.toContain('Snow');
+    expect(list).not.toContain('Gloom');
+    expect(list).not.toContain('Thunderstorms');
+  });
+
+  it('returns sorted ascending for stable order', () => {
+    const list = getNmTriggeringWeathers();
+    const sorted = [...list].sort();
+    expect(list).toEqual(sorted);
+  });
+});
+
+describe('NIGHT_FILTER_KEY', () => {
+  it('is a sentinel string distinct from any real weather name', () => {
+    expect(typeof NIGHT_FILTER_KEY).toBe('string');
+    expect(NIGHT_FILTER_KEY.startsWith('__')).toBe(true);
   });
 });
 

@@ -189,6 +189,21 @@ export function getActiveNms(
 // player's actual ET clock instead of the period midpoint. Without realNow,
 // behaviour matches getActiveNms with the midpoint heuristic — appropriate for
 // future cells where there is no real "now".
+// Sentinel string used in `selected` Set<string> to represent the "night-only"
+// pseudo-filter chip. It is never a real weather name, so existing weather
+// matching logic ignores it; ZoneWeatherRow checks for it explicitly.
+export const NIGHT_FILTER_KEY = '__night__';
+
+export function getNmTriggeringWeathers(): string[] {
+  const set = new Set<string>();
+  for (const nm of eurekaNms) {
+    if (nm.trigger.weather) {
+      for (const w of nm.trigger.weather) set.add(w);
+    }
+  }
+  return [...set].sort();
+}
+
 export function getActiveNmsAt(
   zone: EurekaZone,
   weather: string,
