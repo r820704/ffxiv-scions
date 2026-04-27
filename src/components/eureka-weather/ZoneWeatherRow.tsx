@@ -18,11 +18,12 @@ interface ZoneWeatherRowProps {
   zone: EurekaZone;
   selectedWeathers: Set<string>;
   now: number;
+  forecastCount?: number;
   scrollRef?: (el: HTMLDivElement | null) => void;
   onScroll?: (scrollLeft: number) => void;
 }
 
-const FORECAST_COUNT = 24;
+const DEFAULT_FORECAST_COUNT = 48;
 
 function formatRelMs(ms: number): string {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -51,14 +52,15 @@ export default function ZoneWeatherRow({
   zone,
   selectedWeathers,
   now,
+  forecastCount = DEFAULT_FORECAST_COUNT,
   scrollRef,
   onScroll,
 }: ZoneWeatherRowProps) {
   const localRef = useRef<HTMLDivElement | null>(null);
 
   const forecasts = useMemo(
-    () => generateForecasts(zone, FORECAST_COUNT, now),
-    [zone, now],
+    () => generateForecasts(zone, forecastCount, now),
+    [zone, now, forecastCount],
   );
 
   const nextMatch = useMemo(() => {

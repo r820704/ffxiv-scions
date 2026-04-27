@@ -21,11 +21,23 @@ describe('ZoneWeatherRow', () => {
     expect(screen.getByText(/Lv 50.60/)).toBeTruthy();
   });
 
-  it('renders 24 period cells', () => {
+  it('renders 48 period cells by default (M8: doubled from 24)', () => {
     const { container } = render(
       <ZoneWeatherRow zone="Eureka Anemos" selectedWeathers={new Set()} now={fixedNow} />,
     );
-    expect(container.querySelectorAll('[data-period-cell]').length).toBe(24);
+    expect(container.querySelectorAll('[data-period-cell]').length).toBe(48);
+  });
+
+  it('renders the requested number of cells via forecastCount prop', () => {
+    const { container } = render(
+      <ZoneWeatherRow
+        zone="Eureka Anemos"
+        selectedWeathers={new Set()}
+        now={fixedNow}
+        forecastCount={72}
+      />,
+    );
+    expect(container.querySelectorAll('[data-period-cell]').length).toBe(72);
   });
 
   it('highlights cells matching selectedWeathers filter', () => {
