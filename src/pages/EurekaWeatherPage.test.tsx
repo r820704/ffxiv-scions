@@ -20,6 +20,8 @@ describe('EurekaWeatherPage', () => {
 
   it('renders weather filter bar', () => {
     render(<EurekaWeatherPage />);
-    expect(screen.getByText('天氣篩選')).toBeTruthy();
+    // Section labels of the M4 two-group filter bar
+    expect(screen.getByText(/觸發 NM/)).toBeTruthy();
+    expect(screen.getByText(/一般天氣/)).toBeTruthy();
   });
 });

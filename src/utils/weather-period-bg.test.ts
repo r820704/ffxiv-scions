@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { getPeriodKind, getPeriodBgClass, isCellNight } from './weather-period-bg';
-import { WEATHER_PERIOD_MS } from './eorzea-time';
 import { toEorzeaTime } from './eorzea-time';
 
 function findTimestampAtEtHour(etHour: number, fromTs = 1714000000000): number {
