@@ -36,6 +36,7 @@ export default function NmTooltip({ nms, children }: NmTooltipProps) {
         <Popover.Content
           side="top"
           sideOffset={6}
+          updatePositionStrategy="always"
           className="z-50 bg-card border border-border rounded-lg p-2 shadow-xl text-xs max-w-[240px]"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
