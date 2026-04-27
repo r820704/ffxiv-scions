@@ -10,6 +10,7 @@ interface NmSearchResultRowProps {
   now: number;
   forecastCount: number;
   onScrollToCell: (zone: EurekaZone, cellIndex: number) => void;
+  onOpenDetail?: (nmId: string) => void;
 }
 
 function formatRel(ms: number): string {
@@ -35,6 +36,7 @@ export default function NmSearchResultRow({
   now,
   forecastCount,
   onScrollToCell,
+  onOpenDetail,
 }: NmSearchResultRowProps) {
   const primaryFilter = getPrimaryFilterId(nm);
   const hits = useMemo(() => {
@@ -48,7 +50,17 @@ export default function NmSearchResultRow({
   return (
     <div className="flex flex-col gap-1.5 p-3 rounded-lg bg-card border border-border/50 hover:border-border transition-colors">
       <div className="flex items-baseline gap-2 flex-wrap">
-        <span className="text-sm font-semibold text-foreground">{nm.nameTw}</span>
+        {onOpenDetail ? (
+          <button
+            type="button"
+            onClick={() => onOpenDetail(nm.id)}
+            className="text-sm font-semibold text-foreground underline-offset-2 hover:underline hover:text-primary cursor-pointer text-left"
+          >
+            {nm.nameTw}
+          </button>
+        ) : (
+          <span className="text-sm font-semibold text-foreground">{nm.nameTw}</span>
+        )}
         <span className="text-xs text-muted-foreground">{nm.nameEn}</span>
         <span className="text-xs text-muted-foreground">Lv.{nm.level}</span>
         <span className="ml-auto text-xs text-amber-300/80">
