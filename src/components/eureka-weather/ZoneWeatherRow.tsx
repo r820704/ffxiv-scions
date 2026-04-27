@@ -204,7 +204,7 @@ export default function ZoneWeatherRow({
                 {hasNightOnlyNm && !hasWeatherNm && (
                   <div
                     data-night-nm-indicator
-                    className="absolute top-0.5 left-0.5 text-[10px] leading-none"
+                    className="absolute top-0.5 right-0.5 text-[10px] leading-none"
                     title="此時段有夜間 NM"
                   >
                     🌙
