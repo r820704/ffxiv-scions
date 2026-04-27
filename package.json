@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build:data": "node scripts/build-eureka-weapons.mjs"
+    "build:data": "node scripts/build-eureka-weapons.mjs",
+    "build:nm-spawn": "node scripts/build-eureka-nm-spawn.mjs",
+    "fetch:maps": "node scripts/fetch-eureka-maps.mjs"
   },
   "dependencies": {
     "@radix-ui/react-popover": "^1.1.15",
