@@ -9,10 +9,15 @@ export interface EurekaNm {
   nameEn: string;
   zone: EurekaZone;
   level: number;
-  trigger: {
+  // Absent = unconditional ("常駐") NM that may spawn at any weather/time.
+  // Such NMs do not appear in cell badges (see getActiveNms).
+  trigger?: {
     weather?: string[];
     timeOfDay?: 'day' | 'night';
   };
+  // Community / shorthand names players use when searching.
+  // e.g. ['Cassie', '奶妹凱西', 'CC']
+  aliases?: string[];
 }
 
 // Weather- and/or time-triggered Eureka NMs.
@@ -176,6 +181,7 @@ export function getActiveNms(
 ): EurekaNm[] {
   return eurekaNms.filter((nm) => {
     if (nm.zone !== zone) return false;
+    if (!nm.trigger) return false; // unconditional NMs never appear in cell badges
     const { weather: ws, timeOfDay } = nm.trigger;
     if (!ws && !timeOfDay) return false;
     if (ws && !ws.includes(weather)) return false;
@@ -197,7 +203,7 @@ export const NIGHT_FILTER_KEY = '__night__';
 export function getNmTriggeringWeathers(): string[] {
   const set = new Set<string>();
   for (const nm of eurekaNms) {
-    if (nm.trigger.weather) {
+    if (nm.trigger?.weather) {
       for (const w of nm.trigger.weather) set.add(w);
     }
   }
@@ -216,6 +222,7 @@ export function getActiveNmsAt(
 }
 
 export function formatNmTrigger(nm: EurekaNm): string {
+  if (!nm.trigger) return '常駐';
   const parts: string[] = [];
   const ws = nm.trigger.weather;
   if (ws && ws.length > 0) {
@@ -223,5 +230,5 @@ export function formatNmTrigger(nm: EurekaNm): string {
   }
   if (nm.trigger.timeOfDay === 'night') parts.push('夜間');
   if (nm.trigger.timeOfDay === 'day') parts.push('白天');
-  return parts.join('+');
+  return parts.join('+') || '常駐';
 }

@@ -17,8 +17,9 @@ describe('eurekaNms', () => {
     }
   });
 
-  it('every entry has at least one trigger condition', () => {
+  it('every entry with a trigger has at least one trigger condition (weather or timeOfDay)', () => {
     for (const nm of eurekaNms) {
+      if (!nm.trigger) continue; // unconditional NMs (常駐) are allowed post-D1
       const { weather, timeOfDay } = nm.trigger;
       expect(Boolean((weather && weather.length > 0) || timeOfDay)).toBe(true);
     }
@@ -92,7 +93,7 @@ describe('getActiveNmsAt — current cell uses realNow not midpoint', () => {
     expect(midpointEt.hours).toBeGreaterThanOrEqual(18);
 
     const nms = getActiveNmsAt('Eureka Anemos', 'Fair Skies', periodStart, realNow);
-    expect(nms.every((nm) => nm.trigger.timeOfDay !== 'night')).toBe(true);
+    expect(nms.every((nm) => nm.trigger?.timeOfDay !== 'night')).toBe(true);
   });
 
   it('falls back to midpoint isDay when realNow is omitted (parity with getActiveNms)', () => {
