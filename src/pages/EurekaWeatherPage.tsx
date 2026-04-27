@@ -7,7 +7,6 @@ import WeatherFilterBar from '@/components/eureka-weather/WeatherFilterBar';
 import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 import HelpModal from '@/components/eureka-weather/HelpModal';
 import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
-import LoadMoreButton from '@/components/eureka-weather/LoadMoreButton';
 import WeatherSummaryBar from '@/components/eureka-weather/WeatherSummaryBar';
 import type { EurekaZone } from '@/data/weather-data';
 
@@ -19,6 +18,12 @@ export default function EurekaWeatherPage() {
   const [scrolledAway, setScrolledAway] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [forecastCount, setForecastCount] = useState(48);
+  const FORECAST_MAX = 96;
+  const FORECAST_STEP = 24;
+  const remainingStep = Math.min(FORECAST_STEP, FORECAST_MAX - forecastCount);
+  const loadMore = useCallback(() => {
+    setForecastCount((c) => Math.min(c + FORECAST_STEP, FORECAST_MAX));
+  }, []);
   const [toast, setToast] = useState<string | null>(null);
   const scrollRefs = useRef<Array<HTMLDivElement | null>>([]);
   const isSyncingRef = useRef(false);
@@ -127,16 +132,12 @@ export default function EurekaWeatherPage() {
               selectedWeathers={selected}
               now={now}
               forecastCount={forecastCount}
+              loadMoreStep={remainingStep > 0 ? remainingStep : undefined}
+              onLoadMore={remainingStep > 0 ? loadMore : undefined}
               scrollRef={registerRef(i)}
               onScroll={handleScroll(i)}
             />
           ))}
-          <LoadMoreButton
-            count={forecastCount}
-            step={24}
-            max={96}
-            onLoadMore={setForecastCount}
-          />
         </div>
       </div>
     </div>
