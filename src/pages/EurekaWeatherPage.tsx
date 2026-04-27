@@ -4,6 +4,8 @@ import { useGameClock } from '@/hooks/useGameClock';
 import GameClock from '@/components/eureka-weather/GameClock';
 import WeatherFilterBar from '@/components/eureka-weather/WeatherFilterBar';
 import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
+import HelpModal from '@/components/eureka-weather/HelpModal';
+import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
 
 const SCROLL_REVEAL_THRESHOLD = 80;
 
@@ -11,6 +13,7 @@ export default function EurekaWeatherPage() {
   const { now } = useGameClock();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [scrolledAway, setScrolledAway] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const scrollRefs = useRef<Array<HTMLDivElement | null>>([]);
   const isSyncingRef = useRef(false);
 
@@ -54,11 +57,21 @@ export default function EurekaWeatherPage() {
 
   return (
     <div>
-      <h1 className="font-title text-2xl font-bold text-center text-primary mb-4">
-        優雷卡天氣
-      </h1>
+      <div className="relative flex items-center justify-center mb-4">
+        <h1 className="font-title text-2xl font-bold text-primary">優雷卡天氣</h1>
+        <button
+          type="button"
+          aria-label="說明"
+          onClick={() => setHelpOpen(true)}
+          className="absolute right-0 w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+        >
+          ?
+        </button>
+      </div>
+      <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
       <div className="flex flex-col gap-3">
         <GameClock />
+        <OnboardingHint />
         <WeatherFilterBar
           selected={selected}
           onToggle={toggle}

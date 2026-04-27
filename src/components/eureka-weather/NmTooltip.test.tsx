@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
 import NmTooltip from './NmTooltip';
 import type { EurekaNm } from '@/data/eureka-nm-data';
 
@@ -68,5 +68,33 @@ describe('NmTooltip', () => {
     );
     fireEvent.mouseEnter(screen.getByTestId('cell').parentElement!);
     expect(screen.getByText('Lv.20')).toBeTruthy();
+  });
+
+  describe('pin behavior (M1)', () => {
+    it('keeps popover open after mouseLeave when clicked (pinned)', async () => {
+      render(
+        <NmTooltip nms={[pazuzu]}>
+          <div data-testid="cell">cell</div>
+        </NmTooltip>,
+      );
+      const trigger = screen.getByTestId('cell').parentElement!;
+      fireEvent.mouseEnter(trigger);
+      fireEvent.click(trigger);
+      fireEvent.mouseLeave(trigger);
+      expect(await screen.findByText('帕祖祖')).toBeTruthy();
+    });
+
+    it('closes after second click (unpin) followed by mouseLeave', async () => {
+      render(
+        <NmTooltip nms={[pazuzu]}>
+          <div data-testid="cell">cell</div>
+        </NmTooltip>,
+      );
+      const trigger = screen.getByTestId('cell').parentElement!;
+      fireEvent.click(trigger); // pin
+      fireEvent.click(trigger); // unpin
+      fireEvent.mouseLeave(trigger);
+      await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
+    });
   });
 });

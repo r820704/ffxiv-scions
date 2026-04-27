@@ -172,8 +172,10 @@ export default function ZoneWeatherRow({
               <div
                 data-period-cell
                 data-matched={matched ? 'true' : 'false'}
-                className={`relative flex-shrink-0 w-16 rounded p-1 text-center text-[10px] border ${
-                  matched ? 'border-amber-500 bg-amber-500/10' : `border-border/50 ${bgClass}`
+                className={`relative flex-shrink-0 w-16 rounded p-1 text-center text-[10px] border ${bgClass} ${
+                  matched
+                    ? 'border-amber-500 shadow-[0_0_0_1px_rgba(251,191,36,0.5),0_0_8px_rgba(251,191,36,0.35)]'
+                    : 'border-border/50'
                 } ${isCurrent ? 'ring-1 ring-primary' : ''}`}
               >
                 <div className="flex justify-center">

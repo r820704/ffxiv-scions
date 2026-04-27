@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import EurekaWeatherPage from './EurekaWeatherPage';
 
 afterEach(cleanup);
@@ -23,5 +23,16 @@ describe('EurekaWeatherPage', () => {
     // Section labels of the M4 two-group filter bar
     expect(screen.getByText(/觸發 NM/)).toBeTruthy();
     expect(screen.getByText(/一般天氣/)).toBeTruthy();
+  });
+
+  it('renders a help button in the page header', () => {
+    render(<EurekaWeatherPage />);
+    expect(screen.getByRole('button', { name: /說明/ })).toBeTruthy();
+  });
+
+  it('opens HelpModal when help button is clicked', () => {
+    render(<EurekaWeatherPage />);
+    fireEvent.click(screen.getByRole('button', { name: /說明/ }));
+    expect(screen.getByText(/怎麼讀格子/)).toBeTruthy();
   });
 });
