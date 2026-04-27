@@ -6,6 +6,7 @@ import GameClock from '@/components/eureka-weather/GameClock';
 import WeatherFilterBar from '@/components/eureka-weather/WeatherFilterBar';
 import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 import HelpModal from '@/components/eureka-weather/HelpModal';
+import NmSearchPanel from '@/components/eureka-weather/NmSearchPanel';
 import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
 import WeatherSummaryBar from '@/components/eureka-weather/WeatherSummaryBar';
 import type { EurekaZone } from '@/data/weather-data';
@@ -17,6 +18,7 @@ export default function EurekaWeatherPage() {
   const [selected, setSelected] = useUrlSelectedWeathers();
   const [scrolledAway, setScrolledAway] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [forecastCount, setForecastCount] = useState(48);
   const FORECAST_MAX = 96;
   const FORECAST_STEP = 24;
@@ -93,16 +95,33 @@ export default function EurekaWeatherPage() {
     <div>
       <div className="relative flex items-center justify-center mb-4">
         <h1 className="font-title text-2xl font-bold text-primary">優雷卡天氣</h1>
-        <button
-          type="button"
-          aria-label="說明"
-          onClick={() => setHelpOpen(true)}
-          className="absolute right-0 w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
-        >
-          ?
-        </button>
+        <div className="absolute right-0 flex items-center gap-2">
+          <button
+            type="button"
+            aria-label="搜尋 NM"
+            onClick={() => setSearchOpen(true)}
+            className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
+          >
+            🔍
+          </button>
+          <button
+            type="button"
+            aria-label="說明"
+            onClick={() => setHelpOpen(true)}
+            className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+          >
+            ?
+          </button>
+        </div>
       </div>
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
+      <NmSearchPanel
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        now={now}
+        forecastCount={forecastCount}
+        onScrollToCell={scrollToCell}
+      />
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-md px-4 py-2 text-sm shadow-lg animate-in fade-in">
           {toast}

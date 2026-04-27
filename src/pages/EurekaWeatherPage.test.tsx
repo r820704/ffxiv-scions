@@ -56,4 +56,23 @@ describe('EurekaWeatherPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /說明/ }));
     expect(screen.getByText(/怎麼讀格子/)).toBeTruthy();
   });
+
+  it('renders an NM search button in the page header', () => {
+    render(
+      <MemoryRouter initialEntries={['/eureka-weather']}>
+        <EurekaWeatherPage />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('button', { name: /搜尋 NM/ })).toBeTruthy();
+  });
+
+  it('opens NmSearchPanel when search button is clicked', () => {
+    render(
+      <MemoryRouter initialEntries={['/eureka-weather']}>
+        <EurekaWeatherPage />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: /搜尋 NM/ }));
+    expect(screen.getByPlaceholderText(/搜尋 NM/)).toBeTruthy();
+  });
 });
