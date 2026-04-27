@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { EUREKA_ZONES } from '@/data/weather-data';
+import { useUrlSelectedWeathers } from '@/hooks/useUrlSelectedWeathers';
 import { useGameClock } from '@/hooks/useGameClock';
 import GameClock from '@/components/eureka-weather/GameClock';
 import WeatherFilterBar from '@/components/eureka-weather/WeatherFilterBar';
@@ -14,25 +15,39 @@ const SCROLL_REVEAL_THRESHOLD = 80;
 
 export default function EurekaWeatherPage() {
   const { now } = useGameClock();
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useUrlSelectedWeathers();
   const [scrolledAway, setScrolledAway] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [forecastCount, setForecastCount] = useState(48);
+  const [toast, setToast] = useState<string | null>(null);
   const scrollRefs = useRef<Array<HTMLDivElement | null>>([]);
   const isSyncingRef = useRef(false);
 
   const toggle = (w: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(w)) next.delete(w);
-      else next.add(w);
-      return next;
-    });
+    const next = new Set(selected);
+    if (next.has(w)) next.delete(w);
+    else next.add(w);
+    setSelected(next);
   };
 
   const clearAll = useCallback(() => {
     setSelected(new Set());
+  }, [setSelected]);
+
+  const copyLink = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setToast('已複製連結');
+    } catch {
+      setToast('複製失敗');
+    }
   }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(null), 3000);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   const registerRef = (index: number) => (el: HTMLDivElement | null) => {
     scrollRefs.current[index] = el;
@@ -83,6 +98,11 @@ export default function EurekaWeatherPage() {
         </button>
       </div>
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-md px-4 py-2 text-sm shadow-lg animate-in fade-in">
+          {toast}
+        </div>
+      )}
       <div className="flex flex-col gap-3">
         <GameClock />
         <OnboardingHint />
@@ -91,6 +111,7 @@ export default function EurekaWeatherPage() {
           onToggle={toggle}
           onClearAll={clearAll}
           onJumpToNow={scrolledAway ? jumpToNow : undefined}
+          onCopyLink={copyLink}
         />
         <WeatherSummaryBar
           selected={selected}

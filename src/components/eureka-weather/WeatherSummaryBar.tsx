@@ -74,7 +74,7 @@ export default function WeatherSummaryBar({
                     onClick={() => onScrollToCell(h.zone, h.cellIndex)}
                     className="px-2 py-0.5 rounded border border-border/50 hover:border-primary hover:text-primary text-muted-foreground transition-colors"
                   >
-                    {zoneNamesTw[h.zone].replace('優雷卡', '')} · {formatRel(h.startTime - now)}
+                    {(zoneNamesTw[h.zone] ?? h.zone).replace('優雷卡', '')} · {formatRel(h.startTime - now)}
                   </button>
                 ))}
                 {missingCount > 0 && (
