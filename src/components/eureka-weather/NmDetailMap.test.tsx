@@ -42,4 +42,17 @@ describe('NmDetailMap', () => {
     // The pulsing animation class should apply when highlighted
     expect(pin.className).toMatch(/pulse|animate/);
   });
+
+  it('renders an NM pin with rose color and trigger pins with amber color', () => {
+    render(<NmDetailMap zone="Eureka Anemos" pins={[
+      { x: 7.4, y: 21.6, label: 'NM', kind: 'nm' },
+      { x: 8.6, y: 20.2, label: '1', kind: 'trigger' },
+    ]} />);
+    const nmPin = screen.getByText('NM');
+    const triggerPin = screen.getByText('1');
+    expect(nmPin.className).toMatch(/bg-rose-/);
+    expect(triggerPin.className).toMatch(/bg-amber-/);
+    expect(nmPin.getAttribute('data-pin-kind')).toBe('nm');
+    expect(triggerPin.getAttribute('data-pin-kind')).toBe('trigger');
+  });
 });

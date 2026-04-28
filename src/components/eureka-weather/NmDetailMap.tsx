@@ -7,6 +7,7 @@ interface Pin {
   x: number;
   y: number;
   label: string;
+  kind?: 'nm' | 'trigger';
   highlighted?: boolean;
 }
 
@@ -48,11 +49,16 @@ export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
       />
       {pins.map((pin, idx) => {
         const pos = mapCoordToPercent({ x: pin.x, y: pin.y }, bounds);
+        const isNm = pin.kind === 'nm';
+        const bg = isNm ? 'bg-rose-600' : 'bg-amber-500';
+        const ringHi = isNm ? 'ring-rose-300' : 'ring-amber-300';
+        const size = isNm ? 'w-7 h-7' : 'w-6 h-6';
         return (
           <div
             key={idx}
-            className={`absolute -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-md ${
-              pin.highlighted ? 'animate-pulse ring-2 ring-amber-300' : ''
+            data-pin-kind={pin.kind ?? 'trigger'}
+            className={`absolute -translate-x-1/2 -translate-y-1/2 ${size} rounded-full ${bg} text-white text-[10px] font-bold flex items-center justify-center border-2 border-white shadow-md ${
+              pin.highlighted ? `animate-pulse ring-2 ${ringHi}` : ''
             }`}
             style={{ left: pos.left, top: pos.top }}
           >

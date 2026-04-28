@@ -12,331 +12,397 @@ export interface MobSpawn {
 }
 
 export interface NmSpawnInfo {
+  nmCoord: { x: number; y: number };
   trigger: MobSpawn[];
 }
 
 export const nmSpawnInfo: Record<string, NmSpawnInfo> = {
   "aetolus": {
+    nmCoord: { x: 10.1, y: 14.2 },
     trigger: [
       { nameTw: "瓦爾獨爪妖禽", nameEn: "Islandhander", coords: [{ x: 10.1, y: 14.2 }] },
     ],
   },
   "amarok": {
+    nmCoord: { x: 7.7, y: 17.9 },
     trigger: [
       { nameTw: "虛無鱗龍", nameEn: "Voidscale", coords: [{ x: 7.7, y: 17.9 }] },
     ],
   },
   "amemet": {
+    nmCoord: { x: 15, y: 16 },
     trigger: [
       { nameTw: "阿蔔拉克薩斯", nameEn: "Abraxas", coords: [{ x: 15, y: 16 }] },
     ],
   },
   "anapos": {
+    nmCoord: { x: 32.9, y: 21.5 },
     trigger: [
       { nameTw: "融雪元精", nameEn: "Snowmelt Sprite", coords: [{ x: 32.9, y: 21.5 }] },
     ],
   },
   "arch-angra-mainyu": {
+    nmCoord: { x: 24, y: 25 },
     trigger: [
       { nameTw: "瞪視之眼", nameEn: "Gawper", coords: [{ x: 24, y: 25 }] },
     ],
   },
   "asag": {
+    nmCoord: { x: 10.5, y: 11 },
     trigger: [
       { nameTw: "徘徊歐浦肯", nameEn: "Wandering Opken", coords: [{ x: 10.5, y: 11 }] },
     ],
   },
   "ash-dragon": {
+    nmCoord: { x: 30.1, y: 29.8 },
     trigger: [
       { nameTw: "血魔", nameEn: "Blood Demon", coords: [{ x: 30.1, y: 29.8 }] },
     ],
   },
   "askalaphos": {
+    nmCoord: { x: 19.2, y: 29.2 },
     trigger: [
       { nameTw: "過期魔導書", nameEn: "Overdue Tome", coords: [{ x: 19.2, y: 29.2 }] },
     ],
   },
   "barong": {
+    nmCoord: { x: 32, y: 24 },
     trigger: [
       { nameTw: "研究所雄獅", nameEn: "Laboratory Lion", coords: [{ x: 34.6, y: 24.9 }] },
     ],
   },
   "bombadeel": {
+    nmCoord: { x: 28.2, y: 20.3 },
     trigger: [
       { nameTw: "古老貪吃鬼", nameEn: "Traveling Gourmand", coords: [{ x: 28.2, y: 20.3 }] },
     ],
   },
   "callisto": {
+    nmCoord: { x: 26, y: 22 },
     trigger: [
       { nameTw: "瓦爾巨熊", nameEn: "Val Bear", coords: [{ x: 26, y: 22 }] },
     ],
   },
   "caym": {
+    nmCoord: { x: 14, y: 13 },
     trigger: [
       { nameTw: "追蹤席茲", nameEn: "Stalker Ziz", coords: [{ x: 14, y: 13 }] },
     ],
   },
   "ceto": {
+    nmCoord: { x: 36.4, y: 13.4 },
     trigger: [
       { nameTw: "豐水達菲妮", nameEn: "Hydatos Delphyne", coords: [{ x: 36.4, y: 13.4 }] },
     ],
   },
   "copycat-cassie": {
+    nmCoord: { x: 22.3, y: 14.3 },
     trigger: [
       { nameTw: "阿米雷戴", nameEn: "Ameretat", coords: [{ x: 21, y: 14.5 }] },
     ],
   },
   "daphne": {
+    nmCoord: { x: 25.6, y: 16.2 },
     trigger: [
       { nameTw: "暗黑虛無鬼魚", nameEn: "Dark Void Monk", coords: [{ x: 25.6, y: 16.2 }] },
     ],
   },
   "dux": {
+    nmCoord: { x: 27.4, y: 8.9 },
     trigger: [
       { nameTw: "遺棄象魔", nameEn: "Matanga Castaway", coords: [{ x: 27.4, y: 8.9 }] },
     ],
   },
   "eldthurs": {
+    nmCoord: { x: 15.2, y: 6.4 },
     trigger: [
       { nameTw: "湧火陸蟹", nameEn: "Pyros Crab", coords: [{ x: 15.2, y: 6.4 }] },
     ],
   },
   "emperor-of-anemos": {
+    nmCoord: { x: 17.1, y: 22.2 },
     trigger: [
       { nameTw: "晏蜓", nameEn: "Darner", coords: [{ x: 17.1, y: 22.2 }] },
     ],
   },
   "fafnir": {
+    nmCoord: { x: 36, y: 22 },
     trigger: [
       { nameTw: "龍化石", nameEn: "Fossil Dragon", coords: [{ x: 36, y: 22 }] },
     ],
   },
   "flauros": {
+    nmCoord: { x: 29, y: 29 },
     trigger: [
       { nameTw: "雷暴元精", nameEn: "Thunderstorm Sprite", coords: [{ x: 29, y: 29 }] },
     ],
   },
   "frostmane": {
+    nmCoord: { x: 7.9, y: 26.1 },
     trigger: [
       { nameTw: "北方猛虎", nameEn: "Northern Tiger", coords: [{ x: 6.4, y: 26.5 }] },
     ],
   },
   "glaukopis": {
+    nmCoord: { x: 32, y: 15.2 },
     trigger: [
       { nameTw: "瓦爾斯卡尼特", nameEn: "Val Skatene", coords: [{ x: 32, y: 15.2 }] },
     ],
   },
   "glavoid": {
+    nmCoord: { x: 32.8, y: 27.3 },
     trigger: [
       { nameTw: "瓦爾蠕蟲", nameEn: "Val Worm", coords: [{ x: 32.8, y: 27.3 }] },
     ],
   },
   "graffiacane": {
+    nmCoord: { x: 23, y: 37 },
     trigger: [
       { nameTw: "瓦爾維京人偶", nameEn: "Valking", coords: [{ x: 23, y: 37 }] },
     ],
   },
   "grand-duke-batym": {
+    nmCoord: { x: 17.8, y: 14.1 },
     trigger: [
       { nameTw: "暗黑行吟者", nameEn: "Dark Troubadour", coords: [{ x: 17.8, y: 14.1 }] },
     ],
   },
   "hadhayosh": {
+    nmCoord: { x: 31, y: 18.5 },
     trigger: [
       { nameTw: "虛無小龍", nameEn: "Lesser Void Dragon", coords: [{ x: 31, y: 18.5 }] },
     ],
   },
   "hakutaku": {
+    nmCoord: { x: 28.9, y: 22.3 },
     trigger: [
       { nameTw: "啜泣百目妖", nameEn: "Blubber Eyes", coords: [{ x: 28.9, y: 22.3 }] },
     ],
   },
   "holy-cow": {
+    nmCoord: { x: 26.5, y: 16.9 },
     trigger: [
       { nameTw: "古老水牛", nameEn: "Elder Buffalo", coords: [{ x: 26.5, y: 16.9 }] },
     ],
   },
   "horus": {
+    nmCoord: { x: 26, y: 20.2 },
     trigger: [
       { nameTw: "虛無薇薇爾飛龍", nameEn: "Void Vouivre", coords: [{ x: 26, y: 20.2 }] },
     ],
   },
   "iris": {
+    nmCoord: { x: 21.3, y: 12.2 },
     trigger: [
       { nameTw: "北境鹽藍燕", nameEn: "Northern Swallow", coords: [{ x: 21.3, y: 12.2 }] },
     ],
   },
   "jahannam": {
+    nmCoord: { x: 19.1, y: 19.6 },
     trigger: [
       { nameTw: "颱風元精", nameEn: "Typhoon Sprite", coords: [{ x: 19.1, y: 19.6 }] },
     ],
   },
   "judgmental-julika": {
+    nmCoord: { x: 21.9, y: 14.5 },
     trigger: [
       { nameTw: "天仙子", nameEn: "Henbane", coords: [{ x: 21.9, y: 14.5 }] },
     ],
   },
   "khalamari": {
+    nmCoord: { x: 11, y: 25.3 },
     trigger: [
       { nameTw: "左米特", nameEn: "Xzomit", coords: [{ x: 11, y: 25.3 }] },
     ],
   },
   "king-arthro": {
+    nmCoord: { x: 8.7, y: 15.4 },
     trigger: [
       { nameTw: "瓦爾利螯陸蟹", nameEn: "Val Snipper", coords: [{ x: 8.7, y: 15.4 }] },
     ],
   },
   "king-goldemar": {
+    nmCoord: { x: 28.9, y: 23.6 },
     trigger: [
       { nameTw: "豐水幽靈", nameEn: "Hydatos Wraith", coords: [{ x: 28, y: 23 }] },
     ],
   },
   "king-hazmat": {
+    nmCoord: { x: 35, y: 18 },
     trigger: [
       { nameTw: "常風阿那羅", nameEn: "Anemos Anala", coords: [{ x: 35, y: 18 }] },
     ],
   },
   "king-igloo": {
+    nmCoord: { x: 17.2, y: 16.2 },
     trigger: [
       { nameTw: "胡瓦西", nameEn: "Huwasi", coords: [{ x: 17.2, y: 16.2 }] },
     ],
   },
   "lamashtu": {
+    nmCoord: { x: 7.6, y: 26.6 },
     trigger: [
       { nameTw: "瓦爾妖影", nameEn: "Val Specter", coords: [{ x: 7.6, y: 26.6 }] },
     ],
   },
   "lamebrix-strikebocks": {
+    nmCoord: { x: 21.8, y: 8.4 },
     trigger: [
       { nameTw: "青藍之手逃亡者", nameEn: "Illuminati Escapee", coords: [{ x: 21.8, y: 8.4 }] },
     ],
   },
   "lesath": {
+    nmCoord: { x: 12.6, y: 11.1 },
     trigger: [
       { nameTw: "食鳥者", nameEn: "Bird Eater", coords: [{ x: 12.6, y: 11.1 }] },
     ],
   },
   "leucosia": {
+    nmCoord: { x: 27, y: 26 },
     trigger: [
       { nameTw: "湧火浮靈", nameEn: "Pyros Bhoot", coords: [{ x: 27, y: 26 }] },
     ],
   },
   "leuke": {
+    nmCoord: { x: 37, y: 26 },
     trigger: [
       { nameTw: "虎鷹", nameEn: "Tigerhawk", coords: [{ x: 37.2, y: 27.8 }] },
     ],
   },
   "lord-of-anemos": {
+    nmCoord: { x: 30, y: 27 },
     trigger: [
       { nameTw: "海祭司", nameEn: "Sea Bishop", coords: [{ x: 14, y: 22 }] },
     ],
   },
   "louhi": {
+    nmCoord: { x: 36, y: 19 },
     trigger: [
       { nameTw: "瓦爾腐屍", nameEn: "Val Corpse", coords: [{ x: 36, y: 19 }] },
     ],
   },
   "lumber-jack": {
+    nmCoord: { x: 30.2, y: 11.4 },
     trigger: [
       { nameTw: "湧火樹妖", nameEn: "Pyros Treant", coords: [{ x: 30.2, y: 11.4 }] },
     ],
   },
   "mindertaur-eldertaur": {
+    nmCoord: { x: 13.9, y: 18.7 },
     trigger: [
       { nameTw: "研究所米諾陶洛斯", nameEn: "Lab Minotaur", coords: [{ x: 13.9, y: 18.7 }] },
     ],
   },
   "molech": {
+    nmCoord: { x: 7, y: 21 },
     trigger: [
       { nameTw: "瓦爾爛泥食腐獸", nameEn: "Val Nullchu", coords: [{ x: 7, y: 21 }] },
     ],
   },
   "number": {
+    nmCoord: { x: 24, y: 23 },
     trigger: [
       { nameTw: "奪靈魔", nameEn: "Pneumaflayer", coords: [{ x: 24, y: 23 }] },
     ],
   },
   "pazuzu": {
+    nmCoord: { x: 7.4, y: 21.6 },
     trigger: [
       { nameTw: "暗影幽靈", nameEn: "Shadow Wraith", coords: [{ x: 8.6, y: 20.2 }] },
     ],
   },
   "penthesilea": {
+    nmCoord: { x: 35.9, y: 5.9 },
     trigger: [
       { nameTw: "瓦爾血飛蛾", nameEn: "Val Bloodglider", coords: [{ x: 33.6, y: 8.2 }] },
     ],
   },
   "piasa": {
+    nmCoord: { x: 7, y: 14 },
     trigger: [
       { nameTw: "多彩冠恐鳥", nameEn: "Vivid Gastornis", coords: [{ x: 7, y: 14 }] },
     ],
   },
   "polyphemus": {
+    nmCoord: { x: 26, y: 14 },
     trigger: [
       { nameTw: "獨眼怪", nameEn: "Monoeye", coords: [{ x: 26, y: 14 }] },
     ],
   },
   "provenance-watcher": {
+    nmCoord: { x: 32.7, y: 19.6 },
     trigger: [
       { nameTw: "水晶爪", nameEn: "Crystal Claw", coords: [{ x: 32.5, y: 21.6 }] },
     ],
   },
   "sabotender-corrido": {
+    nmCoord: { x: 14, y: 22 },
     trigger: [
       { nameTw: "開花仙人掌怪", nameEn: "Flowering Sabotender", coords: [{ x: 14, y: 22 }] },
     ],
   },
   "serket": {
+    nmCoord: { x: 24.9, y: 18.2 },
     trigger: [
       { nameTw: "河道巨鉗蝦", nameEn: "Khor Claw", coords: [{ x: 24.9, y: 18.2 }] },
     ],
   },
   "simurghs-strider": {
+    nmCoord: { x: 29, y: 13 },
     trigger: [
       { nameTw: "舊世界祖", nameEn: "Old World Zu", coords: [{ x: 29, y: 13 }] },
     ],
   },
   "skoll": {
+    nmCoord: { x: 24, y: 30 },
     trigger: [
       { nameTw: "湧火狗靈", nameEn: "Pyros Shuck", coords: [{ x: 16, y: 36.8 }] },
     ],
   },
   "snow-queen": {
+    nmCoord: { x: 21.7, y: 26.3 },
     trigger: [
       { nameTw: "雪童子", nameEn: "Yukinko", coords: [{ x: 22, y: 27.2 }] },
     ],
   },
   "sophist": {
+    nmCoord: { x: 32.1, y: 31.5 },
     trigger: [
       { nameTw: "湧火阿班達", nameEn: "Pyros Apanda", coords: [{ x: 32.1, y: 31.5 }] },
     ],
   },
   "stegodon": {
+    nmCoord: { x: 10.1, y: 17.9 },
     trigger: [
       { nameTw: "豐水曙象", nameEn: "Hydatos Primelephas", coords: [{ x: 11.1, y: 16 }] },
     ],
   },
   "surabhi": {
+    nmCoord: { x: 10, y: 20 },
     trigger: [
       { nameTw: "恆冰公山羊", nameEn: "Pagos Billygoat", coords: [{ x: 10, y: 20 }] },
     ],
   },
   "taxim": {
+    nmCoord: { x: 25, y: 28 },
     trigger: [
       { nameTw: "珍卷惡魔", nameEn: "Demon of the Incunable", coords: [{ x: 25, y: 28 }] },
     ],
   },
   "teles": {
+    nmCoord: { x: 25.9, y: 27 },
     trigger: [
       { nameTw: "常風哈佩亞鳥妖", nameEn: "Anemos Harpeia", coords: [{ x: 25.9, y: 27 }] },
     ],
   },
   "white-rider": {
+    nmCoord: { x: 20, y: 13 },
     trigger: [
       { nameTw: "黃昏無頭騎士", nameEn: "Duskfall Dullahan", coords: [{ x: 20, y: 13 }] },
     ],
   },
   "ying-yang": {
+    nmCoord: { x: 11.5, y: 34.3 },
     trigger: [
       { nameTw: "湧火百目妖", nameEn: "Pyros Hecteyes", coords: [{ x: 11.5, y: 34.3 }] },
     ],

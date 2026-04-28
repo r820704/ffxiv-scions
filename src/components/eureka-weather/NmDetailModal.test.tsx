@@ -59,4 +59,16 @@ describe('NmDetailModal', () => {
     fireEvent.click(screen.getByText('帕祖祖'));
     expect(handle).not.toHaveBeenCalled();
   });
+
+  it('shows NM coord in info section and renders an NM pin on the map', () => {
+    render(<NmDetailModal nmId="pazuzu" onClose={() => {}} />);
+    // Pazuzu's NM coord from EurekaHelper is 7.4, 21.6
+    expect(screen.getByText(/7\.4,\s*21\.6/)).toBeInTheDocument();
+    // The map renders an "NM" pin (rose-colored, kind=nm)
+    const nmPin = screen.getAllByText('NM').find(
+      (el) => el.getAttribute('data-pin-kind') === 'nm',
+    );
+    expect(nmPin).toBeDefined();
+    expect(nmPin?.className).toMatch(/bg-rose-/);
+  });
 });

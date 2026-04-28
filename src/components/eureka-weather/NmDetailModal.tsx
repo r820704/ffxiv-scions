@@ -30,8 +30,9 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
   const zoneTw = zoneNamesTw[nm.zone] ?? nm.zone;
   const isUnconditional = !nm.trigger;
 
-  // Build pin list: each mob's each coordinate becomes one pin with sequential label
-  const pins = spawn
+  // Build pin list: NM pin first (red, "NM" label), then each trigger mob coord
+  // gets a sequentially-numbered amber pin.
+  const triggerPins = spawn
     ? spawn.trigger.flatMap((mob, mobIdx) =>
         mob.coords.map((c, coordIdx) => {
           const baseLabel = spawn.trigger
@@ -41,9 +42,16 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
             x: c.x,
             y: c.y,
             label: String(baseLabel + coordIdx + 1),
+            kind: 'trigger' as const,
           };
         }),
       )
+    : [];
+  const pins = spawn
+    ? [
+        { x: spawn.nmCoord.x, y: spawn.nmCoord.y, label: 'NM', kind: 'nm' as const },
+        ...triggerPins,
+      ]
     : [];
 
   return (
@@ -99,6 +107,16 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
             </div>
           ) : (
             <>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">NM 座標</div>
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-950/40 text-xs">
+                  <span className="text-rose-400 font-bold">NM</span>
+                  <span className="text-muted-foreground">
+                    📍 {spawn.nmCoord.x.toFixed(1)}, {spawn.nmCoord.y.toFixed(1)}
+                  </span>
+                </span>
+              </div>
+
               <div>
                 <div className="text-xs text-muted-foreground mb-1">觸發方式</div>
                 <div className="text-foreground mb-2">在以下地點擊殺：</div>

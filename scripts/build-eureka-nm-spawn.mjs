@@ -165,7 +165,8 @@ function parseNmDataIds(tsText) {
 //   trackerId, position, territory, lgb, fateName, nmName, shortName,
 //   Vector2(nmX,nmY), triggerMobName, Vector2(trigX,trigY),
 //   weather1, weather2, element1, element2, bool, sortOrder
-// Returns { nmName, trigger: { name, x, y } } or null if line is malformed.
+// Returns { nmName, nmCoord: { x, y }, trigger: { name, x, y } } or null if
+// line is malformed.
 function parseNmRow(line) {
   // Strip leading "new(" and trailing "),".
   const inner = line.match(/new\(\s*(.+?)\s*\)\s*,?\s*$/);
@@ -187,7 +188,7 @@ function parseNmRow(line) {
   const nmName = stringLiterals[1];
   const triggerMobName = stringLiterals[3];
 
-  // Find the two Vector2(...) calls. Second one is the trigger position.
+  // Find the two Vector2(...) calls. First is NM position, second is trigger.
   // Note: trigger-less FATEs (Ovni, Tristitia, Bunny FATEs) use `Vector2.Zero`
   // (a static field, not `new Vector2(...)`) for both nm and trigger positions
   // and `null` for triggerMobName. This regex only matches the
@@ -201,9 +202,14 @@ function parseNmRow(line) {
     vecs.push({ x: Number(vm[1]), y: Number(vm[2]) });
   }
   if (vecs.length < 2) return null;
+  const nmCoord = vecs[0];
   const triggerCoord = vecs[1];
 
-  return { nmName, trigger: { name: triggerMobName, x: triggerCoord.x, y: triggerCoord.y } };
+  return {
+    nmName,
+    nmCoord: { x: nmCoord.x, y: nmCoord.y },
+    trigger: { name: triggerMobName, x: triggerCoord.x, y: triggerCoord.y },
+  };
 }
 
 function extractNmRows(zoneText) {
@@ -289,8 +295,11 @@ async function main() {
 
       // Aggregate trigger mob spawns by mob name. Some NMs share trigger mob
       // entries across the same row; group by EN name and append coords.
-      if (!byId.has(candidate)) byId.set(candidate, { trigger: [] });
+      if (!byId.has(candidate)) byId.set(candidate, { nmCoord: row.nmCoord, trigger: [] });
       const info = byId.get(candidate);
+      // First row wins for nmCoord (each NM id should have exactly one fate row
+      // in EurekaHelper, so this is just defensive).
+      if (!info.nmCoord) info.nmCoord = row.nmCoord;
       let bucket = info.trigger.find((b) => b.nameEn === row.trigger.name);
       if (!bucket) {
         bucket = { nameTw, nameEn: row.trigger.name, coords: [] };
@@ -337,6 +346,7 @@ async function main() {
   lines.push('}');
   lines.push('');
   lines.push('export interface NmSpawnInfo {');
+  lines.push('  nmCoord: { x: number; y: number };');
   lines.push('  trigger: MobSpawn[];');
   lines.push('}');
   lines.push('');
@@ -344,6 +354,7 @@ async function main() {
   for (const id of sortedIds) {
     const info = byId.get(id);
     lines.push(`  ${JSON.stringify(id)}: {`);
+    lines.push(`    nmCoord: { x: ${info.nmCoord.x}, y: ${info.nmCoord.y} },`);
     lines.push('    trigger: [');
     for (const m of info.trigger) {
       const coordsStr = m.coords
