@@ -55,4 +55,26 @@ describe('NmDetailMap', () => {
     expect(nmPin.getAttribute('data-pin-kind')).toBe('nm');
     expect(triggerPin.getAttribute('data-pin-kind')).toBe('trigger');
   });
+
+  it('offsets the NM pin and draws a leader line when it overlaps a trigger pin', () => {
+    // Pazuzu case: NM at 7.4,21.6 vs trigger at 8.6,20.2 — % distance ~4 < threshold
+    const { container } = render(<NmDetailMap zone="Eureka Anemos" pins={[
+      { x: 7.4, y: 21.6, label: 'NM', kind: 'nm' },
+      { x: 8.6, y: 20.2, label: '1', kind: 'trigger' },
+    ]} />);
+    const nmPin = screen.getByText('NM');
+    const triggerPin = screen.getByText('1');
+    expect(nmPin.getAttribute('data-pin-offset')).toBe('true');
+    expect(triggerPin.getAttribute('data-pin-offset')).toBe('false');
+    expect(container.querySelector('svg line')).not.toBeNull();
+  });
+
+  it('does NOT offset the NM pin when it is far from any trigger pin', () => {
+    render(<NmDetailMap zone="Eureka Anemos" pins={[
+      { x: 7.4, y: 21.6, label: 'NM', kind: 'nm' },
+      { x: 30, y: 30, label: '1', kind: 'trigger' },
+    ]} />);
+    const nmPin = screen.getByText('NM');
+    expect(nmPin.getAttribute('data-pin-offset')).toBe('false');
+  });
 });

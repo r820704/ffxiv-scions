@@ -16,6 +16,15 @@ interface NmDetailMapProps {
   pins: Pin[];
 }
 
+// % distance below which an NM pin is considered to overlap a trigger pin
+// and gets nudged to a non-overlapping spot.
+const NM_OFFSET_THRESHOLD = 5;
+// % offset applied (upper-left) when overlap is detected. Picked to clear pin
+// radii at typical desktop modal width while keeping the leader line short.
+const NM_OFFSET_DELTA = 6;
+// Clamp the displaced position so the pin never lands flush with the map edge.
+const EDGE_CLAMP = 4;
+
 export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
   const [imgFailed, setImgFailed] = useState(false);
   const key = ZONE_MAP_FILE_KEY[zone];
@@ -39,6 +48,34 @@ export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
     );
   }
 
+  // Resolve each pin to a numeric % position so we can detect overlap and
+  // (if needed) draw a leader line from the displaced display position back
+  // to the actual coord.
+  const resolved = pins.map((pin) => {
+    const raw = mapCoordToPercent({ x: pin.x, y: pin.y }, bounds);
+    return {
+      pin,
+      actualX: parseFloat(raw.left),
+      actualY: parseFloat(raw.top),
+    };
+  });
+  const triggerPositions = resolved.filter((p) => p.pin.kind !== 'nm');
+  const placed = resolved.map((p) => {
+    if (p.pin.kind !== 'nm') return { ...p, displayX: p.actualX, displayY: p.actualY, offset: false };
+    const overlaps = triggerPositions.some((t) => {
+      const dx = t.actualX - p.actualX;
+      const dy = t.actualY - p.actualY;
+      return Math.sqrt(dx * dx + dy * dy) < NM_OFFSET_THRESHOLD;
+    });
+    if (!overlaps) return { ...p, displayX: p.actualX, displayY: p.actualY, offset: false };
+    return {
+      ...p,
+      displayX: Math.max(EDGE_CLAMP, p.actualX - NM_OFFSET_DELTA),
+      displayY: Math.max(EDGE_CLAMP, p.actualY - NM_OFFSET_DELTA),
+      offset: true,
+    };
+  });
+
   return (
     <div className="relative aspect-square bg-muted/20 rounded-lg overflow-hidden">
       <img
@@ -47,22 +84,43 @@ export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
         onError={() => setImgFailed(true)}
         className="absolute inset-0 w-full h-full object-cover"
       />
-      {pins.map((pin, idx) => {
-        const pos = mapCoordToPercent({ x: pin.x, y: pin.y }, bounds);
-        const isNm = pin.kind === 'nm';
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        preserveAspectRatio="none"
+        viewBox="0 0 100 100"
+      >
+        {placed
+          .filter((p) => p.offset)
+          .map((p, i) => (
+            <line
+              key={`leader-${i}`}
+              x1={p.actualX}
+              y1={p.actualY}
+              x2={p.displayX}
+              y2={p.displayY}
+              stroke="rgb(244 63 94 / 0.7)"
+              strokeWidth={0.4}
+              strokeDasharray="1,1"
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+      </svg>
+      {placed.map((p, idx) => {
+        const isNm = p.pin.kind === 'nm';
         const bg = isNm ? 'bg-rose-600' : 'bg-amber-500';
         const ringHi = isNm ? 'ring-rose-300' : 'ring-amber-300';
         const size = isNm ? 'w-7 h-7' : 'w-6 h-6';
         return (
           <div
             key={idx}
-            data-pin-kind={pin.kind ?? 'trigger'}
+            data-pin-kind={p.pin.kind ?? 'trigger'}
+            data-pin-offset={p.offset ? 'true' : 'false'}
             className={`absolute -translate-x-1/2 -translate-y-1/2 ${size} rounded-full ${bg} text-white text-[10px] font-bold flex items-center justify-center border-2 border-white shadow-md ${
-              pin.highlighted ? `animate-pulse ring-2 ${ringHi}` : ''
+              p.pin.highlighted ? `animate-pulse ring-2 ${ringHi}` : ''
             }`}
-            style={{ left: pos.left, top: pos.top }}
+            style={{ left: `${p.displayX}%`, top: `${p.displayY}%` }}
           >
-            {pin.label}
+            {p.pin.label}
           </div>
         );
       })}

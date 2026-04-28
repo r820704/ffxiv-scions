@@ -168,15 +168,6 @@ export default function EurekaWeatherPage() {
           ))}
         </div>
       </div>
-      <footer className="mt-8 pt-4 border-t border-border/30 text-[10px] text-muted-foreground/70 text-center">
-        資料來源：EurekaHelper 等社群開源計畫｜© SQUARE ENIX｜
-        <a
-          href="https://github.com/r820704/ffxiv-baldesion/blob/main/THIRD-PARTY-NOTICES.md"
-          className="underline hover:text-foreground"
-          target="_blank"
-          rel="noopener noreferrer"
-        >第三方資料致謝</a>
-      </footer>
     </div>
   );
 }

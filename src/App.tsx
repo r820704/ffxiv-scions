@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
+import SiteFooter from '@/components/SiteFooter';
 import HomePage from '@/pages/HomePage';
 import EurekaWeatherPage from '@/pages/EurekaWeatherPage';
 import EurekaPage from '@/pages/EurekaPage';
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/eureka" element={<EurekaPage />} />
           <Route path="/eureka-gear" element={<EurekaGearPage />} />
         </Routes>
+        <SiteFooter />
       </div>
     </HashRouter>
   );
