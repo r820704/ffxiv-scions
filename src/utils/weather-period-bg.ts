@@ -28,11 +28,11 @@ export function getPeriodBgClass(kind: PeriodKind): string {
   switch (kind) {
     case 'dawn':
       // night→day transition at ET 6 = 75% of cell width; ±2% soft edge
-      return 'bg-[linear-gradient(90deg,rgba(67,56,202,0.36)_0%,rgba(67,56,202,0.36)_73%,rgba(254,243,199,0.20)_77%,rgba(254,243,199,0.20)_100%)]';
+      return 'bg-[linear-gradient(90deg,rgba(67,56,202,0.27)_0%,rgba(67,56,202,0.27)_73%,rgba(254,243,199,0.13)_77%,rgba(254,243,199,0.13)_100%)]';
     case 'day':
-      return 'bg-[linear-gradient(180deg,rgba(254,243,199,0.20)_0%,rgba(254,243,199,0.26)_100%)]';
+      return 'bg-[linear-gradient(180deg,rgba(254,243,199,0.13)_0%,rgba(254,243,199,0.20)_100%)]';
     case 'dusk':
       // day→night transition at ET 18 = 25% of cell width; ±2% soft edge
-      return 'bg-[linear-gradient(90deg,rgba(254,243,199,0.20)_0%,rgba(254,243,199,0.20)_23%,rgba(67,56,202,0.36)_27%,rgba(67,56,202,0.36)_100%)]';
+      return 'bg-[linear-gradient(90deg,rgba(254,243,199,0.13)_0%,rgba(254,243,199,0.13)_23%,rgba(67,56,202,0.27)_27%,rgba(67,56,202,0.27)_100%)]';
   }
 }
