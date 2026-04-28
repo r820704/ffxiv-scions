@@ -10,26 +10,16 @@ interface NmTooltipProps {
 }
 
 export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProps) {
-  const [pinned, setPinned] = useState(false);
-  const [hovering, setHovering] = useState(false);
-  const open = pinned || hovering;
+  const [open, setOpen] = useState(false);
 
   if (nms.length === 0) return <>{children}</>;
 
-  const handleOpenChange = (next: boolean) => {
-    if (!next) {
-      setPinned(false);
-      setHovering(false);
-    }
-  };
-
   return (
-    <Popover.Root open={open} onOpenChange={handleOpenChange}>
+    <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Anchor asChild>
         <div
-          onMouseEnter={() => setHovering(true)}
-          onMouseLeave={() => setHovering(false)}
-          onClick={() => setPinned((p) => !p)}
+          onMouseEnter={() => setOpen(true)}
+          onClick={() => setOpen((o) => !o)}
         >
           {children}
         </div>
@@ -54,8 +44,7 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
                     onClick={(e) => {
                       e.stopPropagation();
                       onOpenDetail(nm.id);
-                      setPinned(false);
-                      setHovering(false);
+                      setOpen(false);
                     }}
                     className="text-foreground underline-offset-2 hover:underline hover:text-primary cursor-pointer text-left"
                   >
