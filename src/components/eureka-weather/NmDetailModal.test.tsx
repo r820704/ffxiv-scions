@@ -20,8 +20,9 @@ describe('NmDetailModal', () => {
   it('shows trigger condition (formatNmTrigger output)', () => {
     render(<NmDetailModal nmId="pazuzu" onClose={() => {}} />);
     // Pazuzu trigger is Gales + night → formatNmTrigger returns 強風+夜間
+    // Shadow Wraith (trigger mob) also has night, so multiple 夜間 elements exist.
     expect(screen.getByText(/強風/)).toBeInTheDocument();
-    expect(screen.getByText(/夜間/)).toBeInTheDocument();
+    expect(screen.getAllByText(/夜間/).length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows 常駐 text when NM has no trigger', () => {
@@ -83,5 +84,21 @@ describe('NmDetailModal', () => {
     const matches = screen.getAllByText(/常風之地\s*\(\d+\.\d,\s*\d+\.\d\)/);
     // At least 1 NM coord + 1 trigger mob coord
     expect(matches.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('shows trigger mob attrs (Lv / element / timeOfDay) for Fafnir → 龍化石', () => {
+    render(<NmDetailModal nmId="fafnir" onClose={() => {}} />);
+    // 龍化石: Lv.22, Fire, night per eureka-trigger-mob-data.ts
+    // Note: Fafnir's own trigger condition also contains 夜間, so getAllByText is used.
+    expect(screen.getByText('Lv.22')).toBeTruthy();
+    expect(screen.getByAltText('火屬性')).toBeTruthy();
+    expect(screen.getAllByText('夜間').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('omits timeOfDay chip for trigger mob without time-of-day attribute', () => {
+    // sabotender-corrido's trigger mob (Flowering Sabotender) has no timeOfDay.
+    render(<NmDetailModal nmId="sabotender-corrido" onClose={() => {}} />);
+    const trigList = screen.getByText('在以下地點擊殺：').parentElement!;
+    expect(trigList.querySelector('[class*="indigo-950"]')).toBeNull();
   });
 });
