@@ -30,6 +30,12 @@ We gratefully acknowledge the following projects and data sources, whose work ma
 ### 1.6 thewakingsands/ffxiv-datamining-tc
 - https://github.com/thewakingsands/ffxiv-datamining-tc
 
+### Eureka element icons
+
+- Source: rendered 96×96 PNG icons (Fire / Ice / Wind / Earth / Lightning / Water) uploaded by the community at [FFXIV consolegameswiki](https://ffxiv.consolegameswiki.com/wiki/Template:Eurekaelement_icon)
+- Usage: display elemental affinity of Eureka NM trigger mobs
+- License: derived from FINAL FANTASY XIV © SQUARE ENIX; included with attribution per fan-tool convention
+
 ## 2. Reference Sources
 
 > The following projects served as references and cross-verification during data preparation.

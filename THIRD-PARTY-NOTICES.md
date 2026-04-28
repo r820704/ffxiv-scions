@@ -30,6 +30,12 @@
 ### 1.6 thewakingsands/ffxiv-datamining-tc
 - https://github.com/thewakingsands/ffxiv-datamining-tc
 
+### Eureka 屬性 icon
+
+- 來源：[FFXIV consolegameswiki](https://ffxiv.consolegameswiki.com/wiki/Template:Eurekaelement_icon) 上由社群上傳的 6 張渲染後屬性 icon（Fire / Ice / Wind / Earth / Lightning / Water）
+- 用途：顯示優雷卡觸發怪的屬性
+- 授權：素材源自 FINAL FANTASY XIV © SQUARE ENIX，依粉絲工具慣例附上致謝
+
 ## 2. 對照與查考來源
 
 > 下列計畫於資料整理過程提供查考與相互印證，特此致謝。
