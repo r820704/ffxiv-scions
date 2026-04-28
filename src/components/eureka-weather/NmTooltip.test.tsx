@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
-import NmTooltip from './NmTooltip';
+import NmTooltip, { NmTooltipProvider } from './NmTooltip';
 import type { EurekaNm } from '@/data/eureka-nm-data';
 
 afterEach(cleanup);
@@ -34,7 +34,7 @@ describe('NmTooltip', () => {
     expect(screen.queryByText('可能出現')).toBeNull();
   });
 
-  it('shows tooltip content on hover', () => {
+  it('opens tooltip on hover', () => {
     render(
       <NmTooltip nms={[pazuzu, fafnir]}>
         <div data-testid="cell">cell</div>
@@ -47,7 +47,19 @@ describe('NmTooltip', () => {
     expect(screen.getByText('強風+夜間')).toBeTruthy();
   });
 
-  it('hides tooltip on mouse leave', () => {
+  it('stays open after pointer leaves trigger (sticky)', () => {
+    render(
+      <NmTooltip nms={[pazuzu]}>
+        <div data-testid="cell">cell</div>
+      </NmTooltip>,
+    );
+    const trigger = screen.getByTestId('cell').parentElement!;
+    fireEvent.mouseEnter(trigger);
+    fireEvent.mouseLeave(trigger);
+    expect(screen.getByText('帕祖祖')).toBeTruthy();
+  });
+
+  it('closes when trigger is clicked while open (toggle)', async () => {
     render(
       <NmTooltip nms={[pazuzu]}>
         <div data-testid="cell">cell</div>
@@ -56,8 +68,8 @@ describe('NmTooltip', () => {
     const trigger = screen.getByTestId('cell').parentElement!;
     fireEvent.mouseEnter(trigger);
     expect(screen.getByText('帕祖祖')).toBeTruthy();
-    fireEvent.mouseLeave(trigger);
-    expect(screen.queryByText('帕祖祖')).toBeNull();
+    fireEvent.click(trigger);
+    await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
   });
 
   it('shows level for each NM', () => {
@@ -70,32 +82,36 @@ describe('NmTooltip', () => {
     expect(screen.getByText('Lv.20')).toBeTruthy();
   });
 
-  describe('pin behavior (M1)', () => {
-    it('keeps popover open after mouseLeave when clicked (pinned)', async () => {
-      render(
-        <NmTooltip nms={[pazuzu]}>
-          <div data-testid="cell">cell</div>
-        </NmTooltip>,
-      );
-      const trigger = screen.getByTestId('cell').parentElement!;
-      fireEvent.mouseEnter(trigger);
-      fireEvent.click(trigger);
-      fireEvent.mouseLeave(trigger);
-      expect(await screen.findByText('帕祖祖')).toBeTruthy();
-    });
+  it('closes when ✕ button inside the tooltip is clicked', async () => {
+    render(
+      <NmTooltip nms={[pazuzu]}>
+        <div data-testid="cell">cell</div>
+      </NmTooltip>,
+    );
+    fireEvent.mouseEnter(screen.getByTestId('cell').parentElement!);
+    expect(screen.getByText('帕祖祖')).toBeTruthy();
+    fireEvent.click(screen.getByLabelText('關閉'));
+    await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
+  });
 
-    it('closes after second click (unpin) followed by mouseLeave', async () => {
-      render(
+  it('closes other tooltip when hovering a sibling under NmTooltipProvider', async () => {
+    render(
+      <NmTooltipProvider>
         <NmTooltip nms={[pazuzu]}>
-          <div data-testid="cell">cell</div>
-        </NmTooltip>,
-      );
-      const trigger = screen.getByTestId('cell').parentElement!;
-      fireEvent.click(trigger); // pin
-      fireEvent.click(trigger); // unpin
-      fireEvent.mouseLeave(trigger);
-      await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
-    });
+          <div data-testid="cell-a">A</div>
+        </NmTooltip>
+        <NmTooltip nms={[fafnir]}>
+          <div data-testid="cell-b">B</div>
+        </NmTooltip>
+      </NmTooltipProvider>,
+    );
+    const triggerA = screen.getByTestId('cell-a').parentElement!;
+    const triggerB = screen.getByTestId('cell-b').parentElement!;
+    fireEvent.mouseEnter(triggerA);
+    expect(screen.getByText('帕祖祖')).toBeTruthy();
+    fireEvent.mouseEnter(triggerB);
+    await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
+    expect(screen.getByText('法夫納')).toBeTruthy();
   });
 
   it('calls onOpenDetail and closes popover when NM name button is clicked', async () => {
@@ -106,7 +122,7 @@ describe('NmTooltip', () => {
       </NmTooltip>,
     );
     const trigger = screen.getByTestId('cell').parentElement!;
-    fireEvent.click(trigger); // pin to open
+    fireEvent.mouseEnter(trigger);
     const nameButton = screen.getByRole('button', { name: '帕祖祖' });
     fireEvent.click(nameButton);
     expect(handle).toHaveBeenCalledWith('pazuzu');

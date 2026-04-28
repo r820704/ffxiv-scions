@@ -1,7 +1,23 @@
-import { useState, type ReactNode } from 'react';
+import { createContext, useContext, useId, useState, type ReactNode } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { formatNmTrigger, type EurekaNm } from '@/data/eureka-nm-data';
 import { preloadEurekaMap } from '@/utils/preload-eureka-map';
+
+interface NmTooltipState {
+  activeId: string | null;
+  setActiveId: (id: string | null) => void;
+}
+
+const NmTooltipContext = createContext<NmTooltipState | null>(null);
+
+export function NmTooltipProvider({ children }: { children: ReactNode }) {
+  const [activeId, setActiveId] = useState<string | null>(null);
+  return (
+    <NmTooltipContext.Provider value={{ activeId, setActiveId }}>
+      {children}
+    </NmTooltipContext.Provider>
+  );
+}
 
 interface NmTooltipProps {
   nms: EurekaNm[];
@@ -10,26 +26,24 @@ interface NmTooltipProps {
 }
 
 export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProps) {
-  const [pinned, setPinned] = useState(false);
-  const [hovering, setHovering] = useState(false);
-  const open = pinned || hovering;
+  const id = useId();
+  const ctx = useContext(NmTooltipContext);
+  const [localOpen, setLocalOpen] = useState(false);
+
+  const open = ctx ? ctx.activeId === id : localOpen;
+  const setOpen = (next: boolean) => {
+    if (ctx) ctx.setActiveId(next ? id : null);
+    else setLocalOpen(next);
+  };
 
   if (nms.length === 0) return <>{children}</>;
 
-  const handleOpenChange = (next: boolean) => {
-    if (!next) {
-      setPinned(false);
-      setHovering(false);
-    }
-  };
-
   return (
-    <Popover.Root open={open} onOpenChange={handleOpenChange}>
+    <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Anchor asChild>
         <div
-          onMouseEnter={() => setHovering(true)}
-          onMouseLeave={() => setHovering(false)}
-          onClick={() => setPinned((p) => !p)}
+          onMouseEnter={() => setOpen(true)}
+          onClick={() => setOpen(!open)}
         >
           {children}
         </div>
@@ -42,7 +56,17 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
           className="z-50 bg-card border border-border rounded-lg p-2 shadow-xl text-xs max-w-[240px]"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <div className="text-muted-foreground text-[10px] mb-1">可能出現</div>
+          <div className="flex items-center justify-between mb-1 gap-2">
+            <span className="text-muted-foreground text-[10px]">可能出現</span>
+            <button
+              type="button"
+              aria-label="關閉"
+              onClick={() => setOpen(false)}
+              className="text-muted-foreground hover:text-foreground transition-colors text-sm leading-none"
+            >
+              ✕
+            </button>
+          </div>
           <ul className="flex flex-col gap-1">
             {nms.map((nm) => (
               <li key={nm.id} className="flex items-center gap-2 whitespace-nowrap">
@@ -54,8 +78,7 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
                     onClick={(e) => {
                       e.stopPropagation();
                       onOpenDetail(nm.id);
-                      setPinned(false);
-                      setHovering(false);
+                      setOpen(false);
                     }}
                     className="text-foreground underline-offset-2 hover:underline hover:text-primary cursor-pointer text-left"
                   >

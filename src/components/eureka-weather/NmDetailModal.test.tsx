@@ -60,15 +60,28 @@ describe('NmDetailModal', () => {
     expect(handle).not.toHaveBeenCalled();
   });
 
-  it('shows NM coord in info section and renders an NM pin on the map', () => {
+  it('shows NM coord with short zone name and parens', () => {
     render(<NmDetailModal nmId="pazuzu" onClose={() => {}} />);
-    // Pazuzu's NM coord from EurekaHelper is 7.4, 21.6
-    expect(screen.getByText(/7\.4,\s*21\.6/)).toBeInTheDocument();
-    // The map renders an "NM" pin (rose-colored, kind=nm)
+    // Pazuzu's NM coord 7.4, 21.6, zone 'Eureka Anemos' → short '常風之地'
+    expect(screen.getByText(/常風之地\s*\(7\.4,\s*21\.6\)/)).toBeInTheDocument();
     const nmPin = screen.getAllByText('NM').find(
       (el) => el.getAttribute('data-pin-kind') === 'nm',
     );
     expect(nmPin).toBeDefined();
     expect(nmPin?.className).toMatch(/bg-rose-/);
+  });
+
+  it('does not render the deprecated zone+aliases header row', () => {
+    render(<NmDetailModal nmId="pazuzu" onClose={() => {}} />);
+    expect(screen.queryByText(/優雷卡常風之地/)).toBeNull();
+    expect(screen.queryByText(/別名：/)).toBeNull();
+  });
+
+  it('renders trigger mob coord with short zone name and parens', () => {
+    render(<NmDetailModal nmId="pazuzu" onClose={() => {}} />);
+    // Every coord (NM + each trigger mob) should now match the new format.
+    const matches = screen.getAllByText(/常風之地\s*\(\d+\.\d,\s*\d+\.\d\)/);
+    // At least 1 NM coord + 1 trigger mob coord
+    expect(matches.length).toBeGreaterThanOrEqual(2);
   });
 });

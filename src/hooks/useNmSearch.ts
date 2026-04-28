@@ -8,7 +8,6 @@ export function useNmSearch(query: string): EurekaNm[] {
     return eurekaNms.filter((nm) => {
       if (nm.nameTw.toLowerCase().includes(q)) return true;
       if (nm.nameEn.toLowerCase().includes(q)) return true;
-      if (nm.aliases?.some((a) => a.toLowerCase().includes(q))) return true;
       return false;
     });
   }, [query]);

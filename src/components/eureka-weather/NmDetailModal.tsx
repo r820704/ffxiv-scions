@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { eurekaNms, formatNmTrigger } from '@/data/eureka-nm-data';
-import { zoneNamesTw } from '@/data/weather-data';
+import { zoneShortNamesTw } from '@/data/weather-data';
 import { nmSpawnInfo } from '@/data/eureka-nm-spawn-data';
 import NmDetailMap from './NmDetailMap';
 
@@ -27,7 +27,7 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
   if (!nm) return null;
 
   const spawn = nmSpawnInfo[nmId];
-  const zoneTw = zoneNamesTw[nm.zone] ?? nm.zone;
+  const zoneShort = zoneShortNamesTw[nm.zone] ?? nm.zone;
   const isUnconditional = !nm.trigger;
 
   // Build pin list: NM pin first (red, "NM" label), then each trigger mob coord
@@ -87,13 +87,6 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
         </div>
 
         <div className="p-3 flex flex-col gap-3 text-sm">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>{zoneTw}</span>
-            {nm.aliases && nm.aliases.length > 0 && (
-              <span>· 別名：{nm.aliases.join(', ')}</span>
-            )}
-          </div>
-
           <div>
             <div className="text-xs text-muted-foreground mb-1">觸發條件</div>
             <div className="text-amber-300/90">
@@ -112,7 +105,7 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
                 <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-950/40 text-xs">
                   <span className="text-rose-400 font-bold">NM</span>
                   <span className="text-muted-foreground">
-                    📍 {spawn.nmCoord.x.toFixed(1)}, {spawn.nmCoord.y.toFixed(1)}
+                    📍 {zoneShort} ({spawn.nmCoord.x.toFixed(1)}, {spawn.nmCoord.y.toFixed(1)})
                   </span>
                 </span>
               </div>
@@ -136,7 +129,7 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
                             <span className="text-amber-400 font-bold">
                               {baseLabel + coordIdx + 1}
                             </span>
-                            <span>📍 {c.x.toFixed(1)}, {c.y.toFixed(1)}</span>
+                            <span>📍 {zoneShort} ({c.x.toFixed(1)}, {c.y.toFixed(1)})</span>
                           </span>
                         ))}
                       </li>

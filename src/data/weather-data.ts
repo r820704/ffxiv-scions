@@ -30,6 +30,13 @@ export const zoneNamesTw: Record<string, string> = {
   'Eureka Hydatos': '優雷卡豐水之地',
 };
 
+export const zoneShortNamesTw: Record<string, string> = {
+  'Eureka Anemos': '常風之地',
+  'Eureka Pagos': '恆冰之地',
+  'Eureka Pyros': '湧火之地',
+  'Eureka Hydatos': '豐水之地',
+};
+
 export const EUREKA_ZONES = ['Eureka Anemos', 'Eureka Pagos', 'Eureka Pyros', 'Eureka Hydatos'] as const;
 export type EurekaZone = typeof EUREKA_ZONES[number];
 
