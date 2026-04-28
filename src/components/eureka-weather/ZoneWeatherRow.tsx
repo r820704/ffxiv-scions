@@ -150,10 +150,11 @@ export default function ZoneWeatherRow({
         {onOpenList && (
           <button
             type="button"
+            aria-label="開啟全部 NM 列表"
             onClick={() => onOpenList(zone)}
             className="text-xs px-2 py-0.5 rounded border border-border hover:border-primary text-muted-foreground hover:text-primary transition-colors"
           >
-            📋 全部 NM ({eurekaNms.filter((n) => n.zone === zone).length})
+            <span aria-hidden="true">📋</span> 全部 NM ({eurekaNms.filter((n) => n.zone === zone).length})
           </button>
         )}
         <div className="flex items-center gap-2 ml-auto">

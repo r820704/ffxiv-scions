@@ -1,5 +1,5 @@
-import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect, afterEach, vi } from 'vitest';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import ZoneWeatherRow, { formatCellTime } from './ZoneWeatherRow';
 import { generateForecasts, findLastEndedWeather } from '@/utils/weather-engine';
 import { weatherNamesTw } from '@/data/weather-data';
@@ -14,6 +14,27 @@ describe('ZoneWeatherRow', () => {
   it('renders the zone TC name', () => {
     render(<ZoneWeatherRow zone="Eureka Anemos" selectedWeathers={new Set()} now={fixedNow} />);
     expect(screen.getByText('優雷卡常風之地')).toBeTruthy();
+  });
+
+  it('does not render 全部 NM button when onOpenList is omitted', () => {
+    render(<ZoneWeatherRow zone="Eureka Anemos" selectedWeathers={new Set()} now={fixedNow} />);
+    expect(screen.queryByLabelText('開啟全部 NM 列表')).toBeNull();
+  });
+
+  it('renders 全部 NM button with NM count when onOpenList provided, and forwards zone on click', () => {
+    const onOpenList = vi.fn();
+    render(
+      <ZoneWeatherRow
+        zone="Eureka Anemos"
+        selectedWeathers={new Set()}
+        now={fixedNow}
+        onOpenList={onOpenList}
+      />,
+    );
+    const btn = screen.getByLabelText('開啟全部 NM 列表');
+    expect(btn.textContent).toMatch(/全部 NM \(\d+\)/);
+    fireEvent.click(btn);
+    expect(onOpenList).toHaveBeenCalledWith('Eureka Anemos');
   });
 
   it('renders the elemental Lv range next to zone name (M5)', () => {
