@@ -22,7 +22,6 @@ const unconditionalNm: EurekaNm = {
   nameEn: 'Sabotender Corrido',
   zone: 'Eureka Anemos',
   level: 1,
-  aliases: ['Sabo'],
 };
 
 describe('NmSearchResultRow', () => {

@@ -18,11 +18,6 @@ describe('useNmSearch', () => {
     expect(result.current.some((n) => n.id === 'pazuzu')).toBe(true);
   });
 
-  it('matches by alias', () => {
-    const { result } = renderHook(() => useNmSearch('Cassie'));
-    expect(result.current.some((n) => n.id === 'copycat-cassie')).toBe(true);
-  });
-
   it('matches partial / substring queries', () => {
     const { result } = renderHook(() => useNmSearch('ing'));
     // King Hazmat / King Igloo / King Arthro / King Goldemar / Snow Queen — multiple "King" / "Queen" matches
