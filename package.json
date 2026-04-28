@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "build:data": "node scripts/build-eureka-weapons.mjs",
     "build:nm-spawn": "node scripts/build-eureka-nm-spawn.mjs",
+    "build:trigger-elements": "node scripts/build-eureka-trigger-mob-elements.mjs",
     "fetch:maps": "node scripts/fetch-eureka-maps.mjs"
   },
   "dependencies": {
