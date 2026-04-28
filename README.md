@@ -31,6 +31,10 @@ npm run test
 npm run build
 ```
 
+## 第三方資料致謝
+
+本專案的資料整理受惠於多個開源計畫與社群。完整列表請見 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)（English: [THIRD-PARTY-NOTICES.en.md](THIRD-PARTY-NOTICES.en.md)）。
+
 ## License
 
 Source code of this project is licensed under the MIT license.

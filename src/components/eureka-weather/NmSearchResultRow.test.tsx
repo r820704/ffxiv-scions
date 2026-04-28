@@ -82,4 +82,21 @@ describe('NmSearchResultRow', () => {
       expect(onScrollToCell).toHaveBeenCalled();
     }
   });
+
+  it('calls onOpenDetail when NM name button clicked', () => {
+    const handleOpenDetail = vi.fn();
+    render(
+      <NmSearchResultRow
+        nm={conditionalNm}
+        now={fixedNow}
+        forecastCount={48}
+        onScrollToCell={vi.fn()}
+        onOpenDetail={handleOpenDetail}
+      />,
+    );
+    const buttons = screen.getAllByRole('button');
+    // First button should be the NM name (when onOpenDetail is provided)
+    fireEvent.click(buttons[0]!);
+    expect(handleOpenDetail).toHaveBeenCalledWith('king-arthro');
+  });
 });

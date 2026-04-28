@@ -2,11 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { EUREKA_ZONES } from '@/data/weather-data';
 import { useUrlSelectedWeathers } from '@/hooks/useUrlSelectedWeathers';
 import { useGameClock } from '@/hooks/useGameClock';
+import { useNmDetailHash } from '@/hooks/useNmDetailHash';
 import GameClock from '@/components/eureka-weather/GameClock';
 import WeatherFilterBar from '@/components/eureka-weather/WeatherFilterBar';
 import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 import HelpModal from '@/components/eureka-weather/HelpModal';
 import NmSearchPanel from '@/components/eureka-weather/NmSearchPanel';
+import NmDetailModal from '@/components/eureka-weather/NmDetailModal';
 import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
 import WeatherSummaryBar from '@/components/eureka-weather/WeatherSummaryBar';
 import type { EurekaZone } from '@/data/weather-data';
@@ -29,6 +31,10 @@ export default function EurekaWeatherPage() {
   const [toast, setToast] = useState<string | null>(null);
   const scrollRefs = useRef<Array<HTMLDivElement | null>>([]);
   const isSyncingRef = useRef(false);
+
+  const [detailNmId, setDetailNmId] = useNmDetailHash();
+  const openDetail = useCallback((id: string) => setDetailNmId(id), [setDetailNmId]);
+  const closeDetail = useCallback(() => setDetailNmId(null), [setDetailNmId]);
 
   const toggle = (w: string) => {
     const next = new Set(selected);
@@ -121,7 +127,9 @@ export default function EurekaWeatherPage() {
         now={now}
         forecastCount={forecastCount}
         onScrollToCell={scrollToCell}
+        onOpenDetail={openDetail}
       />
+      <NmDetailModal nmId={detailNmId} onClose={closeDetail} />
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-md px-4 py-2 text-sm shadow-lg animate-in fade-in">
           {toast}
@@ -155,6 +163,7 @@ export default function EurekaWeatherPage() {
               onLoadMore={remainingStep > 0 ? loadMore : undefined}
               scrollRef={registerRef(i)}
               onScroll={handleScroll(i)}
+              onOpenDetail={openDetail}
             />
           ))}
         </div>

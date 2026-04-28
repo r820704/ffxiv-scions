@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
 import NmTooltip from './NmTooltip';
 import type { EurekaNm } from '@/data/eureka-nm-data';
@@ -96,5 +96,20 @@ describe('NmTooltip', () => {
       fireEvent.mouseLeave(trigger);
       await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
     });
+  });
+
+  it('calls onOpenDetail and closes popover when NM name button is clicked', async () => {
+    const handle = vi.fn();
+    render(
+      <NmTooltip nms={[pazuzu]} onOpenDetail={handle}>
+        <div data-testid="cell">cell</div>
+      </NmTooltip>,
+    );
+    const trigger = screen.getByTestId('cell').parentElement!;
+    fireEvent.click(trigger); // pin to open
+    const nameButton = screen.getByRole('button', { name: '帕祖祖' });
+    fireEvent.click(nameButton);
+    expect(handle).toHaveBeenCalledWith('pazuzu');
+    await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
   });
 });

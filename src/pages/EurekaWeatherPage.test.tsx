@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import EurekaWeatherPage from './EurekaWeatherPage';
 
@@ -74,5 +74,29 @@ describe('EurekaWeatherPage', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: /搜尋 NM/ }));
     expect(screen.getByPlaceholderText(/搜尋 NM/)).toBeTruthy();
+  });
+});
+
+describe('EurekaWeatherPage - NM detail integration', () => {
+  it('opens detail modal when URL has nm=pazuzu (deep link)', () => {
+    render(
+      <MemoryRouter initialEntries={['/eureka-weather?nm=pazuzu']}>
+        <EurekaWeatherPage />
+      </MemoryRouter>,
+    );
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+    expect(within(dialog).getByText('帕祖祖')).toBeInTheDocument();
+  });
+
+  it('clears nm param from URL when modal closed via close button', () => {
+    render(
+      <MemoryRouter initialEntries={['/eureka-weather?nm=pazuzu']}>
+        <EurekaWeatherPage />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText('關閉'));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

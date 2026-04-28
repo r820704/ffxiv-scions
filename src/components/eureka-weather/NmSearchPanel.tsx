@@ -9,6 +9,7 @@ interface NmSearchPanelProps {
   now: number;
   forecastCount: number;
   onScrollToCell: (zone: EurekaZone, cellIndex: number) => void;
+  onOpenDetail?: (nmId: string) => void;
 }
 
 export default function NmSearchPanel({
@@ -17,6 +18,7 @@ export default function NmSearchPanel({
   now,
   forecastCount,
   onScrollToCell,
+  onOpenDetail,
 }: NmSearchPanelProps) {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -88,6 +90,10 @@ export default function NmSearchPanel({
                   now={now}
                   forecastCount={forecastCount}
                   onScrollToCell={handleScrollToCell}
+                  onOpenDetail={(id) => {
+                    onOpenDetail?.(id);
+                    onClose();
+                  }}
                 />
               ))}
             </>

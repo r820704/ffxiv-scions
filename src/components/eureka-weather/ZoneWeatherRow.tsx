@@ -23,6 +23,7 @@ interface ZoneWeatherRowProps {
   onLoadMore?: () => void;
   scrollRef?: (el: HTMLDivElement | null) => void;
   onScroll?: (scrollLeft: number) => void;
+  onOpenDetail?: (nmId: string) => void;
 }
 
 const DEFAULT_FORECAST_COUNT = 48;
@@ -59,6 +60,7 @@ export default function ZoneWeatherRow({
   onLoadMore,
   scrollRef,
   onScroll,
+  onOpenDetail,
 }: ZoneWeatherRowProps) {
   const localRef = useRef<HTMLDivElement | null>(null);
 
@@ -179,7 +181,7 @@ export default function ZoneWeatherRow({
             ? Math.max(0, Math.min(100, ((now - f.startTime) / WEATHER_PERIOD_MS) * 100))
             : null;
           return (
-            <NmTooltip key={f.startTime} nms={nms}>
+            <NmTooltip key={f.startTime} nms={nms} onOpenDetail={onOpenDetail}>
               <div
                 data-period-cell
                 data-matched={matched ? 'true' : 'false'}
