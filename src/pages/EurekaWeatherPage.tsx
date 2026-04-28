@@ -9,6 +9,7 @@ import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 import HelpModal from '@/components/eureka-weather/HelpModal';
 import NmSearchPanel from '@/components/eureka-weather/NmSearchPanel';
 import NmDetailModal from '@/components/eureka-weather/NmDetailModal';
+import { NmTooltipProvider } from '@/components/eureka-weather/NmTooltip';
 import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
 import WeatherSummaryBar from '@/components/eureka-weather/WeatherSummaryBar';
 import type { EurekaZone } from '@/data/weather-data';
@@ -98,7 +99,7 @@ export default function EurekaWeatherPage() {
   }, []);
 
   return (
-    <div>
+    <NmTooltipProvider>
       <div className="relative flex items-center justify-center mb-4">
         <h1 className="font-title text-2xl font-bold text-primary">優雷卡天氣</h1>
         <div className="absolute right-0 flex items-center gap-2">
@@ -168,6 +169,6 @@ export default function EurekaWeatherPage() {
           ))}
         </div>
       </div>
-    </div>
+    </NmTooltipProvider>
   );
 }

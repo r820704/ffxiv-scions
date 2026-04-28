@@ -1,7 +1,23 @@
-import { useState, type ReactNode } from 'react';
+import { createContext, useContext, useId, useState, type ReactNode } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { formatNmTrigger, type EurekaNm } from '@/data/eureka-nm-data';
 import { preloadEurekaMap } from '@/utils/preload-eureka-map';
+
+interface NmTooltipState {
+  activeId: string | null;
+  setActiveId: (id: string | null) => void;
+}
+
+const NmTooltipContext = createContext<NmTooltipState | null>(null);
+
+export function NmTooltipProvider({ children }: { children: ReactNode }) {
+  const [activeId, setActiveId] = useState<string | null>(null);
+  return (
+    <NmTooltipContext.Provider value={{ activeId, setActiveId }}>
+      {children}
+    </NmTooltipContext.Provider>
+  );
+}
 
 interface NmTooltipProps {
   nms: EurekaNm[];
@@ -10,7 +26,15 @@ interface NmTooltipProps {
 }
 
 export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProps) {
-  const [open, setOpen] = useState(false);
+  const id = useId();
+  const ctx = useContext(NmTooltipContext);
+  const [localOpen, setLocalOpen] = useState(false);
+
+  const open = ctx ? ctx.activeId === id : localOpen;
+  const setOpen = (next: boolean) => {
+    if (ctx) ctx.setActiveId(next ? id : null);
+    else setLocalOpen(next);
+  };
 
   if (nms.length === 0) return <>{children}</>;
 
@@ -19,7 +43,7 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
       <Popover.Anchor asChild>
         <div
           onMouseEnter={() => setOpen(true)}
-          onClick={() => setOpen((o) => !o)}
+          onClick={() => setOpen(!open)}
         >
           {children}
         </div>

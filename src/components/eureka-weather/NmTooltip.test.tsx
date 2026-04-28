@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
-import NmTooltip from './NmTooltip';
+import NmTooltip, { NmTooltipProvider } from './NmTooltip';
 import type { EurekaNm } from '@/data/eureka-nm-data';
 
 afterEach(cleanup);
@@ -80,6 +80,26 @@ describe('NmTooltip', () => {
     );
     fireEvent.mouseEnter(screen.getByTestId('cell').parentElement!);
     expect(screen.getByText('Lv.20')).toBeTruthy();
+  });
+
+  it('closes other tooltip when hovering a sibling under NmTooltipProvider', async () => {
+    render(
+      <NmTooltipProvider>
+        <NmTooltip nms={[pazuzu]}>
+          <div data-testid="cell-a">A</div>
+        </NmTooltip>
+        <NmTooltip nms={[fafnir]}>
+          <div data-testid="cell-b">B</div>
+        </NmTooltip>
+      </NmTooltipProvider>,
+    );
+    const triggerA = screen.getByTestId('cell-a').parentElement!;
+    const triggerB = screen.getByTestId('cell-b').parentElement!;
+    fireEvent.mouseEnter(triggerA);
+    expect(screen.getByText('帕祖祖')).toBeTruthy();
+    fireEvent.mouseEnter(triggerB);
+    await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
+    expect(screen.getByText('法夫納')).toBeTruthy();
   });
 
   it('calls onOpenDetail and closes popover when NM name button is clicked', async () => {
