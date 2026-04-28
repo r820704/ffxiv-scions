@@ -9,6 +9,7 @@ import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 import HelpModal from '@/components/eureka-weather/HelpModal';
 import NmSearchPanel from '@/components/eureka-weather/NmSearchPanel';
 import NmDetailModal from '@/components/eureka-weather/NmDetailModal';
+import NmListModal from '@/components/eureka-weather/NmListModal';
 import { NmTooltipProvider } from '@/components/eureka-weather/NmTooltip';
 import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
 import WeatherSummaryBar from '@/components/eureka-weather/WeatherSummaryBar';
@@ -36,6 +37,14 @@ export default function EurekaWeatherPage() {
   const [detailNmId, setDetailNmId] = useNmDetailHash();
   const openDetail = useCallback((id: string) => setDetailNmId(id), [setDetailNmId]);
   const closeDetail = useCallback(() => setDetailNmId(null), [setDetailNmId]);
+
+  const [listZone, setListZone] = useState<EurekaZone | null>(null);
+  const openList = useCallback((z: EurekaZone) => setListZone(z), []);
+  const closeList = useCallback(() => setListZone(null), []);
+  const openDetailFromList = useCallback((id: string) => {
+    setListZone(null);
+    setDetailNmId(id);
+  }, [setDetailNmId]);
 
   const toggle = (w: string) => {
     const next = new Set(selected);
@@ -131,6 +140,7 @@ export default function EurekaWeatherPage() {
         onOpenDetail={openDetail}
       />
       <NmDetailModal nmId={detailNmId} onClose={closeDetail} />
+      <NmListModal zone={listZone} onClose={closeList} onOpenDetail={openDetailFromList} />
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-md px-4 py-2 text-sm shadow-lg animate-in fade-in">
           {toast}
@@ -165,6 +175,7 @@ export default function EurekaWeatherPage() {
               scrollRef={registerRef(i)}
               onScroll={handleScroll(i)}
               onOpenDetail={openDetail}
+              onOpenList={openList}
             />
           ))}
         </div>
