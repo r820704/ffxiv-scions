@@ -72,25 +72,30 @@ export default function NmListModal({ zone, onClose, onOpenDetail }: NmListModal
           {sorted.map((nm) => {
             const isUnconditional = !nm.trigger;
             return (
-              <li
-                key={nm.id}
-                onClick={() => {
-                  onOpenDetail(nm.id);
-                  onClose();
-                }}
-                className="grid grid-cols-[36px_1fr_auto] items-center gap-2 p-2 rounded cursor-pointer border border-transparent hover:bg-muted/30 hover:border-border/50"
-              >
-                <span className="text-center text-[11px] font-bold rounded bg-indigo-950/50 text-primary py-0.5">
-                  {nm.level}
-                </span>
-                <span className="text-sm text-foreground">{nm.nameTw}</span>
-                <span
-                  className={`text-xs whitespace-nowrap ${
-                    isUnconditional ? 'text-muted-foreground' : 'text-amber-300/85'
-                  }`}
+              <li key={nm.id}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenDetail(nm.id);
+                    onClose();
+                  }}
+                  className="w-full grid grid-cols-[36px_1fr_auto] items-center gap-2 p-2 rounded text-left cursor-pointer border border-transparent hover:bg-muted/30 hover:border-border/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
                 >
-                  {isUnconditional ? '常駐' : formatNmTrigger(nm)}
-                </span>
+                  <span
+                    data-testid="nm-level-chip"
+                    className="text-center text-[11px] font-bold rounded bg-indigo-950/50 text-primary py-0.5"
+                  >
+                    {nm.level}
+                  </span>
+                  <span className="text-sm text-foreground">{nm.nameTw}</span>
+                  <span
+                    className={`text-xs whitespace-nowrap ${
+                      isUnconditional ? 'text-muted-foreground' : 'text-amber-300/85'
+                    }`}
+                  >
+                    {isUnconditional ? '常駐' : formatNmTrigger(nm)}
+                  </span>
+                </button>
               </li>
             );
           })}

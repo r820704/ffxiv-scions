@@ -21,9 +21,10 @@ describe('NmListModal', () => {
     expect(screen.getByText('寇里多仙人掌怪')).toBeTruthy(); // Lv.1
     expect(screen.getByText('帕祖祖')).toBeTruthy(); // Lv.20
     // Verify sorted by level: first Lv chip is 1, last is 20
-    const lvLabels = screen.getAllByText(/^\d+$/);
-    expect(lvLabels[0]!.textContent).toBe('1');
-    expect(lvLabels[lvLabels.length - 1]!.textContent).toBe('20');
+    const lvLabels = screen.getAllByTestId('nm-level-chip');
+    expect(lvLabels.length).toBe(20);
+    expect(lvLabels[0]?.textContent).toBe('1');
+    expect(lvLabels[lvLabels.length - 1]?.textContent).toBe('20');
   });
 
   it('shows trigger condition for each NM', () => {
