@@ -56,7 +56,17 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
           className="z-50 bg-card border border-border rounded-lg p-2 shadow-xl text-xs max-w-[240px]"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <div className="text-muted-foreground text-[10px] mb-1">可能出現</div>
+          <div className="flex items-center justify-between mb-1 gap-2">
+            <span className="text-muted-foreground text-[10px]">可能出現</span>
+            <button
+              type="button"
+              aria-label="關閉"
+              onClick={() => setOpen(false)}
+              className="text-muted-foreground hover:text-foreground transition-colors text-sm leading-none"
+            >
+              ✕
+            </button>
+          </div>
           <ul className="flex flex-col gap-1">
             {nms.map((nm) => (
               <li key={nm.id} className="flex items-center gap-2 whitespace-nowrap">

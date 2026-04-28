@@ -82,6 +82,18 @@ describe('NmTooltip', () => {
     expect(screen.getByText('Lv.20')).toBeTruthy();
   });
 
+  it('closes when ✕ button inside the tooltip is clicked', async () => {
+    render(
+      <NmTooltip nms={[pazuzu]}>
+        <div data-testid="cell">cell</div>
+      </NmTooltip>,
+    );
+    fireEvent.mouseEnter(screen.getByTestId('cell').parentElement!);
+    expect(screen.getByText('帕祖祖')).toBeTruthy();
+    fireEvent.click(screen.getByLabelText('關閉'));
+    await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
+  });
+
   it('closes other tooltip when hovering a sibling under NmTooltipProvider', async () => {
     render(
       <NmTooltipProvider>
