@@ -98,10 +98,10 @@ export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
               y1={p.actualY}
               x2={p.displayX}
               y2={p.displayY}
-              stroke="rgb(244 63 94 / 0.7)"
-              strokeWidth={0.4}
-              strokeDasharray="1,1"
-              vectorEffect="non-scaling-stroke"
+              stroke="rgb(244 63 94)"
+              strokeWidth={1}
+              strokeDasharray="2,1.2"
+              strokeLinecap="round"
             />
           ))}
       </svg>
