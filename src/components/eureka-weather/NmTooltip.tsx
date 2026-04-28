@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { formatNmTrigger, type EurekaNm } from '@/data/eureka-nm-data';
+import { preloadEurekaMap } from '@/utils/preload-eureka-map';
 
 interface NmTooltipProps {
   nms: EurekaNm[];
@@ -48,6 +49,8 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
                 {onOpenDetail ? (
                   <button
                     type="button"
+                    onMouseEnter={() => preloadEurekaMap(nm.zone)}
+                    onFocus={() => preloadEurekaMap(nm.zone)}
                     onClick={(e) => {
                       e.stopPropagation();
                       onOpenDetail(nm.id);

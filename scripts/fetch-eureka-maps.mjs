@@ -1,5 +1,6 @@
 // Source: SQUARE ENIX game assets (via XIVAPI / datamining mirrors).
-// One-shot: downloads 4 Eureka zone map images to public/data/eureka-maps/.
+// One-shot: downloads 4 Eureka zone map images, resizes to 1024×1024, and
+// re-encodes as WebP @ q=80 into public/data/eureka-maps/.
 // See THIRD-PARTY-NOTICES.md for license details.
 //
 // To run: npm run fetch:maps
@@ -7,6 +8,7 @@
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..');
@@ -20,9 +22,9 @@ const OUT_DIR = resolve(REPO_ROOT, 'public/data/eureka-maps');
 // Eureka Hydatos : territory 827 -> map 515, /m/z3fd/z3fd.01.jpg
 //
 // XIVAPI hosts the unpacked client image at https://xivapi.com<MapFilename>.
-// Source format is JPEG; we save bytes as <zone>.jpg so downstream UI code
-// can use a single .jpg convention — browsers detect format by content, not
-// by extension. If a URL fails, we log a clear manual-download fallback.
+// Source format is JPEG at 2048×2048; we downscale to 1024×1024 and re-encode
+// as WebP @ q=80 — the modal renders at ~400px so the source is wildly
+// oversized, and WebP cuts the per-file size from ~900KB to ~120KB.
 const ZONES = [
   { id: 'anemos',  url: 'https://xivapi.com/m/z3fa/z3fa.00.jpg' },
   { id: 'pagos',   url: 'https://xivapi.com/m/z3fb/z3fb.00.jpg' },
@@ -30,10 +32,13 @@ const ZONES = [
   { id: 'hydatos', url: 'https://xivapi.com/m/z3fd/z3fd.01.jpg' },
 ];
 
+const TARGET_SIZE = 1024;
+const WEBP_QUALITY = 80;
+
 async function fetchMap(zone) {
-  const outPath = resolve(OUT_DIR, `${zone.id}.jpg`);
+  const outPath = resolve(OUT_DIR, `${zone.id}.webp`);
   if (existsSync(outPath)) {
-    console.log(`[skip] ${zone.id}.jpg already exists at ${outPath}`);
+    console.log(`[skip] ${zone.id}.webp already exists at ${outPath}`);
     return { zone: zone.id, status: 'skipped' };
   }
 
@@ -41,19 +46,25 @@ async function fetchMap(zone) {
     const res = await fetch(zone.url);
     if (!res.ok) {
       console.warn(
-        `[warn] failed to fetch ${zone.id}.jpg: HTTP ${res.status} from ${zone.url}.\n` +
-        `       Manually download from ${zone.url} and save to ${outPath}`,
+        `[warn] failed to fetch ${zone.id}: HTTP ${res.status} from ${zone.url}.\n` +
+        `       Manually download from ${zone.url} and run again.`,
       );
       return { zone: zone.id, status: 'failed' };
     }
-    const buf = Buffer.from(await res.arrayBuffer());
-    writeFileSync(outPath, buf);
-    console.log(`[ok]   ${zone.id}.jpg  ${buf.length} bytes  -> ${outPath}`);
-    return { zone: zone.id, status: 'ok', bytes: buf.length };
+    const srcBuf = Buffer.from(await res.arrayBuffer());
+    const out = await sharp(srcBuf)
+      .resize(TARGET_SIZE, TARGET_SIZE, { fit: 'cover' })
+      .webp({ quality: WEBP_QUALITY })
+      .toBuffer();
+    writeFileSync(outPath, out);
+    console.log(
+      `[ok]   ${zone.id}.webp  src=${srcBuf.length}B  out=${out.length}B  -> ${outPath}`,
+    );
+    return { zone: zone.id, status: 'ok', srcBytes: srcBuf.length, outBytes: out.length };
   } catch (err) {
     console.warn(
-      `[warn] failed to fetch ${zone.id}.jpg: ${err?.message ?? err}.\n` +
-      `       Manually download from ${zone.url} and save to ${outPath}`,
+      `[warn] failed to fetch ${zone.id}: ${err?.message ?? err}.\n` +
+      `       Manually download from ${zone.url} and run again.`,
     );
     return { zone: zone.id, status: 'error' };
   }

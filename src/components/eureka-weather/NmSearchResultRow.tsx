@@ -4,6 +4,7 @@ import { zoneNamesTw } from '@/data/weather-data';
 import { formatNmTrigger, NIGHT_FILTER_KEY, type EurekaNm } from '@/data/eureka-nm-data';
 import { getNextHits } from '@/utils/weather-summary';
 import { EUREKA_ZONES } from '@/data/weather-data';
+import { preloadEurekaMap } from '@/utils/preload-eureka-map';
 
 interface NmSearchResultRowProps {
   nm: EurekaNm;
@@ -53,6 +54,8 @@ export default function NmSearchResultRow({
         {onOpenDetail ? (
           <button
             type="button"
+            onMouseEnter={() => preloadEurekaMap(nm.zone)}
+            onFocus={() => preloadEurekaMap(nm.zone)}
             onClick={() => onOpenDetail(nm.id)}
             className="text-sm font-semibold text-foreground underline-offset-2 hover:underline hover:text-primary cursor-pointer text-left"
           >

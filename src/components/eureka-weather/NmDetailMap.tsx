@@ -30,7 +30,7 @@ export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
   const key = ZONE_MAP_FILE_KEY[zone];
   const tw = zoneNamesTw[zone] ?? zone;
   const bounds = EUREKA_ZONE_BOUNDS[zone];
-  const src = `${import.meta.env.BASE_URL}data/eureka-maps/${key}.jpg`;
+  const src = `${import.meta.env.BASE_URL}data/eureka-maps/${key}.webp`;
 
   if (imgFailed) {
     return (

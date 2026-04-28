@@ -8,7 +8,7 @@ describe('NmDetailMap', () => {
   it('renders zone map image with correct src', () => {
     render(<NmDetailMap zone="Eureka Anemos" pins={[]} />);
     const img = screen.getByAltText(/常風|Anemos/i);
-    expect(img.getAttribute('src')).toMatch(/anemos\.jpg/);
+    expect(img.getAttribute('src')).toMatch(/anemos\.webp/);
   });
 
   it('renders one pin with label "1" for single pin', () => {
