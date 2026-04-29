@@ -33,12 +33,13 @@ export function playReminderBeep(): void {
     };
 
     playTone(0, 880, 0.2);     // A5
-    playTone(0.25, 1320, 0.2); // E6
+    playTone(0.25, 1047, 0.2); // C6
+    playTone(0.5, 1320, 0.2);  // E6
 
     // Release the AudioContext after the tones finish to free the device.
     window.setTimeout(() => {
       void ctx.close();
-    }, 1000);
+    }, 1500);
   } catch (err) {
     console.warn('[reminder] beep failed:', err);
   }
