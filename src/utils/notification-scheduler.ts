@@ -37,9 +37,12 @@ function getChannel(): BroadcastChannel | null {
           // Not our claim id (we never scheduled this) — ignore
           return;
         }
-        // Only yield if the competing tab posted a claim with ts <= ours.
-        // BroadcastChannel does not echo to the sender, so we only see other tabs' claims.
-        if (data.ts <= mine) {
+        // Yield only if the competing tab's ts is STRICTLY smaller than ours.
+        // Equal-ts ties: neither yields → both fire → browser dedupes via the
+        // shared `tag` so the user sees one notification. The previous `<=`
+        // behavior caused both tabs to yield in the equal-ts case, producing a
+        // silent drop. Strict-less is correct per spec ("smaller ts wins").
+        if (data.ts < mine) {
           lostClaims.add(data.id);
         }
       } else if (data.type === 'fired') {
@@ -82,6 +85,12 @@ async function claimAndFire(
 
   const myTs = Date.now();
   myClaimTs.set(reminder.id, myTs);
+  console.log('[reminder]', new Date().toISOString(), 'fire start', {
+    id: reminder.id,
+    zone: reminder.zone,
+    weather: reminder.weather,
+    ts: myTs,
+  });
   const ch = getChannel();
   if (ch) {
     ch.postMessage({ type: 'fire-claim', id: reminder.id, ts: myTs });
@@ -92,6 +101,9 @@ async function claimAndFire(
   if (lostClaims.has(reminder.id)) {
     lostClaims.delete(reminder.id);
     myClaimTs.delete(reminder.id);
+    console.log('[reminder]', new Date().toISOString(), 'fire yielded (claim lost)', {
+      id: reminder.id,
+    });
     return;
   }
 
@@ -101,6 +113,9 @@ async function claimAndFire(
     ch.postMessage({ type: 'fired', id: reminder.id });
   }
 
+  console.log('[reminder]', new Date().toISOString(), 'fire won → handlers.onFire', {
+    id: reminder.id,
+  });
   handlers.onFire(reminder);
   if (reminder.recurring) {
     handlers.onRecurringRearm(reminder);

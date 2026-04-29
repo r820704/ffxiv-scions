@@ -118,17 +118,37 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
 
   const fire = useCallback((reminder: Reminder) => {
     const N = (globalThis as { Notification?: typeof Notification }).Notification;
-    if (!N) return;
+    if (!N) {
+      console.warn('[reminder] fire skipped: Notification API unavailable', { id: reminder.id });
+      return;
+    }
+    if (N.permission !== 'granted') {
+      console.warn('[reminder] fire skipped: permission not granted', {
+        id: reminder.id,
+        permission: N.permission,
+      });
+      return;
+    }
     const activeNms = reminder.nmName
       ? [reminder.nmName]
       : getActiveNmsAt(reminder.zone, reminder.weather, reminder.targetMs).map((nm) => nm.nameTw);
     const built = buildNotification(reminder, activeNms);
-    const notif = new N(built.title, { body: built.body, tag: built.tag });
-    notif.onclick = () => {
-      window.focus();
-      window.location.hash = buildFocusHash(reminder, reminder.targetMs);
-      notif.close();
-    };
+    try {
+      const notif = new N(built.title, { body: built.body, tag: built.tag });
+      notif.onclick = () => {
+        window.focus();
+        window.location.hash = buildFocusHash(reminder, reminder.targetMs);
+        notif.close();
+      };
+      console.log('[reminder] new Notification constructed', {
+        id: reminder.id,
+        title: built.title,
+        body: built.body,
+        tag: built.tag,
+      });
+    } catch (err) {
+      console.error('[reminder] new Notification threw', { id: reminder.id, err });
+    }
     if (!reminder.recurring) {
       const next = remindersRef.current.filter((r) => r.id !== reminder.id);
       updateAndPersist(next);
