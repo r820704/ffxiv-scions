@@ -20,8 +20,15 @@ export default function RemindersHeaderButton() {
         setOpen(false);
       }
     }
+    function handleKeyDown(ev: KeyboardEvent) {
+      if (ev.key === 'Escape') setOpen(false);
+    }
     document.addEventListener('mousedown', handleOutside);
-    return () => document.removeEventListener('mousedown', handleOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, [open]);
 
   return (
@@ -30,6 +37,7 @@ export default function RemindersHeaderButton() {
         ref={buttonRef}
         type="button"
         aria-label="已設提醒"
+        aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         className="relative w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
@@ -45,6 +53,7 @@ export default function RemindersHeaderButton() {
         <div
           ref={popoverRef}
           role="dialog"
+          aria-modal="true"
           aria-label="已設提醒列表"
           className="absolute right-0 top-10 w-80 bg-card border border-border rounded-lg shadow-lg z-50 p-3 text-sm"
         >

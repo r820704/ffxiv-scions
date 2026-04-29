@@ -70,4 +70,21 @@ describe('RemindersHeaderButton', () => {
     expect(screen.getByText(/不支援|主畫面/)).toBeInTheDocument();
     (globalThis as { Notification?: unknown }).Notification = original;
   });
+
+  it('clicking 全部清除 removes all reminders', () => {
+    renderWith([reminder({ id: 'a' }), reminder({ id: 'b' })]);
+    fireEvent.click(screen.getByRole('button', { name: /已設提醒/ }));
+    fireEvent.click(screen.getByRole('button', { name: /全部清除/ }));
+    expect(screen.queryByText(/強風/)).not.toBeInTheDocument();
+    expect(screen.queryByText('2')).not.toBeInTheDocument();
+  });
+
+  it('pressing Escape closes the popover', () => {
+    renderWith([reminder({ id: 'a' })]);
+    fireEvent.click(screen.getByRole('button', { name: /已設提醒/ }));
+    expect(screen.getByText(/強風/)).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByText(/強風/)).not.toBeInTheDocument();
+  });
 });
