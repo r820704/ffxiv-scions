@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import type { EurekaZone } from '@/data/weather-data';
 import type { ReminderSource } from '@/types/reminder';
-import { useReminders } from '@/hooks/useReminders';
+import { useReminders, type PermissionState } from '@/hooks/useReminders';
+import { cn } from '@/lib/utils';
 
 interface AddReminderButtonProps {
   zone: EurekaZone;
@@ -55,7 +56,7 @@ export default function AddReminderButton({
       onToast('已設提醒已達上限 50 筆，請先移除一些再加。');
       return;
     }
-    let p = permission;
+    let p: PermissionState = permission;
     if (p === 'default') {
       p = await requestPermission();
     }
@@ -91,15 +92,13 @@ export default function AddReminderButton({
       aria-label={label}
       aria-pressed={isSet}
       onClick={handleClick}
-      className={[
+      className={cn(
         'inline-flex items-center justify-center w-6 h-6 rounded transition-colors text-xs',
         visualState === 'set' && 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30',
         visualState === 'default' && 'text-muted-foreground hover:text-amber-300',
-        visualState === 'disabled' && 'text-muted-foreground/50',
-        className ?? '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
+        visualState === 'disabled' && 'text-muted-foreground/50 cursor-not-allowed',
+        className,
+      )}
     >
       <span aria-hidden>{isSet ? '🔔' : '🔕'}</span>
     </button>

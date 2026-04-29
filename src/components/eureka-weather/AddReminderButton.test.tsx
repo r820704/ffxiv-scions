@@ -67,4 +67,28 @@ describe('AddReminderButton', () => {
     expect(onToast).toHaveBeenCalledWith(expect.stringMatching(/拒絕|瀏覽器設定/));
     (globalThis as { Notification?: unknown }).Notification = original;
   });
+
+  it('clicking removes reminder when already set', async () => {
+    const original = (globalThis as { Notification?: unknown }).Notification;
+    class N {
+      static permission = 'granted';
+      static requestPermission = async () => 'granted';
+    }
+    (globalThis as { Notification?: unknown }).Notification = N as unknown;
+
+    localStorage.clear();
+    const onToast = vi.fn();
+    setup({ ...baseProps, onToast });
+    const btn = screen.getByRole('button', { name: /提醒/ });
+
+    // Click once to set
+    fireEvent.click(btn);
+    expect(btn).toHaveAttribute('aria-pressed', 'true');
+
+    // Click again to remove
+    fireEvent.click(btn);
+    expect(btn).toHaveAttribute('aria-pressed', 'false');
+
+    (globalThis as { Notification?: unknown }).Notification = original;
+  });
 });
