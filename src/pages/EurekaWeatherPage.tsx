@@ -15,7 +15,6 @@ import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
 import WeatherSummaryBar from '@/components/eureka-weather/WeatherSummaryBar';
 import { RemindersProvider } from '@/hooks/useReminders';
 import RemindersHeaderButton from '@/components/eureka-weather/RemindersHeaderButton';
-import TempTestReminderButton from '@/components/eureka-weather/TempTestReminderButton';
 import type { EurekaZone } from '@/data/weather-data';
 
 const SCROLL_REVEAL_THRESHOLD = 80;
@@ -117,7 +116,6 @@ export default function EurekaWeatherPage() {
         <h1 className="font-title text-2xl font-bold text-primary">優雷卡天氣</h1>
         <div className="absolute right-0 flex items-center gap-2">
           <RemindersHeaderButton />
-          <TempTestReminderButton onToast={setToast} />
           <button
             type="button"
             aria-label="搜尋 NM"
