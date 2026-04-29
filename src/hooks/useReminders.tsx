@@ -28,6 +28,7 @@ import {
   scheduleReminder,
   unscheduleReminder,
 } from '@/utils/notification-scheduler';
+import { flashTitle, playReminderBeep } from '@/utils/notification-fallback';
 import { getActiveNmsAt } from '@/data/eureka-nm-data';
 
 /**
@@ -157,6 +158,12 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       console.error('[reminder] new Notification threw', { id: reminder.id, err });
     }
+
+    // In-page fallbacks: even if the OS suppresses the notification banner
+    // (Focus Assist / quieter messaging / multi-monitor / etc.), the user
+    // will still hear a beep and see the tab title flashing in the taskbar.
+    playReminderBeep();
+    flashTitle(`🔔 ${built.title}`);
     if (!reminder.recurring) {
       const next = remindersRef.current.filter((r) => r.id !== reminder.id);
       updateAndPersist(next);
