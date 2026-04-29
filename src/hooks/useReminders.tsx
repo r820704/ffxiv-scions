@@ -10,6 +10,7 @@ import {
 } from 'react';
 import {
   REMINDER_BROADCAST_NAME,
+  REMINDER_LEAD_MS,
   REMINDER_PERMISSION_ASKED_KEY,
   REMINDER_SOFT_CAP,
   REMINDER_STORAGE_KEY,
@@ -28,6 +29,11 @@ import {
 } from '@/utils/notification-scheduler';
 import { getActiveNmsAt } from '@/data/eureka-nm-data';
 
+/**
+ * Result of adding a reminder. Note: `'denied'` is reserved for future use; the
+ * current `add()` does not return it because the UI button (T4) checks
+ * `permission === 'denied'` directly via `useReminders().permission`.
+ */
 export type AddOutcome =
   | { ok: true }
   | { ok: false; reason: 'unsupported' | 'cap' | 'duplicate' | 'denied' };
@@ -81,7 +87,7 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
     const now = Date.now();
     const kept: Reminder[] = [];
     for (const r of stored) {
-      if (r.targetMs <= now) {
+      if (r.targetMs - REMINDER_LEAD_MS <= now) {
         if (!r.recurring) continue;
         const next = computeNextOccurrence(r.zone, r.weather, now);
         if (next === null) continue;
@@ -155,6 +161,8 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let ch: BroadcastChannel | null = null;
     try {
+      // Channel is shared with notification-scheduler. We handle 'added'/'removed'/'updated';
+      // scheduler handles 'fire-claim'/'fired'. Type-dispatch keeps them isolated.
       ch = new BroadcastChannel(REMINDER_BROADCAST_NAME);
     } catch {
       return;
@@ -191,6 +199,8 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
   const broadcast = useCallback(
     (msg: { type: 'added' | 'removed' | 'updated'; reminder?: Reminder; id?: string }) => {
       try {
+        // Channel is shared with notification-scheduler. We handle 'added'/'removed'/'updated';
+        // scheduler handles 'fire-claim'/'fired'. Type-dispatch keeps them isolated.
         const ch = new BroadcastChannel(REMINDER_BROADCAST_NAME);
         ch.postMessage(msg);
         ch.close();

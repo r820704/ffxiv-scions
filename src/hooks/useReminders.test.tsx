@@ -113,7 +113,8 @@ describe('useReminders', () => {
 
   it('mount: prunes expired one-shot reminders', () => {
     const expired = makeReminder({ id: 'exp', targetMs: Date.now() - 10_000, recurring: false });
-    const future = makeReminder({ id: 'fut', targetMs: Date.now() + 60_000, recurring: false });
+    // Must be more than REMINDER_LEAD_MS (90 s) in the future so the new prune boundary keeps it.
+    const future = makeReminder({ id: 'fut', targetMs: Date.now() + 5 * 60_000, recurring: false });
     localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify([expired, future]));
     const { result } = renderHook(() => useReminders(), { wrapper });
     expect(result.current.reminders.map((r) => r.id)).toEqual(['fut']);
@@ -126,5 +127,38 @@ describe('useReminders', () => {
     localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(list));
     const { result } = renderHook(() => useReminders(), { wrapper });
     expect(result.current.isFull).toBe(true);
+  });
+
+  it('cross-tab "added" message appends to reminders', async () => {
+    const { result } = renderHook(() => useReminders(), { wrapper });
+    expect(result.current.reminders).toHaveLength(0);
+
+    const incoming = makeReminder({ id: 'from-other-tab' });
+    const ch = new BroadcastChannel('eureka-weather-reminders-bc');
+
+    await act(async () => {
+      ch.postMessage({ type: 'added', reminder: incoming });
+      // Allow the channel listener to receive
+      await vi.advanceTimersByTimeAsync(10);
+    });
+
+    expect(result.current.reminders.map((r) => r.id)).toContain('from-other-tab');
+    ch.close();
+  });
+
+  it('cross-tab "removed" message drops a reminder by id', async () => {
+    const r = makeReminder({ id: 'to-remove' });
+    localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify([r]));
+    const { result } = renderHook(() => useReminders(), { wrapper });
+    expect(result.current.reminders).toHaveLength(1);
+
+    const ch = new BroadcastChannel('eureka-weather-reminders-bc');
+    await act(async () => {
+      ch.postMessage({ type: 'removed', id: 'to-remove' });
+      await vi.advanceTimersByTimeAsync(10);
+    });
+
+    expect(result.current.reminders).toHaveLength(0);
+    ch.close();
   });
 });

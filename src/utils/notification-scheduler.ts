@@ -25,6 +25,8 @@ const myClaimTs = new Map<string, number>(); // id -> ts we posted for that id
 function getChannel(): BroadcastChannel | null {
   if (channel) return channel;
   try {
+    // Channel is shared with useReminders provider. We handle 'fire-claim'/'fired';
+    // the provider handles 'added'/'removed'/'updated'. Type-dispatch keeps them isolated.
     channel = new BroadcastChannel(REMINDER_BROADCAST_NAME);
     channel.addEventListener('message', (ev: MessageEvent) => {
       const data = ev.data as { type?: string; id?: string; ts?: number } | null;
