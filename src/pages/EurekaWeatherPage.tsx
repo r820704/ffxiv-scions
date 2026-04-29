@@ -165,6 +165,7 @@ export default function EurekaWeatherPage() {
           now={now}
           forecastCount={forecastCount}
           onScrollToCell={scrollToCell}
+          onToast={setToast}
         />
         <div className="flex flex-col gap-3">
           {EUREKA_ZONES.map((z, i) => (
