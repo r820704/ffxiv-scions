@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, afterAll } from 'vitest';
 import {
   scheduleReminder,
   unscheduleReminder,
   clearAllSchedules,
+  closeChannel,
   type ScheduleHandlers,
 } from './notification-scheduler';
 import type { Reminder } from '@/types/reminder';
@@ -111,12 +112,31 @@ describe('multi-tab claim protocol (BroadcastChannel)', () => {
     scheduleReminder(r, { onFire: fire, onRecurringRearm: vi.fn() });
 
     await vi.advanceTimersByTimeAsync(5 * 60_000 - REMINDER_LEAD_MS);
-    // Simulate a competing tab broadcasting an earlier claim
+    // Inject a smaller-ts claim during the claim window
     const ch = new BroadcastChannel('eureka-weather-reminders-bc');
     ch.postMessage({ type: 'fire-claim', id: r.id, ts: Date.now() - 1000 });
 
     await vi.advanceTimersByTimeAsync(60);
     expect(fire).not.toHaveBeenCalled();
     ch.close();
+  });
+
+  it('DOES fire if competing tab claims with larger ts (we win)', async () => {
+    const r = makeReminder({ targetMs: Date.now() + 5 * 60_000 });
+    const fire = vi.fn();
+    scheduleReminder(r, { onFire: fire, onRecurringRearm: vi.fn() });
+
+    await vi.advanceTimersByTimeAsync(5 * 60_000 - REMINDER_LEAD_MS);
+    // Inject a larger-ts claim — we should still win
+    const ch = new BroadcastChannel('eureka-weather-reminders-bc');
+    ch.postMessage({ type: 'fire-claim', id: r.id, ts: Date.now() + 5000 });
+
+    await vi.advanceTimersByTimeAsync(60);
+    expect(fire).toHaveBeenCalled();
+    ch.close();
+  });
+
+  afterAll(() => {
+    closeChannel();
   });
 });

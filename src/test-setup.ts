@@ -30,6 +30,10 @@ if (typeof globalThis.BroadcastChannel === 'undefined') {
     }
     postMessage(_data: unknown) {}
     close() {}
+    // In the noop fallback, listeners are silently dropped — this means the scheduler's
+    // claim protocol degrades to "fire always" (no dedup). Only relevant if the host
+    // environment lacks BroadcastChannel; Node 18+ exposes it natively so this path
+    // should not activate in normal Vitest runs.
     addEventListener() {}
     removeEventListener() {}
   }

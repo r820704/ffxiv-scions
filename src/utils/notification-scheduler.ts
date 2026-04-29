@@ -19,6 +19,8 @@ const CLAIM_WINDOW_MS = 50;
 const scheduled = new Map<string, ScheduledEntry>();
 let channel: BroadcastChannel | null = null;
 const lostClaims = new Set<string>();
+/** Track the ts we posted for each claim so we can compare incoming claims fairly. */
+const myClaimTs = new Map<string, number>(); // id -> ts we posted for that id
 
 function getChannel(): BroadcastChannel | null {
   if (channel) return channel;
@@ -28,15 +30,29 @@ function getChannel(): BroadcastChannel | null {
       const data = ev.data as { type?: string; id?: string; ts?: number } | null;
       if (!data || typeof data.id !== 'string') return;
       if (data.type === 'fire-claim' && typeof data.ts === 'number') {
-        lostClaims.add(data.id);
+        const mine = myClaimTs.get(data.id);
+        if (mine === undefined) {
+          // Not our claim id (we never scheduled this) — ignore
+          return;
+        }
+        // Only yield if the competing tab posted a claim with ts <= ours.
+        // BroadcastChannel does not echo to the sender, so we only see other tabs' claims.
+        if (data.ts <= mine) {
+          lostClaims.add(data.id);
+        }
       } else if (data.type === 'fired') {
-        lostClaims.add(data.id);
+        lostClaims.add(data.id); // already fired by someone — always yield
       }
     });
   } catch {
     channel = null;
   }
   return channel;
+}
+
+export function closeChannel(): void {
+  channel?.close();
+  channel = null;
 }
 
 export function scheduleReminder(reminder: Reminder, handlers: ScheduleHandlers): void {
@@ -47,7 +63,9 @@ export function scheduleReminder(reminder: Reminder, handlers: ScheduleHandlers)
   if (delay <= 0) return;
 
   const timeoutId = setTimeout(() => {
-    void claimAndFire(reminder, handlers);
+    claimAndFire(reminder, handlers).catch((err) => {
+      console.error('[notification-scheduler] claimAndFire failed:', err);
+    });
   }, delay);
 
   scheduled.set(reminder.id, { timeoutId, reminder, handlers });
@@ -60,17 +78,22 @@ async function claimAndFire(
   scheduled.delete(reminder.id);
   lostClaims.delete(reminder.id);
 
+  const myTs = Date.now();
+  myClaimTs.set(reminder.id, myTs);
   const ch = getChannel();
   if (ch) {
-    ch.postMessage({ type: 'fire-claim', id: reminder.id, ts: Date.now() });
+    ch.postMessage({ type: 'fire-claim', id: reminder.id, ts: myTs });
   }
 
   await new Promise<void>((resolve) => setTimeout(resolve, CLAIM_WINDOW_MS));
 
   if (lostClaims.has(reminder.id)) {
     lostClaims.delete(reminder.id);
+    myClaimTs.delete(reminder.id);
     return;
   }
+
+  myClaimTs.delete(reminder.id);
 
   if (ch) {
     ch.postMessage({ type: 'fired', id: reminder.id });
@@ -95,4 +118,6 @@ export function clearAllSchedules(): void {
   }
   scheduled.clear();
   lostClaims.clear();
+  myClaimTs.clear();
+  closeChannel();
 }
