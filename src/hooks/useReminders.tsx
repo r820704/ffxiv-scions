@@ -134,7 +134,15 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
       : getActiveNmsAt(reminder.zone, reminder.weather, reminder.targetMs).map((nm) => nm.nameTw);
     const built = buildNotification(reminder, activeNms);
     try {
-      const notif = new N(built.title, { body: built.body, tag: built.tag });
+      const notif = new N(built.title, {
+        body: built.body,
+        tag: built.tag,
+        // Stay on screen until user dismisses — Chrome desktop honors this;
+        // other browsers fall back to the default auto-dismiss banner. Keeps
+        // the user from missing the reminder when their tab is in the
+        // background or the OS shows banner-style (not alert-style) notifs.
+        requireInteraction: true,
+      });
       notif.onclick = () => {
         window.focus();
         window.location.hash = buildFocusHash(reminder, reminder.targetMs);
