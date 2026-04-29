@@ -79,6 +79,7 @@ export default function AddReminderButton({
     if (!outcome.ok) {
       if (outcome.reason === 'cap') onToast('已設提醒已達上限 50 筆，請先移除一些再加。');
       else if (outcome.reason === 'unsupported') onToast('您的瀏覽器不支援桌面通知。');
+      else if (outcome.reason === 'too-soon') onToast('離目標時間不到 2 分鐘，無法設定提醒。');
       // duplicate / denied: silent
     }
   }

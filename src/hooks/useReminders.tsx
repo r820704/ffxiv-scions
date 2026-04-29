@@ -11,6 +11,7 @@ import {
 import {
   REMINDER_BROADCAST_NAME,
   REMINDER_LEAD_MS,
+  REMINDER_MIN_TARGET_OFFSET_MS,
   REMINDER_PERMISSION_ASKED_KEY,
   REMINDER_SOFT_CAP,
   REMINDER_STORAGE_KEY,
@@ -33,10 +34,11 @@ import { getActiveNmsAt } from '@/data/eureka-nm-data';
  * Result of adding a reminder. Note: `'denied'` is reserved for future use; the
  * current `add()` does not return it because the UI button (T4) checks
  * `permission === 'denied'` directly via `useReminders().permission`.
+ * `'too-soon'` is returned when `targetMs - Date.now() < REMINDER_MIN_TARGET_OFFSET_MS`.
  */
 export type AddOutcome =
   | { ok: true }
-  | { ok: false; reason: 'unsupported' | 'cap' | 'duplicate' | 'denied' };
+  | { ok: false; reason: 'unsupported' | 'cap' | 'duplicate' | 'denied' | 'too-soon' };
 
 export type PermissionState = 'default' | 'granted' | 'denied' | 'unsupported';
 
@@ -214,6 +216,9 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
   const add = useCallback<RemindersContextValue['add']>(
     (reminder) => {
       if (!isNotificationSupported()) return { ok: false, reason: 'unsupported' };
+      if (reminder.targetMs - Date.now() < REMINDER_MIN_TARGET_OFFSET_MS) {
+        return { ok: false, reason: 'too-soon' };
+      }
       if (remindersRef.current.length >= REMINDER_SOFT_CAP) {
         return { ok: false, reason: 'cap' };
       }

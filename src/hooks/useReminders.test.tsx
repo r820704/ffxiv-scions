@@ -161,4 +161,28 @@ describe('useReminders', () => {
     expect(result.current.reminders).toHaveLength(0);
     ch.close();
   });
+
+  it('add rejects when target is within REMINDER_MIN_TARGET_OFFSET_MS', () => {
+    const { result } = renderHook(() => useReminders(), { wrapper });
+    // 1 minute out — below the 2-minute floor
+    const tooSoon = makeReminder({ id: 'too-soon', targetMs: Date.now() + 60_000 });
+    let outcome: ReturnType<typeof result.current.add> | undefined;
+    act(() => {
+      outcome = result.current.add(tooSoon);
+    });
+    expect(outcome).toEqual({ ok: false, reason: 'too-soon' });
+    expect(result.current.reminders).toHaveLength(0);
+  });
+
+  it('add accepts when target is exactly at REMINDER_MIN_TARGET_OFFSET_MS boundary or beyond', () => {
+    const { result } = renderHook(() => useReminders(), { wrapper });
+    // 3 minutes out — comfortably beyond the 2-minute floor
+    const ok = makeReminder({ id: 'ok', targetMs: Date.now() + 3 * 60_000 });
+    let outcome: ReturnType<typeof result.current.add> | undefined;
+    act(() => {
+      outcome = result.current.add(ok);
+    });
+    expect(outcome).toEqual({ ok: true });
+    expect(result.current.reminders.map((r) => r.id)).toEqual(['ok']);
+  });
 });

@@ -14,6 +14,12 @@ export interface Reminder {
 }
 
 export const REMINDER_LEAD_MS = 90_000;
+/**
+ * Minimum required gap between `targetMs` and `Date.now()` when adding a
+ * reminder. Below this floor, the lead time would fire the notification almost
+ * immediately, defeating the purpose of an advance reminder.
+ */
+export const REMINDER_MIN_TARGET_OFFSET_MS = 120_000;
 export const REMINDER_SOFT_CAP = 50;
 export const REMINDER_STORAGE_KEY = 'eureka-weather-reminders';
 export const REMINDER_PERMISSION_ASKED_KEY = 'eureka-weather-permission-asked';
