@@ -1,6 +1,7 @@
 import type { Reminder } from '@/types/reminder';
 import { weatherNamesTw, zoneNamesTw, type EurekaZone } from '@/data/weather-data';
 import { generateForecasts } from './weather-engine';
+import { WEATHER_PERIOD_MS } from './eorzea-time';
 
 const NEXT_OCCURRENCE_HORIZON = 600;
 
@@ -16,11 +17,12 @@ export function formatLocalHHMM(ts: number): string {
 }
 
 export function buildFocusHash(reminder: Reminder, cellBaseMs: number): string {
+  // clamp to 0 so a reminder fired slightly before cellBaseMs still resolves to cell 0
   const cellIndex = Math.max(
     0,
-    Math.round((reminder.targetMs - cellBaseMs) / (8 * 175 * 1000)),
+    Math.round((reminder.targetMs - cellBaseMs) / WEATHER_PERIOD_MS),
   );
-  const focus = `focus=${reminder.zone}:${cellIndex}`;
+  const focus = `focus=${encodeURIComponent(reminder.zone)}:${cellIndex}`;
   return `#/eureka-weather?${focus}`;
 }
 

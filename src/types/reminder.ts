@@ -17,4 +17,4 @@ export const REMINDER_LEAD_MS = 90_000;
 export const REMINDER_SOFT_CAP = 50;
 export const REMINDER_STORAGE_KEY = 'eureka-weather-reminders';
 export const REMINDER_PERMISSION_ASKED_KEY = 'eureka-weather-permission-asked';
-export const REMINDER_BROADCAST_NAME = 'eureka-weather-reminders';
+export const REMINDER_BROADCAST_NAME = 'eureka-weather-reminders-bc';

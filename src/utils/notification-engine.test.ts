@@ -56,7 +56,7 @@ describe('buildFocusHash', () => {
     };
     const hash = buildFocusHash(reminder, baseStart);
     expect(hash).toMatch(/^#\/eureka-weather/);
-    expect(hash).toContain('focus=Eureka Anemos:0');
+    expect(hash).toContain('focus=Eureka%20Anemos:0');
   });
 });
 
