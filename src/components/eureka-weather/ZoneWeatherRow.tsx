@@ -116,6 +116,32 @@ export default function ZoneWeatherRow({
     return () => el.removeEventListener('wheel', handler);
   }, []);
 
+  useEffect(() => {
+    const stride = 68; // matches scrollToCell stride in EurekaWeatherPage
+    const apply = () => {
+      const hash = window.location.hash;
+      const match = hash.match(/[?&]focus=([^:&]+):(\d+)/);
+      if (!match) return;
+      const focusZone = decodeURIComponent(match[1] ?? '');
+      const idx = parseInt(match[2] ?? '0', 10);
+      if (focusZone !== zone) return;
+      const el = localRef.current;
+      if (!el) return;
+      el.scrollTo({ left: Math.max(0, idx * stride - stride), behavior: 'smooth' });
+      const cell = el.querySelector<HTMLElement>(`[data-cell-index="${idx}"]`);
+      if (cell) {
+        cell.classList.add('ring-2', 'ring-amber-400');
+        const timeoutId = window.setTimeout(() => {
+          cell.classList.remove('ring-2', 'ring-amber-400');
+        }, 2000);
+        return () => window.clearTimeout(timeoutId);
+      }
+    };
+    apply();
+    window.addEventListener('hashchange', apply);
+    return () => window.removeEventListener('hashchange', apply);
+  }, [zone]);
+
   const setRefs = (el: HTMLDivElement | null) => {
     localRef.current = el;
     scrollRef?.(el);
@@ -196,6 +222,7 @@ export default function ZoneWeatherRow({
             <NmTooltip key={f.startTime} nms={nms} onOpenDetail={onOpenDetail}>
               <div
                 data-period-cell
+                data-cell-index={idx}
                 data-matched={matched ? 'true' : 'false'}
                 className={`relative flex-shrink-0 w-16 rounded p-1 text-center text-[10px] border ${bgClass} ${
                   matched

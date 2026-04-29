@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
+import { RemindersProvider } from '@/hooks/useReminders';
+import { NmTooltipProvider } from './NmTooltip';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import ZoneWeatherRow, { formatCellTime } from './ZoneWeatherRow';
 import { generateForecasts, findLastEndedWeather } from '@/utils/weather-engine';
@@ -240,4 +242,48 @@ describe('ZoneWeatherRow', () => {
     });
   });
 
+});
+
+describe('ZoneWeatherRow — focus hash listener', () => {
+  it('does not throw when hash contains a focus token for a different zone', () => {
+    window.location.hash = '#/eureka-weather?focus=Eureka%20Pyros:5';
+    render(
+      <RemindersProvider>
+        <NmTooltipProvider>
+          <ZoneWeatherRow
+            zone="Eureka Anemos"
+            selectedWeathers={new Set()}
+            now={Date.now()}
+            forecastCount={24}
+            scrollRef={() => {}}
+            onScroll={() => {}}
+            onOpenDetail={() => {}}
+            onOpenList={() => {}}
+          />
+        </NmTooltipProvider>
+      </RemindersProvider>,
+    );
+    expect(true).toBe(true);
+  });
+
+  it('does not throw when hash has no focus param', () => {
+    window.location.hash = '#/eureka-weather?w=Gales';
+    render(
+      <RemindersProvider>
+        <NmTooltipProvider>
+          <ZoneWeatherRow
+            zone="Eureka Anemos"
+            selectedWeathers={new Set()}
+            now={Date.now()}
+            forecastCount={24}
+            scrollRef={() => {}}
+            onScroll={() => {}}
+            onOpenDetail={() => {}}
+            onOpenList={() => {}}
+          />
+        </NmTooltipProvider>
+      </RemindersProvider>,
+    );
+    expect(true).toBe(true);
+  });
 });
