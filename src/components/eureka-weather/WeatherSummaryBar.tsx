@@ -3,12 +3,14 @@ import { EUREKA_ZONES, weatherNamesTw, zoneNamesTw, type EurekaZone } from '@/da
 import { NIGHT_FILTER_KEY } from '@/data/eureka-nm-data';
 import { getNextHits } from '@/utils/weather-summary';
 import WeatherIcon from '@/components/WeatherIcon';
+import AddReminderButton from './AddReminderButton';
 
 interface WeatherSummaryBarProps {
   selected: Set<string>;
   now: number;
   forecastCount: number;
   onScrollToCell: (zone: EurekaZone, cellIndex: number) => void;
+  onToast: (msg: string) => void;
 }
 
 function formatRel(ms: number): string {
@@ -30,6 +32,7 @@ export default function WeatherSummaryBar({
   now,
   forecastCount,
   onScrollToCell,
+  onToast,
 }: WeatherSummaryBarProps) {
   const rows = useMemo(() => {
     return [...selected].map((filterId) => ({
@@ -68,14 +71,24 @@ export default function WeatherSummaryBar({
             ) : (
               <>
                 {hits.map((h) => (
-                  <button
-                    key={`${h.zone}-${h.cellIndex}`}
-                    type="button"
-                    onClick={() => onScrollToCell(h.zone, h.cellIndex)}
-                    className="px-2 py-0.5 rounded border border-border/50 hover:border-primary hover:text-primary text-muted-foreground transition-colors"
-                  >
-                    {(zoneNamesTw[h.zone] ?? h.zone).replace('優雷卡', '')} · {formatRel(h.startTime - now)}
-                  </button>
+                  <span key={`${h.zone}-${h.cellIndex}`} className="inline-flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => onScrollToCell(h.zone, h.cellIndex)}
+                      className="px-2 py-0.5 rounded border border-border/50 hover:border-primary hover:text-primary text-muted-foreground transition-colors"
+                    >
+                      {(zoneNamesTw[h.zone] ?? h.zone).replace('優雷卡', '')} · {formatRel(h.startTime - now)}
+                    </button>
+                    {!isNight && (
+                      <AddReminderButton
+                        zone={h.zone}
+                        weather={filterId}
+                        targetMs={h.startTime}
+                        source="m9-zone-hit"
+                        onToast={onToast}
+                      />
+                    )}
+                  </span>
                 ))}
                 {missingCount > 0 && (
                   <span className="text-muted-foreground/60">
