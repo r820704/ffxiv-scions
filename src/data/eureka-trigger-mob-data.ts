@@ -8,6 +8,12 @@
 //
 // Spawn weather of the trigger mob can be derived from the NM's own trigger weather
 // (the mob only appears under the same weather), so no separate weather field here.
+//
+// Source-priority rule for level discrepancies between consolegameswiki pages:
+// the zone page's FATE table records the Elemental Level (EL) at which the mob
+// counts toward the NM trigger; the mob's own page records its base object level.
+// The trigger mechanic uses the EL value, so the zone page wins when they disagree.
+// Cross-checked against guide.contentachievers.com EL listings.
 
 export interface TriggerMobAttrs {
   nameTw: string;  // Traditional Chinese name from datamining-tc
@@ -87,8 +93,8 @@ export const triggerMobAttrs: Record<string, TriggerMobAttrs> = {
   "Yukinko": { nameTw: "雪童子", level: 25, element: 'Ice', nmTw: "雪之女王" },
 
   // Taxim — /wiki/Demon_of_the_Incunable
-  // Mob page lists Lv 27; zone page lists Lv 26 — preferring mob page per source-priority rule.
-  "Demon of the Incunable": { nameTw: "珍卷惡魔", level: 27, timeOfDay: 'night', element: 'Wind', nmTw: "塔克西姆" },
+  // Zone page (FATE EL) lists Lv 26; mob's own page lists Lv 27 (base level). Trigger uses EL.
+  "Demon of the Incunable": { nameTw: "珍卷惡魔", level: 26, timeOfDay: 'night', element: 'Wind', nmTw: "塔克西姆" },
 
   // Ash Dragon — /wiki/Blood_Demon
   "Blood Demon": { nameTw: "血魔", level: 27, element: 'Fire', nmTw: "灰燼龍" },
@@ -97,8 +103,8 @@ export const triggerMobAttrs: Record<string, TriggerMobAttrs> = {
   "Val Worm": { nameTw: "瓦爾蠕蟲", level: 28, element: 'Earth', nmTw: "Glavoid" },
 
   // Anapos — /wiki/Snowmelt_Sprite
-  // Mob page lists Lv 28; zone page lists Lv 29 — preferring mob page per source-priority rule.
-  "Snowmelt Sprite": { nameTw: "融雪元精", level: 28, element: 'Water', nmTw: "安娜波" },
+  // Zone page (FATE EL) lists Lv 29; mob's own page lists Lv 28 (base level). Trigger uses EL.
+  "Snowmelt Sprite": { nameTw: "融雪元精", level: 29, element: 'Water', nmTw: "安娜波" },
 
   // Hakutaku — /wiki/Blubber_Eyes
   "Blubber Eyes": { nameTw: "啜泣百目妖", level: 30, element: 'Fire', nmTw: "白澤" },
@@ -131,8 +137,8 @@ export const triggerMobAttrs: Record<string, TriggerMobAttrs> = {
   "Gawper": { nameTw: "瞪視之眼", level: 39, element: 'Wind', nmTw: "總領安格拉·曼紐" },
 
   // Louhi — /wiki/Val_Corpse
-  // Mob page lists Lv 39; zone page lists Lv 40 — preferring mob page per source-priority rule.
-  "Val Corpse": { nameTw: "瓦爾腐屍", level: 39, timeOfDay: 'night', element: 'Ice', nmTw: "婁希" },
+  // Zone page (FATE EL) lists Lv 40; mob's own page lists Lv 39 (base level). Trigger uses EL.
+  "Val Corpse": { nameTw: "瓦爾腐屍", level: 40, timeOfDay: 'night', element: 'Ice', nmTw: "婁希" },
 
   // Copycat Cassie — /wiki/Ameretat
   "Ameretat": { nameTw: "阿米雷戴", level: 40, element: 'Ice', nmTw: "複製魔花凱西" },
@@ -140,8 +146,8 @@ export const triggerMobAttrs: Record<string, TriggerMobAttrs> = {
   // ===== Pyros (Lv 35-50) =====
 
   // Leucosia — /wiki/Pyros_Bhoot
-  // Mob page lists Lv 38; zone page lists Lv 40 — preferring mob page per source-priority rule.
-  "Pyros Bhoot": { nameTw: "湧火浮靈", level: 38, timeOfDay: 'night', element: 'Ice', nmTw: "琉科西亞" },
+  // Zone page (FATE EL) lists Lv 40; mob's own page lists Lv 38 (base level). Trigger uses EL.
+  "Pyros Bhoot": { nameTw: "湧火浮靈", level: 40, timeOfDay: 'night', element: 'Ice', nmTw: "琉科西亞" },
 
   // Flauros — /wiki/Thunderstorm_Sprite
   "Thunderstorm Sprite": { nameTw: "雷暴元精", level: 41, element: 'Lightning', nmTw: "佛勞洛斯" },
@@ -212,8 +218,8 @@ export const triggerMobAttrs: Record<string, TriggerMobAttrs> = {
   "Dark Void Monk": { nameTw: "暗黑虛無鬼魚", level: 60, element: 'Water', nmTw: "達佛涅" },
 
   // King Goldemar — /wiki/Hydatos_Wraith
-  // Mob page lists Lv 60; zone page lists Lv 61 — preferring mob page per source-priority rule.
-  "Hydatos Wraith": { nameTw: "豐水幽靈", level: 60, timeOfDay: 'night', element: 'Lightning', nmTw: "戈爾德馬爾王" },
+  // Zone page (FATE EL) lists Lv 61; mob's own page lists Lv 60 (base level). Trigger uses EL.
+  "Hydatos Wraith": { nameTw: "豐水幽靈", level: 61, timeOfDay: 'night', element: 'Lightning', nmTw: "戈爾德馬爾王" },
 
   // Leuke — /wiki/Tigerhawk
   "Tigerhawk": { nameTw: "虎鷹", level: 62, element: 'Wind', nmTw: "琉刻" },
