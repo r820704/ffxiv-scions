@@ -2,7 +2,9 @@ import { useEffect, useRef } from 'react';
 import { eurekaNms, formatNmTrigger } from '@/data/eureka-nm-data';
 import { zoneShortNamesTw } from '@/data/weather-data';
 import { nmSpawnInfo } from '@/data/eureka-nm-spawn-data';
+import { triggerMobAttrs } from '@/data/eureka-trigger-mob-data';
 import NmDetailMap from './NmDetailMap';
+import TriggerMobChips from './TriggerMobChips';
 
 interface NmDetailModalProps {
   nmId: string | null;
@@ -118,9 +120,11 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
                     const baseLabel = spawn.trigger
                       .slice(0, mobIdx)
                       .reduce((sum, m) => sum + m.coords.length, 0);
+                    const mobAttrs = triggerMobAttrs[mob.nameEn];
                     return (
                       <li key={mobIdx} className="flex flex-wrap items-center gap-2 text-xs">
                         <span className="text-foreground">{mob.nameTw}</span>
+                        {mobAttrs && <TriggerMobChips attrs={mobAttrs} />}
                         {mob.coords.map((c, coordIdx) => (
                           <span
                             key={coordIdx}

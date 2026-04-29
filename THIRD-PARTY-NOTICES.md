@@ -30,6 +30,11 @@
 ### 1.6 thewakingsands/ffxiv-datamining-tc
 - https://github.com/thewakingsands/ffxiv-datamining-tc
 
+### 1.7 Eureka 屬性 icon
+
+- 來源：[FFXIV consolegameswiki — Template:Eurekaelement_icon](https://ffxiv.consolegameswiki.com/wiki/Template:Eurekaelement_icon) 社群上傳之屬性 icon（Fire / Ice / Wind / Earth / Lightning / Water）
+- 素材源自 FINAL FANTASY XIV © SQUARE ENIX；感謝 consolegameswiki 社群整理並公開分享
+
 ## 2. 對照與查考來源
 
 > 下列計畫於資料整理過程提供查考與相互印證，特此致謝。

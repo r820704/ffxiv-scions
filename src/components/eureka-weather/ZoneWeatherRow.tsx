@@ -10,7 +10,7 @@ import { zoneNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weather-dat
 import { getZoneLevelLabel } from '@/data/eureka-zone-meta';
 import { WEATHER_PERIOD_MS } from '@/utils/eorzea-time';
 import { getPeriodKind, getPeriodBgClass, isCellNight } from '@/utils/weather-period-bg';
-import { getActiveNmsAt, NIGHT_FILTER_KEY } from '@/data/eureka-nm-data';
+import { eurekaNms, getActiveNmsAt, NIGHT_FILTER_KEY } from '@/data/eureka-nm-data';
 import WeatherIcon from '@/components/WeatherIcon';
 import NmTooltip from './NmTooltip';
 
@@ -24,6 +24,7 @@ interface ZoneWeatherRowProps {
   scrollRef?: (el: HTMLDivElement | null) => void;
   onScroll?: (scrollLeft: number) => void;
   onOpenDetail?: (nmId: string) => void;
+  onOpenList?: (zone: EurekaZone) => void;
 }
 
 const DEFAULT_FORECAST_COUNT = 48;
@@ -61,6 +62,7 @@ export default function ZoneWeatherRow({
   scrollRef,
   onScroll,
   onOpenDetail,
+  onOpenList,
 }: ZoneWeatherRowProps) {
   const localRef = useRef<HTMLDivElement | null>(null);
 
@@ -145,7 +147,17 @@ export default function ZoneWeatherRow({
             · {getZoneLevelLabel(zone)}
           </span>
         </span>
-        <div className="flex items-center gap-2">
+        {onOpenList && (
+          <button
+            type="button"
+            aria-label="開啟全部 NM 列表"
+            onClick={() => onOpenList(zone)}
+            className="text-xs px-2 py-0.5 rounded border border-border hover:border-primary text-muted-foreground hover:text-primary transition-colors"
+          >
+            <span aria-hidden="true">📋</span> 全部 NM ({eurekaNms.filter((n) => n.zone === zone).length})
+          </button>
+        )}
+        <div className="flex items-center gap-2 ml-auto">
           {showInfoLine && (
             <span className="text-xs text-amber-300">
               {lastLabel}
