@@ -140,7 +140,10 @@ export default function EurekaGearPage() {
 
       <OnboardingBanner />
 
-      <nav role="tablist" className="flex border-b-2 border-blue-500 mb-4">
+      <nav
+        role="tablist"
+        className="sticky top-0 z-30 -mx-4 px-4 bg-background flex border-b-2 border-blue-500 mb-4"
+      >
         {tabBtn('overview', '總覽')}
         {tabBtn('detail', '職業詳情')}
         {tabBtn('farming', '素材需求')}
