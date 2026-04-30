@@ -11,6 +11,21 @@ describe('ChainStepper', () => {
     expect(screen.getAllByRole('button').length).toBe(16);
   });
 
+  it('renders all stages as not-started when currentStage is null', () => {
+    render(<ChainStepper currentStage={null} targetStage={undefined} onSelectTarget={() => {}} />);
+    const nodes = screen.getAllByRole('button');
+    nodes.forEach((n) => expect(n.getAttribute('data-state')).toBe('not-started'));
+  });
+
+  it('keeps target distinct even when currentStage is null', () => {
+    render(<ChainStepper currentStage={null} targetStage="anemos" onSelectTarget={() => {}} />);
+    const nodes = screen.getAllByRole('button');
+    expect(nodes[4]?.getAttribute('data-state')).toBe('target');
+    // Other non-target stages stay not-started
+    expect(nodes[0]?.getAttribute('data-state')).toBe('not-started');
+    expect(nodes[10]?.getAttribute('data-state')).toBe('not-started');
+  });
+
   it('marks current stage distinctly', () => {
     render(<ChainStepper currentStage="anemos" targetStage={undefined} onSelectTarget={() => {}} />);
     const nodes = screen.getAllByRole('button');
