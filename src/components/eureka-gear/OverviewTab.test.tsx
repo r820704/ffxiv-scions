@@ -3,7 +3,10 @@ import { render, screen, fireEvent, cleanup, within } from '@testing-library/rea
 import { OverviewTab } from './OverviewTab';
 import { emptyInventoryV3 } from '../../utils/eureka-gear-migrate';
 
-afterEach(() => cleanup());
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+});
 
 describe('OverviewTab', () => {
   it('renders all 15 SB jobs, each with a dedicated job card', () => {
@@ -31,12 +34,16 @@ describe('OverviewTab', () => {
   });
 
   describe('role filter chips', () => {
-    it('renders all 6 chips with 全部 active by default', () => {
+    it('renders all 6 role chips with 全部 active by default', () => {
       const { container } = render(<OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} />);
       const filter = container.querySelector('[data-testid="role-filter"]');
       expect(filter).not.toBeNull();
+      // The filter row also contains the "我的職業" chip (and possibly an edit button);
+      // assert that the 6 role chips appear in order before any extras.
       const chips = within(filter as HTMLElement).getAllByRole('button');
-      expect(chips.map((c) => c.textContent)).toEqual(['全部', '坦克', '近戰', '遠程', '治療', '法師']);
+      expect(chips.slice(0, 6).map((c) => c.textContent)).toEqual([
+        '全部', '坦克', '近戰', '遠程', '治療', '法師',
+      ]);
       const allChip = within(filter as HTMLElement).getByRole('button', { name: '全部' });
       expect(allChip.getAttribute('aria-pressed')).toBe('true');
     });
@@ -98,6 +105,45 @@ describe('OverviewTab', () => {
       }
       const roleCards = (container.querySelector('[data-testid="role-grid"]') as HTMLElement).querySelectorAll('article');
       expect(roleCards.length).toBe(3);
+    });
+
+    describe('main jobs chip', () => {
+      it('shows "設定我的職業" prompt when no main jobs configured', () => {
+        render(<OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} />);
+        expect(screen.getByRole('button', { name: /設定我的職業/ })).toBeInTheDocument();
+      });
+
+      it('clicking the prompt opens the picker dialog', () => {
+        render(<OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} />);
+        fireEvent.click(screen.getByRole('button', { name: /設定我的職業/ }));
+        expect(screen.getByRole('dialog', { name: /設定我的職業/ })).toBeInTheDocument();
+      });
+
+      it('saving picker writes to localStorage and changes chip label to "我的職業 (N)"', () => {
+        render(<OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} />);
+        fireEvent.click(screen.getByRole('button', { name: /設定我的職業/ }));
+        fireEvent.click(screen.getByRole('button', { name: '騎士' }));
+        fireEvent.click(screen.getByRole('button', { name: '武僧' }));
+        fireEvent.click(screen.getByRole('button', { name: /儲存（2）/ }));
+        expect(localStorage.getItem('eureka-gear-main-jobs')).toBe(JSON.stringify(['PLD', 'MNK']));
+        expect(screen.getByRole('button', { name: /我的職業 \(2\)/ })).toBeInTheDocument();
+      });
+
+      it('main-jobs filter overrides role chip and shows only selected jobs', () => {
+        localStorage.setItem('eureka-gear-main-jobs', JSON.stringify(['PLD', 'WHM']));
+        const { container } = render(
+          <OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} role="tank" onRoleChange={() => {}} />,
+        );
+        // Click the main-jobs chip to activate the filter.
+        fireEvent.click(screen.getByRole('button', { name: /我的職業 \(2\)/ }));
+        const jobGrid = container.querySelector('[data-testid="job-grid"]') as HTMLElement;
+        const alts = new Set<string>();
+        jobGrid.querySelectorAll('img[alt]').forEach((img) => alts.add(img.getAttribute('alt') ?? ''));
+        expect(alts.has('PLD')).toBe(true);
+        expect(alts.has('WHM')).toBe(true);
+        expect(alts.has('WAR')).toBe(false); // role=tank no longer applied
+        expect(alts.has('MNK')).toBe(false);
+      });
     });
 
     it('clicking 全部 returns to all jobs and all role cards', () => {
