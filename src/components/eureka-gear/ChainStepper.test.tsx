@@ -8,18 +8,18 @@ afterEach(() => cleanup());
 describe('ChainStepper', () => {
   it('renders 16 interactive nodes', () => {
     render(<ChainStepper currentStage="anemos" targetStage={undefined} onSelectTarget={() => {}} />);
-    expect(screen.getAllByRole('button').length).toBe(16);
+    expect(screen.getAllByRole('button', { name: /^stage \d+:/ }).length).toBe(16);
   });
 
   it('renders all stages as not-started when currentStage is null', () => {
     render(<ChainStepper currentStage={null} targetStage={undefined} onSelectTarget={() => {}} />);
-    const nodes = screen.getAllByRole('button');
+    const nodes = screen.getAllByRole('button', { name: /^stage \d+:/ });
     nodes.forEach((n) => expect(n.getAttribute('data-state')).toBe('not-started'));
   });
 
   it('keeps target distinct even when currentStage is null', () => {
     render(<ChainStepper currentStage={null} targetStage="anemos" onSelectTarget={() => {}} />);
-    const nodes = screen.getAllByRole('button');
+    const nodes = screen.getAllByRole('button', { name: /^stage \d+:/ });
     expect(nodes[4]?.getAttribute('data-state')).toBe('target');
     // Other non-target stages stay not-started
     expect(nodes[0]?.getAttribute('data-state')).toBe('not-started');
@@ -28,21 +28,21 @@ describe('ChainStepper', () => {
 
   it('marks current stage distinctly', () => {
     render(<ChainStepper currentStage="anemos" targetStage={undefined} onSelectTarget={() => {}} />);
-    const nodes = screen.getAllByRole('button');
+    const nodes = screen.getAllByRole('button', { name: /^stage \d+:/ });
     expect(nodes[4]?.getAttribute('data-state')).toBe('current'); // anemos is idx 4
   });
 
   it('calls onSelectTarget with the stage when clicked', () => {
     const onSelectTarget = vi.fn();
     render(<ChainStepper currentStage="anemos" targetStage={undefined} onSelectTarget={onSelectTarget} />);
-    const nodes = screen.getAllByRole('button');
+    const nodes = screen.getAllByRole('button', { name: /^stage \d+:/ });
     fireEvent.click(nodes[8]!);
     expect(onSelectTarget).toHaveBeenCalled();
   });
 
   it('marks target stage distinctly from current and unowned', () => {
     render(<ChainStepper currentStage="anemos" targetStage="pyros" onSelectTarget={() => {}} />);
-    const nodes = screen.getAllByRole('button');
+    const nodes = screen.getAllByRole('button', { name: /^stage \d+:/ });
     // pyros is idx 10
     expect(nodes[10]?.getAttribute('data-state')).toBe('target');
   });
@@ -72,7 +72,7 @@ describe('ChainStepper', () => {
   it('still renders all 16 buttons + each remains clickable when grouped', () => {
     const onSelectTarget = vi.fn();
     render(<ChainStepper currentStage="anemos" targetStage={undefined} onSelectTarget={onSelectTarget} />);
-    const nodes = screen.getAllByRole('button');
+    const nodes = screen.getAllByRole('button', { name: /^stage \d+:/ });
     expect(nodes.length).toBe(16);
     nodes.forEach((node) => fireEvent.click(node));
     expect(onSelectTarget).toHaveBeenCalledTimes(16);
@@ -87,7 +87,7 @@ describe('ChainStepper', () => {
         stages={ANEMOS_ARMOR_STAGES}
       />,
     );
-    expect(screen.getAllByRole('button').length).toBe(5);
+    expect(screen.getAllByRole('button', { name: /^stage \d+:/ }).length).toBe(5);
     expect(screen.queryByText('常風之地')).toBeNull();
     expect(screen.queryByText('恆冰之地')).toBeNull();
     expect(screen.queryByText('湧火之地')).toBeNull();
@@ -105,7 +105,7 @@ describe('ChainStepper', () => {
         stages={ELEMENTAL_ARMOR_STAGES}
       />,
     );
-    expect(screen.getAllByRole('button').length).toBe(4);
+    expect(screen.getAllByRole('button', { name: /^stage \d+:/ }).length).toBe(4);
     expect(screen.queryByText('常風之地')).toBeNull();
     expect(screen.queryByText('湧火之地')).toBeNull();
   });
