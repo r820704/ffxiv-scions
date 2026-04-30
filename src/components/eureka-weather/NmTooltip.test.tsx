@@ -1,9 +1,29 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, waitFor, act } from '@testing-library/react';
 import NmTooltip, { NmTooltipProvider } from './NmTooltip';
 import type { EurekaNm } from '@/data/eureka-nm-data';
 
-afterEach(cleanup);
+const originalMatchMedia = window.matchMedia;
+
+function mockHoverCapability(canHover: boolean) {
+  window.matchMedia = (query: string) =>
+    ({
+      matches: query.includes('hover: hover') ? canHover : true,
+      media: query,
+      onchange: null,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      addListener: () => {},
+      removeListener: () => {},
+      dispatchEvent: () => false,
+    }) as unknown as MediaQueryList;
+}
+
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+  window.matchMedia = originalMatchMedia;
+});
 
 const pazuzu: EurekaNm = {
   id: 'pazuzu',
@@ -34,7 +54,7 @@ describe('NmTooltip', () => {
     expect(screen.queryByText('可能出現')).toBeNull();
   });
 
-  it('opens tooltip on hover', () => {
+  it('opens tooltip on mouse hover (hover-capable device)', () => {
     render(
       <NmTooltip nms={[pazuzu, fafnir]}>
         <div data-testid="cell">cell</div>
@@ -47,19 +67,29 @@ describe('NmTooltip', () => {
     expect(screen.getByText('強風+夜間')).toBeTruthy();
   });
 
-  it('stays open after pointer leaves trigger (sticky)', () => {
+  it('does not open on hover when device cannot hover (touch-only)', () => {
+    mockHoverCapability(false);
     render(
       <NmTooltip nms={[pazuzu]}>
         <div data-testid="cell">cell</div>
       </NmTooltip>,
     );
-    const trigger = screen.getByTestId('cell').parentElement!;
-    fireEvent.mouseEnter(trigger);
-    fireEvent.mouseLeave(trigger);
+    fireEvent.mouseEnter(screen.getByTestId('cell').parentElement!);
+    expect(screen.queryByText('帕祖祖')).toBeNull();
+  });
+
+  it('still opens on click for touch-only devices', () => {
+    mockHoverCapability(false);
+    render(
+      <NmTooltip nms={[pazuzu]}>
+        <div data-testid="cell">cell</div>
+      </NmTooltip>,
+    );
+    fireEvent.click(screen.getByTestId('cell').parentElement!);
     expect(screen.getByText('帕祖祖')).toBeTruthy();
   });
 
-  it('closes when trigger is clicked while open (toggle)', async () => {
+  it('auto-closes after pointer leaves trigger when not pinned', async () => {
     render(
       <NmTooltip nms={[pazuzu]}>
         <div data-testid="cell">cell</div>
@@ -67,6 +97,36 @@ describe('NmTooltip', () => {
     );
     const trigger = screen.getByTestId('cell').parentElement!;
     fireEvent.mouseEnter(trigger);
+    expect(screen.getByText('帕祖祖')).toBeTruthy();
+    fireEvent.mouseLeave(trigger);
+    await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull(), { timeout: 1000 });
+  });
+
+  it('pins tooltip on click and stays open after pointer leaves', async () => {
+    vi.useFakeTimers();
+    render(
+      <NmTooltip nms={[pazuzu]}>
+        <div data-testid="cell">cell</div>
+      </NmTooltip>,
+    );
+    const trigger = screen.getByTestId('cell').parentElement!;
+    fireEvent.mouseEnter(trigger);
+    fireEvent.click(trigger);
+    fireEvent.mouseLeave(trigger);
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+    expect(screen.getByText('帕祖祖')).toBeTruthy();
+  });
+
+  it('closes pinned tooltip on second click of trigger', async () => {
+    render(
+      <NmTooltip nms={[pazuzu]}>
+        <div data-testid="cell">cell</div>
+      </NmTooltip>,
+    );
+    const trigger = screen.getByTestId('cell').parentElement!;
+    fireEvent.click(trigger);
     expect(screen.getByText('帕祖祖')).toBeTruthy();
     fireEvent.click(trigger);
     await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
@@ -88,7 +148,7 @@ describe('NmTooltip', () => {
         <div data-testid="cell">cell</div>
       </NmTooltip>,
     );
-    fireEvent.mouseEnter(screen.getByTestId('cell').parentElement!);
+    fireEvent.click(screen.getByTestId('cell').parentElement!);
     expect(screen.getByText('帕祖祖')).toBeTruthy();
     fireEvent.click(screen.getByLabelText('關閉'));
     await waitFor(() => expect(screen.queryByText('帕祖祖')).toBeNull());
