@@ -1,5 +1,15 @@
 import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME, ZONE_ENDPOINT_TC_NAME } from '../../types/eureka-gear';
 import type { EurekaStage, EurekaZone } from '../../types/eureka-gear';
+import { Tooltip } from '../ui/Tooltip';
+
+const ZONE_HINT: Record<string, string> = {
+  start: '起始狀態。Stage 1 對應 70 級職業套裝（antiquated），是禁地兵裝的前置物。',
+  anemos: '常風之地（Eureka Anemos）取得的素材主要用於升 stage 2-5。',
+  pagos: '恆冰之地（Eureka Pagos）取得的素材主要用於升 stage 6-7。',
+  pyros: '湧火之地（Eureka Pyros）取得的素材主要用於升 stage 8-11。',
+  hydatos: '豐水之地（Eureka Hydatos）取得的素材主要用於升 stage 12-15。',
+  final: '最終形態（physeos）— 把武器升到 iL400 的傳說型態。',
+};
 
 export type ChainStepperProps = {
   currentStage: EurekaStage;
@@ -106,9 +116,20 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages
           <span
             id={`zone-label-${group.key}`}
             data-testid={`zone-label-${group.key}`}
-            className="text-xs text-gray-400"
+            className="text-xs text-gray-400 inline-flex items-center gap-1"
           >
             {group.label}
+            {ZONE_HINT[group.key] && (
+              <Tooltip label={ZONE_HINT[group.key]!}>
+                <button
+                  type="button"
+                  aria-label={`${group.label} 說明`}
+                  className="w-4 h-4 rounded-full bg-gray-700 text-gray-300 text-[10px] leading-4 text-center hover:bg-gray-600 transition-colors"
+                >
+                  ⓘ
+                </button>
+              </Tooltip>
+            )}
           </span>
           <div className="flex flex-wrap gap-1 items-center">
             {group.entries.map(({ stage, index }) => renderButton(stage, index))}
