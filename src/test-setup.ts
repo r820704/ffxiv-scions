@@ -18,6 +18,30 @@ if (!Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = () => {};
 }
 
+// jsdom does not implement matchMedia. Default to a "desktop with mouse" profile:
+// hover-capable + fine pointer match, coarse pointer (touch) does not. Tests that
+// need to simulate touch can override this stub per-test.
+if (typeof window !== 'undefined' && !window.matchMedia) {
+  const defaultMatch = (query: string): boolean => {
+    if (query.includes('hover: hover')) return true;
+    if (query.includes('pointer: fine')) return true;
+    if (query.includes('pointer: coarse')) return false;
+    if (query.includes('hover: none')) return false;
+    return false;
+  };
+  window.matchMedia = (query: string) =>
+    ({
+      matches: defaultMatch(query),
+      media: query,
+      onchange: null,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      addListener: () => {},
+      removeListener: () => {},
+      dispatchEvent: () => false,
+    }) as unknown as MediaQueryList;
+}
+
 // jsdom 25 (vitest 2.1) does not expose BroadcastChannel on the window proxy.
 // Node has a native BroadcastChannel on globalThis — re-expose it so production
 // code can `new BroadcastChannel(...)` in tests too.
