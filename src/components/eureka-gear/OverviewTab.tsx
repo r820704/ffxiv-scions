@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { JobCard } from './JobCard';
 import { RoleCard } from './RoleCard';
+import { ProgressSummary } from './ProgressSummary';
 import { getJobProgress } from '../../utils/eurekaGear';
 import type { EurekaInventoryV5, EurekaWeapon, ArmorSetId } from '../../types/eureka-gear';
 import { ARMOR_SET_IDS } from '../../types/eureka-gear';
@@ -62,6 +63,7 @@ export function OverviewTab({
 
   return (
     <div className="space-y-6">
+      <ProgressSummary inventory={inventory} />
       <div
         role="group"
         aria-label="職能篩選"

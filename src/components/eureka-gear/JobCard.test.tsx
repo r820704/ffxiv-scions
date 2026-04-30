@@ -7,8 +7,8 @@ afterEach(() => cleanup());
 
 const baseProgress: JobProgress = {
   weapons: [
-    { chainId: 'pld-galatyn', progress: { currentStage: 'anemos' } },
-    { chainId: 'pld-galatyn-shield', progress: { currentStage: 'antiquated' } },
+    { chainId: 'pld-galatyn', progress: { currentStage: 'anemos' }, started: true },
+    { chainId: 'pld-galatyn-shield', progress: { currentStage: 'antiquated' }, started: true },
   ],
   anemos: {},
   elemental: { set: 'fending', pieces: {} },
@@ -55,6 +55,7 @@ describe('JobCard', () => {
         {
           chainId: 'pld-galatyn',
           progress: { currentStage: 'anemos', targetStage: 'pagos' },
+          started: true,
         },
       ],
       anemos: {},
@@ -63,6 +64,20 @@ describe('JobCard', () => {
     render(<JobCard job="PLD" progress={progressWithTarget} onSelect={() => {}} />);
     // Should show both current and target stages
     expect(screen.getByText(/禁地兵裝·常風 → 禁地兵裝·恆冰/)).toBeInTheDocument();
+  });
+
+  it('shows 未開始 hint for weapon when started is false (no inventory entry yet)', () => {
+    const progress: JobProgress = {
+      weapons: [
+        { chainId: 'pld-galatyn', progress: { currentStage: 'antiquated' }, started: false },
+      ],
+      anemos: {},
+      elemental: { set: 'fending', pieces: {} },
+    };
+    render(<JobCard job="PLD" progress={progress} onSelect={() => {}} />);
+    // Both the unstarted weapon AND every empty anemos slot render a 未開始 line.
+    // Six lines total (1 weapon + 5 armor slots) is the precise expectation here.
+    expect(screen.getAllByText(/· 未開始/).length).toBe(6);
   });
 
   it('shows stage name labels for anemos armor slots', () => {

@@ -103,7 +103,10 @@ export function costBetweenInSequence(
 }
 
 export type JobProgress = {
-  weapons: { chainId: string; progress: SlotProgress }[];
+  /** `started` is true only when the chain has an explicit slot in inventory; the
+   *  `progress` field falls back to a default antiquated SlotProgress otherwise so
+   *  consumers that don't care about the started/not distinction stay simple. */
+  weapons: { chainId: string; progress: SlotProgress; started: boolean }[];
   /** Anemos armor is per-job — this is just *this* job's anemos set. */
   anemos: Partial<Record<ArmorSlot, SlotProgress>>;
   /** Elemental armor is per-role — shared with all jobs in the same set. */
@@ -116,10 +119,14 @@ export type JobProgress = {
 export function getJobProgress(job: JobId, inv: EurekaInventoryV5): JobProgress {
   const weapons = EUREKA_CHAINS
     .filter((c) => c.job === job)
-    .map((c) => ({
-      chainId: c.chainId,
-      progress: inv.weapons[c.chainId] ?? { currentStage: 'antiquated' as const },
-    }));
+    .map((c) => {
+      const stored = inv.weapons[c.chainId];
+      return {
+        chainId: c.chainId,
+        progress: stored ?? { currentStage: 'antiquated' as const },
+        started: stored !== undefined,
+      };
+    });
   const set = ARMOR_SET_FOR_JOB[job];
   return {
     weapons,
