@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ZoneGroup } from './ZoneGroup';
+import { NextEdgeShortage } from './NextEdgeShortage';
 import { costBetween, costBetweenInSequence } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
@@ -176,6 +177,7 @@ export function FarmingTab({ inventory, materialsMap }: FarmingTabProps) {
   return (
     <div>
       {toggle}
+      <NextEdgeShortage inventory={inventory} materialsMap={materialsMap} />
       <div className="space-y-3">
         {zones.map((zone) => {
           const items: AggregatedMaterial[] = Array.from(zoneAgg[zone]).map(
