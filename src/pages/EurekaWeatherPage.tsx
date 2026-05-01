@@ -146,11 +146,11 @@ export default function EurekaWeatherPage() {
       )}
       <div className="flex flex-col gap-3">
         <div className="bg-secondary rounded-lg px-3 py-2 flex items-center gap-2 flex-wrap text-sm">
+          <span className="text-xs text-muted-foreground">現實時間</span>
           <span className="font-mono font-semibold text-foreground">{formatClientTime(now)}</span>
-          <span className="text-xs text-muted-foreground">現實</span>
-          <span className="text-muted-foreground">·</span>
-          <span className="font-mono font-semibold text-foreground">{eorzeaClock}</span>
+          <span className="text-muted-foreground mx-1">·</span>
           <span className="text-xs text-muted-foreground">艾奧傑亞</span>
+          <span className="font-mono font-semibold text-foreground">{eorzeaClock}</span>
           <span className={`px-2 py-0.5 rounded text-xs font-medium ${isDay ? 'bg-amber-500/20 text-amber-300' : 'bg-indigo-500/20 text-indigo-300'}`}>
             {isDay ? '☀ 白天' : '🌙 夜晚'}
           </span>
