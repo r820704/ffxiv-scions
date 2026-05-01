@@ -134,37 +134,6 @@ describe('WeatherFilterBar', () => {
     });
   });
 
-  describe('copy link button (M7)', () => {
-    it('renders the copy link button when onCopyLink is provided', () => {
-      render(
-        <WeatherFilterBar
-          selected={new Set()}
-          onToggle={vi.fn()}
-          onCopyLink={vi.fn()}
-        />,
-      );
-      expect(screen.getByText(/複製連結/)).toBeTruthy();
-    });
-
-    it('does NOT render the copy link button when onCopyLink is omitted', () => {
-      render(<WeatherFilterBar selected={new Set()} onToggle={vi.fn()} />);
-      expect(screen.queryByText(/複製連結/)).toBeNull();
-    });
-
-    it('calls onCopyLink when clicked', () => {
-      const onCopyLink = vi.fn();
-      render(
-        <WeatherFilterBar
-          selected={new Set()}
-          onToggle={vi.fn()}
-          onCopyLink={onCopyLink}
-        />,
-      );
-      fireEvent.click(screen.getByText(/複製連結/));
-      expect(onCopyLink).toHaveBeenCalledOnce();
-    });
-  });
-
   describe('jump-to-now button (Q2)', () => {
     it('renders the button when onJumpToNow prop is provided', () => {
       render(

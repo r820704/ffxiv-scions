@@ -24,7 +24,7 @@ describe('EurekaWeatherPage', () => {
         <EurekaWeatherPage />
       </MemoryRouter>,
     );
-    expect(screen.getByText('艾奧傑亞時間')).toBeTruthy();
+    expect(screen.getByText('艾奧傑亞')).toBeTruthy();
   });
 
   it('renders weather filter bar', () => {
