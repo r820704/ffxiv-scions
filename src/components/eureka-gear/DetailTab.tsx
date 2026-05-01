@@ -120,6 +120,10 @@ export function DetailTab({
           {primaryChains.map(({ chainId, progress: p }) => {
             const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
             const ref: ChainRef = { kind: 'weapon', chainId };
+            // A chain is "started" only when it has an explicit slot in inventory;
+            // getJobProgress fabricates a default antiquated SlotProgress otherwise.
+            const isStarted = inventory.weapons[chainId] !== undefined;
+            const stepperCurrent = isStarted ? p.currentStage : null;
             const currentInfo = weaponInfoAt(weapons, chainId, p.currentStage);
             const targetInfo = p.targetStage ? weaponInfoAt(weapons, chainId, p.targetStage) : undefined;
             const currentName = currentInfo?.tcName ?? chain?.displayName ?? chainId;
@@ -134,6 +138,7 @@ export function DetailTab({
 
             const stageSuffix = (info: typeof currentInfo, stage: EurekaStage) =>
               `（${STAGE_TC_LABEL[stage]}${info ? ` · iL${info.itemLevel}` : ''}）`;
+            const notStartedSuffix = '（未開始 · 點下方階段標記目標）';
 
             return (
               <div key={chainId} className="space-y-2 pt-2">
@@ -141,7 +146,7 @@ export function DetailTab({
                   <div className="text-gray-100 font-semibold">
                     {currentName}
                     <span className="text-xs text-gray-400 font-normal ml-2">
-                      {stageSuffix(currentInfo, p.currentStage)}
+                      {isStarted ? stageSuffix(currentInfo, p.currentStage) : notStartedSuffix}
                     </span>
                     {targetInfo && p.targetStage && p.targetStage !== p.currentStage && (
                       <>
@@ -160,7 +165,7 @@ export function DetailTab({
                     <div key={m.chainId} className="text-gray-100 font-semibold">
                       {m.current?.tcName ?? m.displayName}
                       <span className="text-xs text-gray-400 font-normal ml-2">
-                        {stageSuffix(m.current, p.currentStage)}
+                        {isStarted ? stageSuffix(m.current, p.currentStage) : notStartedSuffix}
                       </span>
                       {m.target && p.targetStage && p.targetStage !== p.currentStage && (
                         <>
@@ -178,7 +183,7 @@ export function DetailTab({
                 </div>
 
                 <ChainStepper
-                  currentStage={p.currentStage}
+                  currentStage={stepperCurrent}
                   targetStage={p.targetStage}
                   onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
                 />
@@ -261,13 +266,16 @@ function ArmorTrackSection({
       </h3>
       <div className="space-y-3 pl-2 border-l-2 border-gray-700">
         {ARMOR_SLOTS.map((slot) => {
-          const p = pieces[slot] ?? { currentStage: 'antiquated' as const };
+          const slotData = pieces[slot];
+          const isStarted = slotData !== undefined;
+          const p = slotData ?? { currentStage: 'antiquated' as const };
+          const stepperCurrent = isStarted ? p.currentStage : null;
           const ref = makeRef(slot);
           const header = (
             <div className="text-sm text-gray-100 font-semibold">
               {SLOT_TC[slot]}
               <span className="text-xs text-gray-400 font-normal ml-2">
-                （{STAGE_TC_LABEL[p.currentStage]}）
+                {isStarted ? `（${STAGE_TC_LABEL[p.currentStage]}）` : '（未開始）'}
               </span>
               {p.targetStage && p.targetStage !== p.currentStage && (
                 <>
@@ -288,7 +296,7 @@ function ArmorTrackSection({
             >
               <div className="space-y-2">
                 <ChainStepper
-                  currentStage={p.currentStage}
+                  currentStage={stepperCurrent}
                   targetStage={p.targetStage}
                   stages={stages}
                   onSelectTarget={(stage) =>

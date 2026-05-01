@@ -2,7 +2,8 @@ import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME, ZONE_ENDPOINT_TC_NAME } fro
 import type { EurekaStage, EurekaZone } from '../../types/eureka-gear';
 
 export type ChainStepperProps = {
-  currentStage: EurekaStage;
+  /** null = the player has not even owned the prereq stage 1 (antiquated). */
+  currentStage: EurekaStage | null;
   targetStage?: EurekaStage;
   onSelectTarget: (stage: EurekaStage) => void;
   /** Optional stage sequence for armor tracks (shorter than EUREKA_STAGES). */
@@ -13,7 +14,13 @@ function stageState(
   i: number,
   currentIdx: number,
   targetIdx: number | null,
-): 'owned' | 'current' | 'target' | 'unowned' {
+): 'owned' | 'current' | 'target' | 'unowned' | 'not-started' {
+  // currentIdx === -1 means currentStage is null → entire stepper is "not started";
+  // only the explicit target (if any) breaks out of the gray treatment.
+  if (currentIdx < 0) {
+    if (targetIdx !== null && i === targetIdx) return 'target';
+    return 'not-started';
+  }
   if (i === currentIdx) return 'current';
   if (targetIdx !== null && i === targetIdx) return 'target';
   if (i < currentIdx) return 'owned';
@@ -25,6 +32,8 @@ const STATE_STYLE: Record<string, string> = {
   current: 'bg-green-500 text-black ring-2 ring-white',
   target: 'bg-transparent border-2 border-yellow-400 text-yellow-400 ring-2 ring-white',
   unowned: 'bg-gray-700 text-gray-500',
+  // not-started: empty-slot look (Diablo 4 wardrobe style) — dashed faint ring.
+  'not-started': 'bg-transparent border border-dashed border-gray-600 text-gray-600',
 };
 
 type StageEntry = { stage: EurekaStage; index: number };
@@ -64,7 +73,8 @@ function groupByZone(seq: readonly EurekaStage[]): ZoneGroup[] {
 
 export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages }: ChainStepperProps) {
   const seq = stages ?? EUREKA_STAGES;
-  const currentIdx = seq.indexOf(currentStage);
+  // currentStage === null → currentIdx -1, which stageState reads as "not started".
+  const currentIdx = currentStage ? seq.indexOf(currentStage) : -1;
   const targetIdx = targetStage ? seq.indexOf(targetStage) : null;
   const showZoneGroups = seq === EUREKA_STAGES;
 
