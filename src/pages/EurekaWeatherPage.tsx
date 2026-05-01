@@ -3,7 +3,6 @@ import { EUREKA_ZONES } from '@/data/weather-data';
 import { useUrlSelectedWeathers } from '@/hooks/useUrlSelectedWeathers';
 import { useGameClock } from '@/hooks/useGameClock';
 import { useNmDetailHash } from '@/hooks/useNmDetailHash';
-import GameClock from '@/components/eureka-weather/GameClock';
 import WeatherFilterBar from '@/components/eureka-weather/WeatherFilterBar';
 import ZoneWeatherRow from '@/components/eureka-weather/ZoneWeatherRow';
 import HelpModal from '@/components/eureka-weather/HelpModal';
@@ -19,8 +18,22 @@ import type { EurekaZone } from '@/data/weather-data';
 
 const SCROLL_REVEAL_THRESHOLD = 80;
 
+function formatCountdown(ms: number): string {
+  const totalSec = Math.max(0, Math.floor(ms / 1000));
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${m}分${String(s).padStart(2, '0')}秒`;
+}
+
+function formatClientTime(ms: number): string {
+  const d = new Date(ms);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${hh}:${mm}`;
+}
+
 export default function EurekaWeatherPage() {
-  const { now } = useGameClock();
+  const { now, eorzeaClock, isDay, msUntilTransition } = useGameClock();
   const [selected, setSelected] = useUrlSelectedWeathers();
   const [scrolledAway, setScrolledAway] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -112,27 +125,8 @@ export default function EurekaWeatherPage() {
   return (
     <RemindersProvider>
     <NmTooltipProvider>
-      <div className="relative flex items-center justify-center mb-4">
+      <div className="flex items-center justify-center mb-4">
         <h1 className="font-title text-2xl font-bold text-primary">優雷卡天氣</h1>
-        <div className="absolute right-0 flex items-center gap-2">
-          <RemindersHeaderButton />
-          <button
-            type="button"
-            aria-label="搜尋 NM"
-            onClick={() => setSearchOpen(true)}
-            className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
-          >
-            🔍
-          </button>
-          <button
-            type="button"
-            aria-label="說明"
-            onClick={() => setHelpOpen(true)}
-            className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
-          >
-            ?
-          </button>
-        </div>
       </div>
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
       <NmSearchPanel
@@ -151,14 +145,50 @@ export default function EurekaWeatherPage() {
         </div>
       )}
       <div className="flex flex-col gap-3">
-        <GameClock />
+        <div className="bg-secondary rounded-lg px-3 py-2 flex items-center gap-2 flex-wrap text-sm">
+          <span className="font-mono font-semibold text-foreground">{formatClientTime(now)}</span>
+          <span className="text-xs text-muted-foreground">現實</span>
+          <span className="text-muted-foreground">·</span>
+          <span className="font-mono font-semibold text-foreground">{eorzeaClock}</span>
+          <span className="text-xs text-muted-foreground">艾奧傑亞</span>
+          <span className={`px-2 py-0.5 rounded text-xs font-medium ${isDay ? 'bg-amber-500/20 text-amber-300' : 'bg-indigo-500/20 text-indigo-300'}`}>
+            {isDay ? '☀ 白天' : '🌙 夜晚'}
+          </span>
+          <span className="text-xs text-muted-foreground">距{isDay ? '夜晚' : '白天'} {formatCountdown(msUntilTransition)}</span>
+          <div className="ml-auto flex items-center gap-1.5">
+            <RemindersHeaderButton />
+            <button
+              type="button"
+              aria-label="搜尋 NM"
+              onClick={() => setSearchOpen(true)}
+              className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
+            >
+              🔍
+            </button>
+            <button
+              type="button"
+              aria-label="說明"
+              onClick={() => setHelpOpen(true)}
+              className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+            >
+              ?
+            </button>
+            <button
+              type="button"
+              onClick={copyLink}
+              className="flex items-center gap-1 text-xs px-2 py-0.5 rounded border border-border/50 text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+            >
+              <span>📋</span>
+              <span>複製連結</span>
+            </button>
+          </div>
+        </div>
         <OnboardingHint />
         <WeatherFilterBar
           selected={selected}
           onToggle={toggle}
           onClearAll={clearAll}
           onJumpToNow={scrolledAway ? jumpToNow : undefined}
-          onCopyLink={copyLink}
         />
         <WeatherSummaryBar
           selected={selected}
