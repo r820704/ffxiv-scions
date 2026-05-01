@@ -49,9 +49,8 @@ export function OverviewTab({
   role = 'all',
   onRoleChange,
 }: OverviewTabProps) {
-  const { mainJobs, setMainJobs } = useMainJobs();
+  const { mainJobs, setMainJobs, mainJobsActive, setMainJobsActive } = useMainJobs();
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [mainJobsActive, setMainJobsActive] = useState(false);
 
   const jobProgresses = useMemo(
     () => JOBS_WITH_WEAPONS.map((job) => ({ job, progress: getJobProgress(job, inventory) })),
