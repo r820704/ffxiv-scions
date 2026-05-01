@@ -1,13 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const DISMISSED_KEY = 'eureka-gear-onboarding-dismissed';
 const EXPANDED_KEY = 'eureka-gear-onboarding-expanded';
+const REOPEN_EVENT = 'eureka-gear-onboarding-reopen';
+
+/** Trigger a re-display of a banner that was previously dismissed. Mirrors the
+ *  weather page's `?` header button → opens HelpModal pattern, but here the
+ *  banner is the help surface so we just flip its dismissed state back. */
+export function reopenOnboarding(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(DISMISSED_KEY);
+  window.dispatchEvent(new CustomEvent(REOPEN_EVENT));
+}
 
 export function OnboardingBanner() {
   const [dismissed, setDismissed] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return localStorage.getItem(DISMISSED_KEY) === '1';
   });
+
+  // Listen for external "reopen" calls (the page-header `?` button).
+  useEffect(() => {
+    const handler = () => setDismissed(false);
+    window.addEventListener(REOPEN_EVENT, handler);
+    return () => window.removeEventListener(REOPEN_EVENT, handler);
+  }, []);
+
   const [expanded, setExpanded] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true;
     // First visit (key absent) → start expanded; subsequent visits respect last toggle.

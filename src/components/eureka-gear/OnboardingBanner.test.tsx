@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { OnboardingBanner } from './OnboardingBanner';
+import { act, render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { OnboardingBanner, reopenOnboarding } from './OnboardingBanner';
 
 afterEach(() => {
   cleanup();
@@ -63,5 +63,17 @@ describe('OnboardingBanner', () => {
     render(<OnboardingBanner />);
     expect(screen.queryByText(/依職業，16 階段/)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /展開三軌說明/ })).toBeInTheDocument();
+  });
+
+  it('reopenOnboarding() makes a dismissed banner reappear without remount', () => {
+    localStorage.setItem('eureka-gear-onboarding-dismissed', '1');
+    render(<OnboardingBanner />);
+    // Pre-condition: banner hidden because of dismissed flag.
+    expect(screen.queryByRole('region', { name: /禁地兵裝說明/ })).not.toBeInTheDocument();
+    // Trigger the page-header `?` button equivalent.
+    act(() => reopenOnboarding());
+    expect(screen.getByRole('region', { name: /禁地兵裝說明/ })).toBeInTheDocument();
+    // localStorage flag should also have been cleared so a hard reload doesn't re-hide it.
+    expect(localStorage.getItem('eureka-gear-onboarding-dismissed')).toBeNull();
   });
 });
