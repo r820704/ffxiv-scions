@@ -133,8 +133,11 @@ export default function EurekaPage() {
     <div className="relative">
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 40% at 10% 20%,rgba(74,48,120,.06),transparent),radial-gradient(ellipse 50% 35% at 85% 70%,rgba(40,80,140,.05),transparent),radial-gradient(ellipse 45% 30% at 50% 90%,rgba(120,50,50,.04),transparent)' }} />
       <div className="relative">
-        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <h1 className="font-title text-2xl font-bold text-primary">Eureka 文理技能</h1>
+        <div className="flex items-start justify-between mb-4 flex-wrap gap-2">
+          <div>
+            <h1 className="font-title text-2xl font-bold text-primary">文理技能</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">依圖鑑狀態與素材計算最佳文理技能合成路徑</p>
+          </div>
           <div className="flex items-center gap-3">
             {lastFetched && (
               <span className="text-xs text-muted-foreground">

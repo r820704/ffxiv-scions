@@ -25,7 +25,7 @@ export default function CalcModeToggle({ calcMode, onChange }: CalcModeTogglePro
               'px-4 py-2 text-sm rounded-md border transition-colors cursor-pointer',
               active
                 ? 'border-primary-dark bg-primary-dark/15 text-primary font-semibold'
-                : 'border-border bg-card text-muted-foreground hover:text-foreground',
+                : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/50',
             )}
           >
             {active ? '● ' : '○ '}{label}
