@@ -104,7 +104,10 @@ export function OverviewTab({
       </section>
 
       <section>
-        <h3 className="text-sm font-bold text-cyan-300 mb-2">元素防具（依職能共用）</h3>
+        <h3 className="text-sm font-bold text-cyan-300 mb-1">元素防具（依職能共用）</h3>
+        <p className="text-xs text-gray-400 mb-2">
+          同職能玩家共享同一套外觀，按坦克 / 近戰 / 遠程 / 治療 / 法職分組
+        </p>
         <div
           data-testid="role-grid"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
