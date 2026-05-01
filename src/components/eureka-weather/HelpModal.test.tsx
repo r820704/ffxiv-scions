@@ -10,11 +10,10 @@ describe('HelpModal', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('renders all three sections when isOpen', () => {
+  it('renders both sections when isOpen', () => {
     render(<HelpModal isOpen onClose={vi.fn()} />);
     expect(screen.getByText(/怎麼讀格子/)).toBeTruthy();
     expect(screen.getByText(/怎麼用篩選/)).toBeTruthy();
-    expect(screen.getByText(/連續同天氣/)).toBeTruthy();
   });
 
   it('calls onClose when backdrop clicked', () => {
