@@ -8,9 +8,10 @@ import type { EurekaInventoryV5, EurekaWeapon, ArmorSetId } from '../../types/eu
 import { ARMOR_SET_IDS } from '../../types/eureka-gear';
 import {
   ARMOR_SET_FOR_JOB,
+  ARMOR_SET_FOR_ANY_JOB,
   JOBS_FOR_ARMOR_SET,
   JOBS_WITH_WEAPONS,
-  type JobId,
+  type AnyJobId,
 } from '../../data/eureka-armor-sets';
 import { ROLE_LABELS, ROLE_COLORS, type Role } from '../../types/eureka';
 
@@ -63,7 +64,7 @@ export function OverviewTab({
   const filteringByMain = mainJobsActive && mainJobs.length > 0;
 
   const visibleJobs = useMemo(() => {
-    if (filteringByMain) return jobProgresses.filter(({ job }) => mainJobsSet.has(job as JobId));
+    if (filteringByMain) return jobProgresses.filter(({ job }) => mainJobsSet.has(job));
     if (role === 'all') return jobProgresses;
     return jobProgresses.filter(({ job }) => ARMOR_SET_TO_ROLE[ARMOR_SET_FOR_JOB[job]] === role);
   }, [jobProgresses, role, filteringByMain, mainJobsSet]);
@@ -71,7 +72,7 @@ export function OverviewTab({
   const visibleSets = useMemo(() => {
     if (filteringByMain) {
       // When filtering by main jobs, show only role-armor sets that any main job belongs to.
-      const roles = new Set(mainJobs.map((j) => ARMOR_SET_TO_ROLE[ARMOR_SET_FOR_JOB[j]]));
+      const roles = new Set(mainJobs.map((j) => ARMOR_SET_TO_ROLE[ARMOR_SET_FOR_ANY_JOB[j]]));
       return ARMOR_SET_IDS.filter((set) => roles.has(ARMOR_SET_TO_ROLE[set]));
     }
     if (role === 'all') return ARMOR_SET_IDS;
@@ -86,7 +87,7 @@ export function OverviewTab({
     }
   };
 
-  const handlePickerConfirm = (next: JobId[]) => {
+  const handlePickerConfirm = (next: AnyJobId[]) => {
     setMainJobs(next);
     setPickerOpen(false);
     if (next.length > 0) setMainJobsActive(true);

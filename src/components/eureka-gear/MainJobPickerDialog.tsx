@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import {
-  ARMOR_SET_FOR_JOB,
   JOB_TC_NAME,
-  JOBS_WITH_WEAPONS,
-  type JobId,
+  JOBS_FOR_ARMOR_SET,
+  type AnyJobId,
 } from '../../data/eureka-armor-sets';
+import type { ArmorSetId } from '../../types/eureka-gear';
 
-const ROLE_GROUPS: Array<{ label: string; setIds: string[] }> = [
+const ROLE_GROUPS: Array<{ label: string; setIds: ArmorSetId[] }> = [
   { label: '坦克', setIds: ['fending'] },
   { label: '近戰', setIds: ['maiming', 'striking', 'scouting'] },
   { label: '遠程', setIds: ['aiming'] },
@@ -16,13 +16,13 @@ const ROLE_GROUPS: Array<{ label: string; setIds: string[] }> = [
 
 export type MainJobPickerDialogProps = {
   isOpen: boolean;
-  initial: JobId[];
-  onConfirm: (jobs: JobId[]) => void;
+  initial: AnyJobId[];
+  onConfirm: (jobs: AnyJobId[]) => void;
   onCancel: () => void;
 };
 
 export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: MainJobPickerDialogProps) {
-  const [selected, setSelected] = useState<Set<JobId>>(() => new Set(initial));
+  const [selected, setSelected] = useState<Set<AnyJobId>>(() => new Set(initial));
 
   // Reset selection when dialog reopens with a different initial set.
   useEffect(() => {
@@ -31,7 +31,7 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
 
   if (!isOpen) return null;
 
-  const toggle = (job: JobId) => {
+  const toggle = (job: AnyJobId) => {
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(job)) next.delete(job);
@@ -63,8 +63,7 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
 
         <div className="space-y-3">
           {ROLE_GROUPS.map(({ label, setIds }) => {
-            const jobs = JOBS_WITH_WEAPONS.filter((job) => setIds.includes(ARMOR_SET_FOR_JOB[job]));
-            if (jobs.length === 0) return null;
+            const jobs = setIds.flatMap((setId) => JOBS_FOR_ARMOR_SET[setId]);
             return (
               <div key={label}>
                 <div className="text-xs text-gray-500 mb-1">{label}</div>
