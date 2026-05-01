@@ -119,7 +119,7 @@ export function OverviewTab({
               }}
               className={`text-xs px-2 py-1 rounded transition-colors ${
                 active
-                  ? `${ROLE_COLORS[opt]} ring-2 ring-cyan-400`
+                  ? `${ROLE_COLORS[opt]} ring-2 ring-primary`
                   : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
               }`}
             >
