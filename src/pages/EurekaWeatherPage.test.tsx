@@ -34,7 +34,7 @@ describe('EurekaWeatherPage', () => {
       </MemoryRouter>,
     );
     // Section labels of the M4 two-group filter bar
-    expect(screen.getByText(/觸發 NM/)).toBeTruthy();
+    expect(screen.getByText(/觸發 NM：/)).toBeTruthy();
     expect(screen.getByText(/一般天氣/)).toBeTruthy();
   });
 

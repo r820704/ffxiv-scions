@@ -170,7 +170,7 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
           onMouseLeave={handleContentLeave}
         >
           <div className="flex items-center justify-between mb-1 gap-2">
-            <span className="text-muted-foreground text-[10px]">可能出現</span>
+            <span className="text-muted-foreground text-[10px]">符合觸發條件</span>
             <button
               type="button"
               aria-label="關閉"

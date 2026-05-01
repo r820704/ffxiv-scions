@@ -51,7 +51,7 @@ describe('NmTooltip', () => {
       </NmTooltip>,
     );
     expect(screen.getByTestId('cell')).toBeTruthy();
-    expect(screen.queryByText('可能出現')).toBeNull();
+    expect(screen.queryByText('符合觸發條件')).toBeNull();
   });
 
   it('opens tooltip on mouse hover (hover-capable device)', () => {
@@ -61,7 +61,7 @@ describe('NmTooltip', () => {
       </NmTooltip>,
     );
     fireEvent.mouseEnter(screen.getByTestId('cell').parentElement!);
-    expect(screen.getByText('可能出現')).toBeTruthy();
+    expect(screen.getByText('符合觸發條件')).toBeTruthy();
     expect(screen.getByText('帕祖祖')).toBeTruthy();
     expect(screen.getByText('法夫納')).toBeTruthy();
     expect(screen.getByText('強風+夜間')).toBeTruthy();
