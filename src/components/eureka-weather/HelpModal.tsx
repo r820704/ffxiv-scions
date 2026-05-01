@@ -20,7 +20,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
         <h2 className="text-lg font-bold text-amber-300 mb-4">優雷卡天氣 — 使用說明</h2>
         <Section title="怎麼讀格子">
           <p className="text-muted-foreground">每格代表遊戲時間 8 小時（差不多現實 23 分鐘）。</p>
-          <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground">
+          <ul className="list-disc list-outside ml-4 mt-2 space-y-1 text-muted-foreground">
             <li><span className="text-foreground">底色代表日夜</span>：偏紫是夜晚、偏黃是白天；漸層轉折線就是日出／日落</li>
             <li><span className="text-foreground">黃色直線</span>：「現在」在這個時段裡的位置</li>
             <li><span className="text-foreground">🔴 NM 標記</span>：此時段符合天氣觸發條件；移到格子上查看 NM 名單，點一下釘住</li>
@@ -29,7 +29,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           </ul>
         </Section>
         <Section title="怎麼用篩選">
-          <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground">
+          <ul className="list-disc list-outside ml-4 mt-2 space-y-1 text-muted-foreground">
             <li><span className="text-foreground">上排「觸發 NM」</span>：6 種符合觸發 NM 的天氣 + 🌙 夜間（純夜晚出的 NM 不挑天氣）</li>
             <li><span className="text-foreground">下排「一般天氣」</span>：點 ▸ 展開</li>
             <li><span className="text-foreground">「✕ 清除全部」</span>：一鍵把所有篩選清掉</li>
