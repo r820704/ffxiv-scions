@@ -166,7 +166,7 @@ export default function ZoneWeatherRow({
 
   return (
     <div className="border border-border rounded-lg p-3 bg-card">
-      <div className="flex items-center justify-between gap-2 flex-wrap">
+      <div className="flex items-center gap-2 flex-wrap">
         <span className="text-sm font-semibold text-foreground">
           {zoneNamesTw[zone]}
           <span className="ml-2 text-xs font-normal text-amber-300/70">
@@ -183,14 +183,14 @@ export default function ZoneWeatherRow({
             <span aria-hidden="true">📋</span> 全部 NM ({eurekaNms.filter((n) => n.zone === zone).length})
           </button>
         )}
+        {showInfoLine && (
+          <span className="text-xs text-amber-300">
+            {lastLabel}
+            {lastLabel && rightLabel && ' ・ '}
+            {rightLabel}
+          </span>
+        )}
       </div>
-      {showInfoLine && (
-        <div className="text-xs text-amber-300 mt-0.5">
-          {lastLabel}
-          {lastLabel && rightLabel && ' ・ '}
-          {rightLabel}
-        </div>
-      )}
       <div
         ref={setRefs}
         onScroll={(e) => onScroll?.(e.currentTarget.scrollLeft)}
