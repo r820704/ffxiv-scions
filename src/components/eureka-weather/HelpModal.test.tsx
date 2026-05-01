@@ -25,14 +25,7 @@ describe('HelpModal', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('calls onClose when close button clicked', () => {
-    const onClose = vi.fn();
-    render(<HelpModal isOpen onClose={onClose} />);
-    fireEvent.click(screen.getByText(/我知道了/));
-    expect(onClose).toHaveBeenCalled();
-  });
-
-  it('does NOT close when clicking inside the modal content', () => {
+it('does NOT close when clicking inside the modal content', () => {
     const onClose = vi.fn();
     render(<HelpModal isOpen onClose={onClose} />);
     fireEvent.click(screen.getByText(/怎麼讀格子/));

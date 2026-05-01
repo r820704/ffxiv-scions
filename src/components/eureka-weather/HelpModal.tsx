@@ -15,7 +15,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-card border border-border rounded-lg max-w-lg w-full max-h-[85vh] overflow-y-auto p-5 text-sm"
+        className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 text-sm"
       >
         <h2 className="text-lg font-bold text-amber-300 mb-4">優雷卡天氣 — 使用說明</h2>
         <Section title="怎麼讀格子">
@@ -45,13 +45,6 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             點擊 🔍 可依名稱搜尋所有優雷卡 NM，查看觸發條件，並跳至最近符合的格子。
           </p>
         </Section>
-        <button
-          type="button"
-          onClick={onClose}
-          className="mt-4 w-full py-2 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-        >
-          我知道了
-        </button>
       </div>
     </div>
   );
