@@ -35,6 +35,16 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             <li><span className="text-foreground">「✕ 清除全部」</span>：一鍵把所有篩選清掉</li>
           </ul>
         </Section>
+        <Section title="提醒">
+          <p className="text-muted-foreground">
+            篩選天氣後，下方摘要每筆「地圖・出現時間」旁的 🔕 可設定瀏覽器通知；點頁首 🔔 鈴鐺可查看和管理提醒，並切換重複通知。
+          </p>
+        </Section>
+        <Section title="NM 搜尋">
+          <p className="text-muted-foreground">
+            點擊 🔍 可依名稱搜尋所有優雷卡 NM，查看觸發條件，並跳至最近符合的格子。
+          </p>
+        </Section>
         <button
           type="button"
           onClick={onClose}
