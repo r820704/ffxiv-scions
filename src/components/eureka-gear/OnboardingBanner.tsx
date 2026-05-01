@@ -2,28 +2,41 @@ import { useEffect, useState } from 'react';
 
 const DISMISSED_KEY = 'eureka-gear-onboarding-dismissed';
 const EXPANDED_KEY = 'eureka-gear-onboarding-expanded';
-const REOPEN_EVENT = 'eureka-gear-onboarding-reopen';
+const TOGGLE_EVENT = 'eureka-gear-onboarding-toggle';
 
-/** Trigger a re-display of a banner that was previously dismissed. Mirrors the
- *  weather page's `?` header button → opens HelpModal pattern, but here the
- *  banner is the help surface so we just flip its dismissed state back. */
-export function reopenOnboarding(): void {
+/** Toggle the banner's visibility from outside (the page-header `?` button).
+ *  - If the banner is hidden — whether via the X dismiss button (persisted) or
+ *    by an earlier toggle (transient) — bring it back. The persisted dismiss
+ *    flag is cleared so a hard reload also keeps it visible.
+ *  - If the banner is currently visible, hide it transiently (no flag write),
+ *    so the next `?` click re-shows without resurrecting an X-dismissed flag.
+ *
+ *  X dismissal stays "permanent until ? is pressed"; ? toggle is the soft
+ *  show/hide affordance the user expects from a single header help button. */
+export function toggleOnboarding(): void {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem(DISMISSED_KEY);
-  window.dispatchEvent(new CustomEvent(REOPEN_EVENT));
+  window.dispatchEvent(new CustomEvent(TOGGLE_EVENT));
 }
 
 export function OnboardingBanner() {
-  const [dismissed, setDismissed] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem(DISMISSED_KEY) === '1';
+  const [visible, setVisible] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    return localStorage.getItem(DISMISSED_KEY) !== '1';
   });
 
-  // Listen for external "reopen" calls (the page-header `?` button).
   useEffect(() => {
-    const handler = () => setDismissed(false);
-    window.addEventListener(REOPEN_EVENT, handler);
-    return () => window.removeEventListener(REOPEN_EVENT, handler);
+    const handler = () => {
+      setVisible((prev) => {
+        const next = !prev;
+        // When toggling back to visible, also clear the persisted dismissed flag
+        // so a hard reload keeps it visible. Hiding via toggle does NOT set the
+        // flag — that's reserved for the X button (explicit "stop reminding me").
+        if (next) localStorage.removeItem(DISMISSED_KEY);
+        return next;
+      });
+    };
+    window.addEventListener(TOGGLE_EVENT, handler);
+    return () => window.removeEventListener(TOGGLE_EVENT, handler);
   }, []);
 
   const [expanded, setExpanded] = useState<boolean>(() => {
@@ -33,11 +46,11 @@ export function OnboardingBanner() {
     return raw === null ? true : raw === '1';
   });
 
-  if (dismissed) return null;
+  if (!visible) return null;
 
   const handleDismiss = () => {
     localStorage.setItem(DISMISSED_KEY, '1');
-    setDismissed(true);
+    setVisible(false);
   };
 
   const toggleExpanded = () => {

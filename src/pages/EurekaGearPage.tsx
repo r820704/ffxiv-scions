@@ -8,7 +8,7 @@ import { DetailTab } from '@/components/eureka-gear/DetailTab';
 import { FarmingTab } from '@/components/eureka-gear/FarmingTab';
 import InventorySidebar from '@/components/eureka-gear/InventorySidebar';
 import { UpgradeDialog } from '@/components/eureka-gear/UpgradeDialog';
-import { OnboardingBanner, reopenOnboarding } from '@/components/eureka-gear/OnboardingBanner';
+import { OnboardingBanner, toggleOnboarding } from '@/components/eureka-gear/OnboardingBanner';
 import { EUREKA_STAGES } from '@/types/eureka-gear';
 import type { EurekaStage } from '@/types/eureka-gear';
 import { sharedJobNames } from '@/data/eureka-armor-sets';
@@ -139,8 +139,8 @@ export default function EurekaGearPage() {
         <h1 className="text-lg font-semibold">禁地兵裝</h1>
         <button
           type="button"
-          aria-label="說明"
-          onClick={reopenOnboarding}
+          aria-label="切換說明"
+          onClick={toggleOnboarding}
           className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
         >
           ?

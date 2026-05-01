@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { act, render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { OnboardingBanner, reopenOnboarding } from './OnboardingBanner';
+import { OnboardingBanner, toggleOnboarding } from './OnboardingBanner';
 
 afterEach(() => {
   cleanup();
@@ -65,15 +65,23 @@ describe('OnboardingBanner', () => {
     expect(screen.getByRole('button', { name: /展開三軌說明/ })).toBeInTheDocument();
   });
 
-  it('reopenOnboarding() makes a dismissed banner reappear without remount', () => {
+  it('toggleOnboarding() reveals an X-dismissed banner and clears the flag', () => {
     localStorage.setItem('eureka-gear-onboarding-dismissed', '1');
     render(<OnboardingBanner />);
-    // Pre-condition: banner hidden because of dismissed flag.
     expect(screen.queryByRole('region', { name: /禁地兵裝說明/ })).not.toBeInTheDocument();
-    // Trigger the page-header `?` button equivalent.
-    act(() => reopenOnboarding());
+    act(() => toggleOnboarding());
     expect(screen.getByRole('region', { name: /禁地兵裝說明/ })).toBeInTheDocument();
-    // localStorage flag should also have been cleared so a hard reload doesn't re-hide it.
     expect(localStorage.getItem('eureka-gear-onboarding-dismissed')).toBeNull();
+  });
+
+  it('toggleOnboarding() also hides a currently-visible banner without setting the flag', () => {
+    render(<OnboardingBanner />);
+    expect(screen.getByRole('region', { name: /禁地兵裝說明/ })).toBeInTheDocument();
+    act(() => toggleOnboarding());
+    expect(screen.queryByRole('region', { name: /禁地兵裝說明/ })).not.toBeInTheDocument();
+    // Soft hide must NOT persist — only the X button writes the dismiss flag.
+    expect(localStorage.getItem('eureka-gear-onboarding-dismissed')).toBeNull();
+    act(() => toggleOnboarding());
+    expect(screen.getByRole('region', { name: /禁地兵裝說明/ })).toBeInTheDocument();
   });
 });
