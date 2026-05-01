@@ -60,7 +60,7 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
         <section>
           <div className="text-xs font-bold text-yellow-400 mb-1">武器</div>
           <ul className="space-y-1 text-xs">
-            {progress.weapons.map(({ chainId, progress: p }) => {
+            {progress.weapons.map(({ chainId, progress: p, started }) => {
               const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
               const info = weaponInfoAt(weapons, chainId, p.currentStage);
               const name = info?.tcName ?? chain?.displayName ?? chainId;
@@ -72,8 +72,14 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
                   </div>
                   <ChainFingerprint currentStage={p.currentStage} showLabel />
                   <div className="text-xs text-gray-400">
-                    · {STAGE_TC_LABEL[p.currentStage]}
-                    {p.targetStage && ` → ${STAGE_TC_LABEL[p.targetStage]}`}
+                    {started ? (
+                      <>
+                        · {STAGE_TC_LABEL[p.currentStage]}
+                        {p.targetStage && ` → ${STAGE_TC_LABEL[p.targetStage]}`}
+                      </>
+                    ) : (
+                      <span className="text-gray-500">· 未開始</span>
+                    )}
                   </div>
                 </li>
               );
@@ -87,6 +93,7 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
         <ul className="space-y-0.5">
           {ARMOR_SLOTS.map((slot) => {
             const p = progress.anemos[slot];
+            const started = p !== undefined;
             const stage: EurekaStage = p?.currentStage ?? 'antiquated';
             return (
               <li key={slot} className="flex flex-wrap items-center gap-2 text-xs">
@@ -97,8 +104,14 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
                   showLabel
                 />
                 <span className="text-gray-400">
-                  · {STAGE_TC_LABEL[stage]}
-                  {p?.targetStage && ` → ${STAGE_TC_LABEL[p.targetStage]}`}
+                  {started ? (
+                    <>
+                      · {STAGE_TC_LABEL[stage]}
+                      {p?.targetStage && ` → ${STAGE_TC_LABEL[p.targetStage]}`}
+                    </>
+                  ) : (
+                    <span className="text-gray-500">· 未開始</span>
+                  )}
                 </span>
               </li>
             );

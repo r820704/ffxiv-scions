@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { JobCard } from './JobCard';
 import { RoleCard } from './RoleCard';
+import { ProgressSummary } from './ProgressSummary';
 import { MainJobPickerDialog } from './MainJobPickerDialog';
 import { getJobProgress } from '../../utils/eurekaGear';
 import { useMainJobs } from '../../hooks/useMainJobs';
@@ -95,6 +96,7 @@ export function OverviewTab({
 
   return (
     <div className="space-y-6">
+      <ProgressSummary inventory={inventory} />
       <div
         role="group"
         aria-label="職能篩選"
