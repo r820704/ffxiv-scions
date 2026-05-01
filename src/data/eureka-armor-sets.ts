@@ -75,6 +75,16 @@ export const JOB_TC_NAME: Record<AnyJobId, string> = {
   BLM: '黑魔道士', SMN: '召喚士',   RDM: '赤魔道士', BLU: '青魔道士', PCT: '繪靈法師',
 };
 
+/** Armor set lookup for ALL jobs (SB-era + post-SB). Derived from JOBS_FOR_ARMOR_SET. */
+export const ARMOR_SET_FOR_ANY_JOB: Record<AnyJobId, ArmorSetId> = {
+  ...ARMOR_SET_FOR_JOB,
+  GNB: 'fending',
+  RPR: 'maiming', VPR: 'scouting',
+  DNC: 'aiming',
+  SGE: 'healing',
+  BLU: 'casting', PCT: 'casting',
+};
+
 export function isArmorSetShared(id: ArmorSetId): boolean {
   return JOBS_FOR_ARMOR_SET[id].length > 1;
 }
