@@ -70,6 +70,9 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
   const [localState, setLocalState] = useState<{ open: boolean; pinned: boolean }>({ open: false, pinned: false });
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
+  // Always points to the latest ctx so timer callbacks don't close the wrong tooltip.
+  const ctxRef = useRef(ctx);
+  ctxRef.current = ctx;
 
   const open = ctx ? ctx.activeId === id : localState.open;
   const pinned = ctx ? ctx.pinnedId === id : localState.pinned;
@@ -90,9 +93,12 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
     cancelScheduledClose();
     closeTimerRef.current = setTimeout(() => {
       closeTimerRef.current = null;
-      // Re-check pinned state at fire time — user may have pinned during the delay.
-      if (ctx) {
-        if (ctx.pinnedId !== id) ctx.setActive(null, false);
+      // Use ctxRef (latest) so we don't accidentally close a different tooltip
+      // that became active while this timer was pending (e.g. user moved to
+      // another cell before the 120ms elapsed).
+      const latestCtx = ctxRef.current;
+      if (latestCtx) {
+        if (latestCtx.activeId === id && latestCtx.pinnedId !== id) latestCtx.setActive(null, false);
       } else {
         setLocalState((s) => (s.pinned ? s : { open: false, pinned: false }));
       }
