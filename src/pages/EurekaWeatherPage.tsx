@@ -125,7 +125,7 @@ export default function EurekaWeatherPage() {
   return (
     <RemindersProvider>
     <NmTooltipProvider>
-      <div className="flex items-center justify-center mb-4">
+      <div className="mb-4">
         <h1 className="font-title text-2xl font-bold text-primary">優雷卡天氣</h1>
       </div>
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />

@@ -136,7 +136,7 @@ export default function EurekaGearPage() {
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="text-lg font-semibold">禁地兵裝</h1>
+        <h1 className="font-title text-2xl font-bold text-primary">禁地兵裝</h1>
         <button
           type="button"
           aria-label="切換說明"
