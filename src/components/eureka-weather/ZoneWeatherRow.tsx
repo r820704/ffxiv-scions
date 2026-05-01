@@ -183,16 +183,14 @@ export default function ZoneWeatherRow({
             <span aria-hidden="true">📋</span> 全部 NM ({eurekaNms.filter((n) => n.zone === zone).length})
           </button>
         )}
-        <div className="flex items-center gap-2 ml-auto">
-          {showInfoLine && (
-            <span className="text-xs text-amber-300">
-              {lastLabel}
-              {lastLabel && rightLabel && ' ・ '}
-              {rightLabel}
-            </span>
-          )}
-        </div>
       </div>
+      {showInfoLine && (
+        <div className="text-xs text-amber-300 mt-0.5">
+          {lastLabel}
+          {lastLabel && rightLabel && ' ・ '}
+          {rightLabel}
+        </div>
+      )}
       <div
         ref={setRefs}
         onScroll={(e) => onScroll?.(e.currentTarget.scrollLeft)}
