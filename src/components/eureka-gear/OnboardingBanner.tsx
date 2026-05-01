@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 const DISMISSED_KEY = 'eureka-gear-onboarding-dismissed';
-const EXPANDED_KEY = 'eureka-gear-onboarding-expanded';
 const TOGGLE_EVENT = 'eureka-gear-onboarding-toggle';
 
 /** Toggle the banner's visibility from outside (the page-header `?` button).
@@ -28,9 +27,6 @@ export function OnboardingBanner() {
     const handler = () => {
       setVisible((prev) => {
         const next = !prev;
-        // When toggling back to visible, also clear the persisted dismissed flag
-        // so a hard reload keeps it visible. Hiding via toggle does NOT set the
-        // flag — that's reserved for the X button (explicit "stop reminding me").
         if (next) localStorage.removeItem(DISMISSED_KEY);
         return next;
       });
@@ -39,24 +35,11 @@ export function OnboardingBanner() {
     return () => window.removeEventListener(TOGGLE_EVENT, handler);
   }, []);
 
-  const [expanded, setExpanded] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return true;
-    // First visit (key absent) → start expanded; subsequent visits respect last toggle.
-    const raw = localStorage.getItem(EXPANDED_KEY);
-    return raw === null ? true : raw === '1';
-  });
-
   if (!visible) return null;
 
   const handleDismiss = () => {
     localStorage.setItem(DISMISSED_KEY, '1');
     setVisible(false);
-  };
-
-  const toggleExpanded = () => {
-    const next = !expanded;
-    setExpanded(next);
-    localStorage.setItem(EXPANDED_KEY, next ? '1' : '0');
   };
 
   return (
@@ -76,33 +59,20 @@ export function OnboardingBanner() {
       <p className="text-sm text-gray-100 pr-8">
         <strong>禁地兵裝</strong>是 4.x（紅蓮解放者）的武器與套裝系列，玩家在禁地優雷卡的四個區域累積元素等級與素材，最終可獲得帶有優雷卡元素加持屬性的武器及裝備，部分形態具有發光特效。
       </p>
-      <button
-        type="button"
-        aria-expanded={expanded}
-        onClick={toggleExpanded}
-        className="mt-2 text-xs text-blue-300 hover:text-blue-100 transition-colors flex items-center gap-1"
-      >
-        <span>{expanded ? '▾' : '▸'}</span>
-        <span>{expanded ? '收合三軌說明' : '展開三軌說明'}</span>
-      </button>
-      {expanded && (
-        <>
-          <ul className="mt-2 text-sm space-y-1 text-gray-300">
-            <li>
-              · <strong>武器</strong>（依職業，共 16 階段，最終階段 iL405，帶有優雷卡元素加持屬性）
-            </li>
-            <li>
-              · <strong>常風防具</strong>（外觀專用，不影響角色能力值，各職業獨立，共 5 階段，最終階段為可染色的 Lv.70 職業套裝）
-            </li>
-            <li>
-              · <strong>元素防具</strong>（戰鬥用，共 3 階段，依職能共用——同職能玩家共享同一套外觀，最終階段 iL390，帶有優雷卡元素加持屬性）
-            </li>
-          </ul>
-          <p className="mt-2 text-xs text-gray-400">
-            優雷卡元素加持：在優雷卡區域內均衡提升六種元素屬性，影響傷害計算。
-          </p>
-        </>
-      )}
+      <ul className="mt-2 text-sm space-y-1 text-gray-300">
+        <li>
+          · <strong>武器</strong>（依職業，共 16 階段，最終階段 iL405，帶有優雷卡元素加持屬性）
+        </li>
+        <li>
+          · <strong>常風防具</strong>（外觀專用，不影響角色能力值，各職業獨立，共 5 階段，最終階段為可染色的 Lv.70 職業套裝）
+        </li>
+        <li>
+          · <strong>元素防具</strong>（戰鬥用，共 3 階段，依職能共用——同職能玩家共享同一套外觀，最終階段 iL390，帶有優雷卡元素加持屬性）
+        </li>
+      </ul>
+      <p className="mt-2 text-xs text-gray-400">
+        優雷卡元素加持：在優雷卡區域內均衡提升六種元素屬性，影響傷害計算。
+      </p>
     </div>
   );
 }

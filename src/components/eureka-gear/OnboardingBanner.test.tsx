@@ -11,7 +11,6 @@ describe('OnboardingBanner', () => {
   it('renders by default when localStorage is clean', () => {
     render(<OnboardingBanner />);
     expect(screen.getByRole('region', { name: /禁地兵裝說明/ })).toBeInTheDocument();
-    // Lead sentence stays visible regardless of expand/collapse
     expect(screen.getByText(/4\.x（紅蓮解放者）的武器與套裝系列/)).toBeInTheDocument();
   });
 
@@ -36,33 +35,16 @@ describe('OnboardingBanner', () => {
     expect(closeBtn).toHaveAttribute('aria-label', '關閉說明');
   });
 
-  it('shows all three track descriptions when expanded by default', () => {
+  it('shows all three track descriptions', () => {
     render(<OnboardingBanner />);
     expect(screen.getByText(/依職業，共 16 階段/)).toBeInTheDocument();
     expect(screen.getByText(/外觀專用，不影響角色能力值/)).toBeInTheDocument();
     expect(screen.getByText(/戰鬥用，共 3 階段，依職能共用/)).toBeInTheDocument();
   });
 
-  it('toggle button collapses and expands the three-track detail list', () => {
+  it('shows 優雷卡元素加持 footnote', () => {
     render(<OnboardingBanner />);
-    const toggle = screen.getByRole('button', { name: /收合三軌說明/ });
-    fireEvent.click(toggle);
-    expect(screen.queryByText(/依職業，共 16 階段/)).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /展開三軌說明/ }));
-    expect(screen.getByText(/依職業，共 16 階段/)).toBeInTheDocument();
-  });
-
-  it('persists collapse state to localStorage', () => {
-    render(<OnboardingBanner />);
-    fireEvent.click(screen.getByRole('button', { name: /收合三軌說明/ }));
-    expect(localStorage.getItem('eureka-gear-onboarding-expanded')).toBe('0');
-  });
-
-  it('respects persisted collapsed state on next mount', () => {
-    localStorage.setItem('eureka-gear-onboarding-expanded', '0');
-    render(<OnboardingBanner />);
-    expect(screen.queryByText(/依職業，共 16 階段/)).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /展開三軌說明/ })).toBeInTheDocument();
+    expect(screen.getByText(/優雷卡元素加持：在優雷卡區域內/)).toBeInTheDocument();
   });
 
   it('toggleOnboarding() reveals an X-dismissed banner and clears the flag', () => {
@@ -79,7 +61,6 @@ describe('OnboardingBanner', () => {
     expect(screen.getByRole('region', { name: /禁地兵裝說明/ })).toBeInTheDocument();
     act(() => toggleOnboarding());
     expect(screen.queryByRole('region', { name: /禁地兵裝說明/ })).not.toBeInTheDocument();
-    // Soft hide must NOT persist — only the X button writes the dismiss flag.
     expect(localStorage.getItem('eureka-gear-onboarding-dismissed')).toBeNull();
     act(() => toggleOnboarding());
     expect(screen.getByRole('region', { name: /禁地兵裝說明/ })).toBeInTheDocument();
