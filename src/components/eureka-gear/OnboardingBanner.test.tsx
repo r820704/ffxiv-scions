@@ -12,7 +12,7 @@ describe('OnboardingBanner', () => {
     render(<OnboardingBanner />);
     expect(screen.getByRole('region', { name: /禁地兵裝說明/ })).toBeInTheDocument();
     // Lead sentence stays visible regardless of expand/collapse
-    expect(screen.getByText(/4\.x（紅蓮之狂潮）的傳說武器/)).toBeInTheDocument();
+    expect(screen.getByText(/4\.x（紅蓮解放者）的武器與套裝系列/)).toBeInTheDocument();
   });
 
   it('does NOT render when localStorage has dismissed flag', () => {
@@ -38,18 +38,18 @@ describe('OnboardingBanner', () => {
 
   it('shows all three track descriptions when expanded by default', () => {
     render(<OnboardingBanner />);
-    expect(screen.getByText(/依職業，16 階段/)).toBeInTheDocument();
-    expect(screen.getByText(/外觀專用、不影響戰力/)).toBeInTheDocument();
-    expect(screen.getByText(/戰鬥用，4 階段，依職能共用/)).toBeInTheDocument();
+    expect(screen.getByText(/依職業，共 16 階段/)).toBeInTheDocument();
+    expect(screen.getByText(/外觀專用，不影響角色能力值/)).toBeInTheDocument();
+    expect(screen.getByText(/戰鬥用，共 3 階段，依職能共用/)).toBeInTheDocument();
   });
 
   it('toggle button collapses and expands the three-track detail list', () => {
     render(<OnboardingBanner />);
     const toggle = screen.getByRole('button', { name: /收合三軌說明/ });
     fireEvent.click(toggle);
-    expect(screen.queryByText(/依職業，16 階段/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/依職業，共 16 階段/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /展開三軌說明/ }));
-    expect(screen.getByText(/依職業，16 階段/)).toBeInTheDocument();
+    expect(screen.getByText(/依職業，共 16 階段/)).toBeInTheDocument();
   });
 
   it('persists collapse state to localStorage', () => {
@@ -61,7 +61,7 @@ describe('OnboardingBanner', () => {
   it('respects persisted collapsed state on next mount', () => {
     localStorage.setItem('eureka-gear-onboarding-expanded', '0');
     render(<OnboardingBanner />);
-    expect(screen.queryByText(/依職業，16 階段/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/依職業，共 16 階段/)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /展開三軌說明/ })).toBeInTheDocument();
   });
 

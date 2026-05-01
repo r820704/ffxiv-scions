@@ -74,7 +74,7 @@ export function OnboardingBanner() {
         ✕
       </button>
       <p className="text-sm text-gray-100 pr-8">
-        <strong>禁地兵裝</strong>是 4.x（紅蓮之狂潮）的傳說武器與外觀套裝，玩家在優雷卡 4 個區域累積 elemental level 與素材，把職業武器一路升級到 iL400 的最終形態。
+        <strong>禁地兵裝</strong>是 4.x（紅蓮解放者）的武器與套裝系列，玩家在禁地優雷卡的四個區域累積元素等級與素材，最終可獲得帶有優雷卡元素加持屬性的武器及裝備，部分形態具有發光特效。
       </p>
       <button
         type="button"
@@ -86,17 +86,22 @@ export function OnboardingBanner() {
         <span>{expanded ? '收合三軌說明' : '展開三軌說明'}</span>
       </button>
       {expanded && (
-        <ul className="mt-2 text-sm space-y-1 text-gray-300">
-          <li>
-            · <strong>武器</strong>（依職業，16 階段，最終形態 iL400）
-          </li>
-          <li>
-            · <strong>常風防具</strong>（外觀專用、不影響戰力，5 階段，依職業）
-          </li>
-          <li>
-            · <strong>元素防具</strong>（戰鬥用，4 階段，依職能共用——同職能玩家分享同一套外觀）
-          </li>
-        </ul>
+        <>
+          <ul className="mt-2 text-sm space-y-1 text-gray-300">
+            <li>
+              · <strong>武器</strong>（依職業，共 16 階段，最終階段 iL405，帶有優雷卡元素加持屬性）
+            </li>
+            <li>
+              · <strong>常風防具</strong>（外觀專用，不影響角色能力值，各職業獨立，共 5 階段，最終階段為可染色的 Lv.70 職業套裝）
+            </li>
+            <li>
+              · <strong>元素防具</strong>（戰鬥用，共 3 階段，依職能共用——同職能玩家共享同一套外觀，最終階段 iL390，帶有優雷卡元素加持屬性）
+            </li>
+          </ul>
+          <p className="mt-2 text-xs text-gray-400">
+            優雷卡元素加持：在優雷卡區域內均衡提升六種元素屬性，影響傷害計算。
+          </p>
+        </>
       )}
     </div>
   );
