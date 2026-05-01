@@ -76,7 +76,7 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages
         type="button"
         data-state={state}
         aria-label={`stage ${i + 1}: ${stage}`}
-        className={`w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center transition ${STATE_STYLE[state]}`}
+        className={`w-10 h-10 md:w-7 md:h-7 rounded-full text-sm md:text-xs font-bold flex items-center justify-center transition ${STATE_STYLE[state]}`}
         onClick={() => onSelectTarget(stage)}
       >
         {i + 1}
@@ -94,14 +94,17 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages
 
   const groups = groupByZone(seq);
   return (
-    <div data-testid="stepper-container" className="flex flex-wrap gap-3 items-end">
+    <div
+      data-testid="stepper-container"
+      className="flex flex-col md:flex-row md:flex-wrap gap-3 md:items-end"
+    >
       {groups.map((group, gi) => (
         <div
           key={group.key}
           data-testid={`zone-group-${group.key}`}
           role="group"
           aria-labelledby={`zone-label-${group.key}`}
-          className={`flex flex-col gap-1 ${gi > 0 ? 'pl-3 border-l border-gray-700' : ''}`}
+          className={`flex flex-col gap-1 ${gi > 0 ? 'md:pl-3 md:border-l md:border-gray-700' : ''}`}
         >
           <span
             id={`zone-label-${group.key}`}
