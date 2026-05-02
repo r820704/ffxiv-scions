@@ -17,19 +17,22 @@ describe('NmDetailModal', () => {
     expect(screen.getByText(/Lv\.20/)).toBeInTheDocument();
   });
 
-  it('shows trigger condition (formatNmTrigger output)', () => {
+  it('shows NM 出現條件 and 觸發怪條件 sections', () => {
     render(<NmDetailModal nmId="pazuzu" onClose={() => {}} />);
-    // Pazuzu trigger is Gales + night → formatNmTrigger returns 強風+夜間
-    // Shadow Wraith (trigger mob) also has night, so multiple 夜間 elements exist.
-    expect(screen.getByText(/強風/)).toBeInTheDocument();
-    expect(screen.getAllByText(/夜間/).length).toBeGreaterThanOrEqual(1);
+    // Section labels
+    expect(screen.getByText('NM 出現條件')).toBeInTheDocument();
+    expect(screen.getByText('觸發怪條件')).toBeInTheDocument();
+    // Pazuzu: nm condition = 強風, mob condition = 夜間
+    expect(screen.getByText('強風')).toBeInTheDocument();
+    expect(screen.getAllByText('夜間').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('shows 常駐 text when NM has no trigger', () => {
-    // Pick an NM from eurekaNms with no trigger (常駐)
-    // 'teles' is unconditional in eureka-nm-data.ts (no trigger field)
+  it('shows — for both conditions when NM has no trigger', () => {
+    // 'teles' is unconditional (no trigger field)
     render(<NmDetailModal nmId="teles" onClose={() => {}} />);
-    expect(screen.getByText(/常駐.*隨時可刷|隨時可刷/)).toBeInTheDocument();
+    expect(screen.queryByText(/常駐.*隨時可刷/)).toBeNull();
+    const dashes = screen.getAllByText('—');
+    expect(dashes.length).toBeGreaterThanOrEqual(2);
   });
 
   it('calls onClose when close button clicked', () => {

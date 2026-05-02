@@ -31,12 +31,15 @@ describe('NmListModal', () => {
     render(
       <NmListModal zone="Eureka Anemos" onClose={() => {}} onOpenDetail={() => {}} />,
     );
-    // 龐巴德 (Lv.10) — night-only
+    // 龐巴德 (Lv.10) — mob night condition
     expect(screen.getAllByText('夜間').length).toBeGreaterThanOrEqual(1);
-    // 帕祖祖 — Gales+night
-    expect(screen.getByText('強風+夜間')).toBeTruthy();
-    // Sabotender Corrido — unconditional
-    expect(screen.getAllByText('常駐').length).toBeGreaterThanOrEqual(1);
+    // 帕祖祖 — nm condition: 強風 (in NM 條件 column)
+    expect(screen.getAllByText('強風').length).toBeGreaterThanOrEqual(1);
+    // 強風+夜間 combined label no longer used
+    expect(screen.queryByText('強風+夜間')).toBeNull();
+    // 常駐 label no longer used; unconditional NMs show '—'
+    expect(screen.queryByText('常駐')).toBeNull();
+    expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(1);
   });
 
   it('clicking a row calls onOpenDetail with NM id and onClose', () => {

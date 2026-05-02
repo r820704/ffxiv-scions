@@ -1,10 +1,26 @@
 import { useEffect, useRef } from 'react';
-import { eurekaNms, formatNmTrigger } from '@/data/eureka-nm-data';
-import { zoneShortNamesTw } from '@/data/weather-data';
+import { eurekaNms, type EurekaNm } from '@/data/eureka-nm-data';
+import { zoneShortNamesTw, weatherNamesTw } from '@/data/weather-data';
 import { nmSpawnInfo } from '@/data/eureka-nm-spawn-data';
 import { triggerMobAttrs } from '@/data/eureka-trigger-mob-data';
 import NmDetailMap from './NmDetailMap';
 import TriggerMobChips from './TriggerMobChips';
+
+function getNmCondLabel(nm: EurekaNm): string {
+  const weather = nm.trigger?.nm?.weather;
+  if (!weather || weather.length === 0) return '—';
+  return weather.map((w) => weatherNamesTw[w] ?? w).join('/');
+}
+
+function getMobCondLabel(nm: EurekaNm): string {
+  const mobCond = nm.trigger?.mob;
+  if (!mobCond) return '—';
+  if (mobCond.weather && mobCond.weather.length > 0)
+    return mobCond.weather.map((w) => weatherNamesTw[w] ?? w).join('/');
+  if (mobCond.timeOfDay === 'night') return '夜間';
+  if (mobCond.timeOfDay === 'day') return '白天';
+  return '—';
+}
 
 interface NmDetailModalProps {
   nmId: string | null;
@@ -30,7 +46,8 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
 
   const spawn = nmSpawnInfo[nmId];
   const zoneShort = zoneShortNamesTw[nm.zone] ?? nm.zone;
-  const isUnconditional = !nm.trigger;
+  const nmCondLabel = getNmCondLabel(nm);
+  const mobCondLabel = getMobCondLabel(nm);
 
   // Build pin list: NM pin first (red, "NM" label), then each trigger mob coord
   // gets a sequentially-numbered amber pin.
@@ -89,10 +106,18 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
         </div>
 
         <div className="p-3 flex flex-col gap-3 text-sm">
-          <div>
-            <div className="text-xs text-muted-foreground mb-1">觸發條件</div>
-            <div className="text-amber-300/90">
-              {isUnconditional ? '常駐 NM，隨時可刷' : formatNmTrigger(nm)}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <div className="text-xs text-muted-foreground mb-1">NM 出現條件</div>
+              <div className={nmCondLabel !== '—' ? 'text-amber-300/90' : 'text-muted-foreground/50'}>
+                {nmCondLabel}
+              </div>
+            </div>
+            <div className="flex-1">
+              <div className="text-xs text-muted-foreground mb-1">觸發怪條件</div>
+              <div className={mobCondLabel !== '—' ? 'text-amber-300/90' : 'text-muted-foreground/50'}>
+                {mobCondLabel}
+              </div>
             </div>
           </div>
 
@@ -113,7 +138,6 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
               </div>
 
               <div>
-                <div className="text-xs text-muted-foreground mb-1">觸發方式</div>
                 <div className="text-foreground mb-2">在以下地點擊殺：</div>
                 <ul className="flex flex-col gap-1">
                   {spawn.trigger.map((mob, mobIdx) => {
