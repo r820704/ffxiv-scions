@@ -44,22 +44,22 @@ export const eurekaNms: EurekaNm[] = [
   { id: 'jahannam', nameTw: '哲罕南', nameEn: 'Jahannam', zone: 'Eureka Anemos', level: 7, trigger: { mob: { weather: ['Gales'] } } },
   { id: 'amemet', nameTw: '阿米特', nameEn: 'Amemet', zone: 'Eureka Anemos', level: 8 },
   { id: 'caym', nameTw: '蓋因', nameEn: 'Caym', zone: 'Eureka Anemos', level: 9 },
-  { id: 'bombadeel', nameTw: '龐巴德', nameEn: 'Bombadeel', zone: 'Eureka Anemos', level: 10, trigger: { nm: { timeOfDay: 'night' } } },
+  { id: 'bombadeel', nameTw: '龐巴德', nameEn: 'Bombadeel', zone: 'Eureka Anemos', level: 10, trigger: { mob: { timeOfDay: 'night' } } },
   { id: 'serket', nameTw: '塞爾凱特', nameEn: 'Serket', zone: 'Eureka Anemos', level: 11 },
   { id: 'judgmental-julika', nameTw: '武斷魔花茱莉卡', nameEn: 'Judgmental Julika', zone: 'Eureka Anemos', level: 12 },
-  { id: 'white-rider', nameTw: '白騎士', nameEn: 'the White Rider', zone: 'Eureka Anemos', level: 13, trigger: { nm: { timeOfDay: 'night' } } },
+  { id: 'white-rider', nameTw: '白騎士', nameEn: 'the White Rider', zone: 'Eureka Anemos', level: 13, trigger: { mob: { timeOfDay: 'night' } } },
   { id: 'polyphemus', nameTw: '波呂斐摩斯', nameEn: 'Polyphemus', zone: 'Eureka Anemos', level: 14 },
   { id: 'simurghs-strider', nameTw: '闊步西牟鳥', nameEn: "Simurgh's Strider", zone: 'Eureka Anemos', level: 15 },
   { id: 'king-hazmat', nameTw: '極其危險物質', nameEn: 'King Hazmat', zone: 'Eureka Anemos', level: 16 },
-  { id: 'fafnir', nameTw: '法夫納', nameEn: 'Fafnir', zone: 'Eureka Anemos', level: 17, trigger: { nm: { timeOfDay: 'night' } } },
+  { id: 'fafnir', nameTw: '法夫納', nameEn: 'Fafnir', zone: 'Eureka Anemos', level: 17, trigger: { mob: { timeOfDay: 'night' } } },
   { id: 'amarok', nameTw: '阿瑪洛克', nameEn: 'Amarok', zone: 'Eureka Anemos', level: 18 },
-  { id: 'lamashtu', nameTw: '拉瑪什圖', nameEn: 'Lamashtu', zone: 'Eureka Anemos', level: 19, trigger: { nm: { timeOfDay: 'night' } } },
+  { id: 'lamashtu', nameTw: '拉瑪什圖', nameEn: 'Lamashtu', zone: 'Eureka Anemos', level: 19, trigger: { mob: { timeOfDay: 'night' } } },
   // NM spawns during any Gales (pre-farm trigger mob at night beforehand).
   { id: 'pazuzu', nameTw: '帕祖祖', nameEn: 'Pazuzu', zone: 'Eureka Anemos', level: 20, trigger: { nm: { weather: ['Gales'] }, mob: { timeOfDay: 'night' } } },
 
   // ===== Pagos (Lv 20-35) =====
   { id: 'snow-queen', nameTw: '雪之女王', nameEn: 'the Snow Queen', zone: 'Eureka Pagos', level: 20 },
-  { id: 'taxim', nameTw: '塔克西姆', nameEn: 'Taxim', zone: 'Eureka Pagos', level: 22, trigger: { nm: { timeOfDay: 'night' } } },
+  { id: 'taxim', nameTw: '塔克西姆', nameEn: 'Taxim', zone: 'Eureka Pagos', level: 22, trigger: { mob: { timeOfDay: 'night' } } },
   { id: 'ash-dragon', nameTw: '灰燼龍', nameEn: 'Ash Dragon', zone: 'Eureka Pagos', level: 23 },
   { id: 'glavoid', nameTw: 'Glavoid', nameEn: 'Glavoid', zone: 'Eureka Pagos', level: 24 },
   { id: 'anapos', nameTw: '安娜波', nameEn: 'Anapos', zone: 'Eureka Pagos', level: 25 },
@@ -74,15 +74,15 @@ export const eurekaNms: EurekaNm[] = [
   { id: 'horus', nameTw: '荷魯斯', nameEn: 'Horus', zone: 'Eureka Pagos', level: 34, trigger: { nm: { weather: ['Heat Waves'] } } },
   { id: 'arch-angra-mainyu', nameTw: '總領安格拉·曼紐', nameEn: 'Arch Angra Mainyu', zone: 'Eureka Pagos', level: 35 },
   { id: 'copycat-cassie', nameTw: '複製魔花凱西', nameEn: 'Copycat Cassie', zone: 'Eureka Pagos', level: 36, trigger: { nm: { weather: ['Blizzards'] } } },
-  { id: 'louhi', nameTw: '婁希', nameEn: 'Louhi', zone: 'Eureka Pagos', level: 37, trigger: { nm: { timeOfDay: 'night' } } },
+  { id: 'louhi', nameTw: '婁希', nameEn: 'Louhi', zone: 'Eureka Pagos', level: 37, trigger: { mob: { timeOfDay: 'night' } } },
 
   // ===== Pyros (Lv 35-50) =====
-  { id: 'leucosia', nameTw: '琉科西亞', nameEn: 'Leucosia', zone: 'Eureka Pyros', level: 38, trigger: { nm: { timeOfDay: 'night' } } },
+  { id: 'leucosia', nameTw: '琉科西亞', nameEn: 'Leucosia', zone: 'Eureka Pyros', level: 38, trigger: { mob: { timeOfDay: 'night' } } },
   { id: 'flauros', nameTw: '佛勞洛斯', nameEn: 'Flauros', zone: 'Eureka Pyros', level: 39 },
   { id: 'sophist', nameTw: '詭辯者', nameEn: 'the Sophist', zone: 'Eureka Pyros', level: 40 },
   { id: 'graffiacane', nameTw: '格拉菲亞卡內', nameEn: 'Graffiacane', zone: 'Eureka Pyros', level: 41 },
   { id: 'askalaphos', nameTw: '阿斯卡拉福斯', nameEn: 'Askalaphos', zone: 'Eureka Pyros', level: 42, trigger: { nm: { weather: ['Umbral Wind'] } } },
-  { id: 'grand-duke-batym', nameTw: '巴欽大公爵', nameEn: 'Grand Duke Batym', zone: 'Eureka Pyros', level: 43, trigger: { nm: { timeOfDay: 'night' } } },
+  { id: 'grand-duke-batym', nameTw: '巴欽大公爵', nameEn: 'Grand Duke Batym', zone: 'Eureka Pyros', level: 43, trigger: { mob: { timeOfDay: 'night' } } },
   { id: 'aetolus', nameTw: '艾托洛斯', nameEn: 'Aetolus', zone: 'Eureka Pyros', level: 44 },
   { id: 'lesath', nameTw: '來薩特', nameEn: 'Lesath', zone: 'Eureka Pyros', level: 45 },
   { id: 'eldthurs', nameTw: '火巨人艾爾德塞斯', nameEn: 'Eldthurs', zone: 'Eureka Pyros', level: 46 },
@@ -102,7 +102,7 @@ export const eurekaNms: EurekaNm[] = [
   { id: 'piasa', nameTw: '皮艾薩邪鳥', nameEn: 'Piasa', zone: 'Eureka Hydatos', level: 58 },
   { id: 'frostmane', nameTw: '霜鬃獵魔', nameEn: 'Frostmane', zone: 'Eureka Hydatos', level: 59 },
   { id: 'daphne', nameTw: '達佛涅', nameEn: 'Daphne', zone: 'Eureka Hydatos', level: 60 },
-  { id: 'king-goldemar', nameTw: '戈爾德馬爾王', nameEn: 'King Goldemar', zone: 'Eureka Hydatos', level: 61, trigger: { nm: { timeOfDay: 'night' } } },
+  { id: 'king-goldemar', nameTw: '戈爾德馬爾王', nameEn: 'King Goldemar', zone: 'Eureka Hydatos', level: 61, trigger: { mob: { timeOfDay: 'night' } } },
   { id: 'leuke', nameTw: '琉刻', nameEn: 'Leuke', zone: 'Eureka Hydatos', level: 62 },
   { id: 'barong', nameTw: '巴龍', nameEn: 'Barong', zone: 'Eureka Hydatos', level: 63 },
   { id: 'ceto', nameTw: '刻托', nameEn: 'Ceto', zone: 'Eureka Hydatos', level: 64 },
@@ -122,18 +122,20 @@ export function getActiveNms(
     const { nm: nmCond, mob: mobCond } = nm.trigger;
 
     if (nmCond) {
-      // NM has its own spawn condition — check it
-      if (!nmCond.weather && !nmCond.timeOfDay) return false;
-      if (nmCond.weather && !nmCond.weather.includes(weather)) return false;
-      if (nmCond.timeOfDay === 'day' && !isDay) return false;
-      if (nmCond.timeOfDay === 'night' && isDay) return false;
-      return true;
+      // NM has its own spawn condition — check if it's met.
+      const nmMet =
+        (!nmCond.weather || nmCond.weather.includes(weather)) &&
+        (nmCond.timeOfDay !== 'day' || isDay) &&
+        (nmCond.timeOfDay !== 'night' || !isDay);
+      if (nmMet) return true;
+      // nm condition not met — fall through to mobCond so we can still show
+      // the NM as a pre-farm indicator when only the mob condition is active
+      // (e.g. Pazuzu's mob pre-farms at night even when it's not yet Gales).
     }
 
     if (mobCond) {
-      // No NM spawn condition: mob condition defines the action window (e.g. Jahannam).
-      // Weather-gated mob → show badge during that weather.
-      // Night-gated mob (no weather) → show badge at night.
+      // Mob condition defines when to act: either no nm condition (Jahannam),
+      // or nm condition wasn't met but mob window is open (Pazuzu pre-farm).
       if (mobCond.weather) return mobCond.weather.includes(weather);
       if (mobCond.timeOfDay === 'night') return !isDay;
       if (mobCond.timeOfDay === 'day') return isDay;
