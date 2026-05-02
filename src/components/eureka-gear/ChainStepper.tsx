@@ -7,8 +7,7 @@ const ZONE_HINT: Record<string, string> = {
   anemos: '常風之地（Eureka Anemos）取得的素材用於升級常風系列防具。',
   pagos: '恆冰之地（Eureka Pagos）取得的素材主要用於升 stage 6-7。',
   pyros: '湧火之地（Eureka Pyros）取得的湧火水晶用於兌換元素系列防具基礎形態，或升元素武器。',
-  hydatos: '豐水之地（Eureka Hydatos）取得的豐水水晶用於強化元素防具至 +1。',
-  ba: '巴爾德西昂分館（Baldesion Arsenal）取得的禁地精華用於將元素防具強化至最終形態 +2。',
+  hydatos: '豐水之地（Eureka Hydatos）取得的豐水水晶用於強化元素防具至 +1；禁地精華（需進入巴爾德西昂分館）用於強化至 +2。',
   final: '最終形態（physeos）— 把武器升到 iL400 的傳說型態。',
 };
 

@@ -270,6 +270,5 @@ export const ANEMOS_ARMOR_ZONE_GROUPS: ArmorZoneGroupDef[] = [
 /** Zone groups for the elemental armor stepper. */
 export const ELEMENTAL_ARMOR_ZONE_GROUPS: ArmorZoneGroupDef[] = [
   { key: 'pyros',   label: '湧火之地', stages: ['elemental'] },
-  { key: 'hydatos', label: '豐水之地', stages: ['elemental+1'] },
-  { key: 'ba',      label: '巴爾德西昂分館', stages: ['elemental+2'] },
+  { key: 'hydatos', label: '豐水之地', stages: ['elemental+1', 'elemental+2'] },
 ];
