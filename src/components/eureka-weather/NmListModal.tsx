@@ -85,16 +85,15 @@ export default function NmListModal({ zone, onClose, onOpenDetail }: NmListModal
           </button>
         </div>
 
-        {/* Column headers — overflow-y-auto + scrollbar-gutter:stable reserves the same
-            right-side gutter as the list below, keeping columns aligned. */}
-        <div className="grid grid-cols-[36px_1fr_72px_72px] items-center gap-2 px-2 py-1.5 border-b border-border/30 text-[10px] text-muted-foreground/50 overflow-y-auto [scrollbar-gutter:stable] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* Column headers */}
+        <div className="grid grid-cols-[36px_1fr_72px_72px] items-center gap-2 px-2 py-1.5 border-b border-border/30 text-[10px] text-muted-foreground/50">
           <span />
           <span />
           <span className="whitespace-nowrap text-right">NM 條件</span>
           <span className="whitespace-nowrap text-right">觸發怪條件</span>
         </div>
 
-        <ul className="flex-1 overflow-y-auto p-2 [scrollbar-gutter:stable]">
+        <ul className="flex-1 overflow-y-auto p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {sorted.map((nm) => {
             const nmLabel = getNmCondLabel(nm);
             const mobLabel = getMobCondLabel(nm);
