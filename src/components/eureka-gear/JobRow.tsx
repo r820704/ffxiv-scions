@@ -95,15 +95,19 @@ export function JobRow({ job, progress, weapons, onSelect }: JobRowProps) {
         return (
           <div key={slot} className="flex items-center gap-1 text-xs shrink-0">
             <span className="text-green-400/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
-            <ChainFingerprint currentStage={stage} stages={ARMOR_STAGES_BY_TRACK.anemos} />
             {started ? (
-              <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
-                {filled}<span className="text-gray-600">/5</span>
-              </span>
-            ) : null}
-            <span className={`${started && !done ? 'text-gray-500' : done ? 'text-green-400' : 'text-gray-600'}`}>
-              · {started ? STAGE_TC_LABEL[stage] : '未開始'}
-            </span>
+              <>
+                <ChainFingerprint currentStage={stage} stages={ARMOR_STAGES_BY_TRACK.anemos} />
+                <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
+                  {filled}<span className="text-gray-600">/5</span>
+                </span>
+                <span className={done ? 'text-green-400' : 'text-gray-500'}>
+                  · {STAGE_TC_LABEL[stage]}
+                </span>
+              </>
+            ) : (
+              <span className="text-gray-600">· 未開始</span>
+            )}
           </div>
         );
       })}
