@@ -31,7 +31,7 @@ const pazuzu: EurekaNm = {
   nameEn: 'Pazuzu',
   zone: 'Eureka Anemos',
   level: 20,
-  trigger: { weather: ['Gales'], timeOfDay: 'night' },
+  trigger: { nm: { weather: ['Gales'] }, mob: { timeOfDay: 'night' } },
 };
 
 const fafnir: EurekaNm = {
@@ -40,7 +40,7 @@ const fafnir: EurekaNm = {
   nameEn: 'Fafnir',
   zone: 'Eureka Anemos',
   level: 17,
-  trigger: { timeOfDay: 'night' },
+  trigger: { nm: { timeOfDay: 'night' } },
 };
 
 describe('NmTooltip', () => {

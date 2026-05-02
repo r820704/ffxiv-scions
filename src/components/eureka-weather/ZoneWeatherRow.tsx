@@ -206,12 +206,21 @@ export default function ZoneWeatherRow({
           const nms = isCurrent
             ? getActiveNmsAt(zone, f.weather, f.startTime, now)
             : getActiveNmsAt(zone, f.weather, f.startTime);
-          // Split NMs into weather-triggered (red badge) vs night-only (🌙 corner).
-          // Pazuzu-like NMs (weather + night) count as weather-triggered.
-          const hasWeatherNm = nms.some((n) => n.trigger?.weather && n.trigger.weather.length > 0);
-          const hasNightOnlyNm = nms.some(
-            (n) => !n.trigger?.weather && n.trigger?.timeOfDay === 'night',
-          );
+          // Red badge: NM has a weather spawn/mob condition active this cell.
+          // Moon badge: NM has a night-only condition with no weather gate.
+          const hasWeatherNm = nms.some((n) => {
+            const nmW = n.trigger?.nm?.weather;
+            const mobW = n.trigger?.mob?.weather;
+            return (nmW && nmW.length > 0) || (mobW && mobW.length > 0);
+          });
+          const hasNightOnlyNm = nms.some((n) => {
+            const hasNight =
+              n.trigger?.nm?.timeOfDay === 'night' || n.trigger?.mob?.timeOfDay === 'night';
+            const hasWeather =
+              (n.trigger?.nm?.weather?.length ?? 0) > 0 ||
+              (n.trigger?.mob?.weather?.length ?? 0) > 0;
+            return hasNight && !hasWeather;
+          });
           const bgClass = getPeriodBgClass(getPeriodKind(f.startTime));
           const nowOffsetPct = isCurrent
             ? Math.max(0, Math.min(100, ((now - f.startTime) / WEATHER_PERIOD_MS) * 100))

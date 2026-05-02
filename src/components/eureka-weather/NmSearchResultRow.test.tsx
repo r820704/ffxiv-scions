@@ -13,7 +13,7 @@ const conditionalNm: EurekaNm = {
   nameEn: 'King Arthro',
   zone: 'Eureka Pagos',
   level: 30,
-  trigger: { weather: ['Fog'] },
+  trigger: { nm: { weather: ['Fog'] } },
 };
 
 const unconditionalNm: EurekaNm = {
