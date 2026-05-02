@@ -127,7 +127,7 @@ export default function EurekaGearPage() {
       role="tab"
       aria-selected={view === key}
       onClick={() => setTab(key)}
-      className={`px-3 py-2 text-sm ${view === key ? 'bg-blue-500 text-white font-bold' : 'text-gray-400'}`}
+      className={`px-3 py-2 text-sm ${view === key ? 'bg-primary text-primary-foreground font-bold' : 'text-muted-foreground hover:text-foreground'}`}
     >
       {label}
     </button>
@@ -152,7 +152,7 @@ export default function EurekaGearPage() {
 
       <nav
         role="tablist"
-        className="sticky top-0 z-30 -mx-4 px-4 bg-background flex border-b-2 border-blue-500 mb-4"
+        className="sticky top-0 z-30 -mx-4 px-4 bg-background flex border-b-2 border-primary mb-4"
       >
         {tabBtn('overview', '總覽')}
         {tabBtn('detail', '職業詳情')}

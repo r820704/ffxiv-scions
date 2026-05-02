@@ -63,7 +63,7 @@ function SharedJobIcons({ set }: { set: ArmorSetId }) {
   if (jobs.length <= 1) return null;
   return (
     <span className="inline-flex items-center gap-1 ml-2">
-      <span className="text-xs text-blue-200 mr-1">共用</span>
+      <span className="text-xs text-muted-foreground mr-1">共用</span>
       {jobs.map((j) => {
         const tcName = JOB_TC_NAME[j] ?? j;
         const icon = JOB_ICONS[j];

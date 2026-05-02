@@ -50,7 +50,7 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
         <button
           type="button"
           onClick={() => onSelect(job)}
-          className="text-xs text-blue-400 hover:underline"
+          className="text-xs text-muted-foreground hover:text-primary hover:underline"
           aria-label="查看詳情"
         >
           查看詳情 →

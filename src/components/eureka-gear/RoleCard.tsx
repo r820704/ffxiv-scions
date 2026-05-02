@@ -76,7 +76,7 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
           <button
             type="button"
             onClick={() => onSelect(primary)}
-            className="text-xs text-blue-400 hover:underline whitespace-nowrap"
+            className="text-xs text-muted-foreground hover:text-primary hover:underline whitespace-nowrap"
             aria-label="查看詳情"
           >
             查看詳情 →
