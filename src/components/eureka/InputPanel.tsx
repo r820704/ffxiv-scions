@@ -54,18 +54,15 @@ export default function InputPanel({
       </div>
 
       <Tooltip label={isAlbum ? '切換到「技能格計算」模式才可編輯' : undefined}>
-        <div
-          className={cn(
-            'shrink-0',
-            isAlbum && 'opacity-40 pointer-events-none',
-          )}
-        >
-          <SlotPanel
-            slotConfig={slotConfig}
-            selectedSlot={selectedSlot}
-            onSelectSlot={onSelectSlot}
-            onClearSlot={onClearSlot}
-          />
+        <div className={cn('shrink-0', isAlbum && 'cursor-not-allowed')}>
+          <div className={cn(isAlbum && 'opacity-40 pointer-events-none')}>
+            <SlotPanel
+              slotConfig={slotConfig}
+              selectedSlot={selectedSlot}
+              onSelectSlot={onSelectSlot}
+              onClearSlot={onClearSlot}
+            />
+          </div>
         </div>
       </Tooltip>
     </div>
