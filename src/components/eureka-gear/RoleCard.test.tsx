@@ -21,6 +21,16 @@ describe('RoleCard', () => {
     expect(screen.getByAltText('GNB')).toBeInTheDocument();
   });
 
+  it('renders job combination names as heading text for fending', () => {
+    render(<RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />);
+    expect(screen.getByText(/騎士 · 戰士 · 暗黑騎士 · 絕槍戰士/)).toBeInTheDocument();
+  });
+
+  it('renders job combination names as heading text for maiming', () => {
+    render(<RoleCard set="maiming" pieces={baseSlotProgress} onSelect={() => {}} />);
+    expect(screen.getByText(/龍騎士 · 奪魂者/)).toBeInTheDocument();
+  });
+
   it('renders job icons for striking (MNK/SAM)', () => {
     render(<RoleCard set="striking" pieces={baseSlotProgress} onSelect={() => {}} />);
     expect(screen.getByAltText('MNK')).toBeInTheDocument();
@@ -105,6 +115,7 @@ describe('RoleCard', () => {
     render(<RoleCard set="striking" pieces={{}} onSelect={() => {}} />);
     expect(screen.getByText('[近戰]')).toBeInTheDocument();
     expect(screen.getByAltText('MNK')).toBeInTheDocument();
+    expect(screen.getByText(/武僧 · 武士/)).toBeInTheDocument();
   });
 
   it('shows elemental armor chip label', () => {

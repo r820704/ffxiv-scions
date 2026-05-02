@@ -40,14 +40,15 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
   const jobs = JOBS_FOR_ARMOR_SET[set] ?? [];
   const primary = jobs[0];
   const roleLabel = ROLE_TC_NAME[set];
+  const jobNamesHeading = jobs.map((j) => JOB_TC_NAME[j as AnyJobId] ?? j).join(' · ');
   const elementalStages = ARMOR_STAGES_BY_TRACK.elemental;
   const lastStage = elementalStages[elementalStages.length - 1];
 
   return (
     <article className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 px-3 py-2.5 bg-gray-800 hover:bg-gray-700/60 transition-colors">
-      {/* Role identifier */}
-      <div className="flex flex-col w-[108px] shrink-0 gap-0.5">
-        <div className="flex flex-wrap gap-0.5 items-center">
+      {/* Line 1: job icons + job combination names + role label */}
+      <div className="w-full flex items-center gap-1.5 flex-wrap">
+        <div className="flex gap-0.5 items-center shrink-0">
           {jobs.map((j) => {
             const tcName = JOB_TC_NAME[j as AnyJobId] ?? j;
             const icon = JOB_ICONS[j];
@@ -62,10 +63,11 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
             );
           })}
         </div>
-        <span className="text-[10px] text-gray-400">[{roleLabel}]</span>
+        <span className="text-sm text-gray-200">{jobNamesHeading}</span>
+        <span className="text-xs text-gray-500">[{roleLabel}]</span>
       </div>
 
-      {/* Elemental armor chip */}
+      {/* Line 2: elemental armor chip */}
       <span className="text-[10px] font-bold text-cyan-400/90 bg-cyan-950/40 px-1.5 py-0.5 rounded shrink-0">
         元素系列（戰鬥）
       </span>
