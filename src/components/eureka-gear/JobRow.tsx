@@ -75,8 +75,9 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
         );
       })}
 
-      {/* Force new line before armor section */}
+      {/* Force new line + 108px spacer to align armor chip with weapon chip */}
       <div className="w-full" />
+      <div className="w-[108px] shrink-0" />
 
       {/* Anemos armor section */}
       <span className="text-[10px] font-bold text-green-400/90 bg-green-950/40 px-1.5 py-0.5 rounded shrink-0">
