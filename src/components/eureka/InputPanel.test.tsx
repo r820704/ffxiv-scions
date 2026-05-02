@@ -19,9 +19,9 @@ const baseProps = {
 describe('InputPanel', () => {
   it('slot panel wrapper should be pointer-events-none in album mode', () => {
     const { container } = render(<InputPanel {...baseProps} calcMode="album" />);
-    const slotWrapper = container.querySelector('[title*="技能格計算"]');
-    expect(slotWrapper).toBeTruthy();
-    expect(slotWrapper!.className).toMatch(/pointer-events-none/);
+    const inner = container.querySelector('.cursor-not-allowed > div');
+    expect(inner).toBeTruthy();
+    expect(inner!.className).toMatch(/pointer-events-none/);
   });
 
   it('slot panel wrapper should NOT be pointer-events-none in slots mode', () => {

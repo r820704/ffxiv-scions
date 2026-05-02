@@ -3,6 +3,7 @@ import CompactAlbumGrid from './CompactAlbumGrid';
 import SlotPanel from './SlotPanel';
 import RecentSkillsRow from './RecentSkillsRow';
 import { cn } from '@/lib/utils';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 interface InputPanelProps {
   calcMode: CalcMode;
@@ -52,20 +53,18 @@ export default function InputPanel({
         )}
       </div>
 
-      <div
-        className={cn(
-          'shrink-0',
-          isAlbum && 'opacity-40 pointer-events-none',
-        )}
-        title={isAlbum ? '切換到「技能格計算」模式才可編輯' : undefined}
-      >
-        <SlotPanel
-          slotConfig={slotConfig}
-          selectedSlot={selectedSlot}
-          onSelectSlot={onSelectSlot}
-          onClearSlot={onClearSlot}
-        />
-      </div>
+      <Tooltip label={isAlbum ? '切換到「技能格計算」模式才可編輯' : undefined}>
+        <div className={cn('shrink-0', isAlbum && 'cursor-not-allowed')}>
+          <div className={cn(isAlbum && 'opacity-40 pointer-events-none')}>
+            <SlotPanel
+              slotConfig={slotConfig}
+              selectedSlot={selectedSlot}
+              onSelectSlot={onSelectSlot}
+              onClearSlot={onClearSlot}
+            />
+          </div>
+        </div>
+      </Tooltip>
     </div>
   );
 }
