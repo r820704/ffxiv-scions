@@ -64,13 +64,9 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
         return (
           <div key={chainId} className="flex items-center gap-1 text-xs shrink-0">
             <span className="text-yellow-400/40 text-[10px]">{slotLabel}</span>
-            {started ? (
-              <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
-                {filled}<span className="text-gray-600">/{EUREKA_STAGES.length}</span>
-              </span>
-            ) : (
-              <span className="text-gray-600">未開始</span>
-            )}
+            <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
+              {started ? filled : 0}<span className="text-gray-600">/{EUREKA_STAGES.length}</span>
+            </span>
           </div>
         );
       })}
@@ -93,15 +89,17 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
           <div key={slot} className="flex items-center gap-1 text-xs shrink-0">
             <span className="text-green-400/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
             {started ? (
-              <>
-                <ChainFingerprint currentStage={stage} stages={ARMOR_STAGES_BY_TRACK.anemos} />
-                <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
-                  {filled}<span className="text-gray-600">/5</span>
-                </span>
-              </>
+              <ChainFingerprint currentStage={stage} stages={ARMOR_STAGES_BY_TRACK.anemos} />
             ) : (
-              <span className="text-gray-600">—</span>
+              <div className="flex gap-[2px]">
+                {ARMOR_STAGES_BY_TRACK.anemos.map((s) => (
+                  <span key={s} className="text-gray-600">●</span>
+                ))}
+              </div>
             )}
+            <span className={`tabular-nums shrink-0 ${done ? 'text-green-400' : 'text-gray-400'}`}>
+              {started ? filled : 0}<span className="text-gray-600">/5</span>
+            </span>
           </div>
         );
       })}
