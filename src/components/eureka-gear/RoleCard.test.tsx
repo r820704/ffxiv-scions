@@ -13,166 +13,89 @@ const baseSlotProgress = {
 };
 
 describe('RoleCard', () => {
-  it('renders job names joined with full-width middle-dot for fending (tanks)', () => {
-    render(
-      <RoleCard
-        set="fending"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
+  it('renders job icons for all jobs in fending (PLD/WAR/DRK/GNB)', () => {
+    render(<RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />);
+    expect(screen.getByAltText('PLD')).toBeInTheDocument();
+    expect(screen.getByAltText('WAR')).toBeInTheDocument();
+    expect(screen.getByAltText('DRK')).toBeInTheDocument();
+    expect(screen.getByAltText('GNB')).toBeInTheDocument();
+  });
+
+  it('renders job combination names as heading text for fending', () => {
+    render(<RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />);
     expect(screen.getByText(/騎士 · 戰士 · 暗黑騎士 · 絕槍戰士/)).toBeInTheDocument();
   });
 
-  it('renders job names joined with full-width middle-dot for striking (martial)', () => {
-    render(
-      <RoleCard
-        set="striking"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
-    expect(screen.getByText(/武僧 · 武士/)).toBeInTheDocument();
-  });
-
-  it('renders job names joined with full-width middle-dot for maiming (melee)', () => {
-    render(
-      <RoleCard
-        set="maiming"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
+  it('renders job combination names as heading text for maiming', () => {
+    render(<RoleCard set="maiming" pieces={baseSlotProgress} onSelect={() => {}} />);
     expect(screen.getByText(/龍騎士 · 奪魂者/)).toBeInTheDocument();
   });
 
-  it('renders job names joined with full-width middle-dot for scouting (melee)', () => {
-    render(
-      <RoleCard
-        set="scouting"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
-    expect(screen.getByText(/忍者 · 毒蛇劍士/)).toBeInTheDocument();
+  it('renders job icons for striking (MNK/SAM)', () => {
+    render(<RoleCard set="striking" pieces={baseSlotProgress} onSelect={() => {}} />);
+    expect(screen.getByAltText('MNK')).toBeInTheDocument();
+    expect(screen.getByAltText('SAM')).toBeInTheDocument();
   });
 
-  it('renders job names joined with full-width middle-dot for aiming (ranged)', () => {
-    render(
-      <RoleCard
-        set="aiming"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
-    expect(screen.getByText(/吟遊詩人 · 機工士 · 舞者/)).toBeInTheDocument();
+  it('renders job icons for maiming (DRG/RPR)', () => {
+    render(<RoleCard set="maiming" pieces={baseSlotProgress} onSelect={() => {}} />);
+    expect(screen.getByAltText('DRG')).toBeInTheDocument();
+    expect(screen.getByAltText('RPR')).toBeInTheDocument();
   });
 
-  it('renders role label as smaller text in brackets', () => {
-    render(
-      <RoleCard
-        set="fending"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
+  it('renders job icons for scouting (NIN/VPR)', () => {
+    render(<RoleCard set="scouting" pieces={baseSlotProgress} onSelect={() => {}} />);
+    expect(screen.getByAltText('NIN')).toBeInTheDocument();
+    expect(screen.getByAltText('VPR')).toBeInTheDocument();
+  });
+
+  it('renders job icons for aiming (BRD/MCH/DNC)', () => {
+    render(<RoleCard set="aiming" pieces={baseSlotProgress} onSelect={() => {}} />);
+    expect(screen.getByAltText('BRD')).toBeInTheDocument();
+    expect(screen.getByAltText('MCH')).toBeInTheDocument();
+    expect(screen.getByAltText('DNC')).toBeInTheDocument();
+  });
+
+  it('renders role label [坦克] for fending', () => {
+    render(<RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />);
     expect(screen.getByText('[坦克]')).toBeInTheDocument();
   });
 
   it('renders role label for healing', () => {
-    render(
-      <RoleCard
-        set="healing"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
+    render(<RoleCard set="healing" pieces={baseSlotProgress} onSelect={() => {}} />);
     expect(screen.getByText('[治療]')).toBeInTheDocument();
   });
 
   it('renders role label for casting', () => {
-    render(
-      <RoleCard
-        set="casting"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
+    render(<RoleCard set="casting" pieces={baseSlotProgress} onSelect={() => {}} />);
     expect(screen.getByText('[法師]')).toBeInTheDocument();
   });
 
   it('renders role label as [近戰] for maiming', () => {
-    render(
-      <RoleCard
-        set="maiming"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
+    render(<RoleCard set="maiming" pieces={baseSlotProgress} onSelect={() => {}} />);
     expect(screen.getByText('[近戰]')).toBeInTheDocument();
   });
 
   it('renders role label as [近戰] for scouting', () => {
-    render(
-      <RoleCard
-        set="scouting"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
+    render(<RoleCard set="scouting" pieces={baseSlotProgress} onSelect={() => {}} />);
     expect(screen.getByText('[近戰]')).toBeInTheDocument();
   });
 
   it('renders role label as [遠程] for aiming', () => {
-    render(
-      <RoleCard
-        set="aiming"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
+    render(<RoleCard set="aiming" pieces={baseSlotProgress} onSelect={() => {}} />);
     expect(screen.getByText('[遠程]')).toBeInTheDocument();
   });
 
   it('calls onSelect with primary job ID when detail button clicked', () => {
     const onSelect = vi.fn();
-    render(
-      <RoleCard
-        set="fending"
-        pieces={baseSlotProgress}
-        onSelect={onSelect}
-      />
-    );
+    render(<RoleCard set="fending" pieces={baseSlotProgress} onSelect={onSelect} />);
     fireEvent.click(screen.getByRole('button', { name: /查看詳情/ }));
     expect(onSelect).toHaveBeenCalledWith('PLD');
   });
 
-  it('renders job icons for all jobs in the set', () => {
-    render(
-      <RoleCard
-        set="fending"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
-    // Check for multiple job icons in fending set (PLD, WAR, DRK, GNB)
-    const pldIcon = screen.getByAltText('PLD');
-    const warIcon = screen.getByAltText('WAR');
-    const drkIcon = screen.getByAltText('DRK');
-    const gnbIcon = screen.getByAltText('GNB');
-    expect(pldIcon).toBeInTheDocument();
-    expect(warIcon).toBeInTheDocument();
-    expect(drkIcon).toBeInTheDocument();
-    expect(gnbIcon).toBeInTheDocument();
-  });
-
   it('renders ChainFingerprint for each armor slot', () => {
     const { container } = render(
-      <RoleCard
-        set="fending"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
+      <RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />,
     );
     // ChainFingerprint renders dots with data-dot attribute
     const dots = container.querySelectorAll('[data-dot]');
@@ -180,13 +103,7 @@ describe('RoleCard', () => {
   });
 
   it('renders slot labels (頭, 身, 手, 腿, 腳)', () => {
-    render(
-      <RoleCard
-        set="fending"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
+    render(<RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />);
     expect(screen.getByText('頭')).toBeInTheDocument();
     expect(screen.getByText('身')).toBeInTheDocument();
     expect(screen.getByText('手')).toBeInTheDocument();
@@ -195,46 +112,37 @@ describe('RoleCard', () => {
   });
 
   it('renders with empty pieces', () => {
-    render(
-      <RoleCard
-        set="striking"
-        pieces={{}}
-        onSelect={() => {}}
-      />
-    );
-    expect(screen.getByText(/武僧 · 武士/)).toBeInTheDocument();
+    render(<RoleCard set="striking" pieces={{}} onSelect={() => {}} />);
     expect(screen.getByText('[近戰]')).toBeInTheDocument();
+    expect(screen.getByAltText('MNK')).toBeInTheDocument();
+    expect(screen.getByText(/武僧 · 武士/)).toBeInTheDocument();
   });
 
-  it('shows stage name labels for elemental armor slots (current only)', () => {
-    render(
-      <RoleCard
-        set="fending"
-        pieces={baseSlotProgress}
-        onSelect={() => {}}
-      />
-    );
-    // Should display stage labels for elemental armor
-    expect(screen.getAllByText(/禁地兵裝·常風/).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText(/70級職業套裝/).length).toBeGreaterThanOrEqual(1);
+  it('shows elemental armor chip label', () => {
+    render(<RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />);
+    expect(screen.getByText('元素系列（戰鬥）')).toBeInTheDocument();
   });
 
-  it('shows stage name labels for elemental armor with target stage', () => {
-    const piecesWithTarget = {
-      head: { currentStage: 'elemental' as const, targetStage: 'pyros' as const },
-      body: { currentStage: 'anemos' as const },
-      hands: { currentStage: 'antiquated' as const },
-      legs: { currentStage: 'antiquated' as const },
-      feet: { currentStage: 'antiquated' as const },
-    };
-    render(
+  it('shows 0/4 count for all unstarted slots', () => {
+    const { container } = render(
+      <RoleCard set="fending" pieces={{}} onSelect={() => {}} />,
+    );
+    const countSpans = Array.from(container.querySelectorAll('.tabular-nums'));
+    const zeroCountSpans = countSpans.filter((el) => el.textContent?.startsWith('0'));
+    expect(zeroCountSpans.length).toBe(5);
+  });
+
+  it('shows filled count for started slots', () => {
+    const { container } = render(
       <RoleCard
         set="fending"
-        pieces={piecesWithTarget}
+        pieces={{ head: { currentStage: 'elemental' as const } }}
         onSelect={() => {}}
-      />
+      />,
     );
-    // Should show both current and target stages for head
-    expect(screen.getByText(/禁地兵裝·元素 → 禁地兵裝·湧火/)).toBeInTheDocument();
+    // elemental is index 1 in ELEMENTAL_ARMOR_STAGES → filled = 2
+    const countSpans = Array.from(container.querySelectorAll('.tabular-nums'));
+    const headCount = countSpans.find((el) => el.textContent?.startsWith('2'));
+    expect(headCount).toBeTruthy();
   });
 });

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { JobCard } from './JobCard';
+import { JobRow } from './JobRow';
 import { RoleCard } from './RoleCard';
 import { ProgressSummary } from './ProgressSummary';
 import { MainJobPickerDialog } from './MainJobPickerDialog';
@@ -158,10 +158,10 @@ export function OverviewTab({
         <h3 className="text-sm font-bold text-yellow-400 mb-2">武器 + 常風防具（依職業）</h3>
         <div
           data-testid="job-grid"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+          className="border border-gray-700 rounded-lg overflow-hidden divide-y divide-gray-700/50"
         >
           {visibleJobs.map(({ job, progress }) => (
-            <JobCard key={job} job={job} progress={progress} weapons={weapons} onSelect={onSelectJob} />
+            <JobRow key={job} job={job} progress={progress} weapons={weapons} onSelect={onSelectJob} />
           ))}
         </div>
       </section>
@@ -173,7 +173,7 @@ export function OverviewTab({
         </p>
         <div
           data-testid="role-grid"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+          className="border border-gray-700 rounded-lg overflow-hidden divide-y divide-gray-700/50"
         >
           {visibleSets.map((set) => {
             const pieces = inventory.armor.elemental[set] ?? {};
