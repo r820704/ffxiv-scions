@@ -271,5 +271,5 @@ export const ANEMOS_ARMOR_ZONE_GROUPS: ArmorZoneGroupDef[] = [
 export const ELEMENTAL_ARMOR_ZONE_GROUPS: ArmorZoneGroupDef[] = [
   { key: 'pyros',   label: '湧火之地', stages: ['elemental'] },
   { key: 'hydatos', label: '豐水之地', stages: ['elemental+1'] },
-  { key: 'ba',      label: '禁地王都', stages: ['elemental+2'] },
+  { key: 'ba',      label: '巴爾德西昂分館', stages: ['elemental+2'] },
 ];
