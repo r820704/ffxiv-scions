@@ -91,7 +91,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
             {started ? (
               <ChainFingerprint currentStage={stage} stages={ARMOR_STAGES_BY_TRACK.anemos} />
             ) : (
-              <div className="flex gap-[2px]">
+              <div className="flex gap-[2px] font-mono">
                 {ARMOR_STAGES_BY_TRACK.anemos.map((s) => (
                   <span key={s} className="text-gray-600">●</span>
                 ))}
