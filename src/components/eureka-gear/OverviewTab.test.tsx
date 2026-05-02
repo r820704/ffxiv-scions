@@ -24,13 +24,17 @@ describe('OverviewTab', () => {
     expect(onSelectJob).toHaveBeenCalled();
   });
 
-  it('uses responsive grid classes', () => {
+  it('job grid contains all 15 job rows', () => {
     const { container } = render(
       <OverviewTab inventory={emptyInventoryV3()} onSelectJob={() => {}} />,
     );
     const grid = container.querySelector('[data-testid="job-grid"]');
-    expect(grid?.className).toContain('sm:grid-cols-2');
-    expect(grid?.className).toContain('lg:grid-cols-3');
+    expect(grid).not.toBeNull();
+    const icons = grid?.querySelectorAll('img[alt]');
+    const alts = new Set(Array.from(icons ?? []).map((img) => img.getAttribute('alt')));
+    for (const job of ['PLD','WAR','DRK','MNK','DRG','NIN','SAM','BRD','MCH','BLM','SMN','RDM','WHM','SCH','AST']) {
+      expect(alts.has(job)).toBe(true);
+    }
   });
 
   describe('role filter chips', () => {

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { JobCard } from './JobCard';
+import { JobRow } from './JobRow';
 import { RoleCard } from './RoleCard';
 import { ProgressSummary } from './ProgressSummary';
 import { MainJobPickerDialog } from './MainJobPickerDialog';
@@ -45,7 +45,7 @@ export type OverviewTabProps = {
 
 export function OverviewTab({
   inventory,
-  weapons,
+  weapons: _weapons,
   onSelectJob,
   role = 'all',
   onRoleChange,
@@ -158,10 +158,17 @@ export function OverviewTab({
         <h3 className="text-sm font-bold text-yellow-400 mb-2">武器 + 常風防具（依職業）</h3>
         <div
           data-testid="job-grid"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+          className="border border-gray-700 rounded-lg overflow-hidden divide-y divide-gray-700/50"
         >
+          {/* Column headers */}
+          <div className="grid grid-cols-[1fr_auto_52px_28px] gap-3 px-3 py-1.5 text-[10px] text-gray-500 bg-gray-800/60 select-none">
+            <span />
+            <span>武器</span>
+            <span className="text-right">常風</span>
+            <span />
+          </div>
           {visibleJobs.map(({ job, progress }) => (
-            <JobCard key={job} job={job} progress={progress} weapons={weapons} onSelect={onSelectJob} />
+            <JobRow key={job} job={job} progress={progress} onSelect={onSelectJob} />
           ))}
         </div>
       </section>
