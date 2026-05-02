@@ -77,69 +77,37 @@ function weatherLabel(weathers: string[]): string {
 
 interface NmRowDisplay {
   condLabel: string | null;
+  condDimmed: boolean;   // true when nm condition exists but is not currently met (pre-farm)
   subRowMob: TriggerMobAttrs | null;
   subRowLabel: string | null;
 }
 
-// Determines how to display a single NM row, including whether to show a trigger-mob sub-row.
+// Determines how to display a single NM row, always including a trigger-mob sub-row.
+// Rules:
+//   - condLabel: the NM's own spawn condition (weather), or null if the NM has no nm condition.
+//   - condDimmed: true when condLabel exists but the cell weather doesn't satisfy it (pre-farm).
+//   - subRowMob: always the trigger mob if found in lookup.
+//   - subRowLabel: the mob's own special condition (night/day/different weather), if any.
 function getNmRowDisplay(nm: EurekaNm, cellWeather: string | undefined): NmRowDisplay {
   const nmCond = nm.trigger?.nm;
   const mobCond = nm.trigger?.mob;
   const triggerMob = mobByNmTw.get(nm.nameTw) ?? null;
 
-  // Is the NM's own spawn condition currently met by the cell's weather?
-  const nmCondMet = nmCond?.weather ? nmCond.weather.includes(cellWeather ?? '') : false;
+  // Main condition label comes from the NM's own spawn condition (nm.weather).
+  const condLabel = nmCond?.weather ? weatherLabel(nmCond.weather) : null;
 
-  if (nmCond && nmCondMet && mobCond) {
-    // nm condition met AND mob condition exists (e.g. Pazuzu in a Gales cell):
-    // show nm condition on main line, mob as sub-row pre-farm hint.
-    const condLabel = nmCond.weather ? weatherLabel(nmCond.weather) : null;
-    const subRowLabel = mobCond.timeOfDay === 'night'
-      ? '夜間'
-      : mobCond.weather ? weatherLabel(mobCond.weather) : null;
-    return { condLabel, subRowMob: triggerMob, subRowLabel };
-  }
+  // condDimmed: nm spawn condition EXISTS but the current cell's weather doesn't satisfy it.
+  // This happens for Pazuzu in night (non-Gales) cells — nm=Gales not met, mob=night is met.
+  const condDimmed = condLabel !== null && !nmCond!.weather!.includes(cellWeather ?? '');
 
-  if (nmCond && !nmCondMet && mobCond) {
-    // nm condition NOT met but mob condition is met (e.g. Pazuzu in a night cell):
-    // single contextual line showing both conditions so player knows what's needed.
-    const nmLabel = nmCond.weather ? weatherLabel(nmCond.weather) : null;
-    const mobLabel = mobCond.timeOfDay === 'night'
-      ? '夜間'
-      : mobCond.weather ? weatherLabel(mobCond.weather) : null;
-    return {
-      condLabel: nmLabel && mobLabel ? `NM：${nmLabel} 觸發怪：${mobLabel}` : null,
-      subRowMob: null,
-      subRowLabel: null,
-    };
-  }
+  // Sub-row condition: the mob's own time-of-day or weather gate, if it differs from
+  // the nm condition already shown on the main line.
+  let subRowLabel: string | null = null;
+  if (mobCond?.timeOfDay === 'night') subRowLabel = '夜間';
+  else if (mobCond?.timeOfDay === 'day') subRowLabel = '白天';
+  else if (mobCond?.weather) subRowLabel = weatherLabel(mobCond.weather);
 
-  if (!nmCond && mobCond?.weather) {
-    // Mob has weather condition, no nm condition (e.g. Jahannam):
-    // the mob's window IS the action window — show mob as sub-row.
-    return {
-      condLabel: null,
-      subRowMob: triggerMob,
-      subRowLabel: weatherLabel(mobCond.weather),
-    };
-  }
-
-  if (!nmCond && mobCond?.timeOfDay) {
-    // Simple night/day mob-only condition (e.g. White Rider):
-    // show condition inline, no sub-row needed.
-    return {
-      condLabel: mobCond.timeOfDay === 'night' ? '夜間' : '白天',
-      subRowMob: null,
-      subRowLabel: null,
-    };
-  }
-
-  // Standard nm-weather-only condition (e.g. King Arthro, Copycat Cassie):
-  return {
-    condLabel: nmCond?.weather ? weatherLabel(nmCond.weather) : null,
-    subRowMob: null,
-    subRowLabel: null,
-  };
+  return { condLabel, condDimmed, subRowMob: triggerMob, subRowLabel };
 }
 
 export default function NmTooltip({ nms, cellWeather, children, onOpenDetail }: NmTooltipProps) {
@@ -270,7 +238,7 @@ export default function NmTooltip({ nms, cellWeather, children, onOpenDetail }: 
           </div>
           <ul className="flex flex-col gap-1">
             {nms.map((nm) => {
-              const { condLabel, subRowMob, subRowLabel } = getNmRowDisplay(nm, cellWeather);
+              const { condLabel, condDimmed, subRowMob, subRowLabel } = getNmRowDisplay(nm, cellWeather);
               return (
                 <li key={nm.id} className="flex flex-col gap-0.5 whitespace-nowrap">
                   <div className="flex items-center gap-2">
@@ -292,14 +260,18 @@ export default function NmTooltip({ nms, cellWeather, children, onOpenDetail }: 
                       <span className="text-foreground">{nm.nameTw}</span>
                     )}
                     <span className="text-muted-foreground">Lv.{nm.level}</span>
-                    {condLabel && <span className="text-amber-300/80 ml-auto">{condLabel}</span>}
+                    {condLabel && (
+                      <span className={`ml-auto ${condDimmed ? 'text-amber-300/35' : 'text-amber-300/80'}`}>
+                        {condLabel}
+                      </span>
+                    )}
                   </div>
-                  {subRowMob && subRowLabel && (
+                  {subRowMob && (
                     <div className="flex items-center gap-1.5 pl-3 text-[10px] text-muted-foreground/60">
                       <span>↳</span>
                       <span>{subRowMob.nameTw}</span>
                       <span>Lv.{subRowMob.level}</span>
-                      <span className="ml-auto text-amber-300/60">{subRowLabel}</span>
+                      {subRowLabel && <span className="ml-auto text-amber-300/60">{subRowLabel}</span>}
                     </div>
                   )}
                 </li>
