@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 interface AlbumStateBarProps {
   learnedCount: number;
@@ -17,12 +18,12 @@ export default function AlbumStateBar({
 }: AlbumStateBarProps) {
   const pct = (learnedCount / total) * 100;
   return (
+    <Tooltip label={disabled ? '切換到「圖鑑全開計算」模式才可編輯' : undefined}>
     <div
       className={cn(
         'flex items-center gap-2 w-full md:flex-1 md:min-w-0',
         disabled && 'opacity-50',
       )}
-      title={disabled ? '切換到「圖鑑全開計算」模式才可編輯' : undefined}
     >
       <div className="flex-1 min-w-0 bg-muted rounded h-2 overflow-hidden">
         <div
@@ -48,5 +49,6 @@ export default function AlbumStateBar({
         重置
       </button>
     </div>
+    </Tooltip>
   );
 }

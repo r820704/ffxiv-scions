@@ -13,6 +13,7 @@ import { getPeriodKind, getPeriodBgClass, isCellNight } from '@/utils/weather-pe
 import { eurekaNms, getActiveNmsAt, NIGHT_FILTER_KEY } from '@/data/eureka-nm-data';
 import WeatherIcon from '@/components/WeatherIcon';
 import NmTooltip from './NmTooltip';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 interface ZoneWeatherRowProps {
   zone: EurekaZone;
@@ -241,13 +242,14 @@ export default function ZoneWeatherRow({
                   </div>
                 )}
                 {hasNightOnlyNm && !hasWeatherNm && (
-                  <div
-                    data-night-nm-indicator
-                    className="absolute top-0.5 right-0.5 text-[10px] leading-none"
-                    title="此時段有夜間 NM"
-                  >
-                    🌙
-                  </div>
+                  <Tooltip label="此時段有夜間 NM">
+                    <div
+                      data-night-nm-indicator
+                      className="absolute top-0.5 right-0.5 text-[10px] leading-none"
+                    >
+                      🌙
+                    </div>
+                  </Tooltip>
                 )}
                 {nowOffsetPct !== null && (
                   <div

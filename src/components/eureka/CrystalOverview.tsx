@@ -8,6 +8,7 @@ import type { OptimizationResult } from '@/utils/recipe-optimizer';
 import type { McDerivedCosts } from '@/utils/mc-analysis';
 import { cn } from '@/lib/utils';
 import { buildPurchasePlan, type PurchasePlan } from '@/utils/purchase-plan';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 const logogramMap = new Map(eurekaData.logograms.map((l) => [l.id, l]));
 
@@ -183,20 +184,23 @@ export default function CrystalOverview({
               >
                 <span className="text-xs text-foreground truncate flex items-center gap-1">
                   {logogram.nameTw}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); toggleMnemeInfo(logogramId); }}
-                    className={cn(
-                      'shrink-0 w-4 h-4 rounded-full text-[9px] flex items-center justify-center cursor-pointer transition-colors',
-                      mnemeInfoRows.has(logogramId)
-                        ? 'bg-primary/30 text-primary'
-                        : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                    )}
-                    title="查看可鑑定的記憶"
-                  >
-                    i
-                  </button>
+                  <Tooltip label="查看可鑑定的記憶">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleMnemeInfo(logogramId); }}
+                      className={cn(
+                        'shrink-0 w-4 h-4 rounded-full text-[9px] flex items-center justify-center cursor-pointer transition-colors',
+                        mnemeInfoRows.has(logogramId)
+                          ? 'bg-primary/30 text-primary'
+                          : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                      )}
+                    >
+                      i
+                    </button>
+                  </Tooltip>
                   {hasOptResult && remaining95 > 0 && plan && !plan.fulfilled && (
-                    <span className="text-[9px] text-red-400" title="市場供應不足">⚠</span>
+                    <Tooltip label="市場供應不足">
+                      <span className="text-[9px] text-red-400">⚠</span>
+                    </Tooltip>
                   )}
                   {hasOptResult && remaining95 > 0 && (
                     <span className={cn(

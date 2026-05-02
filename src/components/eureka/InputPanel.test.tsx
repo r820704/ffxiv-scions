@@ -19,7 +19,7 @@ const baseProps = {
 describe('InputPanel', () => {
   it('slot panel wrapper should be pointer-events-none in album mode', () => {
     const { container } = render(<InputPanel {...baseProps} calcMode="album" />);
-    const slotWrapper = container.querySelector('[title*="技能格計算"]');
+    const slotWrapper = container.querySelector('.shrink-0.opacity-40');
     expect(slotWrapper).toBeTruthy();
     expect(slotWrapper!.className).toMatch(/pointer-events-none/);
   });

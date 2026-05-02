@@ -13,6 +13,7 @@ export type TooltipProps = {
  * the native HTML `title` attribute (~1s delay, no touch support).
  */
 export function Tooltip({ label, children, delayDuration = 200 }: TooltipProps) {
+  if (!label) return <>{children}</>;
   return (
     <RadixTooltip.Provider delayDuration={delayDuration}>
       <RadixTooltip.Root>

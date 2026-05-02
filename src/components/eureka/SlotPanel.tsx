@@ -1,6 +1,7 @@
 // src/components/eureka/SlotPanel.tsx
 import { eurekaData } from '@/data/eureka-data';
 import { cn } from '@/lib/utils';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 const actionMap = new Map(eurekaData.logosActions.map((a) => [a.id, a]));
 
@@ -19,12 +20,16 @@ export default function SlotPanel({
 }: SlotPanelProps) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[10px] text-muted-foreground" title="在BA的時候，你可能需要先使用英傑的記憶再使用其他文理技能">提前使用</span>
+      <Tooltip label="在BA的時候，你可能需要先使用英傑的記憶再使用其他文理技能">
+        <span className="text-[10px] text-muted-foreground cursor-help underline decoration-dotted">提前使用</span>
+      </Tooltip>
       {slotConfig.map(([skill1, skill2], i) => {
         if (i === 2) {
           return (
             <div key={`label-${i}`}>
-              <span className="text-[10px] text-muted-foreground mt-1 block" title="實際佔用技能槽的文理技能（初始上限 3 格，可透過豐水之地的幸運兔NM銀箱子機率獲得試製鍊金容器擴充到最多六格）">文理技能槽</span>
+              <Tooltip label="實際佔用技能槽的文理技能（初始上限 3 格，可透過豐水之地的幸運兔NM銀箱子機率獲得試製鍊金容器擴充到最多六格）">
+                <span className="text-[10px] text-muted-foreground mt-1 block cursor-help underline decoration-dotted">文理技能槽</span>
+              </Tooltip>
               <SlotCell
                 index={i}
                 skill1={skill1}

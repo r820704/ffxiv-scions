@@ -2,6 +2,7 @@ import { EUREKA_ZONES, getZoneWeathers, weatherNamesTw } from '@/data/weather-da
 import { getNmTriggeringWeathers, NIGHT_FILTER_KEY } from '@/data/eureka-nm-data';
 import { useLocalStorageBool } from '@/hooks/useLocalStorageBool';
 import WeatherIcon from '@/components/WeatherIcon';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 interface WeatherFilterBarProps {
   selected: Set<string>;
@@ -53,19 +54,19 @@ export default function WeatherFilterBar({
   const renderNightChip = () => {
     const isOn = selected.has(NIGHT_FILTER_KEY);
     return (
-      <button
-        key={NIGHT_FILTER_KEY}
-        onClick={() => onToggle(NIGHT_FILTER_KEY)}
-        className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded border transition-colors cursor-pointer ${
-          isOn
-            ? 'bg-indigo-600 text-indigo-50 border-indigo-400'
-            : 'bg-muted text-muted-foreground border-indigo-500/40 hover:bg-muted/80'
-        }`}
-        title="夜間 NM（每日 ET 18:00–6:00 不依天氣出現）"
-      >
-        <span>🌙</span>
-        <span>夜間</span>
-      </button>
+      <Tooltip key={NIGHT_FILTER_KEY} label="夜間 NM（每日 ET 18:00–6:00 不依天氣出現）">
+        <button
+          onClick={() => onToggle(NIGHT_FILTER_KEY)}
+          className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+            isOn
+              ? 'bg-indigo-600 text-indigo-50 border-indigo-400'
+              : 'bg-muted text-muted-foreground border-indigo-500/40 hover:bg-muted/80'
+          }`}
+        >
+          <span>🌙</span>
+          <span>夜間</span>
+        </button>
+      </Tooltip>
     );
   };
 
