@@ -96,16 +96,16 @@ describe('ChainStepper', () => {
     expect(screen.queryByText('最終形態')).toBeNull();
   });
 
-  it('does NOT render zone labels for short 4-stage elemental armor track', () => {
+  it('does NOT render zone labels for short 3-stage elemental armor track without zoneGroups prop', () => {
     render(
       <ChainStepper
-        currentStage="antiquated"
+        currentStage="elemental"
         targetStage={undefined}
         onSelectTarget={() => {}}
         stages={ELEMENTAL_ARMOR_STAGES}
       />,
     );
-    expect(screen.getAllByRole('button', { name: /^stage \d+:/ }).length).toBe(4);
+    expect(screen.getAllByRole('button', { name: /^stage \d+:/ }).length).toBe(3);
     expect(screen.queryByText('常風之地')).toBeNull();
     expect(screen.queryByText('湧火之地')).toBeNull();
   });

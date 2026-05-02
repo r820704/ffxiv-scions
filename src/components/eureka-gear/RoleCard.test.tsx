@@ -123,7 +123,7 @@ describe('RoleCard', () => {
     expect(screen.getByText('元素系列（戰鬥）')).toBeInTheDocument();
   });
 
-  it('shows 0/4 count for all unstarted slots', () => {
+  it('shows 0/3 count for all unstarted slots', () => {
     const { container } = render(
       <RoleCard set="fending" pieces={{}} onSelect={() => {}} />,
     );
@@ -140,9 +140,9 @@ describe('RoleCard', () => {
         onSelect={() => {}}
       />,
     );
-    // elemental is index 1 in ELEMENTAL_ARMOR_STAGES → filled = 2
+    // elemental is index 0 in ELEMENTAL_ARMOR_STAGES → filled = 1
     const countSpans = Array.from(container.querySelectorAll('.tabular-nums'));
-    const headCount = countSpans.find((el) => el.textContent?.startsWith('2'));
+    const headCount = countSpans.find((el) => el.textContent?.startsWith('1'));
     expect(headCount).toBeTruthy();
   });
 });
