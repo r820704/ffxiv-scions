@@ -6,6 +6,10 @@ import {
   type EurekaStage,
   type EurekaWeapon,
 } from '../../types/eureka-gear';
+
+const WEAPON_GLOW_STAGES = new Set<EurekaStage>([
+  'anemos', 'elemental', 'pyros', 'eureka', 'physeos',
+]);
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
 import type { JobProgress } from '../../utils/eurekaGear';
@@ -65,7 +69,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
           <div key={chainId} className="flex items-center gap-1 text-xs shrink-0">
             <span className="text-yellow-400/40 text-[10px]">{slotLabel}</span>
             {started ? (
-              <ChainFingerprint currentStage={p.currentStage} />
+              <ChainFingerprint currentStage={p.currentStage} glowStages={WEAPON_GLOW_STAGES} />
             ) : (
               <div className="flex gap-[2px] items-center">
                 {EUREKA_STAGES.map((s) => (
@@ -80,14 +84,36 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
         );
       })}
 
-      {/* Force new line + 108px spacer to align armor chip with weapon chip */}
+      {/* Force new line; spacer aligns armor chip with weapon chip (desktop only) */}
       <div className="w-full" />
-      <div className="w-[108px] shrink-0" />
+      <div className="w-[108px] shrink-0 hidden sm:block" />
 
       {/* Anemos armor section */}
       <span className="text-[10px] font-bold text-green-400/90 bg-green-900/50 px-1.5 py-0.5 rounded shrink-0">
         常風系列（外觀）
       </span>
+
+      {/* Mobile: compact 5×5 dot groups */}
+      <div className="flex sm:hidden gap-[4px] items-center shrink-0">
+        {ARMOR_SLOTS.map((slot) => {
+          const p = progress.anemos[slot];
+          const stage: EurekaStage = p?.currentStage ?? 'antiquated';
+          const started = p !== undefined;
+          const idx = ANEMOS_ARMOR_STAGES.indexOf(stage);
+          return (
+            <div key={slot} className="flex gap-[2px] items-center">
+              {ARMOR_STAGES_BY_TRACK.anemos.map((s, i) => (
+                <span
+                  key={s}
+                  className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${started && i <= idx ? 'bg-green-400' : 'bg-gray-600'}`}
+                />
+              ))}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop: per-slot with label, dots, and count */}
       {ARMOR_SLOTS.map((slot) => {
         const p = progress.anemos[slot];
         const stage: EurekaStage = p?.currentStage ?? 'antiquated';
@@ -95,7 +121,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
         const filled = ANEMOS_ARMOR_STAGES.indexOf(stage) + 1;
         const done = stage === 'anemos';
         return (
-          <div key={slot} className="flex items-center gap-1 text-xs shrink-0">
+          <div key={slot} className="hidden sm:flex items-center gap-1 text-xs shrink-0">
             <span className="text-green-400/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
             {started ? (
               <ChainFingerprint currentStage={stage} stages={ARMOR_STAGES_BY_TRACK.anemos} />
