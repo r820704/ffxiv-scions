@@ -86,11 +86,11 @@ export default function NmListModal({ zone, onClose, onOpenDetail }: NmListModal
         </div>
 
         {/* Column headers */}
-        <div className="grid grid-cols-[36px_1fr_auto_auto] items-center gap-2 px-2 py-1.5 border-b border-border/30 text-[10px] text-muted-foreground/50">
+        <div className="grid grid-cols-[36px_1fr_72px_72px] items-center gap-2 px-2 py-1.5 border-b border-border/30 text-[10px] text-muted-foreground/50">
           <span />
           <span />
-          <span className="whitespace-nowrap">NM 條件</span>
-          <span className="whitespace-nowrap">觸發怪條件</span>
+          <span className="whitespace-nowrap text-right">NM 條件</span>
+          <span className="whitespace-nowrap text-right">觸發怪條件</span>
         </div>
 
         <ul className="flex-1 overflow-y-auto p-2">
@@ -105,7 +105,7 @@ export default function NmListModal({ zone, onClose, onOpenDetail }: NmListModal
                     onOpenDetail(nm.id);
                     onClose();
                   }}
-                  className="w-full grid grid-cols-[36px_1fr_auto_auto] items-center gap-2 p-2 rounded text-left cursor-pointer border border-transparent hover:bg-muted/30 hover:border-border/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                  className="w-full grid grid-cols-[36px_1fr_72px_72px] items-center gap-2 p-2 rounded text-left cursor-pointer border border-transparent hover:bg-muted/30 hover:border-border/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
                 >
                   <span
                     data-testid="nm-level-chip"
