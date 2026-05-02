@@ -206,18 +206,34 @@ export default function ZoneWeatherRow({
           const nms = isCurrent
             ? getActiveNmsAt(zone, f.weather, f.startTime, now)
             : getActiveNmsAt(zone, f.weather, f.startTime);
-          // Split NMs into weather-triggered (red badge) vs night-only (🌙 corner).
-          // Pazuzu-like NMs (weather + night) count as weather-triggered.
-          const hasWeatherNm = nms.some((n) => n.trigger?.weather && n.trigger.weather.length > 0);
-          const hasNightOnlyNm = nms.some(
-            (n) => !n.trigger?.weather && n.trigger?.timeOfDay === 'night',
-          );
+          // Red badge: a weather condition (nm or mob) matches THIS cell's weather.
+          // Moon badge: an NM is present only due to a night condition (no weather match).
+          const hasWeatherNm = nms.some((n) => {
+            const nmWeatherMet =
+              (n.trigger?.nm?.weather?.length ?? 0) > 0 &&
+              n.trigger!.nm!.weather!.includes(f.weather);
+            const mobWeatherMet =
+              (n.trigger?.mob?.weather?.length ?? 0) > 0 &&
+              n.trigger!.mob!.weather!.includes(f.weather);
+            return nmWeatherMet || mobWeatherMet;
+          });
+          const hasNightOnlyNm = nms.some((n) => {
+            const nmWeatherMet =
+              (n.trigger?.nm?.weather?.length ?? 0) > 0 &&
+              n.trigger!.nm!.weather!.includes(f.weather);
+            const mobWeatherMet =
+              (n.trigger?.mob?.weather?.length ?? 0) > 0 &&
+              n.trigger!.mob!.weather!.includes(f.weather);
+            const hasNight =
+              n.trigger?.nm?.timeOfDay === 'night' || n.trigger?.mob?.timeOfDay === 'night';
+            return hasNight && !nmWeatherMet && !mobWeatherMet;
+          });
           const bgClass = getPeriodBgClass(getPeriodKind(f.startTime));
           const nowOffsetPct = isCurrent
             ? Math.max(0, Math.min(100, ((now - f.startTime) / WEATHER_PERIOD_MS) * 100))
             : null;
           return (
-            <NmTooltip key={f.startTime} nms={nms} onOpenDetail={onOpenDetail}>
+            <NmTooltip key={f.startTime} nms={nms} cellWeather={f.weather} onOpenDetail={onOpenDetail}>
               <div
                 data-period-cell
                 data-cell-index={idx}

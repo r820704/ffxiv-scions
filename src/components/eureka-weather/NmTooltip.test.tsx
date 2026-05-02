@@ -31,7 +31,7 @@ const pazuzu: EurekaNm = {
   nameEn: 'Pazuzu',
   zone: 'Eureka Anemos',
   level: 20,
-  trigger: { weather: ['Gales'], timeOfDay: 'night' },
+  trigger: { nm: { weather: ['Gales'] }, mob: { timeOfDay: 'night' } },
 };
 
 const fafnir: EurekaNm = {
@@ -40,7 +40,7 @@ const fafnir: EurekaNm = {
   nameEn: 'Fafnir',
   zone: 'Eureka Anemos',
   level: 17,
-  trigger: { timeOfDay: 'night' },
+  trigger: { mob: { timeOfDay: 'night' } },
 };
 
 describe('NmTooltip', () => {
@@ -56,7 +56,8 @@ describe('NmTooltip', () => {
 
   it('opens tooltip on mouse hover (hover-capable device)', () => {
     render(
-      <NmTooltip nms={[pazuzu, fafnir]}>
+      // cellWeather="Gales" → Pazuzu shows nm condition on main line + mob sub-row
+      <NmTooltip nms={[pazuzu, fafnir]} cellWeather="Gales">
         <div data-testid="cell">cell</div>
       </NmTooltip>,
     );
@@ -64,7 +65,9 @@ describe('NmTooltip', () => {
     expect(screen.getByText('符合觸發條件')).toBeTruthy();
     expect(screen.getByText('帕祖祖')).toBeTruthy();
     expect(screen.getByText('法夫納')).toBeTruthy();
-    expect(screen.getByText('強風+夜間')).toBeTruthy();
+    // Pazuzu: nm condition "強風" on main line; fafnir: mob night "夜間"
+    expect(screen.getByText('強風')).toBeTruthy();
+    expect(screen.getAllByText('夜間').length).toBeGreaterThanOrEqual(1);
   });
 
   it('does not open on hover when device cannot hover (touch-only)', () => {

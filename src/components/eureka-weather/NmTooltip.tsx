@@ -9,7 +9,9 @@ import {
   type ReactNode,
 } from 'react';
 import * as Popover from '@radix-ui/react-popover';
-import { formatNmTrigger, type EurekaNm } from '@/data/eureka-nm-data';
+import { type EurekaNm } from '@/data/eureka-nm-data';
+import { weatherNamesTw } from '@/data/weather-data';
+import { triggerMobAttrs, type TriggerMobAttrs } from '@/data/eureka-trigger-mob-data';
 import { preloadEurekaMap } from '@/utils/preload-eureka-map';
 
 interface NmTooltipState {
@@ -57,13 +59,58 @@ function useCanHover(): boolean {
 
 interface NmTooltipProps {
   nms: EurekaNm[];
+  cellWeather?: string;
   children: ReactNode;
   onOpenDetail?: (nmId: string) => void;
 }
 
 const HOVER_CLOSE_DELAY_MS = 120;
 
-export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProps) {
+// Reverse-lookup map: TC NM name → trigger mob data
+const mobByNmTw = new Map<string, TriggerMobAttrs>(
+  Object.values(triggerMobAttrs).map((m) => [m.nmTw, m]),
+);
+
+function weatherLabel(weathers: string[]): string {
+  return weathers.map((w) => weatherNamesTw[w] ?? w).join('/');
+}
+
+interface NmRowDisplay {
+  condLabel: string | null;
+  condDimmed: boolean;   // true when nm condition exists but is not currently met (pre-farm)
+  subRowMob: TriggerMobAttrs | null;
+  subRowLabel: string | null;
+}
+
+// Determines how to display a single NM row, always including a trigger-mob sub-row.
+// Rules:
+//   - condLabel: the NM's own spawn condition (weather), or null if the NM has no nm condition.
+//   - condDimmed: true when condLabel exists but the cell weather doesn't satisfy it (pre-farm).
+//   - subRowMob: always the trigger mob if found in lookup.
+//   - subRowLabel: the mob's own special condition (night/day/different weather), if any.
+function getNmRowDisplay(nm: EurekaNm, cellWeather: string | undefined): NmRowDisplay {
+  const nmCond = nm.trigger?.nm;
+  const mobCond = nm.trigger?.mob;
+  const triggerMob = mobByNmTw.get(nm.nameTw) ?? null;
+
+  // Main condition label comes from the NM's own spawn condition (nm.weather).
+  const condLabel = nmCond?.weather ? weatherLabel(nmCond.weather) : null;
+
+  // condDimmed: nm spawn condition EXISTS but the current cell's weather doesn't satisfy it.
+  // This happens for Pazuzu in night (non-Gales) cells — nm=Gales not met, mob=night is met.
+  const condDimmed = condLabel !== null && !nmCond!.weather!.includes(cellWeather ?? '');
+
+  // Sub-row condition: the mob's own time-of-day or weather gate, if it differs from
+  // the nm condition already shown on the main line.
+  let subRowLabel: string | null = null;
+  if (mobCond?.timeOfDay === 'night') subRowLabel = '夜間';
+  else if (mobCond?.timeOfDay === 'day') subRowLabel = '白天';
+  else if (mobCond?.weather) subRowLabel = weatherLabel(mobCond.weather);
+
+  return { condLabel, condDimmed, subRowMob: triggerMob, subRowLabel };
+}
+
+export default function NmTooltip({ nms, cellWeather, children, onOpenDetail }: NmTooltipProps) {
   const id = useId();
   const ctx = useContext(NmTooltipContext);
   const canHover = useCanHover();
@@ -162,7 +209,7 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
           side="top"
           sideOffset={6}
           updatePositionStrategy="always"
-          className="z-50 bg-card border border-border rounded-lg p-2 shadow-xl text-xs max-w-[240px]"
+          className="z-50 bg-card border border-border rounded-lg p-2 shadow-xl text-xs max-w-[280px]"
           onOpenAutoFocus={(e) => e.preventDefault()}
           onPointerDownOutside={(e) => {
             // Suppress Radix's auto-close when the pointerdown is on our trigger;
@@ -190,29 +237,46 @@ export default function NmTooltip({ nms, children, onOpenDetail }: NmTooltipProp
             </button>
           </div>
           <ul className="flex flex-col gap-1">
-            {nms.map((nm) => (
-              <li key={nm.id} className="flex items-center gap-2 whitespace-nowrap">
-                {onOpenDetail ? (
-                  <button
-                    type="button"
-                    onMouseEnter={() => preloadEurekaMap(nm.zone)}
-                    onFocus={() => preloadEurekaMap(nm.zone)}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onOpenDetail(nm.id);
-                      handleClose();
-                    }}
-                    className="text-foreground underline-offset-2 hover:underline hover:text-primary cursor-pointer text-left"
-                  >
-                    {nm.nameTw}
-                  </button>
-                ) : (
-                  <span className="text-foreground">{nm.nameTw}</span>
-                )}
-                <span className="text-muted-foreground">Lv.{nm.level}</span>
-                <span className="text-amber-300/80 ml-auto">{formatNmTrigger(nm)}</span>
-              </li>
-            ))}
+            {nms.map((nm) => {
+              const { condLabel, condDimmed, subRowMob, subRowLabel } = getNmRowDisplay(nm, cellWeather);
+              return (
+                <li key={nm.id} className="flex flex-col gap-0.5 whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    {onOpenDetail ? (
+                      <button
+                        type="button"
+                        onMouseEnter={() => preloadEurekaMap(nm.zone)}
+                        onFocus={() => preloadEurekaMap(nm.zone)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onOpenDetail(nm.id);
+                          handleClose();
+                        }}
+                        className="text-foreground underline-offset-2 hover:underline hover:text-primary cursor-pointer text-left"
+                      >
+                        {nm.nameTw}
+                      </button>
+                    ) : (
+                      <span className="text-foreground">{nm.nameTw}</span>
+                    )}
+                    <span className="text-muted-foreground">Lv.{nm.level}</span>
+                    {condLabel && (
+                      <span className={`ml-auto ${condDimmed ? 'text-amber-300/35' : 'text-amber-300/80'}`}>
+                        {condLabel}
+                      </span>
+                    )}
+                  </div>
+                  {subRowMob && (
+                    <div className="flex items-center gap-1.5 pl-3 text-[10px] text-muted-foreground/60">
+                      <span>↳</span>
+                      <span>{subRowMob.nameTw}</span>
+                      <span>Lv.{subRowMob.level}</span>
+                      {subRowLabel && <span className="ml-auto text-amber-300/60">{subRowLabel}</span>}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
           <Popover.Arrow className="fill-border" width={10} height={6} />
         </Popover.Content>

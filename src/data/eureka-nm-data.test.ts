@@ -33,11 +33,16 @@ describe('eurekaNms', () => {
     }
   });
 
-  it('every entry with a trigger has at least one trigger condition (weather or timeOfDay)', () => {
+  it('every entry with a trigger has at least one condition in nm or mob', () => {
     for (const nm of eurekaNms) {
-      if (!nm.trigger) continue; // unconditional NMs (常駐) are allowed post-D1
-      const { weather, timeOfDay } = nm.trigger;
-      expect(Boolean((weather && weather.length > 0) || timeOfDay)).toBe(true);
+      if (!nm.trigger) continue;
+      const { nm: nmCond, mob: mobCond } = nm.trigger;
+      const hasCondition =
+        (nmCond?.weather && nmCond.weather.length > 0) ||
+        nmCond?.timeOfDay ||
+        (mobCond?.weather && mobCond.weather.length > 0) ||
+        mobCond?.timeOfDay;
+      expect(Boolean(hasCondition)).toBe(true);
     }
   });
 });
@@ -48,9 +53,19 @@ describe('getActiveNms', () => {
     expect(matches.some((n) => n.id === 'pazuzu')).toBe(true);
   });
 
-  it('does not return Pazuzu on Anemos + Gales + day (wrong time)', () => {
+  it('returns Pazuzu on Anemos + Gales + day (nm is weather-only, pre-farm trigger mob at night)', () => {
     const matches = getActiveNms('Eureka Anemos', 'Gales', true);
-    expect(matches.some((n) => n.id === 'pazuzu')).toBe(false);
+    expect(matches.some((n) => n.id === 'pazuzu')).toBe(true);
+  });
+
+  it('returns Jahannam on Anemos + Gales (mob-only condition)', () => {
+    const matches = getActiveNms('Eureka Anemos', 'Gales', true);
+    expect(matches.some((n) => n.id === 'jahannam')).toBe(true);
+  });
+
+  it('does not return Jahannam on Anemos + non-Gales weather', () => {
+    const matches = getActiveNms('Eureka Anemos', 'Fair Skies', true);
+    expect(matches.some((n) => n.id === 'jahannam')).toBe(false);
   });
 
   it('returns night-only NMs on any weather at night', () => {
@@ -109,7 +124,7 @@ describe('getActiveNmsAt — current cell uses realNow not midpoint', () => {
     expect(midpointEt.hours).toBeGreaterThanOrEqual(18);
 
     const nms = getActiveNmsAt('Eureka Anemos', 'Fair Skies', periodStart, realNow);
-    expect(nms.every((nm) => nm.trigger?.timeOfDay !== 'night')).toBe(true);
+    expect(nms.every((nm) => nm.trigger?.nm?.timeOfDay !== 'night')).toBe(true);
   });
 
   it('falls back to midpoint isDay when realNow is omitted (parity with getActiveNms)', () => {
@@ -167,8 +182,13 @@ describe('formatNmTrigger', () => {
     expect(formatNmTrigger(taxim)).toBe('夜間');
   });
 
-  it('formats weather + night NM with +', () => {
+  it('formats weather + night NM with + (Pazuzu: nm=Gales, mob=night)', () => {
     const pazuzu = eurekaNms.find((n) => n.id === 'pazuzu')!;
     expect(formatNmTrigger(pazuzu)).toBe('強風+夜間');
+  });
+
+  it('formats mob-only weather NM (Jahannam: mob=Gales)', () => {
+    const jahannam = eurekaNms.find((n) => n.id === 'jahannam')!;
+    expect(formatNmTrigger(jahannam)).toBe('強風');
   });
 });

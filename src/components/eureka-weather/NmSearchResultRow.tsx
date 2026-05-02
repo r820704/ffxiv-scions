@@ -24,11 +24,15 @@ function formatRel(ms: number): string {
 }
 
 // Pick the primary filter id used to compute next windows for a conditional NM.
-// Weather > timeOfDay (most NMs are weather-locked; players generally search for weather first).
+// Priority: nm.weather > mob.weather > night (mob or nm).
 function getPrimaryFilterId(nm: EurekaNm): string | null {
   if (!nm.trigger) return null;
-  if (nm.trigger.weather && nm.trigger.weather.length > 0) return nm.trigger.weather[0]!;
-  if (nm.trigger.timeOfDay === 'night') return NIGHT_FILTER_KEY;
+  const nmW = nm.trigger.nm?.weather;
+  if (nmW && nmW.length > 0) return nmW[0]!;
+  const mobW = nm.trigger.mob?.weather;
+  if (mobW && mobW.length > 0) return mobW[0]!;
+  if (nm.trigger.nm?.timeOfDay === 'night') return NIGHT_FILTER_KEY;
+  if (nm.trigger.mob?.timeOfDay === 'night') return NIGHT_FILTER_KEY;
   return null;
 }
 
