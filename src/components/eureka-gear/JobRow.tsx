@@ -3,7 +3,6 @@ import {
   ARMOR_SLOTS,
   ARMOR_STAGES_BY_TRACK,
   ANEMOS_ARMOR_STAGES,
-  STAGE_TC_LABEL,
   type EurekaStage,
   type EurekaWeapon,
 } from '../../types/eureka-gear';
@@ -34,7 +33,7 @@ export type JobRowProps = {
   onSelect: (job: string) => void;
 };
 
-export function JobRow({ job, progress, weapons, onSelect }: JobRowProps) {
+export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowProps) {
   const iconSrc = JOB_ICONS[job];
   const jobName = JOB_TC_NAME[job as JobId] ?? job;
 
@@ -58,29 +57,26 @@ export function JobRow({ job, progress, weapons, onSelect }: JobRowProps) {
       </span>
       {progress.weapons.map(({ chainId, progress: p, started }) => {
         const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
-        const stageWeapon = weapons?.find((w) => w.chainId === chainId && w.stage === p.currentStage);
-        const name = stageWeapon?.tcName ?? chain?.displayName?.split('·')[1]?.trim() ?? chainId;
+        const slotLabel = chain?.isShield ? '盾' : '主';
         const idx = EUREKA_STAGES.indexOf(p.currentStage);
         const filled = idx + 1;
         const done = filled === EUREKA_STAGES.length;
         return (
           <div key={chainId} className="flex items-center gap-1 text-xs shrink-0">
+            <span className="text-yellow-400/40 text-[10px]">{slotLabel}</span>
             {started ? (
-              <>
-                <span className="text-gray-300">{name}</span>
-                {stageWeapon?.itemLevel && (
-                  <span className="text-gray-500">iL{stageWeapon.itemLevel}</span>
-                )}
-                <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
-                  {filled}<span className="text-gray-600">/{EUREKA_STAGES.length}</span>
-                </span>
-              </>
+              <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
+                {filled}<span className="text-gray-600">/{EUREKA_STAGES.length}</span>
+              </span>
             ) : (
               <span className="text-gray-600">未開始</span>
             )}
           </div>
         );
       })}
+
+      {/* Force new line before armor section */}
+      <div className="w-full" />
 
       {/* Anemos armor section */}
       <span className="text-[10px] font-bold text-green-400/90 bg-green-950/40 px-1.5 py-0.5 rounded shrink-0">
@@ -101,12 +97,9 @@ export function JobRow({ job, progress, weapons, onSelect }: JobRowProps) {
                 <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
                   {filled}<span className="text-gray-600">/5</span>
                 </span>
-                <span className={done ? 'text-green-400' : 'text-gray-500'}>
-                  · {STAGE_TC_LABEL[stage]}
-                </span>
               </>
             ) : (
-              <span className="text-gray-600">· 未開始</span>
+              <span className="text-gray-600">—</span>
             )}
           </div>
         );
