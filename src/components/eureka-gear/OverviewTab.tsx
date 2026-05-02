@@ -45,7 +45,7 @@ export type OverviewTabProps = {
 
 export function OverviewTab({
   inventory,
-  weapons: _weapons,
+  weapons,
   onSelectJob,
   role = 'all',
   onRoleChange,
@@ -160,15 +160,8 @@ export function OverviewTab({
           data-testid="job-grid"
           className="border border-gray-700 rounded-lg overflow-hidden divide-y divide-gray-700/50"
         >
-          {/* Column headers */}
-          <div className="grid grid-cols-[1fr_auto_52px_28px] gap-3 px-3 py-1.5 text-[10px] text-gray-500 bg-gray-800/60 select-none">
-            <span />
-            <span>武器</span>
-            <span className="text-right">常風</span>
-            <span />
-          </div>
           {visibleJobs.map(({ job, progress }) => (
-            <JobRow key={job} job={job} progress={progress} onSelect={onSelectJob} />
+            <JobRow key={job} job={job} progress={progress} weapons={weapons} onSelect={onSelectJob} />
           ))}
         </div>
       </section>
