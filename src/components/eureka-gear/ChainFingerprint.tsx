@@ -13,17 +13,15 @@ export function ChainFingerprint({ currentStage, showLabel, stages }: ChainFinge
   const idx = seq.indexOf(currentStage);
   const filled = Math.max(0, idx + 1);
   return (
-    <div className="flex items-center gap-1 font-mono text-green-400">
-      <div className="flex gap-[2px]">
+    <div className="flex items-center gap-1">
+      <div className="flex gap-[2px] items-center">
         {seq.map((stage, i) => (
           <span
             key={stage}
             data-dot
             data-filled={i <= idx ? 'true' : 'false'}
-            className={i <= idx ? 'text-green-400' : 'text-gray-600'}
-          >
-            ●
-          </span>
+            className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${i <= idx ? 'bg-green-400' : 'bg-gray-600'}`}
+          />
         ))}
       </div>
       {showLabel && <span className="text-xs text-gray-400 ml-1">{filled}/{seq.length}</span>}
