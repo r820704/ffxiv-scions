@@ -1,4 +1,12 @@
-import { EUREKA_STAGES, ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK, ANEMOS_ARMOR_STAGES, type EurekaStage, type EurekaWeapon } from '../../types/eureka-gear';
+import {
+  EUREKA_STAGES,
+  ARMOR_SLOTS,
+  ARMOR_STAGES_BY_TRACK,
+  ANEMOS_ARMOR_STAGES,
+  STAGE_TC_LABEL,
+  type EurekaStage,
+  type EurekaWeapon,
+} from '../../types/eureka-gear';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
 import type { JobProgress } from '../../utils/eurekaGear';
@@ -31,7 +39,7 @@ export function JobRow({ job, progress, weapons, onSelect }: JobRowProps) {
   const jobName = JOB_TC_NAME[job as JobId] ?? job;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-3 py-2.5 hover:bg-gray-800/50 transition-colors">
+    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 px-3 py-2.5 hover:bg-gray-800/50 transition-colors">
       {/* Job identifier */}
       <div className="flex items-center gap-1.5 w-[108px] shrink-0">
         {iconSrc ? (
@@ -44,22 +52,29 @@ export function JobRow({ job, progress, weapons, onSelect }: JobRowProps) {
         <span className="text-sm text-gray-200 truncate">{jobName}</span>
       </div>
 
-      {/* Weapon chips */}
+      {/* Weapons section */}
+      <span className="text-[10px] font-bold text-yellow-400/90 bg-yellow-950/40 px-1.5 py-0.5 rounded shrink-0">
+        武器
+      </span>
       {progress.weapons.map(({ chainId, progress: p, started }) => {
         const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
-        const baseName = chain?.displayName?.split('·')[1]?.trim() ?? chainId;
         const stageWeapon = weapons?.find((w) => w.chainId === chainId && w.stage === p.currentStage);
-        const name = stageWeapon?.tcName ?? baseName;
+        const name = stageWeapon?.tcName ?? chain?.displayName?.split('·')[1]?.trim() ?? chainId;
         const idx = EUREKA_STAGES.indexOf(p.currentStage);
         const filled = idx + 1;
         const done = filled === EUREKA_STAGES.length;
         return (
           <div key={chainId} className="flex items-center gap-1 text-xs shrink-0">
-            {started && <span className="text-yellow-300/80">{name}</span>}
             {started ? (
-              <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
-                {filled}<span className="text-gray-600">/{EUREKA_STAGES.length}</span>
-              </span>
+              <>
+                <span className="text-gray-300">{name}</span>
+                {stageWeapon?.itemLevel && (
+                  <span className="text-gray-500">iL{stageWeapon.itemLevel}</span>
+                )}
+                <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
+                  {filled}<span className="text-gray-600">/{EUREKA_STAGES.length}</span>
+                </span>
+              </>
             ) : (
               <span className="text-gray-600">未開始</span>
             )}
@@ -67,7 +82,10 @@ export function JobRow({ job, progress, weapons, onSelect }: JobRowProps) {
         );
       })}
 
-      {/* Anemos armor slot chips */}
+      {/* Anemos armor section */}
+      <span className="text-[10px] font-bold text-green-400/90 bg-green-950/40 px-1.5 py-0.5 rounded shrink-0">
+        常風系列（外觀）
+      </span>
       {ARMOR_SLOTS.map((slot) => {
         const p = progress.anemos[slot];
         const stage: EurekaStage = p?.currentStage ?? 'antiquated';
@@ -82,9 +100,10 @@ export function JobRow({ job, progress, weapons, onSelect }: JobRowProps) {
               <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
                 {filled}<span className="text-gray-600">/5</span>
               </span>
-            ) : (
-              <span className="text-gray-600">未開始</span>
-            )}
+            ) : null}
+            <span className={`${started && !done ? 'text-gray-500' : done ? 'text-green-400' : 'text-gray-600'}`}>
+              · {started ? STAGE_TC_LABEL[stage] : '未開始'}
+            </span>
           </div>
         );
       })}
