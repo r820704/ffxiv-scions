@@ -2,7 +2,7 @@ import { ChainFingerprint } from './ChainFingerprint';
 import { Tooltip } from '../ui/Tooltip';
 import { JOBS_FOR_ARMOR_SET, JOB_TC_NAME, type AnyJobId } from '../../data/eureka-armor-sets';
 import type { ArmorSetId, ArmorSlot, EurekaStage, SlotProgress } from '../../types/eureka-gear';
-import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK, STAGE_TC_LABEL } from '../../types/eureka-gear';
+import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK } from '../../types/eureka-gear';
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,
@@ -38,71 +38,95 @@ export type RoleCardProps = {
 
 export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
   const jobs = JOBS_FOR_ARMOR_SET[set] ?? [];
-  // Detail tab is wired to SB jobs only, so route to the first SB job in the
-  // set (which is always position 0 in JOBS_FOR_ARMOR_SET).
   const primary = jobs[0];
   const roleLabel = ROLE_TC_NAME[set];
-
-  // Job names joined with full-width middle-dot
-  const jobNamesHeading = jobs
-    .map((j) => JOB_TC_NAME[j as AnyJobId] ?? j)
-    .join(' · ');
+  const elementalStages = ARMOR_STAGES_BY_TRACK.elemental;
+  const lastStage = elementalStages[elementalStages.length - 1];
 
   return (
-    <article className="bg-gray-800 border border-gray-700 rounded p-3 space-y-2">
-      <header className="flex justify-between items-center gap-3">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-cyan-300 text-sm">{jobNamesHeading}</span>
-            <span className="text-xs text-gray-400">[{roleLabel}]</span>
-          </div>
-          <span className="inline-flex items-center gap-1">
-            {jobs.map((j) => {
-              const tcName = JOB_TC_NAME[j as AnyJobId] ?? j;
-              const icon = JOB_ICONS[j];
-              return (
-                <Tooltip key={j} label={tcName}>
-                  {icon ? (
-                    <img src={icon} alt={j} className="w-4 h-4 rounded" />
-                  ) : (
-                    <span className="text-[10px] px-1 bg-gray-700 rounded">{j}</span>
-                  )}
-                </Tooltip>
-              );
-            })}
-          </span>
+    <article className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 px-3 py-2.5 bg-gray-800 hover:bg-gray-700/60 transition-colors">
+      {/* Role identifier */}
+      <div className="flex flex-col w-[108px] shrink-0 gap-0.5">
+        <div className="flex flex-wrap gap-0.5 items-center">
+          {jobs.map((j) => {
+            const tcName = JOB_TC_NAME[j as AnyJobId] ?? j;
+            const icon = JOB_ICONS[j];
+            return (
+              <Tooltip key={j} label={tcName}>
+                {icon ? (
+                  <img src={icon} alt={j} className="w-4 h-4 rounded shrink-0" />
+                ) : (
+                  <span className="text-[8px] px-0.5 bg-gray-700 rounded shrink-0">{j}</span>
+                )}
+              </Tooltip>
+            );
+          })}
         </div>
-        {primary && (
-          <button
-            type="button"
-            onClick={() => onSelect(primary)}
-            className="text-xs text-muted-foreground hover:text-primary hover:underline whitespace-nowrap"
-            aria-label="查看詳情"
-          >
-            查看詳情 →
-          </button>
-        )}
-      </header>
-      <ul className="space-y-0.5 text-xs">
+        <span className="text-[10px] text-gray-400">[{roleLabel}]</span>
+      </div>
+
+      {/* Elemental armor chip */}
+      <span className="text-[10px] font-bold text-cyan-400/90 bg-cyan-950/40 px-1.5 py-0.5 rounded shrink-0">
+        元素系列（戰鬥）
+      </span>
+
+      {/* Mobile: compact 5×4 dot groups */}
+      <div className="flex sm:hidden gap-[4px] items-center shrink-0">
         {ARMOR_SLOTS.map((slot) => {
           const p = pieces[slot];
           const stage: EurekaStage = p?.currentStage ?? 'antiquated';
+          const started = p !== undefined;
+          const idx = elementalStages.indexOf(stage);
           return (
-            <li key={slot} className="flex flex-wrap items-center gap-2">
-              <span className="w-6 text-gray-400">{SLOT_TC[slot]}</span>
-              <ChainFingerprint
-                currentStage={stage}
-                stages={ARMOR_STAGES_BY_TRACK.elemental}
-                showLabel
-              />
-              <span className="text-gray-400">
-                · {STAGE_TC_LABEL[stage]}
-                {p?.targetStage && ` → ${STAGE_TC_LABEL[p.targetStage]}`}
-              </span>
-            </li>
+            <div key={slot} className="flex gap-[2px] items-center">
+              {elementalStages.map((s, i) => (
+                <span
+                  key={s}
+                  className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${started && i <= idx ? 'bg-cyan-400' : 'bg-gray-600'}`}
+                />
+              ))}
+            </div>
           );
         })}
-      </ul>
+      </div>
+
+      {/* Desktop: per-slot with label, dots, count */}
+      {ARMOR_SLOTS.map((slot) => {
+        const p = pieces[slot];
+        const stage: EurekaStage = p?.currentStage ?? 'antiquated';
+        const started = p !== undefined;
+        const filled = elementalStages.indexOf(stage) + 1;
+        const done = stage === lastStage;
+        return (
+          <div key={slot} className="hidden sm:flex items-center gap-1 text-xs shrink-0">
+            <span className="text-cyan-400/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
+            {started ? (
+              <ChainFingerprint currentStage={stage} stages={elementalStages} />
+            ) : (
+              <div className="flex gap-[2px] items-center">
+                {elementalStages.map((s) => (
+                  <span key={s} className="inline-block w-1.5 h-1.5 rounded-full shrink-0 bg-gray-600" />
+                ))}
+              </div>
+            )}
+            <span className={`tabular-nums shrink-0 ${done ? 'text-green-400' : 'text-gray-400'}`}>
+              {started ? filled : 0}<span className="text-gray-600">/{elementalStages.length}</span>
+            </span>
+          </div>
+        );
+      })}
+
+      {/* Detail button */}
+      {primary && (
+        <button
+          type="button"
+          onClick={() => onSelect(primary)}
+          aria-label="查看詳情"
+          className="ml-auto text-xs text-gray-400 hover:text-primary transition-colors shrink-0"
+        >
+          →
+        </button>
+      )}
     </article>
   );
 }

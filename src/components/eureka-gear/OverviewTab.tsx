@@ -173,7 +173,7 @@ export function OverviewTab({
         </p>
         <div
           data-testid="role-grid"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+          className="border border-gray-700 rounded-lg overflow-hidden divide-y divide-gray-700/50"
         >
           {visibleSets.map((set) => {
             const pieces = inventory.armor.elemental[set] ?? {};
