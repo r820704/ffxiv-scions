@@ -38,7 +38,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
   const jobName = JOB_TC_NAME[job as JobId] ?? job;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 px-3 py-2.5 hover:bg-gray-800/50 transition-colors">
+    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 px-3 py-2.5 bg-gray-800 hover:bg-gray-700/60 transition-colors">
       {/* Job identifier */}
       <div className="flex items-center gap-1.5 w-[108px] shrink-0">
         {iconSrc ? (
@@ -80,7 +80,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
       <div className="w-[108px] shrink-0" />
 
       {/* Anemos armor section */}
-      <span className="text-xs font-bold text-green-400 shrink-0">
+      <span className="text-[10px] font-bold text-green-400/90 bg-green-900/50 px-1.5 py-0.5 rounded shrink-0">
         常風系列（外觀）
       </span>
       {ARMOR_SLOTS.map((slot) => {
