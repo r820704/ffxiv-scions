@@ -49,14 +49,13 @@ export function JobRow({ job, progress, weapons, onSelect }: JobRowProps) {
         const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
         const baseName = chain?.displayName?.split('·')[1]?.trim() ?? chainId;
         const stageWeapon = weapons?.find((w) => w.chainId === chainId && w.stage === p.currentStage);
-        // When not started, use the short base name; once started, show the current-stage weapon name.
-        const name = started ? (stageWeapon?.tcName ?? baseName) : baseName;
+        const name = stageWeapon?.tcName ?? baseName;
         const idx = EUREKA_STAGES.indexOf(p.currentStage);
         const filled = idx + 1;
         const done = filled === EUREKA_STAGES.length;
         return (
           <div key={chainId} className="flex items-center gap-1 text-xs shrink-0">
-            <span className="text-yellow-300/80">{name}</span>
+            {started && <span className="text-yellow-300/80">{name}</span>}
             {started ? (
               <span className={`tabular-nums ${done ? 'text-green-400' : 'text-gray-400'}`}>
                 {filled}<span className="text-gray-600">/{EUREKA_STAGES.length}</span>
