@@ -330,6 +330,8 @@ function ArmorTrackSection({
                   stages={stages}
                   costs={costs}
                   slot={slot}
+                  currentLabel={currentLabel}
+                  targetLabel={targetLabel}
                 />
               </div>
             </AccordionItem>
