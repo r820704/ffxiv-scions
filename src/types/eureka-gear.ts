@@ -206,7 +206,7 @@ export const ANEMOS_ARMOR_STAGES: EurekaStage[] = [
 ];
 
 export const ELEMENTAL_ARMOR_STAGES: EurekaStage[] = [
-  'antiquated', 'elemental', 'elemental+1', 'elemental+2',
+  'elemental', 'elemental+1', 'elemental+2',
 ];
 
 export const ARMOR_STAGES_BY_TRACK: Record<ArmorTrack, EurekaStage[]> = {
@@ -253,3 +253,23 @@ export const ZONE_ENDPOINT_TC_NAME = {
   start: '起點',
   final: '最終形態',
 } as const;
+
+/** Zone group shape accepted by ChainStepper.zoneGroups prop. */
+export type ArmorZoneGroupDef = {
+  key: string;
+  label: string;
+  stages: readonly EurekaStage[];
+};
+
+/** Zone groups for the anemos armor stepper. */
+export const ANEMOS_ARMOR_ZONE_GROUPS: ArmorZoneGroupDef[] = [
+  { key: 'start',  label: '起點',    stages: ['antiquated'] },
+  { key: 'anemos', label: '常風之地', stages: ['anemos-base', 'anemos+1', 'anemos+2', 'anemos'] },
+];
+
+/** Zone groups for the elemental armor stepper. */
+export const ELEMENTAL_ARMOR_ZONE_GROUPS: ArmorZoneGroupDef[] = [
+  { key: 'pyros',   label: '湧火之地', stages: ['elemental'] },
+  { key: 'hydatos', label: '豐水之地', stages: ['elemental+1'] },
+  { key: 'final',   label: '最終形態', stages: ['elemental+2'] },
+];

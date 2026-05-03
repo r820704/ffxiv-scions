@@ -13,17 +13,21 @@ import {
 import { Tooltip } from '../ui/Tooltip';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
+import { getAnemosArmorName, getElementalArmorName } from '../../data/eureka-armor-names';
 import type { ChainRef } from '../../hooks/useEurekaInventory';
 import type {
   ArmorSetId,
   ArmorSlot,
+  ArmorZoneGroupDef,
   EurekaInventoryV5,
   EurekaStage,
   EurekaWeapon,
 } from '../../types/eureka-gear';
 import {
+  ANEMOS_ARMOR_ZONE_GROUPS,
   ARMOR_SLOTS,
   ARMOR_STAGES_BY_TRACK,
+  ELEMENTAL_ARMOR_ZONE_GROUPS,
   STAGE_TC_LABEL,
 } from '../../types/eureka-gear';
 
@@ -208,7 +212,9 @@ export function DetailTab({
         pieces={progress.anemos}
         stages={ARMOR_STAGES_BY_TRACK.anemos}
         costs={ANEMOS_ARMOR_COSTS}
+        zoneGroups={ANEMOS_ARMOR_ZONE_GROUPS}
         makeRef={(slot) => ({ kind: 'armor-anemos', job: selectedJob as JobId, slot })}
+        getItemName={(slot, stage) => getAnemosArmorName(selectedJob, slot, stage)}
         materials={inventory.materials}
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
@@ -222,7 +228,9 @@ export function DetailTab({
         pieces={progress.elemental.pieces}
         stages={ARMOR_STAGES_BY_TRACK.elemental}
         costs={ELEMENTAL_ARMOR_COSTS}
+        zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
         makeRef={(slot) => ({ kind: 'armor-elemental', set: progress.elemental.set, slot })}
+        getItemName={(slot, stage) => getElementalArmorName(progress.elemental.set, slot, stage)}
         sharedHeader={
           isArmorSetShared(progress.elemental.set)
             ? <SharedJobIcons set={progress.elemental.set} />
@@ -244,6 +252,8 @@ type ArmorTrackSectionProps = {
   stages: EurekaStage[];
   costs: typeof ANEMOS_ARMOR_COSTS;
   makeRef: (slot: ArmorSlot) => ChainRef;
+  zoneGroups?: readonly ArmorZoneGroupDef[];
+  getItemName?: (slot: ArmorSlot, stage: EurekaStage) => string | undefined;
   sharedHeader?: React.ReactNode;
   materials: Record<number, number>;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
@@ -252,7 +262,7 @@ type ArmorTrackSectionProps = {
 };
 
 function ArmorTrackSection({
-  title, colorClass, pieces, stages, costs, makeRef, sharedHeader,
+  title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, sharedHeader,
   materials, materialsMap, onSetTarget, onRequestUpgrade,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
@@ -271,17 +281,23 @@ function ArmorTrackSection({
           const p = slotData ?? { currentStage: 'antiquated' as const };
           const stepperCurrent = isStarted ? p.currentStage : null;
           const ref = makeRef(slot);
+          const currentLabel = isStarted
+            ? (getItemName?.(slot, p.currentStage) ?? STAGE_TC_LABEL[p.currentStage])
+            : undefined;
+          const targetLabel = p.targetStage
+            ? (getItemName?.(slot, p.targetStage) ?? STAGE_TC_LABEL[p.targetStage])
+            : undefined;
           const header = (
             <div className="text-sm text-gray-100 font-semibold">
               {SLOT_TC[slot]}
               <span className="text-xs text-gray-400 font-normal ml-2">
-                {isStarted ? `（${STAGE_TC_LABEL[p.currentStage]}）` : '（未開始）'}
+                {isStarted ? `（${currentLabel}）` : '（未開始）'}
               </span>
               {p.targetStage && p.targetStage !== p.currentStage && (
                 <>
                   <span className="text-yellow-400 mx-2">→</span>
                   <span className="text-yellow-200">
-                    {STAGE_TC_LABEL[p.targetStage]}
+                    {targetLabel}
                   </span>
                 </>
               )}
@@ -299,6 +315,7 @@ function ArmorTrackSection({
                   currentStage={stepperCurrent}
                   targetStage={p.targetStage}
                   stages={stages}
+                  zoneGroups={zoneGroups}
                   onSelectTarget={(stage) =>
                     onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                   }
@@ -313,6 +330,8 @@ function ArmorTrackSection({
                   stages={stages}
                   costs={costs}
                   slot={slot}
+                  currentLabel={currentLabel}
+                  targetLabel={targetLabel}
                 />
               </div>
             </AccordionItem>

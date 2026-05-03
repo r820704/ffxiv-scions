@@ -1,14 +1,14 @@
 import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME, ZONE_ENDPOINT_TC_NAME } from '../../types/eureka-gear';
-import type { EurekaStage, EurekaZone } from '../../types/eureka-gear';
+import type { ArmorZoneGroupDef, EurekaStage, EurekaZone } from '../../types/eureka-gear';
 import { Tooltip } from '../ui/Tooltip';
 
 const ZONE_HINT: Record<string, string> = {
   start: '起始狀態。Stage 1 對應 70 級職業套裝（antiquated），是禁地兵裝的前置物。',
-  anemos: '常風之地（Eureka Anemos）取得的素材主要用於升 stage 2-5。',
+  anemos: '常風之地（Eureka Anemos）取得的素材用於升級常風系列防具。',
   pagos: '恆冰之地（Eureka Pagos）取得的素材主要用於升 stage 6-7。',
-  pyros: '湧火之地（Eureka Pyros）取得的素材主要用於升 stage 8-11。',
-  hydatos: '豐水之地（Eureka Hydatos）取得的素材主要用於升 stage 12-15。',
-  final: '最終形態（physeos）— 把武器升到 iL400 的傳說型態。',
+  pyros: '湧火之地（Eureka Pyros）取得的湧火水晶用於兌換元素系列防具基礎形態，或升元素武器。',
+  hydatos: '豐水之地（Eureka Hydatos）取得的豐水水晶用於強化元素防具至 +1。',
+  final: '最終形態 — 需使用優雷卡的斷片（於巴爾德西昂分館取得）升級。武器為 physeos（iL400），防具為元素系列 +2（iL390）。',
 };
 
 export type ChainStepperProps = {
@@ -18,6 +18,8 @@ export type ChainStepperProps = {
   onSelectTarget: (stage: EurekaStage) => void;
   /** Optional stage sequence for armor tracks (shorter than EUREKA_STAGES). */
   stages?: readonly EurekaStage[];
+  /** When provided, render zone group labels (for armor tracks). */
+  zoneGroups?: readonly ArmorZoneGroupDef[];
 };
 
 function stageState(
@@ -81,12 +83,12 @@ function groupByZone(seq: readonly EurekaStage[]): ZoneGroup[] {
   return groups;
 }
 
-export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages }: ChainStepperProps) {
+export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages, zoneGroups }: ChainStepperProps) {
   const seq = stages ?? EUREKA_STAGES;
   // currentStage === null → currentIdx -1, which stageState reads as "not started".
   const currentIdx = currentStage ? seq.indexOf(currentStage) : -1;
   const targetIdx = targetStage ? seq.indexOf(targetStage) : null;
-  const showZoneGroups = seq === EUREKA_STAGES;
+  const showZoneGroups = seq === EUREKA_STAGES || zoneGroups !== undefined;
 
   const renderButton = (stage: EurekaStage, i: number) => {
     const state = stageState(i, currentIdx, targetIdx);
@@ -112,7 +114,15 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages
     );
   }
 
-  const groups = groupByZone(seq);
+  const groups = zoneGroups
+    ? zoneGroups.map(({ key, label, stages: stageList }) => ({
+        key,
+        label,
+        entries: stageList
+          .map((stage) => ({ stage, index: seq.indexOf(stage) }))
+          .filter(({ index }) => index >= 0),
+      }))
+    : groupByZone(seq);
   return (
     <div
       data-testid="stepper-container"

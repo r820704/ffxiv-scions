@@ -17,6 +17,9 @@ export type PreviewPanelProps = {
   costs?: StageUpgradeCost[];
   /** Optional: armor slot for slot-specific cost filtering */
   slot?: ArmorSlot;
+  /** Optional display name overrides (falls back to STAGE_TC_LABEL) */
+  currentLabel?: string;
+  targetLabel?: string;
 };
 
 export function PreviewPanel({
@@ -29,6 +32,8 @@ export function PreviewPanel({
   stages,
   costs,
   slot,
+  currentLabel,
+  targetLabel,
 }: PreviewPanelProps) {
   const seq = stages ?? EUREKA_STAGES;
   const currentIdx = seq.indexOf(currentStage);
@@ -65,7 +70,7 @@ export function PreviewPanel({
       {direction === 'up' ? (
         <>
           <div className="text-yellow-400 font-semibold mb-2">
-            從 {STAGE_TC_LABEL[currentStage]} → {targetStage ? STAGE_TC_LABEL[targetStage] : ''} 需要
+            從 {currentLabel ?? STAGE_TC_LABEL[currentStage]} → {targetStage ? (targetLabel ?? STAGE_TC_LABEL[targetStage]) : ''} 需要
           </div>
           <ul className="space-y-1 mb-3">
             {materials.map((m) => {
@@ -85,7 +90,7 @@ export function PreviewPanel({
         </>
       ) : (
         <div className="text-red-400 font-semibold mb-2">
-          {targetStage ? STAGE_TC_LABEL[targetStage] : ''} — 已擁有（設為目前會捨棄中間進度）
+          {targetStage ? (targetLabel ?? STAGE_TC_LABEL[targetStage]) : ''} — 已擁有（設為目前會捨棄中間進度）
         </div>
       )}
       <div className="flex gap-2">
@@ -96,7 +101,7 @@ export function PreviewPanel({
             direction === 'up' ? 'bg-green-500 text-black' : 'bg-red-500 text-white'
           }`}
         >
-          {direction === 'up' ? '⬆' : '⬇'} 📍 設為目前階段 ({targetStage ? STAGE_TC_LABEL[targetStage] : ''})
+          {direction === 'up' ? '⬆' : '⬇'} 📍 設為目前階段 ({targetStage ? (targetLabel ?? STAGE_TC_LABEL[targetStage]) : ''})
         </button>
         <button
           type="button"

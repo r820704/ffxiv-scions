@@ -85,7 +85,12 @@ export function costBetweenInSequence(
 ): MaterialCost[] {
   const fromIdx = sequence.indexOf(from);
   const toIdx = sequence.indexOf(to);
-  if (fromIdx < 0 || toIdx < 0 || toIdx <= fromIdx) return [];
+  if (toIdx < 0 || toIdx <= fromIdx) return [];
+  // 'from' not in sequence but target is — prepend 'from' to walk costs that
+  // lead into the sequence (e.g. antiquated → elemental on the elemental armor track).
+  if (fromIdx < 0) {
+    return costBetweenInSequence(from, to, [from, ...sequence], costs, slot);
+  }
 
   const totals = new Map<number, number>();
   for (let i = fromIdx; i < toIdx; i++) {
