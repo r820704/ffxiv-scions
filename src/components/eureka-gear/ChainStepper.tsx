@@ -16,6 +16,8 @@ export type ChainStepperProps = {
   currentStage: EurekaStage | null;
   targetStage?: EurekaStage;
   onSelectTarget: (stage: EurekaStage) => void;
+  /** Called instead of onSelectTarget when stage 1 is clicked and chain is not started. */
+  onSelectStart?: () => void;
   /** Optional stage sequence for armor tracks (shorter than EUREKA_STAGES). */
   stages?: readonly EurekaStage[];
   /** When provided, render zone group labels (for armor tracks). */
@@ -83,7 +85,7 @@ function groupByZone(seq: readonly EurekaStage[]): ZoneGroup[] {
   return groups;
 }
 
-export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages, zoneGroups }: ChainStepperProps) {
+export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSelectStart, stages, zoneGroups }: ChainStepperProps) {
   const seq = stages ?? EUREKA_STAGES;
   // currentStage === null → currentIdx -1, which stageState reads as "not started".
   const currentIdx = currentStage ? seq.indexOf(currentStage) : -1;
@@ -92,6 +94,7 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages
 
   const renderButton = (stage: EurekaStage, i: number) => {
     const state = stageState(i, currentIdx, targetIdx);
+    const isFirstNotStarted = i === 0 && currentIdx < 0;
     return (
       <button
         key={stage}
@@ -99,7 +102,13 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, stages
         data-state={state}
         aria-label={`stage ${i + 1}: ${stage}`}
         className={`w-10 h-10 md:w-7 md:h-7 rounded-full text-sm md:text-xs font-bold flex items-center justify-center transition ${STATE_STYLE[state]}`}
-        onClick={() => onSelectTarget(stage)}
+        onClick={() => {
+          if (isFirstNotStarted && onSelectStart) {
+            onSelectStart();
+          } else {
+            onSelectTarget(stage);
+          }
+        }}
       >
         {i + 1}
       </button>

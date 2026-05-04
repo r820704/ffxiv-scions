@@ -16,6 +16,7 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={() => {}}
         onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
       />,
     );
     expect(screen.getAllByText(/武器/).length).toBeGreaterThan(0);
@@ -32,6 +33,7 @@ describe('DetailTab', () => {
         onSelectJob={onSelectJob}
         onSetTarget={() => {}}
         onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
       />,
     );
     const select = screen.getByRole('combobox');
@@ -50,6 +52,7 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={onSetTarget}
         onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
       />,
     );
     const nodes = screen.getAllByRole('button', { name: /stage/ });
@@ -68,6 +71,7 @@ describe('DetailTab', () => {
           onSelectJob={() => {}}
           onSetTarget={() => {}}
           onRequestUpgrade={() => {}}
+          onStartChain={() => {}}
         />,
       );
     }
@@ -148,5 +152,23 @@ describe('DetailTab', () => {
         expect(within(parent).queryByTestId('stepper-container')).not.toBeNull();
       });
     });
+  });
+
+  it('clicking stage 1 button when chain not started opens start dialog', () => {
+    render(
+      <DetailTab
+        inventory={emptyInventoryV3()}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
+      />,
+    );
+    const stageButtons = screen.getAllByRole('button', { name: /stage 1/ });
+    fireEvent.click(stageButtons[0]!);
+    expect(screen.getByText('標記為已開始')).toBeInTheDocument();
   });
 });

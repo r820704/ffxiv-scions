@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { StartChainDialog } from './StartChainDialog';
 import { ChainStepper } from './ChainStepper';
 import { PreviewPanel } from './PreviewPanel';
 import { AccordionItem } from '../ui/Accordion';
@@ -56,6 +57,7 @@ export type DetailTabProps = {
   onSelectJob: (job: string) => void;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
+  onStartChain: (ref: ChainRef) => void;
 };
 
 function weaponInfoAt(weapons: EurekaWeapon[], chainId: string, stage: EurekaStage) {
@@ -93,8 +95,10 @@ export function DetailTab({
   onSelectJob,
   onSetTarget,
   onRequestUpgrade,
+  onStartChain,
 }: DetailTabProps) {
   const progress = useMemo(() => getJobProgress(selectedJob as JobId, inventory), [selectedJob, inventory]);
+  const [startDialogRef, setStartDialogRef] = useState<ChainRef | null>(null);
 
   const primaryChains = progress.weapons.filter(({ chainId }) => {
     const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
@@ -190,6 +194,7 @@ export function DetailTab({
                   currentStage={stepperCurrent}
                   targetStage={p.targetStage}
                   onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
+                  onSelectStart={!isStarted ? () => setStartDialogRef(ref) : undefined}
                 />
                 <PreviewPanel
                   currentStage={p.currentStage}
@@ -219,6 +224,7 @@ export function DetailTab({
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
+        onStartChain={onStartChain}
       />
 
       {/* 元素系列 — per-role, shared badge */}
@@ -240,6 +246,16 @@ export function DetailTab({
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
+        onStartChain={onStartChain}
+      />
+
+      <StartChainDialog
+        isOpen={startDialogRef !== null}
+        onConfirm={() => {
+          if (startDialogRef) onStartChain(startDialogRef);
+          setStartDialogRef(null);
+        }}
+        onCancel={() => setStartDialogRef(null)}
       />
     </div>
   );
@@ -259,11 +275,12 @@ type ArmorTrackSectionProps = {
   materialsMap: Record<number, { nameTC: string; icon: number }>;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
+  onStartChain?: (ref: ChainRef) => void;
 };
 
 function ArmorTrackSection({
   title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, sharedHeader,
-  materials, materialsMap, onSetTarget, onRequestUpgrade,
+  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
     head: true, body: false, hands: false, legs: false, feet: false,
@@ -319,6 +336,7 @@ function ArmorTrackSection({
                   onSelectTarget={(stage) =>
                     onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                   }
+                  onSelectStart={!isStarted ? () => onStartChain?.(ref) : undefined}
                 />
                 <PreviewPanel
                   currentStage={p.currentStage}

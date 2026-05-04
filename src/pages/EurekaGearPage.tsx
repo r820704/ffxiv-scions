@@ -35,6 +35,7 @@ export default function EurekaGearPage() {
   const {
     inventory,
     setMaterial,
+    setCurrent,
     setTarget,
     performUpgrade,
     clearAll,
@@ -93,6 +94,10 @@ export default function EurekaGearPage() {
   const executeUpgrade = (ref: ChainRef) => {
     const outcome = performUpgrade(ref);
     if (outcome) showUpgradeToast(outcome);
+  };
+
+  const handleStartChain = (ref: ChainRef) => {
+    setCurrent(ref, 'antiquated');
   };
 
   const handleRequestUpgrade = (ref: ChainRef) => {
@@ -179,6 +184,7 @@ export default function EurekaGearPage() {
               onSelectJob={selectJob}
               onSetTarget={setTarget}
               onRequestUpgrade={handleRequestUpgrade}
+              onStartChain={handleStartChain}
             />
           )}
           {view === 'farming' && (
