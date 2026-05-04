@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { StartChainDialog } from './StartChainDialog';
 import { ChainStepper } from './ChainStepper';
+import { StageListPanel } from './StageListPanel';
 import { PreviewPanel } from './PreviewPanel';
 import { AccordionItem } from '../ui/Accordion';
 import { getJobProgress } from '../../utils/eurekaGear';
@@ -34,6 +35,8 @@ import {
   ARMOR_SLOTS,
   ARMOR_STAGES_BY_TRACK,
   ELEMENTAL_ARMOR_ZONE_GROUPS,
+  EUREKA_STAGES,
+  STAGE_ITEM_LEVELS,
   STAGE_TC_LABEL,
 } from '../../types/eureka-gear';
 
@@ -217,6 +220,14 @@ export function DetailTab({
                   targetStage={p.targetStage}
                   onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
                   onSelectStart={!isStarted ? () => setStartDialogRef(ref) : undefined}
+                />
+                <StageListPanel
+                  stages={EUREKA_STAGES}
+                  currentStage={stepperCurrent}
+                  targetStage={p.targetStage}
+                  itemLevels={STAGE_ITEM_LEVELS}
+                  getItemName={(stage) => weaponInfoAt(weapons, chainId, stage)?.tcName}
+                  onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
                 />
                 <PreviewPanel
                   currentStage={p.currentStage}
@@ -460,6 +471,17 @@ function ArmorTrackSection({
                     onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                   }
                   onSelectStart={!isStarted ? () => onStartChain?.(ref) : undefined}
+                />
+                <StageListPanel
+                  stages={stages}
+                  currentStage={stepperCurrent}
+                  targetStage={p.targetStage}
+                  itemLevels={itemLevels}
+                  getItemName={(stage) => getItemName?.(slot, stage)}
+                  onSelectTarget={(stage) => {
+                    const r = makeRef(slot);
+                    return onSetTarget(r, stage === p.currentStage ? undefined : stage);
+                  }}
                 />
                 <PreviewPanel
                   currentStage={p.currentStage}
