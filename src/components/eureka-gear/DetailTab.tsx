@@ -14,7 +14,12 @@ import {
 import { Tooltip } from '../ui/Tooltip';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
-import { getAnemosArmorName, getElementalArmorName } from '../../data/eureka-armor-names';
+import {
+  ANEMOS_ARMOR_ITEM_LEVELS,
+  ELEMENTAL_ARMOR_ITEM_LEVELS,
+  getAnemosArmorName,
+  getElementalArmorName,
+} from '../../data/eureka-armor-names';
 import type { ChainRef } from '../../hooks/useEurekaInventory';
 import type {
   ArmorSetId,
@@ -257,6 +262,7 @@ export function DetailTab({
         zoneGroups={ANEMOS_ARMOR_ZONE_GROUPS}
         makeRef={(slot) => ({ kind: 'armor-anemos', job: selectedJob as JobId, slot })}
         getItemName={(slot, stage) => getAnemosArmorName(selectedJob, slot, stage)}
+        itemLevels={ANEMOS_ARMOR_ITEM_LEVELS}
         materials={inventory.materials}
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
@@ -276,6 +282,7 @@ export function DetailTab({
         zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
         makeRef={(slot) => ({ kind: 'armor-elemental', set: progress.elemental.set, slot })}
         getItemName={(slot, stage) => getElementalArmorName(progress.elemental.set, slot, stage)}
+        itemLevels={ELEMENTAL_ARMOR_ITEM_LEVELS}
         sharedHeader={
           isArmorSetShared(progress.elemental.set)
             ? <SharedJobIcons set={progress.elemental.set} />
@@ -341,6 +348,7 @@ type ArmorTrackSectionProps = {
   makeRef: (slot: ArmorSlot) => ChainRef;
   zoneGroups?: readonly ArmorZoneGroupDef[];
   getItemName?: (slot: ArmorSlot, stage: EurekaStage) => string | undefined;
+  itemLevels?: Partial<Record<EurekaStage, number>>;
   sharedHeader?: ReactNode;
   materials: Record<number, number>;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
@@ -352,7 +360,7 @@ type ArmorTrackSectionProps = {
 };
 
 function ArmorTrackSection({
-  title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, sharedHeader,
+  title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader,
   materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onRequestReset, globalExpand,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
@@ -393,18 +401,31 @@ function ArmorTrackSection({
           const targetLabel = p.targetStage
             ? (getItemName?.(slot, p.targetStage) ?? STAGE_TC_LABEL[p.targetStage])
             : undefined;
+          const currentIL = isStarted ? itemLevels?.[p.currentStage] : undefined;
+          const currentStageSuffix = isStarted
+            ? `（${STAGE_TC_LABEL[p.currentStage]}${currentIL != null ? ` · iL${currentIL}` : ''}）`
+            : '（未開始）';
+          const targetIL = p.targetStage ? itemLevels?.[p.targetStage] : undefined;
           const header = (
             <div className="flex items-center text-sm text-gray-100 font-semibold">
               <span className="flex-1">
                 {SLOT_TC[slot]}
-                <span className="text-xs text-gray-400 font-normal ml-2">
-                  {isStarted ? `（${currentLabel}）` : '（未開始）'}
+                {isStarted && currentLabel && (
+                  <span className="font-normal ml-2">{currentLabel}</span>
+                )}
+                <span className="text-xs text-gray-400 font-normal ml-1">
+                  {currentStageSuffix}
                 </span>
                 {p.targetStage && p.targetStage !== p.currentStage && (
                   <>
                     <span className="text-yellow-400 mx-2">→</span>
                     <span className="text-yellow-200">
                       {targetLabel}
+                      {targetIL != null && (
+                        <span className="text-xs text-gray-400 font-normal ml-1">
+                          {`（${STAGE_TC_LABEL[p.targetStage]} · iL${targetIL}）`}
+                        </span>
+                      )}
                     </span>
                   </>
                 )}

@@ -268,6 +268,30 @@ describe('DetailTab', () => {
     allAccordions.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('false'));
   });
 
+  it('started anemos slot shows item name with iL in accordion header', () => {
+    const inv = {
+      ...emptyInventoryV3(),
+      armor: {
+        ...emptyInventoryV3().armor,
+        anemos: { PLD: { head: { currentStage: 'anemos-base' as const } } },
+      },
+    };
+    render(
+      <DetailTab
+        inventory={inv}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
+      />,
+    );
+    expect(screen.getByText(/俠義頭冠/)).toBeInTheDocument();
+    expect(screen.getByText(/iL335/)).toBeInTheDocument();
+  });
+
   describe('armor track section collapse', () => {
     function renderTab() {
       return render(

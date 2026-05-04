@@ -4,6 +4,22 @@
 import type { ArmorSetId, ArmorSlot, EurekaStage } from '../types/eureka-gear';
 import type { JobId } from './eureka-armor-sets';
 
+/** Item levels for anemos armor track. */
+export const ANEMOS_ARMOR_ITEM_LEVELS: Partial<Record<EurekaStage, number>> = {
+  antiquated: 290,
+  'anemos-base': 335,
+  'anemos+1': 340,
+  'anemos+2': 345,
+  anemos: 350,
+};
+
+/** Item levels for elemental armor track. Note +1 and +2 share iL390 (substats differ). */
+export const ELEMENTAL_ARMOR_ITEM_LEVELS: Partial<Record<EurekaStage, number>> = {
+  elemental: 380,
+  'elemental+1': 390,
+  'elemental+2': 390,
+};
+
 /** Base item names for the anemos-base stage, per SB-era job and armor slot. */
 export const ANEMOS_ARMOR_BASE_NAMES: Record<JobId, Record<ArmorSlot, string>> = {
   PLD: { head: '俠義頭冠',    body: '俠義戰甲',    hands: '俠義手鎧',      legs: '俠義腿甲',     feet: '俠義鎖甲靴' },
@@ -55,6 +71,7 @@ export function getAnemosArmorName(
 ): string | undefined {
   const base = ANEMOS_ARMOR_BASE_NAMES[job as JobId]?.[slot];
   if (!base) return undefined;
+  if (stage === 'antiquated') return `舊化的${base}`;
   const suffix = ANEMOS_STAGE_SUFFIX[stage];
   if (suffix === undefined) return undefined;
   return base + suffix;
