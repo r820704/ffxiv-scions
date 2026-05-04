@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { StartChainDialog } from './StartChainDialog';
 import { ChainStepper } from './ChainStepper';
 import { PreviewPanel } from './PreviewPanel';
@@ -215,6 +215,7 @@ export function DetailTab({
         <span className="text-xs text-gray-500">防具欄位：</span>
         <button
           type="button"
+          aria-label="展開所有防具欄位"
           onClick={() => setGlobalArmorExpand(true)}
           className="text-xs px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500"
         >
@@ -222,6 +223,7 @@ export function DetailTab({
         </button>
         <button
           type="button"
+          aria-label="收合所有防具欄位"
           onClick={() => setGlobalArmorExpand(false)}
           className="text-xs px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500"
         >
@@ -291,7 +293,7 @@ type ArmorTrackSectionProps = {
   makeRef: (slot: ArmorSlot) => ChainRef;
   zoneGroups?: readonly ArmorZoneGroupDef[];
   getItemName?: (slot: ArmorSlot, stage: EurekaStage) => string | undefined;
-  sharedHeader?: React.ReactNode;
+  sharedHeader?: ReactNode;
   materials: Record<number, number>;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
@@ -310,7 +312,7 @@ function ArmorTrackSection({
   const [sectionExpanded, setSectionExpanded] = useState(true);
 
   useEffect(() => {
-    if (globalExpand === null || globalExpand === undefined) return;
+    if (globalExpand === null) return;
     setExpanded({ head: globalExpand, body: globalExpand, hands: globalExpand, legs: globalExpand, feet: globalExpand });
     setSectionExpanded(globalExpand);
   }, [globalExpand]);

@@ -219,7 +219,7 @@ describe('DetailTab', () => {
     const collapsed = allAccordions.filter((b) => b.getAttribute('aria-expanded') === 'false');
     expect(collapsed.length).toBeGreaterThan(0);
 
-    fireEvent.click(screen.getByRole('button', { name: '全展開' }));
+    fireEvent.click(screen.getByRole('button', { name: '展開所有防具欄位' }));
     const afterExpand = screen.getAllByRole('button').filter((b) => b.hasAttribute('aria-expanded'));
     afterExpand.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('true'));
   });
@@ -237,7 +237,7 @@ describe('DetailTab', () => {
         onStartChain={() => {}}
       />,
     );
-    fireEvent.click(screen.getByRole('button', { name: '全收合' }));
+    fireEvent.click(screen.getByRole('button', { name: '收合所有防具欄位' }));
     const allAccordions = screen.getAllByRole('button').filter((b) => b.hasAttribute('aria-expanded'));
     allAccordions.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('false'));
   });
@@ -274,6 +274,31 @@ describe('DetailTab', () => {
     it('元素系列 section also has a toggle button', () => {
       renderTab();
       expect(screen.getByRole('button', { name: /收合 元素系列/ })).toBeInTheDocument();
+    });
+
+    it('全展開 re-expands a manually-collapsed section header', () => {
+      render(
+        <DetailTab
+          inventory={emptyInventoryV3()}
+          selectedJob="PLD"
+          weapons={[]}
+          materialsMap={{}}
+          onSelectJob={() => {}}
+          onSetTarget={() => {}}
+          onRequestUpgrade={() => {}}
+          onStartChain={() => {}}
+        />,
+      );
+      // Collapse the 常風系列 section manually
+      const toggle = screen.getByRole('button', { name: /收合 常風系列/ });
+      fireEvent.click(toggle);
+      expect(toggle.getAttribute('aria-expanded')).toBe('false');
+
+      // Click 全展開
+      fireEvent.click(screen.getByRole('button', { name: '展開所有防具欄位' }));
+
+      // Section header should be re-expanded
+      expect(toggle.getAttribute('aria-expanded')).toBe('true');
     });
   });
 });
