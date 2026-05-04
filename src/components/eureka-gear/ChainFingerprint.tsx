@@ -1,4 +1,4 @@
-import { EUREKA_STAGES } from '../../types/eureka-gear';
+import { EUREKA_STAGES, ZONE_OF_STAGE } from '../../types/eureka-gear';
 import type { EurekaStage } from '../../types/eureka-gear';
 
 export type ChainFingerprintProps = {
@@ -8,31 +8,79 @@ export type ChainFingerprintProps = {
   stages?: readonly EurekaStage[];
   /** Stages that receive a gold/amber highlight dot (in-game glow milestones). */
   glowStages?: ReadonlySet<EurekaStage>;
+  showZoneSeparators?: boolean;
+  /** When true, all dots render as unfilled (gray) regardless of currentStage. */
+  allEmpty?: boolean;
 };
 
-export function ChainFingerprint({ currentStage, showLabel, stages, glowStages }: ChainFingerprintProps) {
+type DotGroup = { key: string; dots: { stage: EurekaStage; index: number }[] };
+
+function buildZoneGroups(seq: readonly EurekaStage[]): DotGroup[] {
+  const groups: DotGroup[] = [];
+  seq.forEach((stage, index) => {
+    const zone = ZONE_OF_STAGE[stage] ?? (stage === 'antiquated' ? 'start' : stage === 'physeos' ? 'final' : `null-${index}`);
+    const last = groups[groups.length - 1];
+    if (last && last.key === zone) {
+      last.dots.push({ stage, index });
+    } else {
+      groups.push({ key: zone, dots: [{ stage, index }] });
+    }
+  });
+  return groups;
+}
+
+export function ChainFingerprint({
+  currentStage, showLabel, stages, glowStages, showZoneSeparators, allEmpty,
+}: ChainFingerprintProps) {
   const seq = stages ?? EUREKA_STAGES;
-  const idx = seq.indexOf(currentStage);
+  const idx = allEmpty ? -1 : seq.indexOf(currentStage);
   const filled = Math.max(0, idx + 1);
+
+  const renderDot = (stage: EurekaStage, i: number) => {
+    const isFilled = !allEmpty && i <= idx;
+    const isGlow = isFilled && glowStages?.has(stage);
+    return (
+      <span
+        key={stage}
+        data-dot
+        data-filled={isFilled ? 'true' : 'false'}
+        className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${
+          isFilled ? (isGlow ? 'bg-amber-400' : 'bg-green-400') : 'bg-gray-600'
+        }`}
+      />
+    );
+  };
+
+  const label = showLabel && (
+    <span className="text-xs text-gray-400 ml-1">{filled}/{seq.length}</span>
+  );
+
+  if (!showZoneSeparators) {
+    return (
+      <div className="flex items-center gap-1">
+        <div className="flex gap-[2px] items-center">
+          {seq.map((stage, i) => renderDot(stage, i))}
+        </div>
+        {label}
+      </div>
+    );
+  }
+
+  const groups = buildZoneGroups(seq);
   return (
     <div className="flex items-center gap-1">
-      <div className="flex gap-[2px] items-center">
-        {seq.map((stage, i) => {
-          const isFilled = i <= idx;
-          const isGlow = isFilled && glowStages?.has(stage);
-          return (
-            <span
-              key={stage}
-              data-dot
-              data-filled={isFilled ? 'true' : 'false'}
-              className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${
-                isFilled ? (isGlow ? 'bg-amber-400' : 'bg-green-400') : 'bg-gray-600'
-              }`}
-            />
-          );
-        })}
+      <div className="flex items-center">
+        {groups.map((group, gi) => (
+          <div
+            key={group.key}
+            data-zone-group
+            className={`flex gap-[2px] items-center${gi > 0 ? ' ml-1' : ''}`}
+          >
+            {group.dots.map(({ stage, index }) => renderDot(stage, index))}
+          </div>
+        ))}
       </div>
-      {showLabel && <span className="text-xs text-gray-400 ml-1">{filled}/{seq.length}</span>}
+      {label}
     </div>
   );
 }

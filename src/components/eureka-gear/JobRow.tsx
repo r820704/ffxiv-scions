@@ -69,13 +69,9 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
           <div key={chainId} className="flex items-center gap-1 text-xs shrink-0">
             <span className="text-yellow-400/40 text-[10px]">{slotLabel}</span>
             {started ? (
-              <ChainFingerprint currentStage={p.currentStage} glowStages={WEAPON_GLOW_STAGES} />
+              <ChainFingerprint currentStage={p.currentStage} glowStages={WEAPON_GLOW_STAGES} showZoneSeparators />
             ) : (
-              <div className="flex gap-[2px] items-center">
-                {EUREKA_STAGES.map((s) => (
-                  <span key={s} className="inline-block w-1.5 h-1.5 rounded-full shrink-0 bg-gray-600" />
-                ))}
-              </div>
+              <ChainFingerprint currentStage="antiquated" allEmpty showZoneSeparators />
             )}
             <span className={`tabular-nums shrink-0 ${done ? 'text-green-400' : 'text-gray-400'}`}>
               {started ? filled : 0}<span className="text-gray-600">/{EUREKA_STAGES.length}</span>
