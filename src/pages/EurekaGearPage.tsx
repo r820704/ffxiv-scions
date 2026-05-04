@@ -39,6 +39,7 @@ export default function EurekaGearPage() {
     setTarget,
     performUpgrade,
     clearAll,
+    clearChain,
   } = useEurekaInventory();
 
   const materialsMap = useMemo(() => {
@@ -185,6 +186,7 @@ export default function EurekaGearPage() {
               onSetTarget={setTarget}
               onRequestUpgrade={handleRequestUpgrade}
               onStartChain={handleStartChain}
+              onClearChain={clearChain}
             />
           )}
           {view === 'farming' && (

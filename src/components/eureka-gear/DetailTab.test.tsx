@@ -224,6 +224,32 @@ describe('DetailTab', () => {
     afterExpand.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('true'));
   });
 
+  it('clicking 重置 button for a started weapon opens confirm dialog and calls onClearChain on confirm', () => {
+    const onClearChain = vi.fn();
+    const inv = {
+      ...emptyInventoryV3(),
+      weapons: { 'pld-galatyn': { currentStage: 'antiquated' as const } },
+    };
+    render(
+      <DetailTab
+        inventory={inv}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
+        onClearChain={onClearChain}
+      />,
+    );
+    const resetBtn = screen.getByRole('button', { name: /重置主手武器進度/ });
+    fireEvent.click(resetBtn);
+    expect(screen.getByText('重置此裝備進度')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '確認重置' }));
+    expect(onClearChain).toHaveBeenCalled();
+  });
+
   it('全收合 button collapses all armor slot accordions', () => {
     render(
       <DetailTab

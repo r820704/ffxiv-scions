@@ -58,6 +58,7 @@ export type DetailTabProps = {
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
   onStartChain: (ref: ChainRef) => void;
+  onClearChain?: (ref: ChainRef) => void;
 };
 
 function weaponInfoAt(weapons: EurekaWeapon[], chainId: string, stage: EurekaStage) {
@@ -96,10 +97,12 @@ export function DetailTab({
   onSetTarget,
   onRequestUpgrade,
   onStartChain,
+  onClearChain,
 }: DetailTabProps) {
   const progress = useMemo(() => getJobProgress(selectedJob as JobId, inventory), [selectedJob, inventory]);
   const [startDialogRef, setStartDialogRef] = useState<ChainRef | null>(null);
   const [globalArmorExpand, setGlobalArmorExpand] = useState<boolean | null>(null);
+  const [resetDialogRef, setResetDialogRef] = useState<{ ref: ChainRef; label: string } | null>(null);
 
   const primaryChains = progress.weapons.filter(({ chainId }) => {
     const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
@@ -152,7 +155,8 @@ export function DetailTab({
             return (
               <div key={chainId} className="space-y-2 pt-2">
                 <div className="space-y-0.5 text-sm">
-                  <div className="text-gray-100 font-semibold">
+                  <div className="flex items-start">
+                  <div className="text-gray-100 font-semibold flex-1">
                     {currentName}
                     <span className="text-xs text-gray-400 font-normal ml-2">
                       {isStarted ? stageSuffix(currentInfo, p.currentStage) : notStartedSuffix}
@@ -168,6 +172,18 @@ export function DetailTab({
                         </span>
                       </>
                     )}
+                  </div>
+                  {isStarted && (
+                    <button
+                      type="button"
+                      aria-label={`重置${chain?.isShield ? '盾' : '主'}手武器進度`}
+                      onClick={() => setResetDialogRef({ ref, label: `${chain?.isShield ? '盾' : '主'}手武器` })}
+                      className="text-[10px] text-red-400/60 hover:text-red-400 transition-colors px-1 ml-auto"
+                      title="重置此武器的所有進度"
+                    >
+                      重置
+                    </button>
+                  )}
                   </div>
 
                   {mirrorInfos.map((m) => (
@@ -246,6 +262,7 @@ export function DetailTab({
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
         onStartChain={(ref) => setStartDialogRef(ref)}
+        onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
       />
 
@@ -269,6 +286,7 @@ export function DetailTab({
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
         onStartChain={(ref) => setStartDialogRef(ref)}
+        onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
       />
 
@@ -280,6 +298,36 @@ export function DetailTab({
         }}
         onCancel={() => setStartDialogRef(null)}
       />
+
+      {resetDialogRef && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 border-2 border-red-600 rounded-lg p-5 max-w-sm">
+            <h2 className="text-lg font-bold text-red-400 mb-3">重置此裝備進度</h2>
+            <p className="text-sm text-gray-200 mb-4">
+              確認要清除「{resetDialogRef.label}」的所有進度紀錄？此操作不可還原。
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setResetDialogRef(null)}
+                className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (resetDialogRef) onClearChain?.(resetDialogRef.ref);
+                  setResetDialogRef(null);
+                }}
+                className="px-3 py-1.5 rounded bg-red-700 text-white text-sm hover:bg-red-600"
+              >
+                確認重置
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -299,12 +347,13 @@ type ArmorTrackSectionProps = {
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
   onStartChain?: (ref: ChainRef) => void;
+  onRequestReset?: (ref: ChainRef, label: string) => void;
   globalExpand?: boolean | null;
 };
 
 function ArmorTrackSection({
   title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, sharedHeader,
-  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, globalExpand,
+  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onRequestReset, globalExpand,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
     head: true, body: false, hands: false, legs: false, feet: false,
@@ -345,18 +394,31 @@ function ArmorTrackSection({
             ? (getItemName?.(slot, p.targetStage) ?? STAGE_TC_LABEL[p.targetStage])
             : undefined;
           const header = (
-            <div className="text-sm text-gray-100 font-semibold">
-              {SLOT_TC[slot]}
-              <span className="text-xs text-gray-400 font-normal ml-2">
-                {isStarted ? `（${currentLabel}）` : '（未開始）'}
+            <div className="flex items-center text-sm text-gray-100 font-semibold">
+              <span className="flex-1">
+                {SLOT_TC[slot]}
+                <span className="text-xs text-gray-400 font-normal ml-2">
+                  {isStarted ? `（${currentLabel}）` : '（未開始）'}
+                </span>
+                {p.targetStage && p.targetStage !== p.currentStage && (
+                  <>
+                    <span className="text-yellow-400 mx-2">→</span>
+                    <span className="text-yellow-200">
+                      {targetLabel}
+                    </span>
+                  </>
+                )}
               </span>
-              {p.targetStage && p.targetStage !== p.currentStage && (
-                <>
-                  <span className="text-yellow-400 mx-2">→</span>
-                  <span className="text-yellow-200">
-                    {targetLabel}
-                  </span>
-                </>
+              {isStarted && (
+                <button
+                  type="button"
+                  aria-label={`重置${SLOT_TC[slot]}防具進度`}
+                  onClick={(e) => { e.stopPropagation(); onRequestReset?.(ref, SLOT_TC[slot]); }}
+                  className="text-[10px] text-red-400/60 hover:text-red-400 transition-colors px-1 ml-2"
+                  title="重置此欄位的所有進度"
+                >
+                  重置
+                </button>
               )}
             </div>
           );
