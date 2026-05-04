@@ -361,7 +361,7 @@ function ArmorTrackSection({
   const [sectionExpanded, setSectionExpanded] = useState(true);
 
   useEffect(() => {
-    if (globalExpand === null) return;
+    if (globalExpand == null) return;
     setExpanded({ head: globalExpand, body: globalExpand, hands: globalExpand, legs: globalExpand, feet: globalExpand });
     setSectionExpanded(globalExpand);
   }, [globalExpand]);
