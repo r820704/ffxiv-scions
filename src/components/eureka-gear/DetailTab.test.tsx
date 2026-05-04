@@ -171,4 +171,34 @@ describe('DetailTab', () => {
     fireEvent.click(stageButtons[0]!);
     expect(screen.getByText('標記為已開始')).toBeInTheDocument();
   });
+
+  it('clicking armor stage 1 when slot not started opens start dialog (not immediate start)', () => {
+    const onStartChain = vi.fn();
+    render(
+      <DetailTab
+        inventory={emptyInventoryV3()}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={onStartChain}
+      />,
+    );
+    // Head accordion is expanded by default; find the armor stage 1 buttons.
+    // Use the anemos head slot stage 1 (stage 1: antiquated, aria-label includes "stage 1").
+    // The armor stepper's first stage 1 button (anemos track) opens the dialog via setStartDialogRef.
+    const allStage1Buttons = screen.getAllByRole('button', { name: /^stage 1:/ });
+    // Click the anemos-track armor stage 1 (index 0 if no weapon stage 1 visible, otherwise the last one)
+    // Use the last stage-1 button to avoid hitting any weapon stepper button.
+    const armorStage1 = allStage1Buttons[allStage1Buttons.length - 1]!;
+    fireEvent.click(armorStage1);
+    // Dialog should appear — onStartChain should NOT have been called yet
+    expect(screen.getByText('標記為已開始')).toBeInTheDocument();
+    expect(onStartChain).not.toHaveBeenCalled();
+    // Confirm the dialog
+    fireEvent.click(screen.getByRole('button', { name: /確認已持有/ }));
+    expect(onStartChain).toHaveBeenCalled();
+  });
 });

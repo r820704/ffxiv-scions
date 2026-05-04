@@ -224,7 +224,7 @@ export function DetailTab({
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
-        onStartChain={onStartChain}
+        onStartChain={(ref) => setStartDialogRef(ref)}
       />
 
       {/* 元素系列 — per-role, shared badge */}
@@ -246,7 +246,7 @@ export function DetailTab({
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
-        onStartChain={onStartChain}
+        onStartChain={(ref) => setStartDialogRef(ref)}
       />
 
       <StartChainDialog
