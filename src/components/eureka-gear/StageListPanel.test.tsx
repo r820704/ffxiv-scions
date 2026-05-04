@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-
-afterEach(cleanup);
 import { StageListPanel } from './StageListPanel';
 import { ARMOR_STAGES_BY_TRACK } from '../../types/eureka-gear';
+
+afterEach(cleanup);
 
 const stages = ARMOR_STAGES_BY_TRACK.anemos;
 
@@ -17,7 +17,7 @@ describe('StageListPanel', () => {
       />
     );
     expect(screen.queryByRole('list')).toBeNull();
-    expect(screen.getByRole('button', { name: '展開階段列表' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /展開階段列表/ })).toBeInTheDocument();
   });
 
   it('expands on click and shows stage rows', () => {
@@ -28,7 +28,7 @@ describe('StageListPanel', () => {
         onSelectTarget={vi.fn()}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: '展開階段列表' }));
+    fireEvent.click(screen.getByRole('button', { name: /展開階段列表/ }));
     expect(screen.getByRole('list')).toBeInTheDocument();
     expect(screen.getAllByRole('button').length).toBeGreaterThan(1);
   });
@@ -42,11 +42,11 @@ describe('StageListPanel', () => {
         onSelectTarget={onSelectTarget}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: '展開階段列表' }));
+    fireEvent.click(screen.getByRole('button', { name: /展開階段列表/ }));
     const rows = screen.getAllByRole('button');
     // rows[0] = toggle, rows[1..n] = stage rows
     fireEvent.click(rows[1]!);
-    expect(onSelectTarget).toHaveBeenCalled();
+    expect(onSelectTarget).toHaveBeenCalledWith(stages[0]);
   });
 
   it('marks current stage with 目前 label', () => {
@@ -57,7 +57,7 @@ describe('StageListPanel', () => {
         onSelectTarget={vi.fn()}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: '展開階段列表' }));
+    fireEvent.click(screen.getByRole('button', { name: /展開階段列表/ }));
     expect(screen.getByText('目前')).toBeInTheDocument();
   });
 
@@ -70,7 +70,7 @@ describe('StageListPanel', () => {
         onSelectTarget={vi.fn()}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: '展開階段列表' }));
+    fireEvent.click(screen.getByRole('button', { name: /展開階段列表/ }));
     expect(screen.getByText('目標')).toBeInTheDocument();
   });
 });

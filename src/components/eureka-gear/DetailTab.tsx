@@ -478,10 +478,7 @@ function ArmorTrackSection({
                   targetStage={p.targetStage}
                   itemLevels={itemLevels}
                   getItemName={(stage) => getItemName?.(slot, stage)}
-                  onSelectTarget={(stage) => {
-                    const r = makeRef(slot);
-                    return onSetTarget(r, stage === p.currentStage ? undefined : stage);
-                  }}
+                  onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
                 />
                 <PreviewPanel
                   currentStage={p.currentStage}

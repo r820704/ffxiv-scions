@@ -29,7 +29,6 @@ export function StageListPanel({
         onClick={() => setOpen((v) => !v)}
         className="text-xs text-gray-500 hover:text-gray-300 flex items-center gap-1 mt-1 transition-colors"
         aria-expanded={open}
-        aria-label={open ? '收合階段列表' : '展開階段列表'}
       >
         <span>{open ? '▲' : '▼'}</span>
         <span>{open ? '收合階段列表' : '展開階段列表'}</span>
@@ -57,7 +56,7 @@ export function StageListPanel({
                 >
                   <span className="w-5 text-right text-gray-600 shrink-0">{i + 1}</span>
                   <span className="flex-1">{itemName}</span>
-                  {iL && <span className="text-gray-500 shrink-0">iL{iL}</span>}
+                  {iL != null && <span className="text-gray-500 shrink-0">iL{iL}</span>}
                   {isCurrent && <span className="text-green-400 text-[10px] shrink-0">目前</span>}
                   {isTarget && !isCurrent && <span className="text-yellow-400 text-[10px] shrink-0">目標</span>}
                 </button>

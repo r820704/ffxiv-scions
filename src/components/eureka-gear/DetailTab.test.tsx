@@ -87,14 +87,14 @@ describe('DetailTab', () => {
     it('default state: head slot expanded, others collapsed in each track', () => {
       renderTab();
       // 5 slots × 2 tracks = 10 accordion buttons + 2 track section buttons = 12.
-      // Exclude StageListPanel toggles (aria-label contains "階段列表") which also
+      // Exclude StageListPanel toggles (text contains "階段列表") which also
       // carry aria-expanded but are not accordion controls.
       const allAccordions = screen
         .getAllByRole('button')
         .filter(
           (b) =>
             b.hasAttribute('aria-expanded') &&
-            !(b.getAttribute('aria-label') ?? '').includes('階段列表'),
+            !(b.textContent ?? '').includes('階段列表'),
         );
       expect(allAccordions.length).toBe(12);
 
@@ -233,7 +233,7 @@ describe('DetailTab', () => {
       .filter(
         (b) =>
           b.hasAttribute('aria-expanded') &&
-          !(b.getAttribute('aria-label') ?? '').includes('階段列表'),
+          !(b.textContent ?? '').includes('階段列表'),
       );
     afterExpand.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('true'));
   });
