@@ -27,14 +27,14 @@ describe('FarmingTab', () => {
 
   it('renders the expand-all toggle (default off)', () => {
     render(<FarmingTab inventory={emptyInventoryV3()} materialsMap={materialsMap} />);
-    const checkbox = screen.getByRole('checkbox', { name: /展開所有目標/ });
+    const checkbox = screen.getByRole('checkbox', { name: /計算完整路徑至終點/ });
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
   });
 
   it('toggling the checkbox flips its checked state', () => {
     render(<FarmingTab inventory={emptyInventoryV3()} materialsMap={materialsMap} />);
-    const checkbox = screen.getByRole('checkbox', { name: /展開所有目標/ }) as HTMLInputElement;
+    const checkbox = screen.getByRole('checkbox', { name: /計算完整路徑至終點/ }) as HTMLInputElement;
     fireEvent.click(checkbox);
     expect(checkbox.checked).toBe(true);
     fireEvent.click(checkbox);
@@ -50,7 +50,7 @@ describe('FarmingTab', () => {
     expect(screen.getByText(/沒有設定 target/)).toBeInTheDocument();
 
     // Enable expand-all — empty message should disappear and zones should appear.
-    const checkbox = screen.getByRole('checkbox', { name: /展開所有目標/ });
+    const checkbox = screen.getByRole('checkbox', { name: /計算完整路徑至終點/ });
     fireEvent.click(checkbox);
     expect(screen.queryByText(/沒有設定 target/)).not.toBeInTheDocument();
     // pyros → physeos walks through hydatos zone (hydatos / hydatos+1 / base-eureka / eureka / physeos)
@@ -61,7 +61,7 @@ describe('FarmingTab', () => {
     const inv: EurekaInventoryV5 = emptyInventoryV3();
     inv.weapons['pld-galatyn'] = { currentStage: 'physeos' };
     render(<FarmingTab inventory={inv} materialsMap={materialsMap} />);
-    const checkbox = screen.getByRole('checkbox', { name: /展開所有目標/ });
+    const checkbox = screen.getByRole('checkbox', { name: /計算完整路徑至終點/ });
     fireEvent.click(checkbox);
     // No further materials — empty state should be shown with expandAll message.
     expect(screen.getByText(/所有目標已達成 — 沒有需要的升級素材/)).toBeInTheDocument();
