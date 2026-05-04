@@ -8,6 +8,7 @@ export type ChainFingerprintProps = {
   stages?: readonly EurekaStage[];
   /** Stages that receive a gold/amber highlight dot (in-game glow milestones). */
   glowStages?: ReadonlySet<EurekaStage>;
+  /** When true, groups dots by zone with a small gap between groups (weapon-oriented). */
   showZoneSeparators?: boolean;
   /** When true, all dots render as unfilled (gray) regardless of currentStage. */
   allEmpty?: boolean;
@@ -18,6 +19,7 @@ type DotGroup = { key: string; dots: { stage: EurekaStage; index: number }[] };
 function buildZoneGroups(seq: readonly EurekaStage[]): DotGroup[] {
   const groups: DotGroup[] = [];
   seq.forEach((stage, index) => {
+    // antiquated and physeos both map to null in ZONE_OF_STAGE; assign them named sentinel keys so they form their own groups at start/end.
     const zone = ZONE_OF_STAGE[stage] ?? (stage === 'antiquated' ? 'start' : stage === 'physeos' ? 'final' : `null-${index}`);
     const last = groups[groups.length - 1];
     if (last && last.key === zone) {
@@ -37,7 +39,7 @@ export function ChainFingerprint({
   const filled = Math.max(0, idx + 1);
 
   const renderDot = (stage: EurekaStage, i: number) => {
-    const isFilled = !allEmpty && i <= idx;
+    const isFilled = i <= idx;
     const isGlow = isFilled && glowStages?.has(stage);
     return (
       <span
