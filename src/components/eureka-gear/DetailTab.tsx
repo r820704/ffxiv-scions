@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StartChainDialog } from './StartChainDialog';
 import { ChainStepper } from './ChainStepper';
 import { PreviewPanel } from './PreviewPanel';
@@ -99,6 +99,7 @@ export function DetailTab({
 }: DetailTabProps) {
   const progress = useMemo(() => getJobProgress(selectedJob as JobId, inventory), [selectedJob, inventory]);
   const [startDialogRef, setStartDialogRef] = useState<ChainRef | null>(null);
+  const [globalArmorExpand, setGlobalArmorExpand] = useState<boolean | null>(null);
 
   const primaryChains = progress.weapons.filter(({ chainId }) => {
     const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
@@ -210,6 +211,24 @@ export function DetailTab({
         </section>
       )}
 
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-500">防具欄位：</span>
+        <button
+          type="button"
+          onClick={() => setGlobalArmorExpand(true)}
+          className="text-xs px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500"
+        >
+          全展開
+        </button>
+        <button
+          type="button"
+          onClick={() => setGlobalArmorExpand(false)}
+          className="text-xs px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500"
+        >
+          全收合
+        </button>
+      </div>
+
       {/* 常風系列 — per-job, no shared badge */}
       <ArmorTrackSection
         title="常風系列（外觀專用、不影響戰力）"
@@ -225,6 +244,7 @@ export function DetailTab({
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
         onStartChain={(ref) => setStartDialogRef(ref)}
+        globalExpand={globalArmorExpand}
       />
 
       {/* 元素系列 — per-role, shared badge */}
@@ -247,6 +267,7 @@ export function DetailTab({
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
         onStartChain={(ref) => setStartDialogRef(ref)}
+        globalExpand={globalArmorExpand}
       />
 
       <StartChainDialog
@@ -276,21 +297,38 @@ type ArmorTrackSectionProps = {
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
   onStartChain?: (ref: ChainRef) => void;
+  globalExpand?: boolean | null;
 };
 
 function ArmorTrackSection({
   title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, sharedHeader,
-  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain,
+  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, globalExpand,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
     head: true, body: false, hands: false, legs: false, feet: false,
   });
+  const [sectionExpanded, setSectionExpanded] = useState(true);
+
+  useEffect(() => {
+    if (globalExpand === null || globalExpand === undefined) return;
+    setExpanded({ head: globalExpand, body: globalExpand, hands: globalExpand, legs: globalExpand, feet: globalExpand });
+    setSectionExpanded(globalExpand);
+  }, [globalExpand]);
+
   return (
     <section className="space-y-4">
-      <h3 className={`${colorClass} font-bold flex items-center flex-wrap`}>
+      <button
+        type="button"
+        aria-expanded={sectionExpanded}
+        aria-label={`${sectionExpanded ? '收合' : '展開'} ${title}`}
+        onClick={() => setSectionExpanded((v) => !v)}
+        className={`${colorClass} font-bold flex items-center flex-wrap w-full text-left gap-1 hover:opacity-80 transition-opacity`}
+      >
+        <span className="text-xs text-gray-500 mr-1">{sectionExpanded ? '▼' : '▶'}</span>
         <span>{title}</span>
         {sharedHeader}
-      </h3>
+      </button>
+      {sectionExpanded && (
       <div className="space-y-3 pl-2 border-l-2 border-gray-700">
         {ARMOR_SLOTS.map((slot) => {
           const slotData = pieces[slot];
@@ -356,6 +394,7 @@ function ArmorTrackSection({
           );
         })}
       </div>
+      )}
     </section>
   );
 }

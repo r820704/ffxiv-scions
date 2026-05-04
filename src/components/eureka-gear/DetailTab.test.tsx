@@ -90,7 +90,7 @@ describe('DetailTab', () => {
       const allAccordions = screen
         .getAllByRole('button')
         .filter((b) => b.hasAttribute('aria-expanded'));
-      expect(allAccordions.length).toBe(10);
+      expect(allAccordions.length).toBe(12);
 
       const headBtns = slotButtons('頭');
       const bodyBtns = slotButtons('身');
@@ -200,5 +200,80 @@ describe('DetailTab', () => {
     // Confirm the dialog
     fireEvent.click(screen.getByRole('button', { name: /確認已持有/ }));
     expect(onStartChain).toHaveBeenCalled();
+  });
+
+  it('全展開 button expands all armor slot accordions', () => {
+    render(
+      <DetailTab
+        inventory={emptyInventoryV3()}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
+      />,
+    );
+    const allAccordions = screen.getAllByRole('button').filter((b) => b.hasAttribute('aria-expanded'));
+    const collapsed = allAccordions.filter((b) => b.getAttribute('aria-expanded') === 'false');
+    expect(collapsed.length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole('button', { name: '全展開' }));
+    const afterExpand = screen.getAllByRole('button').filter((b) => b.hasAttribute('aria-expanded'));
+    afterExpand.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('true'));
+  });
+
+  it('全收合 button collapses all armor slot accordions', () => {
+    render(
+      <DetailTab
+        inventory={emptyInventoryV3()}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: '全收合' }));
+    const allAccordions = screen.getAllByRole('button').filter((b) => b.hasAttribute('aria-expanded'));
+    allAccordions.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('false'));
+  });
+
+  describe('armor track section collapse', () => {
+    function renderTab() {
+      return render(
+        <DetailTab
+          inventory={emptyInventoryV3()}
+          selectedJob="PLD"
+          weapons={[]}
+          materialsMap={{}}
+          onSelectJob={() => {}}
+          onSetTarget={() => {}}
+          onRequestUpgrade={() => {}}
+          onStartChain={() => {}}
+        />,
+      );
+    }
+
+    it('常風系列 section has a toggle button expanded by default', () => {
+      renderTab();
+      const toggle = screen.getByRole('button', { name: /收合 常風系列/ });
+      expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('clicking 常風系列 header collapses the section', () => {
+      renderTab();
+      const toggle = screen.getByRole('button', { name: /收合 常風系列/ });
+      fireEvent.click(toggle);
+      expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('元素系列 section also has a toggle button', () => {
+      renderTab();
+      expect(screen.getByRole('button', { name: /收合 元素系列/ })).toBeInTheDocument();
+    });
   });
 });
