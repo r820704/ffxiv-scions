@@ -242,6 +242,7 @@ export function DetailTab({
                       ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                       : () => {}}
                     onSelectStart={!isStarted ? () => setPendingStartChain((prev) => prev === chainId ? null : chainId) : undefined}
+                    pendingStartActive={isPendingStart}
                   />
                   <StageListPanel
                     stages={EUREKA_STAGES}
@@ -508,6 +509,7 @@ function ArmorTrackSection({
                     ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                     : () => {}}
                   onSelectStart={!isStarted ? () => setPendingStartSlot((prev) => prev === slot ? null : slot) : undefined}
+                  pendingStartActive={isPendingStart}
                 />
                 <StageListPanel
                   stages={stages}
