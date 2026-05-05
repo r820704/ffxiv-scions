@@ -93,12 +93,12 @@ describe('RoleCard', () => {
     expect(onSelect).toHaveBeenCalledWith('PLD');
   });
 
-  it('renders ChainFingerprint for each armor slot', () => {
+  it('renders armor dots for each slot', () => {
     const { container } = render(
       <RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />,
     );
-    // ChainFingerprint renders dots with data-dot attribute
-    const dots = container.querySelectorAll('[data-dot]');
+    // ArmorDots renders rounded-full dot spans
+    const dots = container.querySelectorAll('.rounded-full');
     expect(dots.length).toBeGreaterThan(0);
   });
 

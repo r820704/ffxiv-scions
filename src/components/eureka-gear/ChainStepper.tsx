@@ -21,8 +21,6 @@ export type ChainStepperProps = {
   stages?: readonly EurekaStage[];
   /** When provided, render zone group labels (for armor tracks). */
   zoneGroups?: readonly ArmorZoneGroupDef[];
-  /** Static hint shown below the 起點 group instead of a tooltip popup. */
-  startHint?: string;
 };
 
 function stageState(
@@ -86,7 +84,7 @@ function groupByZone(seq: readonly EurekaStage[]): ZoneGroup[] {
   return groups;
 }
 
-export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSelectStart, stages, zoneGroups, startHint }: ChainStepperProps) {
+export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSelectStart, stages, zoneGroups }: ChainStepperProps) {
   const seq = stages ?? EUREKA_STAGES;
   // currentStage === null → currentIdx -1, which stageState reads as "not started".
   const currentIdx = currentStage ? seq.indexOf(currentStage) : -1;
@@ -167,9 +165,6 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
           <div className="flex flex-wrap gap-1 items-center">
             {group.entries.map(({ stage, index }) => renderButton(stage, index))}
           </div>
-          {group.key === 'start' && startHint && (
-            <p className="text-[10px] text-gray-500 mt-0.5">{startHint}</p>
-          )}
         </div>
       ))}
     </div>
