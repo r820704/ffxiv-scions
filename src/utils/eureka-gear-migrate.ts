@@ -1,9 +1,30 @@
 import { ARMOR_SET_IDS } from '../types/eureka-gear';
 import type {
+  ArmorSlot,
   EurekaInventoryV3,
   EurekaInventoryV4,
   EurekaInventoryV5,
 } from '../types/eureka-gear';
+
+/**
+ * Removes any elemental armor slot where currentStage is 'antiquated' (invalid stage
+ * for the elemental track — likely leftover from a v4 migration edge case).
+ */
+function cleanElementalAntiquated(inv: EurekaInventoryV5): EurekaInventoryV5 {
+  const elemental = { ...inv.armor.elemental } as typeof inv.armor.elemental;
+  for (const setId of Object.keys(elemental) as (keyof typeof elemental)[]) {
+    const slots = elemental[setId];
+    if (!slots) continue;
+    const cleaned = { ...slots };
+    for (const slot of Object.keys(cleaned) as ArmorSlot[]) {
+      if (cleaned[slot]?.currentStage === 'antiquated') {
+        delete cleaned[slot];
+      }
+    }
+    elemental[setId] = cleaned;
+  }
+  return { ...inv, armor: { ...inv.armor, elemental } };
+}
 
 export function emptyInventoryV5(): EurekaInventoryV5 {
   const elemental = {} as EurekaInventoryV5['armor']['elemental'];
@@ -37,6 +58,10 @@ export function emptyInventoryV3(): EurekaInventoryV5 {
  * - v5: pass through with defensive fills
  */
 export function migrateInventory(raw: string | null): EurekaInventoryV5 {
+  return cleanElementalAntiquated(migrateInventoryRaw(raw));
+}
+
+function migrateInventoryRaw(raw: string | null): EurekaInventoryV5 {
   if (!raw) return emptyInventoryV5();
 
   let parsed: unknown;

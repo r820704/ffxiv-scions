@@ -16,6 +16,7 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={() => {}}
         onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
       />,
     );
     expect(screen.getAllByText(/武器/).length).toBeGreaterThan(0);
@@ -32,6 +33,7 @@ describe('DetailTab', () => {
         onSelectJob={onSelectJob}
         onSetTarget={() => {}}
         onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
       />,
     );
     const select = screen.getByRole('combobox');
@@ -50,6 +52,7 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={onSetTarget}
         onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
       />,
     );
     const nodes = screen.getAllByRole('button', { name: /stage/ });
@@ -68,6 +71,7 @@ describe('DetailTab', () => {
           onSelectJob={() => {}}
           onSetTarget={() => {}}
           onRequestUpgrade={() => {}}
+          onStartChain={() => {}}
         />,
       );
     }
@@ -82,11 +86,17 @@ describe('DetailTab', () => {
 
     it('default state: head slot expanded, others collapsed in each track', () => {
       renderTab();
-      // 5 slots × 2 tracks = 10 accordion buttons total.
+      // 5 slots × 2 tracks = 10 accordion buttons + 2 track section buttons = 12.
+      // Exclude StageListPanel toggles (text contains "階段列表") which also
+      // carry aria-expanded but are not accordion controls.
       const allAccordions = screen
         .getAllByRole('button')
-        .filter((b) => b.hasAttribute('aria-expanded'));
-      expect(allAccordions.length).toBe(10);
+        .filter(
+          (b) =>
+            b.hasAttribute('aria-expanded') &&
+            !(b.textContent ?? '').includes('階段列表'),
+        );
+      expect(allAccordions.length).toBe(12);
 
       const headBtns = slotButtons('頭');
       const bodyBtns = slotButtons('身');
@@ -147,6 +157,212 @@ describe('DetailTab', () => {
         const parent = btn.parentElement!;
         expect(within(parent).queryByTestId('stepper-container')).not.toBeNull();
       });
+    });
+  });
+
+  it('clicking stage 1 button when chain not started opens start dialog', () => {
+    render(
+      <DetailTab
+        inventory={emptyInventoryV3()}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
+      />,
+    );
+    const stageButtons = screen.getAllByRole('button', { name: /stage 1/ });
+    fireEvent.click(stageButtons[0]!);
+    expect(screen.getByText('標記為已開始')).toBeInTheDocument();
+  });
+
+  it('clicking armor stage 1 when slot not started opens start dialog (not immediate start)', () => {
+    const onStartChain = vi.fn();
+    render(
+      <DetailTab
+        inventory={emptyInventoryV3()}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={onStartChain}
+      />,
+    );
+    // Head accordion is expanded by default; find the armor stage 1 buttons.
+    // Use the anemos head slot stage 1 (stage 1: antiquated, aria-label includes "stage 1").
+    // The armor stepper's first stage 1 button (anemos track) opens the dialog via setStartDialogRef.
+    const allStage1Buttons = screen.getAllByRole('button', { name: /^stage 1:/ });
+    // Click the anemos-track armor stage 1 (index 0 if no weapon stage 1 visible, otherwise the last one)
+    // Use the last stage-1 button to avoid hitting any weapon stepper button.
+    const armorStage1 = allStage1Buttons[allStage1Buttons.length - 1]!;
+    fireEvent.click(armorStage1);
+    // Dialog should appear — onStartChain should NOT have been called yet
+    expect(screen.getByText('標記為已開始')).toBeInTheDocument();
+    expect(onStartChain).not.toHaveBeenCalled();
+    // Confirm the dialog
+    fireEvent.click(screen.getByRole('button', { name: /確認已持有/ }));
+    expect(onStartChain).toHaveBeenCalled();
+  });
+
+  it('全展開 button expands all armor slot accordions', () => {
+    render(
+      <DetailTab
+        inventory={emptyInventoryV3()}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
+      />,
+    );
+    const allAccordions = screen.getAllByRole('button').filter((b) => b.hasAttribute('aria-expanded'));
+    const collapsed = allAccordions.filter((b) => b.getAttribute('aria-expanded') === 'false');
+    expect(collapsed.length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole('button', { name: '展開所有防具欄位' }));
+    // Only check accordion-type buttons (exclude StageListPanel toggles which stay
+    // independently collapsed and are not controlled by the global expand button).
+    const afterExpand = screen
+      .getAllByRole('button')
+      .filter(
+        (b) =>
+          b.hasAttribute('aria-expanded') &&
+          !(b.textContent ?? '').includes('階段列表'),
+      );
+    afterExpand.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('true'));
+  });
+
+  it('clicking 重置 button for a started weapon opens confirm dialog and calls onClearChain on confirm', () => {
+    const onClearChain = vi.fn();
+    const inv = {
+      ...emptyInventoryV3(),
+      weapons: { 'pld-galatyn': { currentStage: 'antiquated' as const } },
+    };
+    render(
+      <DetailTab
+        inventory={inv}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
+        onClearChain={onClearChain}
+      />,
+    );
+    const resetBtn = screen.getByRole('button', { name: /重置主手武器進度/ });
+    fireEvent.click(resetBtn);
+    expect(screen.getByText('重置此裝備進度')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '確認重置' }));
+    expect(onClearChain).toHaveBeenCalled();
+  });
+
+  it('全收合 button collapses all armor slot accordions', () => {
+    render(
+      <DetailTab
+        inventory={emptyInventoryV3()}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: '收合所有防具欄位' }));
+    const allAccordions = screen.getAllByRole('button').filter((b) => b.hasAttribute('aria-expanded'));
+    allAccordions.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('false'));
+  });
+
+  it('started anemos slot shows item name with iL in accordion header', () => {
+    const inv = {
+      ...emptyInventoryV3(),
+      armor: {
+        ...emptyInventoryV3().armor,
+        anemos: { PLD: { head: { currentStage: 'anemos-base' as const } } },
+      },
+    };
+    render(
+      <DetailTab
+        inventory={inv}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+        onStartChain={() => {}}
+      />,
+    );
+    expect(screen.getByText(/俠義頭冠/)).toBeInTheDocument();
+    expect(screen.getByText(/iL335/)).toBeInTheDocument();
+  });
+
+  describe('armor track section collapse', () => {
+    function renderTab() {
+      return render(
+        <DetailTab
+          inventory={emptyInventoryV3()}
+          selectedJob="PLD"
+          weapons={[]}
+          materialsMap={{}}
+          onSelectJob={() => {}}
+          onSetTarget={() => {}}
+          onRequestUpgrade={() => {}}
+          onStartChain={() => {}}
+        />,
+      );
+    }
+
+    it('常風系列 section has a toggle button expanded by default', () => {
+      renderTab();
+      const toggle = screen.getByRole('button', { name: /收合 常風系列/ });
+      expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('clicking 常風系列 header collapses the section', () => {
+      renderTab();
+      const toggle = screen.getByRole('button', { name: /收合 常風系列/ });
+      fireEvent.click(toggle);
+      expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('元素系列 section also has a toggle button', () => {
+      renderTab();
+      expect(screen.getByRole('button', { name: /收合 元素系列/ })).toBeInTheDocument();
+    });
+
+    it('全展開 re-expands a manually-collapsed section header', () => {
+      render(
+        <DetailTab
+          inventory={emptyInventoryV3()}
+          selectedJob="PLD"
+          weapons={[]}
+          materialsMap={{}}
+          onSelectJob={() => {}}
+          onSetTarget={() => {}}
+          onRequestUpgrade={() => {}}
+          onStartChain={() => {}}
+        />,
+      );
+      // Collapse the 常風系列 section manually
+      const toggle = screen.getByRole('button', { name: /收合 常風系列/ });
+      fireEvent.click(toggle);
+      expect(toggle.getAttribute('aria-expanded')).toBe('false');
+
+      // Click 全展開
+      fireEvent.click(screen.getByRole('button', { name: '展開所有防具欄位' }));
+
+      // Section header should be re-expanded
+      expect(toggle.getAttribute('aria-expanded')).toBe('true');
     });
   });
 });

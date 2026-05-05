@@ -205,6 +205,38 @@ export function useEurekaInventory() {
     setInventory(emptyInventoryV5());
   }, []);
 
+  const clearChain = useCallback((ref: ChainRef) => {
+    setInventory((prev) => {
+      if (ref.kind === 'weapon') {
+        const chainIds = getSyncedChainIds(ref.chainId);
+        const weapons = { ...prev.weapons };
+        for (const id of chainIds) delete weapons[id];
+        return { ...prev, weapons };
+      }
+      if (ref.kind === 'armor-anemos') {
+        const prevJob = { ...prev.armor.anemos[ref.job] };
+        delete prevJob[ref.slot];
+        return {
+          ...prev,
+          armor: {
+            ...prev.armor,
+            anemos: { ...prev.armor.anemos, [ref.job]: prevJob },
+          },
+        };
+      }
+      // armor-elemental
+      const prevSet = { ...prev.armor.elemental[ref.set] };
+      delete prevSet[ref.slot];
+      return {
+        ...prev,
+        armor: {
+          ...prev.armor,
+          elemental: { ...prev.armor.elemental, [ref.set]: prevSet },
+        },
+      };
+    });
+  }, []);
+
   return {
     inventory,
     setMaterial,
@@ -212,6 +244,7 @@ export function useEurekaInventory() {
     setTarget,
     performUpgrade,
     clearAll,
+    clearChain,
     hasEnoughMaterials: (stage: EurekaStage) =>
       hasEnoughMaterials(stage, inventory.materials, STAGE_UPGRADE_COSTS),
   };

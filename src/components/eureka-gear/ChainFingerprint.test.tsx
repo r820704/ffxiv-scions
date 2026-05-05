@@ -25,3 +25,31 @@ describe('ChainFingerprint', () => {
     expect(screen.getByText('6/16')).toBeInTheDocument();
   });
 });
+
+describe('ChainFingerprint zone separators', () => {
+  it('renders 6 zone groups when showZoneSeparators is true', () => {
+    const { container } = render(
+      <ChainFingerprint currentStage="anemos" showZoneSeparators />
+    );
+    expect(container.querySelectorAll('[data-zone-group]').length).toBe(6);
+  });
+
+  it('first dot group has no ml-1, subsequent groups have ml-1', () => {
+    const { container } = render(
+      <ChainFingerprint currentStage="anemos" showZoneSeparators />
+    );
+    const groups = container.querySelectorAll('[data-zone-group]');
+    expect(groups[0]?.classList.contains('ml-1')).toBe(false);
+    expect(groups[1]?.classList.contains('ml-1')).toBe(true);
+  });
+
+  it('allEmpty prop makes all dots unfilled regardless of currentStage', () => {
+    const { container } = render(
+      <ChainFingerprint currentStage="physeos" allEmpty />
+    );
+    const dots = container.querySelectorAll('[data-dot]');
+    dots.forEach((dot) => {
+      expect(dot.getAttribute('data-filled')).toBe('false');
+    });
+  });
+});

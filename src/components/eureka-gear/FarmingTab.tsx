@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ZoneGroup } from './ZoneGroup';
 import { NextEdgeShortage } from './NextEdgeShortage';
+import { Tooltip } from '../ui/Tooltip';
 import { costBetween, costBetweenInSequence } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
@@ -147,14 +148,23 @@ export function FarmingTab({ inventory, materialsMap }: FarmingTabProps) {
 
   const toggle = (
     <div className="flex items-center gap-2 mb-3">
-      <label className="text-xs text-gray-300 flex items-center gap-1">
+      <label className="text-xs text-gray-300 flex items-center gap-1.5 cursor-pointer">
         <input
           type="checkbox"
           checked={showAll}
           onChange={(e) => setShowAll(e.target.checked)}
         />
-        展開所有目標（顯示完整鏈到終點所需）
+        計算完整路徑至終點
       </label>
+      <Tooltip label="勾選後，對每條「已有進度」的鏈，不管你是否設了中途目標，一律計算從目前階段升至最終形態所需的全部素材。適合規劃長期所需總量。">
+        <button
+          type="button"
+          aria-label="說明"
+          className="w-4 h-4 rounded-full bg-gray-700 text-gray-300 text-[10px] leading-4 text-center hover:bg-gray-600 transition-colors"
+        >
+          ⓘ
+        </button>
+      </Tooltip>
     </div>
   );
 

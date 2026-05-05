@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { StartChainDialog } from './StartChainDialog';
 import { ChainStepper } from './ChainStepper';
+import { StageListPanel } from './StageListPanel';
 import { PreviewPanel } from './PreviewPanel';
 import { AccordionItem } from '../ui/Accordion';
 import { getJobProgress } from '../../utils/eurekaGear';
@@ -13,7 +15,12 @@ import {
 import { Tooltip } from '../ui/Tooltip';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
-import { getAnemosArmorName, getElementalArmorName } from '../../data/eureka-armor-names';
+import {
+  ANEMOS_ARMOR_ITEM_LEVELS,
+  ELEMENTAL_ARMOR_ITEM_LEVELS,
+  getAnemosArmorName,
+  getElementalArmorName,
+} from '../../data/eureka-armor-names';
 import type { ChainRef } from '../../hooks/useEurekaInventory';
 import type {
   ArmorSetId,
@@ -28,6 +35,8 @@ import {
   ARMOR_SLOTS,
   ARMOR_STAGES_BY_TRACK,
   ELEMENTAL_ARMOR_ZONE_GROUPS,
+  EUREKA_STAGES,
+  STAGE_ITEM_LEVELS,
   STAGE_TC_LABEL,
 } from '../../types/eureka-gear';
 
@@ -56,6 +65,8 @@ export type DetailTabProps = {
   onSelectJob: (job: string) => void;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
+  onStartChain: (ref: ChainRef) => void;
+  onClearChain?: (ref: ChainRef) => void;
 };
 
 function weaponInfoAt(weapons: EurekaWeapon[], chainId: string, stage: EurekaStage) {
@@ -93,8 +104,13 @@ export function DetailTab({
   onSelectJob,
   onSetTarget,
   onRequestUpgrade,
+  onStartChain,
+  onClearChain,
 }: DetailTabProps) {
   const progress = useMemo(() => getJobProgress(selectedJob as JobId, inventory), [selectedJob, inventory]);
+  const [startDialogRef, setStartDialogRef] = useState<ChainRef | null>(null);
+  const [globalArmorExpand, setGlobalArmorExpand] = useState<boolean | null>(null);
+  const [resetDialogRef, setResetDialogRef] = useState<{ ref: ChainRef; label: string } | null>(null);
 
   const primaryChains = progress.weapons.filter(({ chainId }) => {
     const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
@@ -147,7 +163,8 @@ export function DetailTab({
             return (
               <div key={chainId} className="space-y-2 pt-2">
                 <div className="space-y-0.5 text-sm">
-                  <div className="text-gray-100 font-semibold">
+                  <div className="flex items-start">
+                  <div className="text-gray-100 font-semibold flex-1">
                     {currentName}
                     <span className="text-xs text-gray-400 font-normal ml-2">
                       {isStarted ? stageSuffix(currentInfo, p.currentStage) : notStartedSuffix}
@@ -163,6 +180,18 @@ export function DetailTab({
                         </span>
                       </>
                     )}
+                  </div>
+                  {isStarted && (
+                    <button
+                      type="button"
+                      aria-label={`重置${chain?.isShield ? '盾' : '主'}手武器進度`}
+                      onClick={() => setResetDialogRef({ ref, label: `${chain?.isShield ? '盾' : '主'}手武器` })}
+                      className="text-[10px] text-red-400/60 hover:text-red-400 transition-colors px-1 ml-auto"
+                      title="重置此武器的所有進度"
+                    >
+                      重置
+                    </button>
+                  )}
                   </div>
 
                   {mirrorInfos.map((m) => (
@@ -190,6 +219,15 @@ export function DetailTab({
                   currentStage={stepperCurrent}
                   targetStage={p.targetStage}
                   onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
+                  onSelectStart={!isStarted ? () => setStartDialogRef(ref) : undefined}
+                />
+                <StageListPanel
+                  stages={EUREKA_STAGES}
+                  currentStage={stepperCurrent}
+                  targetStage={p.targetStage}
+                  itemLevels={STAGE_ITEM_LEVELS}
+                  getItemName={(stage) => weaponInfoAt(weapons, chainId, stage)?.tcName}
+                  onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
                 />
                 <PreviewPanel
                   currentStage={p.currentStage}
@@ -205,6 +243,26 @@ export function DetailTab({
         </section>
       )}
 
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-500">防具欄位：</span>
+        <button
+          type="button"
+          aria-label="展開所有防具欄位"
+          onClick={() => setGlobalArmorExpand(true)}
+          className="text-xs px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500"
+        >
+          全展開
+        </button>
+        <button
+          type="button"
+          aria-label="收合所有防具欄位"
+          onClick={() => setGlobalArmorExpand(false)}
+          className="text-xs px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500"
+        >
+          全收合
+        </button>
+      </div>
+
       {/* 常風系列 — per-job, no shared badge */}
       <ArmorTrackSection
         title="常風系列（外觀專用、不影響戰力）"
@@ -215,10 +273,14 @@ export function DetailTab({
         zoneGroups={ANEMOS_ARMOR_ZONE_GROUPS}
         makeRef={(slot) => ({ kind: 'armor-anemos', job: selectedJob as JobId, slot })}
         getItemName={(slot, stage) => getAnemosArmorName(selectedJob, slot, stage)}
+        itemLevels={ANEMOS_ARMOR_ITEM_LEVELS}
         materials={inventory.materials}
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
+        onStartChain={(ref) => setStartDialogRef(ref)}
+        onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
+        globalExpand={globalArmorExpand}
       />
 
       {/* 元素系列 — per-role, shared badge */}
@@ -231,6 +293,7 @@ export function DetailTab({
         zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
         makeRef={(slot) => ({ kind: 'armor-elemental', set: progress.elemental.set, slot })}
         getItemName={(slot, stage) => getElementalArmorName(progress.elemental.set, slot, stage)}
+        itemLevels={ELEMENTAL_ARMOR_ITEM_LEVELS}
         sharedHeader={
           isArmorSetShared(progress.elemental.set)
             ? <SharedJobIcons set={progress.elemental.set} />
@@ -240,7 +303,49 @@ export function DetailTab({
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
+        onStartChain={(ref) => setStartDialogRef(ref)}
+        onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
+        globalExpand={globalArmorExpand}
       />
+
+      <StartChainDialog
+        isOpen={startDialogRef !== null}
+        onConfirm={() => {
+          if (startDialogRef) onStartChain(startDialogRef);
+          setStartDialogRef(null);
+        }}
+        onCancel={() => setStartDialogRef(null)}
+      />
+
+      {resetDialogRef && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 border-2 border-red-600 rounded-lg p-5 max-w-sm">
+            <h2 className="text-lg font-bold text-red-400 mb-3">重置此裝備進度</h2>
+            <p className="text-sm text-gray-200 mb-4">
+              確認要清除「{resetDialogRef.label}」的所有進度紀錄？此操作不可還原。
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setResetDialogRef(null)}
+                className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (resetDialogRef) onClearChain?.(resetDialogRef.ref);
+                  setResetDialogRef(null);
+                }}
+                className="px-3 py-1.5 rounded bg-red-700 text-white text-sm hover:bg-red-600"
+              >
+                確認重置
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -254,26 +359,46 @@ type ArmorTrackSectionProps = {
   makeRef: (slot: ArmorSlot) => ChainRef;
   zoneGroups?: readonly ArmorZoneGroupDef[];
   getItemName?: (slot: ArmorSlot, stage: EurekaStage) => string | undefined;
-  sharedHeader?: React.ReactNode;
+  itemLevels?: Partial<Record<EurekaStage, number>>;
+  sharedHeader?: ReactNode;
   materials: Record<number, number>;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
+  onStartChain?: (ref: ChainRef) => void;
+  onRequestReset?: (ref: ChainRef, label: string) => void;
+  globalExpand?: boolean | null;
 };
 
 function ArmorTrackSection({
-  title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, sharedHeader,
-  materials, materialsMap, onSetTarget, onRequestUpgrade,
+  title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader,
+  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onRequestReset, globalExpand,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
     head: true, body: false, hands: false, legs: false, feet: false,
   });
+  const [sectionExpanded, setSectionExpanded] = useState(true);
+
+  useEffect(() => {
+    if (globalExpand == null) return;
+    setExpanded({ head: globalExpand, body: globalExpand, hands: globalExpand, legs: globalExpand, feet: globalExpand });
+    setSectionExpanded(globalExpand);
+  }, [globalExpand]);
+
   return (
     <section className="space-y-4">
-      <h3 className={`${colorClass} font-bold flex items-center flex-wrap`}>
+      <button
+        type="button"
+        aria-expanded={sectionExpanded}
+        aria-label={`${sectionExpanded ? '收合' : '展開'} ${title}`}
+        onClick={() => setSectionExpanded((v) => !v)}
+        className={`${colorClass} font-bold flex items-center flex-wrap w-full text-left gap-1 hover:opacity-80 transition-opacity`}
+      >
+        <span className="text-xs text-gray-500 mr-1">{sectionExpanded ? '▼' : '▶'}</span>
         <span>{title}</span>
         {sharedHeader}
-      </h3>
+      </button>
+      {sectionExpanded && (
       <div className="space-y-3 pl-2 border-l-2 border-gray-700">
         {ARMOR_SLOTS.map((slot) => {
           const slotData = pieces[slot];
@@ -287,19 +412,45 @@ function ArmorTrackSection({
           const targetLabel = p.targetStage
             ? (getItemName?.(slot, p.targetStage) ?? STAGE_TC_LABEL[p.targetStage])
             : undefined;
+          const currentIL = isStarted ? itemLevels?.[p.currentStage] : undefined;
+          const currentStageSuffix = isStarted
+            ? `（${STAGE_TC_LABEL[p.currentStage]}${currentIL != null ? ` · iL${currentIL}` : ''}）`
+            : '（未開始）';
+          const targetIL = p.targetStage ? itemLevels?.[p.targetStage] : undefined;
           const header = (
-            <div className="text-sm text-gray-100 font-semibold">
-              {SLOT_TC[slot]}
-              <span className="text-xs text-gray-400 font-normal ml-2">
-                {isStarted ? `（${currentLabel}）` : '（未開始）'}
+            <div className="flex items-center text-sm text-gray-100 font-semibold">
+              <span className="flex-1">
+                {SLOT_TC[slot]}
+                {isStarted && currentLabel && (
+                  <span className="font-normal ml-2">{currentLabel}</span>
+                )}
+                <span className="text-xs text-gray-400 font-normal ml-1">
+                  {currentStageSuffix}
+                </span>
+                {p.targetStage && p.targetStage !== p.currentStage && (
+                  <>
+                    <span className="text-yellow-400 mx-2">→</span>
+                    <span className="text-yellow-200">
+                      {targetLabel}
+                      {targetIL != null && (
+                        <span className="text-xs text-gray-400 font-normal ml-1">
+                          {`（${STAGE_TC_LABEL[p.targetStage]} · iL${targetIL}）`}
+                        </span>
+                      )}
+                    </span>
+                  </>
+                )}
               </span>
-              {p.targetStage && p.targetStage !== p.currentStage && (
-                <>
-                  <span className="text-yellow-400 mx-2">→</span>
-                  <span className="text-yellow-200">
-                    {targetLabel}
-                  </span>
-                </>
+              {isStarted && (
+                <button
+                  type="button"
+                  aria-label={`重置${SLOT_TC[slot]}防具進度`}
+                  onClick={(e) => { e.stopPropagation(); onRequestReset?.(ref, SLOT_TC[slot]); }}
+                  className="text-[10px] text-red-400/60 hover:text-red-400 transition-colors px-1 ml-2"
+                  title="重置此欄位的所有進度"
+                >
+                  重置
+                </button>
               )}
             </div>
           );
@@ -319,6 +470,15 @@ function ArmorTrackSection({
                   onSelectTarget={(stage) =>
                     onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                   }
+                  onSelectStart={!isStarted ? () => onStartChain?.(ref) : undefined}
+                />
+                <StageListPanel
+                  stages={stages}
+                  currentStage={stepperCurrent}
+                  targetStage={p.targetStage}
+                  itemLevels={itemLevels}
+                  getItemName={(stage) => getItemName?.(slot, stage)}
+                  onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
                 />
                 <PreviewPanel
                   currentStage={p.currentStage}
@@ -338,6 +498,7 @@ function ArmorTrackSection({
           );
         })}
       </div>
+      )}
     </section>
   );
 }

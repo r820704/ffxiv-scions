@@ -18,6 +18,19 @@ import type { EurekaZone } from '@/data/weather-data';
 
 const SCROLL_REVEAL_THRESHOLD = 80;
 
+const COLLAPSED_ZONES_KEY = 'eureka-weather-collapsed-zones';
+
+function loadCollapsedZones(): Set<string> {
+  try {
+    const raw = localStorage.getItem(COLLAPSED_ZONES_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw) as string[];
+    return new Set(arr);
+  } catch {
+    return new Set();
+  }
+}
+
 function formatCountdown(ms: number): string {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
   const m = Math.floor(totalSec / 60);
@@ -52,6 +65,29 @@ export default function EurekaWeatherPage() {
   const [detailNmId, setDetailNmId] = useNmDetailHash();
   const openDetail = useCallback((id: string) => setDetailNmId(id), [setDetailNmId]);
   const closeDetail = useCallback(() => setDetailNmId(null), [setDetailNmId]);
+
+  const [collapsedZones, setCollapsedZones] = useState<Set<string>>(loadCollapsedZones);
+
+  const toggleZoneCollapse = useCallback((zone: string) => {
+    setCollapsedZones((prev) => {
+      const next = new Set(prev);
+      if (next.has(zone)) next.delete(zone);
+      else next.add(zone);
+      localStorage.setItem(COLLAPSED_ZONES_KEY, JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
+
+  const collapseAll = useCallback(() => {
+    const s = new Set(EUREKA_ZONES as readonly string[]);
+    setCollapsedZones(s);
+    localStorage.setItem(COLLAPSED_ZONES_KEY, JSON.stringify([...s]));
+  }, []);
+
+  const expandAll = useCallback(() => {
+    setCollapsedZones(new Set());
+    localStorage.setItem(COLLAPSED_ZONES_KEY, '[]');
+  }, []);
 
   const [listZone, setListZone] = useState<EurekaZone | null>(null);
   const openList = useCallback((z: EurekaZone) => setListZone(z), []);
@@ -190,6 +226,23 @@ export default function EurekaWeatherPage() {
           onClearAll={clearAll}
           onJumpToNow={scrolledAway ? jumpToNow : undefined}
         />
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-gray-500">地區：</span>
+          <button
+            type="button"
+            onClick={expandAll}
+            className="px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors"
+          >
+            全展開
+          </button>
+          <button
+            type="button"
+            onClick={collapseAll}
+            className="px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors"
+          >
+            全收合
+          </button>
+        </div>
         <WeatherSummaryBar
           selected={selected}
           now={now}
@@ -211,6 +264,8 @@ export default function EurekaWeatherPage() {
               onScroll={handleScroll(i)}
               onOpenDetail={openDetail}
               onOpenList={openList}
+              isCollapsed={collapsedZones.has(z)}
+              onToggleCollapse={() => toggleZoneCollapse(z)}
             />
           ))}
         </div>

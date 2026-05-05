@@ -25,6 +25,8 @@ interface ZoneWeatherRowProps {
   onScroll?: (scrollLeft: number) => void;
   onOpenDetail?: (nmId: string) => void;
   onOpenList?: (zone: EurekaZone) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 const DEFAULT_FORECAST_COUNT = 48;
@@ -63,6 +65,8 @@ export default function ZoneWeatherRow({
   onScroll,
   onOpenDetail,
   onOpenList,
+  isCollapsed = false,
+  onToggleCollapse,
 }: ZoneWeatherRowProps) {
   const localRef = useRef<HTMLDivElement | null>(null);
 
@@ -167,12 +171,19 @@ export default function ZoneWeatherRow({
   return (
     <div className="border border-border rounded-lg p-3 bg-card">
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-sm font-semibold text-foreground">
+        <button
+          type="button"
+          aria-expanded={!isCollapsed}
+          aria-label={`${isCollapsed ? '展開' : '收合'} ${zoneNamesTw[zone]}`}
+          onClick={onToggleCollapse}
+          className="flex items-center gap-1.5 font-semibold text-sm text-foreground hover:text-primary transition-colors"
+        >
+          <span className="text-[10px] text-gray-400">{isCollapsed ? '▶' : '▼'}</span>
           {zoneNamesTw[zone]}
-          <span className="ml-2 text-xs font-normal text-amber-300/70">
+          <span className="ml-1 text-xs font-normal text-amber-300/70">
             · {getZoneLevelLabel(zone)}
           </span>
-        </span>
+        </button>
         {onOpenList && (
           <button
             type="button"
@@ -191,6 +202,7 @@ export default function ZoneWeatherRow({
           </span>
         )}
       </div>
+      {!isCollapsed && (
       <div
         ref={setRefs}
         onScroll={(e) => onScroll?.(e.currentTarget.scrollLeft)}
@@ -288,6 +300,7 @@ export default function ZoneWeatherRow({
           </button>
         )}
       </div>
+      )}
     </div>
   );
 }

@@ -109,4 +109,28 @@ describe('ChainStepper', () => {
     expect(screen.queryByText('常風之地')).toBeNull();
     expect(screen.queryByText('湧火之地')).toBeNull();
   });
+
+  it('calls onSelectStart (not onSelectTarget) when stage 1 clicked and chain not started', () => {
+    const onSelectTarget = vi.fn();
+    const onSelectStart = vi.fn();
+    render(
+      <ChainStepper
+        currentStage={null}
+        onSelectTarget={onSelectTarget}
+        onSelectStart={onSelectStart}
+      />
+    );
+    const buttons = screen.getAllByRole('button', { name: /stage/ });
+    fireEvent.click(buttons[0]!);
+    expect(onSelectStart).toHaveBeenCalledOnce();
+    expect(onSelectTarget).not.toHaveBeenCalled();
+  });
+
+  it('calls onSelectTarget for stage 1 when not started and onSelectStart is absent', () => {
+    const onSelectTarget = vi.fn();
+    render(<ChainStepper currentStage={null} onSelectTarget={onSelectTarget} />);
+    const buttons = screen.getAllByRole('button', { name: /stage/ });
+    fireEvent.click(buttons[0]!);
+    expect(onSelectTarget).toHaveBeenCalledWith('antiquated');
+  });
 });
