@@ -81,7 +81,7 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
           return (
             <div key={slot} className="flex items-center gap-[2px]">
               {slotIdx > 0 && (
-                <span className="text-gray-600 text-[9px] mx-0.5">,</span>
+                <span className="text-gray-600 text-[9px] mx-0.5">·</span>
               )}
               <ArmorDots
                 stages={elementalStages}

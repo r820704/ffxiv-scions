@@ -103,7 +103,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
           return (
             <div key={slot} className="flex items-center gap-[2px]">
               {slotIdx > 0 && (
-                <span className="text-gray-600 text-[9px] mx-0.5">,</span>
+                <span className="text-gray-600 text-[9px] mx-0.5">·</span>
               )}
               <ArmorDots
                 stages={ARMOR_STAGES_BY_TRACK.anemos}
