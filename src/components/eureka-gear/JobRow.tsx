@@ -91,7 +91,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
 
       {/* Anemos armor section */}
       <span className="text-[10px] font-bold text-green-400/90 bg-green-900/50 px-1.5 py-0.5 rounded shrink-0">
-        常風系列（外觀）
+        常風防具
       </span>
 
       {/* Mobile: compact 5×5 dot groups with zone separators */}

@@ -215,8 +215,8 @@ export const ARMOR_STAGES_BY_TRACK: Record<ArmorTrack, EurekaStage[]> = {
 };
 
 export const ARMOR_TRACK_LABEL: Record<ArmorTrack, string> = {
-  anemos: '常風系列（外觀）',
-  elemental: '元素系列（戰鬥）',
+  anemos: '常風防具',
+  elemental: '元素防具',
 };
 
 // ============ zone grouping ============

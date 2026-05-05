@@ -295,9 +295,9 @@ export function DetailTab({
         </button>
       </div>
 
-      {/* 常風系列 — per-job, no shared badge */}
+      {/* 常風防具 — per-job, no shared badge */}
       <ArmorTrackSection
-        title="常風系列（外觀專用、不影響戰力）"
+        title="常風防具"
         colorClass="text-green-400"
         slotColorClass="text-green-400/70"
         pieces={progress.anemos}
@@ -317,9 +317,9 @@ export function DetailTab({
         startHint="完成70級職業任務"
       />
 
-      {/* 元素系列 — per-role, shared badge */}
+      {/* 元素防具 — per-role, shared badge */}
       <ArmorTrackSection
-        title="元素系列（戰鬥用）"
+        title="元素防具"
         colorClass="text-cyan-400"
         slotColorClass="text-cyan-400/70"
         pieces={progress.elemental.pieces}

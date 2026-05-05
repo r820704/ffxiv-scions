@@ -69,7 +69,7 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
 
       {/* Line 2: elemental armor chip */}
       <span className="text-[10px] font-bold text-cyan-400/90 bg-cyan-950/40 px-1.5 py-0.5 rounded shrink-0">
-        元素系列（戰鬥）
+        元素防具
       </span>
 
       {/* Mobile: compact 5×3 dot groups with zone separators */}

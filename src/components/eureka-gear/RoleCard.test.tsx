@@ -120,7 +120,7 @@ describe('RoleCard', () => {
 
   it('shows elemental armor chip label', () => {
     render(<RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />);
-    expect(screen.getByText('元素系列（戰鬥）')).toBeInTheDocument();
+    expect(screen.getByText('元素防具')).toBeInTheDocument();
   });
 
   it('shows 0/3 count for all unstarted slots', () => {
