@@ -234,7 +234,7 @@ export function DetailTab({
                     onClearTarget={() => onSetTarget(ref, undefined)}
                     materialsMap={materialsMap}
                     showStartPanel={!isStarted && pendingStartChain === chainId}
-                    startHint="前置：需持有 70 級職業套裝（antiquated），可透過職業任務取得"
+                    startHint="完成70級職業任務"
                     onStartChain={!isStarted ? () => { onStartChain(ref); setPendingStartChain(null); } : undefined}
                   />
                 </div>
@@ -282,7 +282,7 @@ export function DetailTab({
         onStartChain={onStartChain}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
-        startHint="前置：需持有 70 級職業套裝（antiquated），可透過職業任務取得"
+        startHint="完成70級職業任務"
       />
 
       {/* 元素系列 — per-role, shared badge */}
