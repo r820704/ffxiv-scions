@@ -161,14 +161,18 @@ export function DetailTab({
 
             const isExpanded = weaponExpanded[chainId] ?? true;
 
+            const isPendingStart = !isStarted && pendingStartChain === chainId;
             const weaponHeader = (
               <div className="flex items-center flex-wrap gap-x-3 gap-y-0.5 text-sm">
                 <span className="text-gray-100 font-semibold flex items-center gap-1">
                   {slotLabel}
+                  {isStarted && currentInfo && (
+                    <span className="font-normal">{currentInfo.tcName}</span>
+                  )}
                   <span className="text-xs text-gray-400 font-normal">
                     {isStarted ? stageSuffix(currentInfo, p.currentStage) : '未開始'}
                   </span>
-                  {!isStarted && currentInfo && (
+                  {isPendingStart && currentInfo && (
                     <>
                       <span className="text-yellow-400">→</span>
                       <span className="text-yellow-200 text-xs">
@@ -179,6 +183,7 @@ export function DetailTab({
                   {isStarted && targetInfo && p.targetStage && p.targetStage !== p.currentStage && (
                     <>
                       <span className="text-yellow-400">→</span>
+                      <span className="text-yellow-200 font-normal">{targetInfo.tcName}</span>
                       <span className="text-yellow-200 text-xs">{stageSuffix(targetInfo, p.targetStage)}</span>
                     </>
                   )}
@@ -186,10 +191,13 @@ export function DetailTab({
                 {mirrorInfos.map((m) => (
                   <span key={m.chainId} className="text-gray-100 font-semibold flex items-center gap-1">
                     {m.chain.isShield ? '盾' : '主手'}
+                    {isStarted && m.current && (
+                      <span className="font-normal">{m.current.tcName}</span>
+                    )}
                     <span className="text-xs text-gray-400 font-normal">
                       {isStarted ? stageSuffix(m.current, p.currentStage) : '未開始'}
                     </span>
-                    {!isStarted && m.current && (
+                    {isPendingStart && m.current && (
                       <>
                         <span className="text-yellow-400">→</span>
                         <span className="text-yellow-200 text-xs">
@@ -200,6 +208,7 @@ export function DetailTab({
                     {isStarted && m.target && p.targetStage && p.targetStage !== p.currentStage && (
                       <>
                         <span className="text-yellow-400">→</span>
+                        <span className="text-yellow-200 font-normal">{m.target.tcName}</span>
                         <span className="text-yellow-200 text-xs">{stageSuffix(m.target, p.targetStage)}</span>
                       </>
                     )}
@@ -254,6 +263,7 @@ export function DetailTab({
                     showStartPanel={!isStarted && pendingStartChain === chainId}
                     startHint="完成70級職業任務"
                     onStartChain={!isStarted ? () => { onStartChain(ref); setPendingStartChain(null); } : undefined}
+                    onClearStart={!isStarted ? () => setPendingStartChain(null) : undefined}
                   />
                 </div>
               </AccordionItem>
@@ -432,6 +442,7 @@ function ArmorTrackSection({
             ? `（${STAGE_TC_LABEL[p.currentStage]}${currentIL != null ? ` · iL${currentIL}` : ''}）`
             : '（未開始）';
           const targetIL = p.targetStage ? itemLevels?.[p.targetStage] : undefined;
+          const isPendingStart = !isStarted && pendingStartSlot === slot;
           const header = (
             <div className="flex items-center text-sm text-gray-100 font-semibold">
               <span className="flex-1">
@@ -442,7 +453,7 @@ function ArmorTrackSection({
                 <span className="text-xs text-gray-400 font-normal ml-1">
                   {currentStageSuffix}
                 </span>
-                {!isStarted && currentItemName && (
+                {isPendingStart && currentItemName && (
                   <>
                     <span className="text-yellow-400 mx-2">→</span>
                     <span className="text-yellow-200">
@@ -521,6 +532,7 @@ function ArmorTrackSection({
                   showStartPanel={!isStarted && pendingStartSlot === slot}
                   startHint={startHint}
                   onStartChain={!isStarted ? () => { onStartChain?.(ref, stages[0] as EurekaStage); setPendingStartSlot(null); } : undefined}
+                  onClearStart={!isStarted ? () => setPendingStartSlot(null) : undefined}
                 />
               </div>
             </AccordionItem>

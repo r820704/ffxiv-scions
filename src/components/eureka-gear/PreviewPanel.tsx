@@ -24,6 +24,8 @@ export type PreviewPanelProps = {
   showStartPanel?: boolean;
   startHint?: string;
   onStartChain?: () => void;
+  /** Optional cancel callback for the start panel; renders a clear button when provided. */
+  onClearStart?: () => void;
 };
 
 export function PreviewPanel({
@@ -41,6 +43,7 @@ export function PreviewPanel({
   showStartPanel,
   startHint,
   onStartChain,
+  onClearStart,
 }: PreviewPanelProps) {
   const seq = stages ?? EUREKA_STAGES;
   const currentIdx = seq.indexOf(currentStage);
@@ -107,6 +110,15 @@ export function PreviewPanel({
             >
               ⬆ 📍 設為目前階段 ({stageName})
             </button>
+            {onClearStart && (
+              <button
+                type="button"
+                onClick={onClearStart}
+                className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
+              >
+                清除
+              </button>
+            )}
           </div>
         </div>
       );

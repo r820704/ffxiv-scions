@@ -31,7 +31,7 @@ export function AccordionItem({
         onClick={onToggle}
         aria-expanded={expanded}
         aria-controls={bodyId}
-        className="w-full flex items-center gap-2 hover:bg-gray-700/50 transition-colors p-1 rounded text-left"
+        className="w-full flex items-center gap-2 hover:bg-gray-700/50 transition-colors p-1 rounded text-left select-text"
       >
         <span className="text-gray-400 text-xs flex-shrink-0" aria-hidden="true">
           {expanded ? '▼' : '▶'}
