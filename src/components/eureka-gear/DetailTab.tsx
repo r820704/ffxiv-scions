@@ -165,7 +165,7 @@ export function DetailTab({
             const weaponHeader = (
               <div className="flex items-center flex-wrap gap-x-3 gap-y-0.5 text-sm">
                 <span className="text-gray-100 font-semibold flex items-center gap-1">
-                  {slotLabel}
+                  <span className="text-yellow-400/70">{slotLabel}</span>
                   {isStarted && currentInfo && (
                     <span className="font-normal">{currentInfo.tcName}</span>
                   )}
@@ -175,8 +175,9 @@ export function DetailTab({
                   {isPendingStart && currentInfo && (
                     <>
                       <span className="text-yellow-400">→</span>
-                      <span className="text-yellow-200 text-xs">
-                        {currentInfo.tcName}（{STAGE_TC_LABEL[p.currentStage]}）
+                      <span className="text-yellow-200">{currentInfo.tcName}</span>
+                      <span className="text-xs text-gray-400 font-normal">
+                        （{STAGE_TC_LABEL[p.currentStage]}）
                       </span>
                     </>
                   )}
@@ -184,13 +185,13 @@ export function DetailTab({
                     <>
                       <span className="text-yellow-400">→</span>
                       <span className="text-yellow-200 font-normal">{targetInfo.tcName}</span>
-                      <span className="text-yellow-200 text-xs">{stageSuffix(targetInfo, p.targetStage)}</span>
+                      <span className="text-xs text-gray-400 font-normal">{stageSuffix(targetInfo, p.targetStage)}</span>
                     </>
                   )}
                 </span>
                 {mirrorInfos.map((m) => (
                   <span key={m.chainId} className="text-gray-100 font-semibold flex items-center gap-1">
-                    {m.chain.isShield ? '盾' : '主手'}
+                    <span className="text-yellow-400/70">{m.chain.isShield ? '盾' : '主手'}</span>
                     {isStarted && m.current && (
                       <span className="font-normal">{m.current.tcName}</span>
                     )}
@@ -200,8 +201,9 @@ export function DetailTab({
                     {isPendingStart && m.current && (
                       <>
                         <span className="text-yellow-400">→</span>
-                        <span className="text-yellow-200 text-xs">
-                          {m.current.tcName}（{STAGE_TC_LABEL[p.currentStage]}）
+                        <span className="text-yellow-200">{m.current.tcName}</span>
+                        <span className="text-xs text-gray-400 font-normal">
+                          （{STAGE_TC_LABEL[p.currentStage]}）
                         </span>
                       </>
                     )}
@@ -209,7 +211,7 @@ export function DetailTab({
                       <>
                         <span className="text-yellow-400">→</span>
                         <span className="text-yellow-200 font-normal">{m.target.tcName}</span>
-                        <span className="text-yellow-200 text-xs">{stageSuffix(m.target, p.targetStage)}</span>
+                        <span className="text-xs text-gray-400 font-normal">{stageSuffix(m.target, p.targetStage)}</span>
                       </>
                     )}
                   </span>
@@ -297,6 +299,7 @@ export function DetailTab({
       <ArmorTrackSection
         title="常風系列（外觀專用、不影響戰力）"
         colorClass="text-green-400"
+        slotColorClass="text-green-400/70"
         pieces={progress.anemos}
         stages={ARMOR_STAGES_BY_TRACK.anemos}
         costs={ANEMOS_ARMOR_COSTS}
@@ -318,6 +321,7 @@ export function DetailTab({
       <ArmorTrackSection
         title="元素系列（戰鬥用）"
         colorClass="text-cyan-400"
+        slotColorClass="text-cyan-400/70"
         pieces={progress.elemental.pieces}
         stages={ARMOR_STAGES_BY_TRACK.elemental}
         costs={ELEMENTAL_ARMOR_COSTS}
@@ -376,6 +380,7 @@ export function DetailTab({
 type ArmorTrackSectionProps = {
   title: string;
   colorClass: string;
+  slotColorClass: string;
   pieces: Partial<Record<ArmorSlot, { currentStage: EurekaStage; targetStage?: EurekaStage }>>;
   stages: EurekaStage[];
   costs: typeof ANEMOS_ARMOR_COSTS;
@@ -395,7 +400,7 @@ type ArmorTrackSectionProps = {
 };
 
 function ArmorTrackSection({
-  title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader,
+  title, colorClass, slotColorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader,
   materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onRequestReset, globalExpand, startHint,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
@@ -447,7 +452,7 @@ function ArmorTrackSection({
           const header = (
             <div className="flex items-center text-sm text-gray-100 font-semibold">
               <span className="flex-1">
-                {SLOT_TC[slot]}
+                <span className={slotColorClass}>{SLOT_TC[slot]}</span>
                 {isStarted && currentLabel && (
                   <span className="font-normal ml-2">{currentLabel}</span>
                 )}
