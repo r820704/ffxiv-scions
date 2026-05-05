@@ -66,8 +66,12 @@ export function PreviewPanel({
 
   if (direction === 'none') {
     if (showStartPanel && onStartChain) {
+      const stageName = currentLabel ?? STAGE_TC_LABEL[currentStage];
       return (
         <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
+          <div className="text-yellow-400 font-semibold mb-2">
+            從 起點 → {stageName} 需要
+          </div>
           {startHint && <p className="text-gray-400 mb-3">{startHint}</p>}
           <div className="flex gap-2">
             <button
@@ -75,7 +79,7 @@ export function PreviewPanel({
               onClick={onStartChain}
               className="px-3 py-1.5 rounded font-bold text-sm bg-green-500 text-black"
             >
-              ⬆ 📍 設為目前階段 ({currentLabel ?? STAGE_TC_LABEL[currentStage]})
+              ⬆ 📍 設為目前階段 ({stageName})
             </button>
           </div>
         </div>
