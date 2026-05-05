@@ -97,8 +97,8 @@ export default function EurekaGearPage() {
     if (outcome) showUpgradeToast(outcome);
   };
 
-  const handleStartChain = (ref: ChainRef) => {
-    setCurrent(ref, 'antiquated');
+  const handleStartChain = (ref: ChainRef, stage: EurekaStage = 'antiquated') => {
+    setCurrent(ref, stage);
   };
 
   const handleRequestUpgrade = (ref: ChainRef) => {

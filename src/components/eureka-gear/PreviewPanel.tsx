@@ -20,8 +20,8 @@ export type PreviewPanelProps = {
   /** Optional display name overrides (falls back to STAGE_TC_LABEL) */
   currentLabel?: string;
   targetLabel?: string;
-  /** When the chain is not yet started and no target is set, show prerequisite hint + confirm button. */
-  isStarted?: boolean;
+  /** When true, show prerequisite hint + confirm button instead of the default placeholder. */
+  showStartPanel?: boolean;
   startHint?: string;
   onStartChain?: () => void;
 };
@@ -38,7 +38,7 @@ export function PreviewPanel({
   slot,
   currentLabel,
   targetLabel,
-  isStarted,
+  showStartPanel,
   startHint,
   onStartChain,
 }: PreviewPanelProps) {
@@ -65,19 +65,17 @@ export function PreviewPanel({
   );
 
   if (direction === 'none') {
-    if (!isStarted && startHint) {
+    if (showStartPanel && onStartChain) {
       return (
         <div className="p-3 rounded border border-dashed border-gray-700 text-sm space-y-3">
-          <p className="text-gray-400">{startHint}</p>
-          {onStartChain && (
-            <button
-              type="button"
-              onClick={onStartChain}
-              className="px-3 py-1.5 rounded bg-green-700 text-white text-sm hover:bg-green-600"
-            >
-              確認已持有，標記為已開始
-            </button>
-          )}
+          {startHint && <p className="text-gray-400">{startHint}</p>}
+          <button
+            type="button"
+            onClick={onStartChain}
+            className="px-3 py-1.5 rounded bg-green-700 text-white text-sm hover:bg-green-600"
+          >
+            確認已持有，標記為已開始
+          </button>
         </div>
       );
     }

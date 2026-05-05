@@ -43,9 +43,13 @@ describe('DetailTab', () => {
 
   it('clicking a stepper node fires onSetTarget', () => {
     const onSetTarget = vi.fn();
+    const inv = {
+      ...emptyInventoryV3(),
+      weapons: { 'pld-galatyn': { currentStage: 'antiquated' as const } },
+    };
     render(
       <DetailTab
-        inventory={emptyInventoryV3()}
+        inventory={inv}
         selectedJob="PLD"
         weapons={[]}
         materialsMap={{}}
@@ -160,8 +164,9 @@ describe('DetailTab', () => {
     });
   });
 
-  it('clicking stage 1 button when chain not started calls onStartChain directly', () => {
+  it('clicking stage 1 button when chain not started shows prereq panel (does not call onSetTarget)', () => {
     const onStartChain = vi.fn();
+    const onSetTarget = vi.fn();
     render(
       <DetailTab
         inventory={emptyInventoryV3()}
@@ -169,19 +174,22 @@ describe('DetailTab', () => {
         weapons={[]}
         materialsMap={{}}
         onSelectJob={() => {}}
-        onSetTarget={() => {}}
+        onSetTarget={onSetTarget}
         onRequestUpgrade={() => {}}
         onStartChain={onStartChain}
       />,
     );
     const stageButtons = screen.getAllByRole('button', { name: /stage 1/ });
     fireEvent.click(stageButtons[0]!);
-    expect(onStartChain).toHaveBeenCalled();
-    expect(screen.queryByText('標記為已開始')).toBeNull();
+    // Circle 1 click on unstarted chain shows prereq panel; inventory must not be touched
+    expect(onSetTarget).not.toHaveBeenCalled();
+    expect(onStartChain).not.toHaveBeenCalled();
+    expect(screen.getByText('確認已持有，標記為已開始')).toBeInTheDocument();
   });
 
-  it('clicking armor stage 1 when slot not started calls onStartChain directly (no dialog)', () => {
+  it('clicking armor stage 1 when slot not started shows prereq panel (does not call onSetTarget)', () => {
     const onStartChain = vi.fn();
+    const onSetTarget = vi.fn();
     render(
       <DetailTab
         inventory={emptyInventoryV3()}
@@ -189,7 +197,7 @@ describe('DetailTab', () => {
         weapons={[]}
         materialsMap={{}}
         onSelectJob={() => {}}
-        onSetTarget={() => {}}
+        onSetTarget={onSetTarget}
         onRequestUpgrade={() => {}}
         onStartChain={onStartChain}
       />,
@@ -197,8 +205,10 @@ describe('DetailTab', () => {
     const allStage1Buttons = screen.getAllByRole('button', { name: /^stage 1:/ });
     const armorStage1 = allStage1Buttons[allStage1Buttons.length - 1]!;
     fireEvent.click(armorStage1);
-    expect(onStartChain).toHaveBeenCalled();
-    expect(screen.queryByText('標記為已開始')).toBeNull();
+    // Circle 1 click on unstarted armor slot shows prereq panel; inventory must not be touched
+    expect(onSetTarget).not.toHaveBeenCalled();
+    expect(onStartChain).not.toHaveBeenCalled();
+    expect(screen.getAllByText('確認已持有，標記為已開始').length).toBeGreaterThan(0);
   });
 
   it('全展開 button expands all armor slot accordions', () => {

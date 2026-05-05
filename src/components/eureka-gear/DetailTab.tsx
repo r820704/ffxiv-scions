@@ -64,7 +64,7 @@ export type DetailTabProps = {
   onSelectJob: (job: string) => void;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
-  onStartChain: (ref: ChainRef) => void;
+  onStartChain: (ref: ChainRef, stage?: EurekaStage) => void;
   onClearChain?: (ref: ChainRef) => void;
 };
 
@@ -110,8 +110,9 @@ export function DetailTab({
   const [globalArmorExpand, setGlobalArmorExpand] = useState<{ rev: number; expand: boolean } | null>(null);
   const [resetDialogRef, setResetDialogRef] = useState<{ ref: ChainRef; label: string } | null>(null);
   const [weaponExpanded, setWeaponExpanded] = useState<Record<string, boolean>>({});
+  const [pendingStartChain, setPendingStartChain] = useState<string | null>(null);
 
-  useEffect(() => { setWeaponExpanded({}); }, [selectedJob]);
+  useEffect(() => { setWeaponExpanded({}); setPendingStartChain(null); }, [selectedJob]);
 
   const primaryChains = progress.weapons.filter(({ chainId }) => {
     const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
@@ -206,8 +207,10 @@ export function DetailTab({
                   <ChainStepper
                     currentStage={stepperCurrent}
                     targetStage={p.targetStage}
-                    onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
-                    onSelectStart={!isStarted ? () => onStartChain(ref) : undefined}
+                    onSelectTarget={isStarted
+                      ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
+                      : () => {}}
+                    onSelectStart={!isStarted ? () => setPendingStartChain((prev) => prev === chainId ? null : chainId) : undefined}
                   />
                   <StageListPanel
                     stages={EUREKA_STAGES}
@@ -215,7 +218,7 @@ export function DetailTab({
                     targetStage={p.targetStage}
                     itemLevels={STAGE_ITEM_LEVELS}
                     getItemName={(stage) => weaponInfoAt(weapons, chainId, stage)?.tcName}
-                    onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
+                    onSelectTarget={isStarted ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage) : () => {}}
                   />
                   <PreviewPanel
                     currentStage={p.currentStage}
@@ -224,9 +227,9 @@ export function DetailTab({
                     onSetCurrent={() => onRequestUpgrade(ref)}
                     onClearTarget={() => onSetTarget(ref, undefined)}
                     materialsMap={materialsMap}
-                    isStarted={isStarted}
+                    showStartPanel={!isStarted && pendingStartChain === chainId}
                     startHint="前置：需持有 70 級職業套裝（antiquated），可透過職業任務取得"
-                    onStartChain={!isStarted ? () => onStartChain(ref) : undefined}
+                    onStartChain={!isStarted ? () => { onStartChain(ref); setPendingStartChain(null); } : undefined}
                   />
                 </div>
               </AccordionItem>
@@ -349,7 +352,7 @@ type ArmorTrackSectionProps = {
   materialsMap: Record<number, { nameTC: string; icon: number }>;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
-  onStartChain?: (ref: ChainRef) => void;
+  onStartChain?: (ref: ChainRef, stage?: EurekaStage) => void;
   onRequestReset?: (ref: ChainRef, label: string) => void;
   globalExpand?: { rev: number; expand: boolean } | null;
   startHint?: string;
@@ -363,6 +366,7 @@ function ArmorTrackSection({
     head: true, body: false, hands: false, legs: false, feet: false,
   });
   const [sectionExpanded, setSectionExpanded] = useState(true);
+  const [pendingStartSlot, setPendingStartSlot] = useState<ArmorSlot | null>(null);
 
   useEffect(() => {
     if (globalExpand == null) return;
@@ -389,7 +393,8 @@ function ArmorTrackSection({
         {ARMOR_SLOTS.map((slot) => {
           const slotData = pieces[slot];
           const isStarted = slotData !== undefined;
-          const p = slotData ?? { currentStage: 'antiquated' as const };
+          const p: { currentStage: EurekaStage; targetStage?: EurekaStage } =
+            slotData ?? { currentStage: stages[0] as EurekaStage };
           const stepperCurrent = isStarted ? p.currentStage : null;
           const ref = makeRef(slot);
           const currentLabel = isStarted
@@ -453,10 +458,10 @@ function ArmorTrackSection({
                   targetStage={p.targetStage}
                   stages={stages}
                   zoneGroups={zoneGroups}
-                  onSelectTarget={(stage) =>
-                    onSetTarget(ref, stage === p.currentStage ? undefined : stage)
-                  }
-                  onSelectStart={!isStarted ? () => onStartChain?.(ref) : undefined}
+                  onSelectTarget={isStarted
+                    ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
+                    : () => {}}
+                  onSelectStart={!isStarted ? () => setPendingStartSlot((prev) => prev === slot ? null : slot) : undefined}
                 />
                 <StageListPanel
                   stages={stages}
@@ -464,7 +469,7 @@ function ArmorTrackSection({
                   targetStage={p.targetStage}
                   itemLevels={itemLevels}
                   getItemName={(stage) => getItemName?.(slot, stage)}
-                  onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
+                  onSelectTarget={isStarted ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage) : () => {}}
                 />
                 <PreviewPanel
                   currentStage={p.currentStage}
@@ -478,9 +483,9 @@ function ArmorTrackSection({
                   slot={slot}
                   currentLabel={currentLabel}
                   targetLabel={targetLabel}
-                  isStarted={isStarted}
+                  showStartPanel={!isStarted && pendingStartSlot === slot}
                   startHint={startHint}
-                  onStartChain={!isStarted ? () => onStartChain?.(ref) : undefined}
+                  onStartChain={!isStarted ? () => { onStartChain?.(ref, stages[0] as EurekaStage); setPendingStartSlot(null); } : undefined}
                 />
               </div>
             </AccordionItem>
