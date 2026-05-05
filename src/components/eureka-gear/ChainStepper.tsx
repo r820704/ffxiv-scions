@@ -17,6 +17,8 @@ export type ChainStepperProps = {
   onSelectTarget: (stage: EurekaStage) => void;
   /** Called instead of onSelectTarget when stage 1 is clicked and chain is not started. */
   onSelectStart?: () => void;
+  /** When true and chain is not started, render stage 1 with the target-style ring. */
+  pendingStartActive?: boolean;
   /** Optional stage sequence for armor tracks (shorter than EUREKA_STAGES). */
   stages?: readonly EurekaStage[];
   /** When provided, render zone group labels (for armor tracks). */
@@ -27,11 +29,13 @@ function stageState(
   i: number,
   currentIdx: number,
   targetIdx: number | null,
+  pendingStartActive: boolean,
 ): 'owned' | 'current' | 'target' | 'unowned' | 'not-started' {
   // currentIdx === -1 means currentStage is null → entire stepper is "not started";
   // only the explicit target (if any) breaks out of the gray treatment.
   if (currentIdx < 0) {
     if (targetIdx !== null && i === targetIdx) return 'target';
+    if (pendingStartActive && i === 0) return 'target';
     return 'not-started';
   }
   if (i === currentIdx) return 'current';
@@ -84,7 +88,7 @@ function groupByZone(seq: readonly EurekaStage[]): ZoneGroup[] {
   return groups;
 }
 
-export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSelectStart, stages, zoneGroups }: ChainStepperProps) {
+export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSelectStart, pendingStartActive, stages, zoneGroups }: ChainStepperProps) {
   const seq = stages ?? EUREKA_STAGES;
   // currentStage === null → currentIdx -1, which stageState reads as "not started".
   const currentIdx = currentStage ? seq.indexOf(currentStage) : -1;
@@ -92,7 +96,7 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
   const showZoneGroups = seq === EUREKA_STAGES || zoneGroups !== undefined;
 
   const renderButton = (stage: EurekaStage, i: number) => {
-    const state = stageState(i, currentIdx, targetIdx);
+    const state = stageState(i, currentIdx, targetIdx, pendingStartActive ?? false);
     const isFirstNotStarted = i === 0 && currentIdx < 0;
     return (
       <button
