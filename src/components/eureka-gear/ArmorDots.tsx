@@ -6,13 +6,15 @@ export type ArmorDotsProps = {
   currentStage: EurekaStage;
   started: boolean;
   colorFilled: string;
+  /** Stages that get amber highlight when filled (weapon glow milestones). */
+  glowStages?: ReadonlySet<EurekaStage>;
 };
 
 /**
  * Renders a row of small dots (1 per stage) grouped by zone, with a thin
  * vertical separator between zone groups.
  */
-export function ArmorDots({ stages, zoneGroups, currentStage, started, colorFilled }: ArmorDotsProps) {
+export function ArmorDots({ stages, zoneGroups, currentStage, started, colorFilled, glowStages }: ArmorDotsProps) {
   const currentIdx = stages.indexOf(currentStage);
   return (
     <div className="flex items-center gap-[2px]">
@@ -24,10 +26,11 @@ export function ArmorDots({ stages, zoneGroups, currentStage, started, colorFill
           {group.stages.map((s) => {
             const idx = stages.indexOf(s);
             const filled = started && idx <= currentIdx;
+            const glow = filled && glowStages?.has(s);
             return (
               <span
                 key={s}
-                className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${filled ? colorFilled : 'bg-gray-600'}`}
+                className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${filled ? (glow ? 'bg-amber-400' : colorFilled) : 'bg-gray-600'}`}
               />
             );
           })}

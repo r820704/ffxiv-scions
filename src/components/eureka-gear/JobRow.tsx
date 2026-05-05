@@ -4,18 +4,18 @@ import {
   ARMOR_STAGES_BY_TRACK,
   ANEMOS_ARMOR_STAGES,
   ANEMOS_ARMOR_ZONE_GROUPS,
+  WEAPON_ZONE_GROUPS,
   type EurekaStage,
   type EurekaWeapon,
 } from '../../types/eureka-gear';
 import { ArmorDots } from './ArmorDots';
+import { EUREKA_CHAINS } from '../../data/eureka-chains';
+import { JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
+import type { JobProgress } from '../../utils/eurekaGear';
 
 const WEAPON_GLOW_STAGES = new Set<EurekaStage>([
   'anemos', 'elemental', 'pyros', 'eureka', 'physeos',
 ]);
-import { EUREKA_CHAINS } from '../../data/eureka-chains';
-import { JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
-import type { JobProgress } from '../../utils/eurekaGear';
-import { ChainFingerprint } from './ChainFingerprint';
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,
@@ -70,11 +70,14 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
         return (
           <div key={chainId} className="flex items-center gap-1 text-xs shrink-0">
             <span className="text-yellow-400/40 text-[10px]">{slotLabel}</span>
-            {started ? (
-              <ChainFingerprint currentStage={p.currentStage} glowStages={WEAPON_GLOW_STAGES} showZoneSeparators />
-            ) : (
-              <ChainFingerprint currentStage="antiquated" allEmpty showZoneSeparators />
-            )}
+            <ArmorDots
+              stages={EUREKA_STAGES}
+              zoneGroups={WEAPON_ZONE_GROUPS}
+              currentStage={p.currentStage}
+              started={started}
+              colorFilled="bg-green-400"
+              glowStages={WEAPON_GLOW_STAGES}
+            />
             <span className={`tabular-nums shrink-0 ${done ? 'text-green-400' : 'text-gray-400'}`}>
               {started ? filled : 0}<span className="text-gray-600">/{EUREKA_STAGES.length}</span>
             </span>
