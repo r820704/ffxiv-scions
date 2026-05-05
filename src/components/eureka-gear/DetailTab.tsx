@@ -218,6 +218,7 @@ export function DetailTab({
                 <ChainStepper
                   currentStage={stepperCurrent}
                   targetStage={p.targetStage}
+                  startHint="前置：需持有 70 級職業套裝（antiquated），可透過職業任務取得"
                   onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
                   onSelectStart={!isStarted ? () => setStartDialogRef(ref) : undefined}
                 />
@@ -281,6 +282,7 @@ export function DetailTab({
         onStartChain={(ref) => setStartDialogRef(ref)}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
+        startHint="前置：需持有 70 級職業套裝（antiquated），可透過職業任務取得"
       />
 
       {/* 元素系列 — per-role, shared badge */}
@@ -368,11 +370,12 @@ type ArmorTrackSectionProps = {
   onStartChain?: (ref: ChainRef) => void;
   onRequestReset?: (ref: ChainRef, label: string) => void;
   globalExpand?: boolean | null;
+  startHint?: string;
 };
 
 function ArmorTrackSection({
   title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader,
-  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onRequestReset, globalExpand,
+  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onRequestReset, globalExpand, startHint,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
     head: true, body: false, hands: false, legs: false, feet: false,
@@ -467,6 +470,7 @@ function ArmorTrackSection({
                   targetStage={p.targetStage}
                   stages={stages}
                   zoneGroups={zoneGroups}
+                  startHint={startHint}
                   onSelectTarget={(stage) =>
                     onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                   }

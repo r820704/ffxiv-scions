@@ -1,8 +1,8 @@
-import { ChainFingerprint } from './ChainFingerprint';
 import { Tooltip } from '../ui/Tooltip';
 import { JOBS_FOR_ARMOR_SET, JOB_TC_NAME, type AnyJobId } from '../../data/eureka-armor-sets';
 import type { ArmorSetId, ArmorSlot, EurekaStage, SlotProgress } from '../../types/eureka-gear';
-import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK } from '../../types/eureka-gear';
+import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK, ELEMENTAL_ARMOR_ZONE_GROUPS } from '../../types/eureka-gear';
+import { ArmorDots } from './ArmorDots';
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,
@@ -72,45 +72,46 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
         元素系列（戰鬥）
       </span>
 
-      {/* Mobile: compact 5×4 dot groups */}
-      <div className="flex sm:hidden gap-[4px] items-center shrink-0">
-        {ARMOR_SLOTS.map((slot) => {
+      {/* Mobile: compact 5×3 dot groups with zone separators */}
+      <div className="flex sm:hidden gap-[2px] items-center shrink-0 flex-wrap">
+        {ARMOR_SLOTS.map((slot, slotIdx) => {
           const p = pieces[slot];
-          const stage: EurekaStage = p?.currentStage ?? 'antiquated';
+          const stage: EurekaStage = p?.currentStage ?? 'elemental';
           const started = p !== undefined;
-          const idx = elementalStages.indexOf(stage);
           return (
-            <div key={slot} className="flex gap-[2px] items-center">
-              {elementalStages.map((s, i) => (
-                <span
-                  key={s}
-                  className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${started && i <= idx ? 'bg-cyan-400' : 'bg-gray-600'}`}
-                />
-              ))}
+            <div key={slot} className="flex items-center gap-[2px]">
+              {slotIdx > 0 && (
+                <span className="text-gray-600 text-[9px] mx-0.5">,</span>
+              )}
+              <ArmorDots
+                stages={elementalStages}
+                zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
+                currentStage={stage}
+                started={started}
+                colorFilled="bg-cyan-400"
+              />
             </div>
           );
         })}
       </div>
 
-      {/* Desktop: per-slot with label, dots, count */}
+      {/* Desktop: per-slot with label, zone-separated dots, count */}
       {ARMOR_SLOTS.map((slot) => {
         const p = pieces[slot];
-        const stage: EurekaStage = p?.currentStage ?? 'antiquated';
+        const stage: EurekaStage = p?.currentStage ?? 'elemental';
         const started = p !== undefined;
         const filled = elementalStages.indexOf(stage) + 1;
         const done = stage === lastStage;
         return (
           <div key={slot} className="hidden sm:flex items-center gap-1 text-xs shrink-0">
             <span className="text-cyan-400/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
-            {started ? (
-              <ChainFingerprint currentStage={stage} stages={elementalStages} />
-            ) : (
-              <div className="flex gap-[2px] items-center">
-                {elementalStages.map((s) => (
-                  <span key={s} className="inline-block w-1.5 h-1.5 rounded-full shrink-0 bg-gray-600" />
-                ))}
-              </div>
-            )}
+            <ArmorDots
+              stages={elementalStages}
+              zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
+              currentStage={stage}
+              started={started}
+              colorFilled="bg-cyan-400"
+            />
             <span className={`tabular-nums shrink-0 ${done ? 'text-green-400' : 'text-gray-400'}`}>
               {started ? filled : 0}<span className="text-gray-600">/{elementalStages.length}</span>
             </span>
