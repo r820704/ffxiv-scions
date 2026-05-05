@@ -181,6 +181,12 @@ export function DetailTab({
                     <span className="text-xs text-gray-400 font-normal">
                       {isStarted ? stageSuffix(m.current, p.currentStage) : '未開始'}
                     </span>
+                    {isStarted && m.target && p.targetStage && p.targetStage !== p.currentStage && (
+                      <>
+                        <span className="text-yellow-400">→</span>
+                        <span className="text-yellow-200 text-xs">{stageSuffix(m.target, p.targetStage)}</span>
+                      </>
+                    )}
                   </span>
                 ))}
                 {isStarted && (
