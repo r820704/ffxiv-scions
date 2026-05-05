@@ -14,26 +14,26 @@ const materialsMap = {
 
 describe('FarmingTab', () => {
   it('shows empty message when no chains have target', () => {
-    render(<FarmingTab inventory={emptyInventoryV3()} materialsMap={materialsMap} />);
+    render(<FarmingTab inventory={emptyInventoryV3()} weapons={[]} materialsMap={materialsMap} />);
     expect(screen.getByText(/沒有設定 target/)).toBeInTheDocument();
   });
 
   it('aggregates by zone when chains have targets', () => {
     const inv: EurekaInventoryV5 = emptyInventoryV3();
     inv.weapons['pld-galatyn'] = { currentStage: 'pyros', targetStage: 'hydatos' };
-    render(<FarmingTab inventory={inv} materialsMap={materialsMap} />);
+    render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
     expect(screen.getByText(/豐水之地/)).toBeInTheDocument();
   });
 
   it('renders the expand-all toggle (default off)', () => {
-    render(<FarmingTab inventory={emptyInventoryV3()} materialsMap={materialsMap} />);
+    render(<FarmingTab inventory={emptyInventoryV3()} weapons={[]} materialsMap={materialsMap} />);
     const checkbox = screen.getByRole('checkbox', { name: /計算完整路徑至終點/ });
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
   });
 
   it('toggling the checkbox flips its checked state', () => {
-    render(<FarmingTab inventory={emptyInventoryV3()} materialsMap={materialsMap} />);
+    render(<FarmingTab inventory={emptyInventoryV3()} weapons={[]} materialsMap={materialsMap} />);
     const checkbox = screen.getByRole('checkbox', { name: /計算完整路徑至終點/ }) as HTMLInputElement;
     fireEvent.click(checkbox);
     expect(checkbox.checked).toBe(true);
@@ -45,7 +45,7 @@ describe('FarmingTab', () => {
     const inv: EurekaInventoryV5 = emptyInventoryV3();
     // Weapon at pyros with no target — default would skip; expandAll should walk to physeos.
     inv.weapons['pld-galatyn'] = { currentStage: 'pyros' };
-    render(<FarmingTab inventory={inv} materialsMap={materialsMap} />);
+    render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
     // Default state: empty message visible
     expect(screen.getByText(/沒有設定 target/)).toBeInTheDocument();
 
@@ -60,7 +60,7 @@ describe('FarmingTab', () => {
   it('with expandAll on, weapon already at physeos contributes nothing', () => {
     const inv: EurekaInventoryV5 = emptyInventoryV3();
     inv.weapons['pld-galatyn'] = { currentStage: 'physeos' };
-    render(<FarmingTab inventory={inv} materialsMap={materialsMap} />);
+    render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
     const checkbox = screen.getByRole('checkbox', { name: /計算完整路徑至終點/ });
     fireEvent.click(checkbox);
     // No further materials — empty state should be shown with expandAll message.

@@ -27,10 +27,10 @@ export function StageListPanel({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="text-xs text-gray-500 hover:text-gray-300 flex items-center gap-1 mt-1 transition-colors"
+        className="text-sm text-gray-300 hover:text-gray-100 border border-gray-700 hover:border-gray-500 rounded px-3 py-1.5 inline-flex items-center gap-2 mt-1 transition-colors"
         aria-expanded={open}
       >
-        <span>{open ? '▲' : '▼'}</span>
+        <span className="text-gray-500">{open ? '▲' : '▼'}</span>
         <span>{open ? '收合階段列表' : '展開階段列表'}</span>
       </button>
 

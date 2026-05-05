@@ -38,7 +38,8 @@ export default function EurekaGearPage() {
     setCurrent,
     setTarget,
     performUpgrade,
-    clearAll,
+    clearMaterials,
+    clearAllProgress,
     clearChain,
   } = useEurekaInventory();
 
@@ -174,6 +175,7 @@ export default function EurekaGearPage() {
               onSelectJob={selectJob}
               role={overviewRole}
               onRoleChange={setOverviewRole}
+              onResetAllProgress={clearAllProgress}
             />
           )}
           {view === 'detail' && (
@@ -190,7 +192,11 @@ export default function EurekaGearPage() {
             />
           )}
           {view === 'farming' && (
-            <FarmingTab inventory={inventory} materialsMap={materialsMap} />
+            <FarmingTab
+              inventory={inventory}
+              weapons={weaponsList}
+              materialsMap={materialsMap}
+            />
           )}
         </main>
         <aside>
@@ -198,7 +204,7 @@ export default function EurekaGearPage() {
             materials={materialsList}
             inventory={inventory.materials}
             onMaterialChange={setMaterial}
-            onClear={clearAll}
+            onClear={clearMaterials}
           />
         </aside>
       </div>
