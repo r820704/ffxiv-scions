@@ -168,6 +168,14 @@ export function DetailTab({
                   <span className="text-xs text-gray-400 font-normal">
                     {isStarted ? stageSuffix(currentInfo, p.currentStage) : '未開始'}
                   </span>
+                  {!isStarted && currentInfo && (
+                    <>
+                      <span className="text-yellow-400">→</span>
+                      <span className="text-yellow-200 text-xs">
+                        {currentInfo.tcName}（{STAGE_TC_LABEL[p.currentStage]}）
+                      </span>
+                    </>
+                  )}
                   {isStarted && targetInfo && p.targetStage && p.targetStage !== p.currentStage && (
                     <>
                       <span className="text-yellow-400">→</span>
@@ -181,6 +189,14 @@ export function DetailTab({
                     <span className="text-xs text-gray-400 font-normal">
                       {isStarted ? stageSuffix(m.current, p.currentStage) : '未開始'}
                     </span>
+                    {!isStarted && m.current && (
+                      <>
+                        <span className="text-yellow-400">→</span>
+                        <span className="text-yellow-200 text-xs">
+                          {m.current.tcName}（{STAGE_TC_LABEL[p.currentStage]}）
+                        </span>
+                      </>
+                    )}
                     {isStarted && m.target && p.targetStage && p.targetStage !== p.currentStage && (
                       <>
                         <span className="text-yellow-400">→</span>
@@ -233,6 +249,8 @@ export function DetailTab({
                     onSetCurrent={() => onRequestUpgrade(ref)}
                     onClearTarget={() => onSetTarget(ref, undefined)}
                     materialsMap={materialsMap}
+                    currentLabel={currentInfo?.tcName}
+                    targetLabel={targetInfo?.tcName}
                     showStartPanel={!isStarted && pendingStartChain === chainId}
                     startHint="完成70級職業任務"
                     onStartChain={!isStarted ? () => { onStartChain(ref); setPendingStartChain(null); } : undefined}
@@ -404,9 +422,8 @@ function ArmorTrackSection({
             slotData ?? { currentStage: stages[0] as EurekaStage };
           const stepperCurrent = isStarted ? p.currentStage : null;
           const ref = makeRef(slot);
-          const currentLabel = isStarted
-            ? (getItemName?.(slot, p.currentStage) ?? STAGE_TC_LABEL[p.currentStage])
-            : undefined;
+          const currentItemName = getItemName?.(slot, p.currentStage);
+          const currentLabel = currentItemName ?? STAGE_TC_LABEL[p.currentStage];
           const targetLabel = p.targetStage
             ? (getItemName?.(slot, p.targetStage) ?? STAGE_TC_LABEL[p.targetStage])
             : undefined;
@@ -425,6 +442,17 @@ function ArmorTrackSection({
                 <span className="text-xs text-gray-400 font-normal ml-1">
                   {currentStageSuffix}
                 </span>
+                {!isStarted && currentItemName && (
+                  <>
+                    <span className="text-yellow-400 mx-2">→</span>
+                    <span className="text-yellow-200">
+                      {currentItemName}
+                      <span className="text-xs text-gray-400 font-normal ml-1">
+                        {`（${STAGE_TC_LABEL[p.currentStage]}）`}
+                      </span>
+                    </span>
+                  </>
+                )}
                 {p.targetStage && p.targetStage !== p.currentStage && (
                   <>
                     <span className="text-yellow-400 mx-2">→</span>
