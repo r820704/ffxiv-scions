@@ -1,15 +1,19 @@
-# FFXIV 繁中伺服器工具
+# FFXIV 巴爾德西昂
 
-為 Final Fantasy XIV 繁體中文伺服器玩家打造的工具網站。
+為 Final Fantasy XIV 繁體中文伺服器玩家打造的優雷卡工具網站。
 
 ## 功能
 
-- 天氣查詢工具：查詢艾歐乍亞各區域的天氣預報
+- **優雷卡天氣**：四地圖天氣時間軸、NM 出現時段與日夜指示
+- **文理技能**：文理技能查詢、材料反查與市場價格
+- **禁地兵裝**：武器與防具升級進度追蹤（常風防具 / 元素防具，依職業／職能分組）
 
 ## 技術棧
 
-- React 18 + TypeScript
+- React 18 + TypeScript（strict mode）
 - Vite
+- Tailwind CSS
+- Vitest + React Testing Library
 - GitHub Pages 部署
 
 ## 開發
@@ -41,4 +45,4 @@ Source code of this project is licensed under the MIT license.
 
 FINAL FANTASY is a registered trademark of Square Enix Holdings Co., Ltd.
 
-All FINAL FANTASY XIV contents and materials are copyrights of SQUARE ENIX, FINAL FANTASY XIV © 2010 - 2021 SQUARE ENIX CO., LTD. All Rights Reserved.
+All FINAL FANTASY XIV contents and materials are copyrights of SQUARE ENIX, FINAL FANTASY XIV © 2010 - 2026 SQUARE ENIX CO., LTD. All Rights Reserved.

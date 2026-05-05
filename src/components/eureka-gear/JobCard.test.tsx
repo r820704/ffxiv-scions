@@ -35,10 +35,10 @@ describe('JobCard', () => {
     expect(onSelect).toHaveBeenCalledWith('PLD');
   });
 
-  it('renders 常風系列 section but NOT 元素系列 (elemental moved to RoleCard)', () => {
+  it('renders 常風防具 section but NOT 元素防具 (elemental moved to RoleCard)', () => {
     render(<JobCard job="PLD" progress={baseProgress} onSelect={() => {}} />);
-    expect(screen.getByText(/常風系列/)).toBeInTheDocument();
-    expect(screen.queryByText(/元素系列/)).toBeNull();
+    expect(screen.getByText(/常風防具/)).toBeInTheDocument();
+    expect(screen.queryByText(/元素防具/)).toBeNull();
   });
 
   it('shows stage name label for weapon (current only, no target)', () => {

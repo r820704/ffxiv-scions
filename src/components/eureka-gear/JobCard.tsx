@@ -89,7 +89,7 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
       )}
 
       <section>
-        <div className="text-xs font-bold text-green-400 mb-1">常風系列（外觀）</div>
+        <div className="text-xs font-bold text-green-400 mb-1">常風防具</div>
         <ul className="space-y-0.5">
           {ARMOR_SLOTS.map((slot) => {
             const p = progress.anemos[slot];

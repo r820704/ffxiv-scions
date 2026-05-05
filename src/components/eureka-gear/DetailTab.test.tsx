@@ -334,22 +334,22 @@ describe('DetailTab', () => {
       );
     }
 
-    it('常風系列 section has a toggle button expanded by default', () => {
+    it('常風防具 section has a toggle button expanded by default', () => {
       renderTab();
-      const toggle = screen.getByRole('button', { name: /收合 常風系列/ });
+      const toggle = screen.getByRole('button', { name: /收合 常風防具/ });
       expect(toggle.getAttribute('aria-expanded')).toBe('true');
     });
 
-    it('clicking 常風系列 header collapses the section', () => {
+    it('clicking 常風防具 header collapses the section', () => {
       renderTab();
-      const toggle = screen.getByRole('button', { name: /收合 常風系列/ });
+      const toggle = screen.getByRole('button', { name: /收合 常風防具/ });
       fireEvent.click(toggle);
       expect(toggle.getAttribute('aria-expanded')).toBe('false');
     });
 
-    it('元素系列 section also has a toggle button', () => {
+    it('元素防具 section also has a toggle button', () => {
       renderTab();
-      expect(screen.getByRole('button', { name: /收合 元素系列/ })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /收合 元素防具/ })).toBeInTheDocument();
     });
 
     it('全展開 re-expands a manually-collapsed section header', () => {
@@ -365,8 +365,8 @@ describe('DetailTab', () => {
           onStartChain={() => {}}
         />,
       );
-      // Collapse the 常風系列 section manually
-      const toggle = screen.getByRole('button', { name: /收合 常風系列/ });
+      // Collapse the 常風防具 section manually
+      const toggle = screen.getByRole('button', { name: /收合 常風防具/ });
       fireEvent.click(toggle);
       expect(toggle.getAttribute('aria-expanded')).toBe('false');
 
