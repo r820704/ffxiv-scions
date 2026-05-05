@@ -43,9 +43,13 @@ describe('DetailTab', () => {
 
   it('clicking a stepper node fires onSetTarget', () => {
     const onSetTarget = vi.fn();
+    const inv = {
+      ...emptyInventoryV3(),
+      weapons: { 'pld-galatyn': { currentStage: 'antiquated' as const } },
+    };
     render(
       <DetailTab
-        inventory={emptyInventoryV3()}
+        inventory={inv}
         selectedJob="PLD"
         weapons={[]}
         materialsMap={{}}
@@ -86,7 +90,7 @@ describe('DetailTab', () => {
 
     it('default state: head slot expanded, others collapsed in each track', () => {
       renderTab();
-      // 5 slots × 2 tracks = 10 accordion buttons + 2 track section buttons = 12.
+      // 5 slots × 2 tracks = 10 accordion buttons + 2 track section buttons + 1 weapon accordion = 13.
       // Exclude StageListPanel toggles (text contains "階段列表") which also
       // carry aria-expanded but are not accordion controls.
       const allAccordions = screen
@@ -96,7 +100,7 @@ describe('DetailTab', () => {
             b.hasAttribute('aria-expanded') &&
             !(b.textContent ?? '').includes('階段列表'),
         );
-      expect(allAccordions.length).toBe(12);
+      expect(allAccordions.length).toBe(13);
 
       const headBtns = slotButtons('頭');
       const bodyBtns = slotButtons('身');
@@ -160,26 +164,9 @@ describe('DetailTab', () => {
     });
   });
 
-  it('clicking stage 1 button when chain not started opens start dialog', () => {
-    render(
-      <DetailTab
-        inventory={emptyInventoryV3()}
-        selectedJob="PLD"
-        weapons={[]}
-        materialsMap={{}}
-        onSelectJob={() => {}}
-        onSetTarget={() => {}}
-        onRequestUpgrade={() => {}}
-        onStartChain={() => {}}
-      />,
-    );
-    const stageButtons = screen.getAllByRole('button', { name: /stage 1/ });
-    fireEvent.click(stageButtons[0]!);
-    expect(screen.getByText('標記為已開始')).toBeInTheDocument();
-  });
-
-  it('clicking armor stage 1 when slot not started opens start dialog (not immediate start)', () => {
+  it('clicking stage 1 button when chain not started shows prereq panel (does not call onSetTarget)', () => {
     const onStartChain = vi.fn();
+    const onSetTarget = vi.fn();
     render(
       <DetailTab
         inventory={emptyInventoryV3()}
@@ -187,25 +174,41 @@ describe('DetailTab', () => {
         weapons={[]}
         materialsMap={{}}
         onSelectJob={() => {}}
-        onSetTarget={() => {}}
+        onSetTarget={onSetTarget}
         onRequestUpgrade={() => {}}
         onStartChain={onStartChain}
       />,
     );
-    // Head accordion is expanded by default; find the armor stage 1 buttons.
-    // Use the anemos head slot stage 1 (stage 1: antiquated, aria-label includes "stage 1").
-    // The armor stepper's first stage 1 button (anemos track) opens the dialog via setStartDialogRef.
+    const stageButtons = screen.getAllByRole('button', { name: /stage 1/ });
+    fireEvent.click(stageButtons[0]!);
+    // Circle 1 click on unstarted chain shows prereq panel; inventory must not be touched
+    expect(onSetTarget).not.toHaveBeenCalled();
+    expect(onStartChain).not.toHaveBeenCalled();
+    expect(screen.getByText(/設為目前階段/)).toBeInTheDocument();
+  });
+
+  it('clicking armor stage 1 when slot not started shows prereq panel (does not call onSetTarget)', () => {
+    const onStartChain = vi.fn();
+    const onSetTarget = vi.fn();
+    render(
+      <DetailTab
+        inventory={emptyInventoryV3()}
+        selectedJob="PLD"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={onSetTarget}
+        onRequestUpgrade={() => {}}
+        onStartChain={onStartChain}
+      />,
+    );
     const allStage1Buttons = screen.getAllByRole('button', { name: /^stage 1:/ });
-    // Click the anemos-track armor stage 1 (index 0 if no weapon stage 1 visible, otherwise the last one)
-    // Use the last stage-1 button to avoid hitting any weapon stepper button.
     const armorStage1 = allStage1Buttons[allStage1Buttons.length - 1]!;
     fireEvent.click(armorStage1);
-    // Dialog should appear — onStartChain should NOT have been called yet
-    expect(screen.getByText('標記為已開始')).toBeInTheDocument();
+    // Circle 1 click on unstarted armor slot shows prereq panel; inventory must not be touched
+    expect(onSetTarget).not.toHaveBeenCalled();
     expect(onStartChain).not.toHaveBeenCalled();
-    // Confirm the dialog
-    fireEvent.click(screen.getByRole('button', { name: /確認已持有/ }));
-    expect(onStartChain).toHaveBeenCalled();
+    expect(screen.getAllByText(/設為目前階段/).length).toBeGreaterThan(0);
   });
 
   it('全展開 button expands all armor slot accordions', () => {
@@ -278,8 +281,17 @@ describe('DetailTab', () => {
       />,
     );
     fireEvent.click(screen.getByRole('button', { name: '收合所有防具欄位' }));
-    const allAccordions = screen.getAllByRole('button').filter((b) => b.hasAttribute('aria-expanded'));
-    allAccordions.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('false'));
+    // Weapon accordion is not controlled by the armor global collapse button.
+    // Only check armor-related accordions (exclude weapon accordion "主手" and StageListPanel toggles).
+    const armorAccordions = screen
+      .getAllByRole('button')
+      .filter(
+        (b) =>
+          b.hasAttribute('aria-expanded') &&
+          !(b.textContent ?? '').includes('階段列表') &&
+          !(b.textContent ?? '').includes('主手'),
+      );
+    armorAccordions.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('false'));
   });
 
   it('started anemos slot shows item name with iL in accordion header', () => {

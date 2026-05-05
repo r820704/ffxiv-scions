@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { StartChainDialog } from './StartChainDialog';
 import { ChainStepper } from './ChainStepper';
 import { StageListPanel } from './StageListPanel';
 import { PreviewPanel } from './PreviewPanel';
@@ -65,7 +64,7 @@ export type DetailTabProps = {
   onSelectJob: (job: string) => void;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
-  onStartChain: (ref: ChainRef) => void;
+  onStartChain: (ref: ChainRef, stage?: EurekaStage) => void;
   onClearChain?: (ref: ChainRef) => void;
 };
 
@@ -108,9 +107,12 @@ export function DetailTab({
   onClearChain,
 }: DetailTabProps) {
   const progress = useMemo(() => getJobProgress(selectedJob as JobId, inventory), [selectedJob, inventory]);
-  const [startDialogRef, setStartDialogRef] = useState<ChainRef | null>(null);
-  const [globalArmorExpand, setGlobalArmorExpand] = useState<boolean | null>(null);
+  const [globalArmorExpand, setGlobalArmorExpand] = useState<{ rev: number; expand: boolean } | null>(null);
   const [resetDialogRef, setResetDialogRef] = useState<{ ref: ChainRef; label: string } | null>(null);
+  const [weaponExpanded, setWeaponExpanded] = useState<Record<string, boolean>>({});
+  const [pendingStartChain, setPendingStartChain] = useState<string | null>(null);
+
+  useEffect(() => { setWeaponExpanded({}); setPendingStartChain(null); }, [selectedJob]);
 
   const primaryChains = progress.weapons.filter(({ chainId }) => {
     const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
@@ -135,109 +137,108 @@ export function DetailTab({
       </header>
 
       {primaryChains.length > 0 && (
-        <section className="space-y-4">
+        <section className="space-y-2">
           <h3 className="text-yellow-400 font-bold">武器</h3>
           {primaryChains.map(({ chainId, progress: p }) => {
             const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
             const ref: ChainRef = { kind: 'weapon', chainId };
-            // A chain is "started" only when it has an explicit slot in inventory;
-            // getJobProgress fabricates a default antiquated SlotProgress otherwise.
             const isStarted = inventory.weapons[chainId] !== undefined;
             const stepperCurrent = isStarted ? p.currentStage : null;
             const currentInfo = weaponInfoAt(weapons, chainId, p.currentStage);
             const targetInfo = p.targetStage ? weaponInfoAt(weapons, chainId, p.targetStage) : undefined;
-            const currentName = currentInfo?.tcName ?? chain?.displayName ?? chainId;
+            const slotLabel = chain?.isShield ? '盾' : '主手';
 
             const mirrorChains = EUREKA_CHAINS.filter((c) => c.mirrorsChainId === chainId);
             const mirrorInfos = mirrorChains.map((mc) => ({
               chainId: mc.chainId,
+              chain: mc,
               current: weaponInfoAt(weapons, mc.chainId, p.currentStage),
               target: p.targetStage ? weaponInfoAt(weapons, mc.chainId, p.targetStage) : undefined,
-              displayName: mc.displayName,
             }));
 
             const stageSuffix = (info: typeof currentInfo, stage: EurekaStage) =>
               `（${STAGE_TC_LABEL[stage]}${info ? ` · iL${info.itemLevel}` : ''}）`;
-            const notStartedSuffix = '（未開始 · 點下方階段標記目標）';
 
-            return (
-              <div key={chainId} className="space-y-2 pt-2">
-                <div className="space-y-0.5 text-sm">
-                  <div className="flex items-start">
-                  <div className="text-gray-100 font-semibold flex-1">
-                    {currentName}
-                    <span className="text-xs text-gray-400 font-normal ml-2">
-                      {isStarted ? stageSuffix(currentInfo, p.currentStage) : notStartedSuffix}
+            const isExpanded = weaponExpanded[chainId] ?? true;
+
+            const weaponHeader = (
+              <div className="flex items-center flex-wrap gap-x-3 gap-y-0.5 text-sm">
+                <span className="text-gray-100 font-semibold flex items-center gap-1">
+                  {slotLabel}
+                  <span className="text-xs text-gray-400 font-normal">
+                    {isStarted ? stageSuffix(currentInfo, p.currentStage) : '未開始'}
+                  </span>
+                  {isStarted && targetInfo && p.targetStage && p.targetStage !== p.currentStage && (
+                    <>
+                      <span className="text-yellow-400">→</span>
+                      <span className="text-yellow-200 text-xs">{stageSuffix(targetInfo, p.targetStage)}</span>
+                    </>
+                  )}
+                </span>
+                {mirrorInfos.map((m) => (
+                  <span key={m.chainId} className="text-gray-100 font-semibold flex items-center gap-1">
+                    {m.chain.isShield ? '盾' : '主手'}
+                    <span className="text-xs text-gray-400 font-normal">
+                      {isStarted ? stageSuffix(m.current, p.currentStage) : '未開始'}
                     </span>
-                    {targetInfo && p.targetStage && p.targetStage !== p.currentStage && (
+                    {isStarted && m.target && p.targetStage && p.targetStage !== p.currentStage && (
                       <>
-                        <span className="text-yellow-400 mx-2">→</span>
-                        <span className="text-yellow-200">
-                          {targetInfo.tcName}
-                          <span className="text-xs text-gray-400 font-normal ml-2">
-                            {stageSuffix(targetInfo, p.targetStage)}
-                          </span>
-                        </span>
+                        <span className="text-yellow-400">→</span>
+                        <span className="text-yellow-200 text-xs">{stageSuffix(m.target, p.targetStage)}</span>
                       </>
                     )}
-                  </div>
-                  {isStarted && (
-                    <button
-                      type="button"
-                      aria-label={`重置${chain?.isShield ? '盾' : '主'}手武器進度`}
-                      onClick={() => setResetDialogRef({ ref, label: `${chain?.isShield ? '盾' : '主'}手武器` })}
-                      className="text-[10px] text-red-400/60 hover:text-red-400 transition-colors px-1 ml-auto"
-                      title="重置此武器的所有進度"
-                    >
-                      重置
-                    </button>
-                  )}
-                  </div>
-
-                  {mirrorInfos.map((m) => (
-                    <div key={m.chainId} className="text-gray-100 font-semibold">
-                      {m.current?.tcName ?? m.displayName}
-                      <span className="text-xs text-gray-400 font-normal ml-2">
-                        {isStarted ? stageSuffix(m.current, p.currentStage) : notStartedSuffix}
-                      </span>
-                      {m.target && p.targetStage && p.targetStage !== p.currentStage && (
-                        <>
-                          <span className="text-yellow-400 mx-2">→</span>
-                          <span className="text-yellow-200">
-                            {m.target.tcName}
-                            <span className="text-xs text-gray-400 font-normal ml-2">
-                              {stageSuffix(m.target, p.targetStage)}
-                            </span>
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                <ChainStepper
-                  currentStage={stepperCurrent}
-                  targetStage={p.targetStage}
-                  onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
-                  onSelectStart={!isStarted ? () => setStartDialogRef(ref) : undefined}
-                />
-                <StageListPanel
-                  stages={EUREKA_STAGES}
-                  currentStage={stepperCurrent}
-                  targetStage={p.targetStage}
-                  itemLevels={STAGE_ITEM_LEVELS}
-                  getItemName={(stage) => weaponInfoAt(weapons, chainId, stage)?.tcName}
-                  onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
-                />
-                <PreviewPanel
-                  currentStage={p.currentStage}
-                  targetStage={p.targetStage}
-                  inventory={inventory.materials}
-                  onSetCurrent={() => onRequestUpgrade(ref)}
-                  onClearTarget={() => onSetTarget(ref, undefined)}
-                  materialsMap={materialsMap}
-                />
+                  </span>
+                ))}
+                {isStarted && (
+                  <button
+                    type="button"
+                    aria-label={`重置${slotLabel}武器進度`}
+                    onClick={(e) => { e.stopPropagation(); setResetDialogRef({ ref, label: `${slotLabel}武器` }); }}
+                    className="text-[10px] text-red-400/60 hover:text-red-400 transition-colors px-1 ml-auto shrink-0"
+                  >
+                    重置
+                  </button>
+                )}
               </div>
+            );
+
+            return (
+              <AccordionItem
+                key={chainId}
+                expanded={isExpanded}
+                onToggle={() => setWeaponExpanded((prev) => ({ ...prev, [chainId]: !isExpanded }))}
+                header={weaponHeader}
+              >
+                <div className="space-y-2">
+                  <ChainStepper
+                    currentStage={stepperCurrent}
+                    targetStage={p.targetStage}
+                    onSelectTarget={isStarted
+                      ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
+                      : () => {}}
+                    onSelectStart={!isStarted ? () => setPendingStartChain((prev) => prev === chainId ? null : chainId) : undefined}
+                  />
+                  <StageListPanel
+                    stages={EUREKA_STAGES}
+                    currentStage={stepperCurrent}
+                    targetStage={p.targetStage}
+                    itemLevels={STAGE_ITEM_LEVELS}
+                    getItemName={(stage) => weaponInfoAt(weapons, chainId, stage)?.tcName}
+                    onSelectTarget={isStarted ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage) : () => {}}
+                  />
+                  <PreviewPanel
+                    currentStage={p.currentStage}
+                    targetStage={p.targetStage}
+                    inventory={inventory.materials}
+                    onSetCurrent={() => onRequestUpgrade(ref)}
+                    onClearTarget={() => onSetTarget(ref, undefined)}
+                    materialsMap={materialsMap}
+                    showStartPanel={!isStarted && pendingStartChain === chainId}
+                    startHint="完成70級職業任務"
+                    onStartChain={!isStarted ? () => { onStartChain(ref); setPendingStartChain(null); } : undefined}
+                  />
+                </div>
+              </AccordionItem>
             );
           })}
         </section>
@@ -248,7 +249,7 @@ export function DetailTab({
         <button
           type="button"
           aria-label="展開所有防具欄位"
-          onClick={() => setGlobalArmorExpand(true)}
+          onClick={() => setGlobalArmorExpand((prev) => ({ rev: (prev?.rev ?? 0) + 1, expand: true }))}
           className="text-xs px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500"
         >
           全展開
@@ -256,7 +257,7 @@ export function DetailTab({
         <button
           type="button"
           aria-label="收合所有防具欄位"
-          onClick={() => setGlobalArmorExpand(false)}
+          onClick={() => setGlobalArmorExpand((prev) => ({ rev: (prev?.rev ?? 0) + 1, expand: false }))}
           className="text-xs px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500"
         >
           全收合
@@ -278,9 +279,10 @@ export function DetailTab({
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
-        onStartChain={(ref) => setStartDialogRef(ref)}
+        onStartChain={onStartChain}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
+        startHint="完成70級職業任務"
       />
 
       {/* 元素系列 — per-role, shared badge */}
@@ -303,18 +305,10 @@ export function DetailTab({
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
-        onStartChain={(ref) => setStartDialogRef(ref)}
+        onStartChain={onStartChain}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
-      />
-
-      <StartChainDialog
-        isOpen={startDialogRef !== null}
-        onConfirm={() => {
-          if (startDialogRef) onStartChain(startDialogRef);
-          setStartDialogRef(null);
-        }}
-        onCancel={() => setStartDialogRef(null)}
+        startHint="前置：持有 70 級職業套裝（antiquated）、解鎖 50 個文理技能圖鑑、至少擁有一件元素武器；於湧火之地（Eureka Pyros）以湧火水晶兌換取得"
       />
 
       {resetDialogRef && (
@@ -365,24 +359,27 @@ type ArmorTrackSectionProps = {
   materialsMap: Record<number, { nameTC: string; icon: number }>;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
-  onStartChain?: (ref: ChainRef) => void;
+  onStartChain?: (ref: ChainRef, stage?: EurekaStage) => void;
   onRequestReset?: (ref: ChainRef, label: string) => void;
-  globalExpand?: boolean | null;
+  globalExpand?: { rev: number; expand: boolean } | null;
+  startHint?: string;
 };
 
 function ArmorTrackSection({
   title, colorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader,
-  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onRequestReset, globalExpand,
+  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onRequestReset, globalExpand, startHint,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
     head: true, body: false, hands: false, legs: false, feet: false,
   });
   const [sectionExpanded, setSectionExpanded] = useState(true);
+  const [pendingStartSlot, setPendingStartSlot] = useState<ArmorSlot | null>(null);
 
   useEffect(() => {
     if (globalExpand == null) return;
-    setExpanded({ head: globalExpand, body: globalExpand, hands: globalExpand, legs: globalExpand, feet: globalExpand });
-    setSectionExpanded(globalExpand);
+    const v = globalExpand.expand;
+    setExpanded({ head: v, body: v, hands: v, legs: v, feet: v });
+    setSectionExpanded(v);
   }, [globalExpand]);
 
   return (
@@ -403,7 +400,8 @@ function ArmorTrackSection({
         {ARMOR_SLOTS.map((slot) => {
           const slotData = pieces[slot];
           const isStarted = slotData !== undefined;
-          const p = slotData ?? { currentStage: 'antiquated' as const };
+          const p: { currentStage: EurekaStage; targetStage?: EurekaStage } =
+            slotData ?? { currentStage: stages[0] as EurekaStage };
           const stepperCurrent = isStarted ? p.currentStage : null;
           const ref = makeRef(slot);
           const currentLabel = isStarted
@@ -467,10 +465,10 @@ function ArmorTrackSection({
                   targetStage={p.targetStage}
                   stages={stages}
                   zoneGroups={zoneGroups}
-                  onSelectTarget={(stage) =>
-                    onSetTarget(ref, stage === p.currentStage ? undefined : stage)
-                  }
-                  onSelectStart={!isStarted ? () => onStartChain?.(ref) : undefined}
+                  onSelectTarget={isStarted
+                    ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
+                    : () => {}}
+                  onSelectStart={!isStarted ? () => setPendingStartSlot((prev) => prev === slot ? null : slot) : undefined}
                 />
                 <StageListPanel
                   stages={stages}
@@ -478,7 +476,7 @@ function ArmorTrackSection({
                   targetStage={p.targetStage}
                   itemLevels={itemLevels}
                   getItemName={(stage) => getItemName?.(slot, stage)}
-                  onSelectTarget={(stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)}
+                  onSelectTarget={isStarted ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage) : () => {}}
                 />
                 <PreviewPanel
                   currentStage={p.currentStage}
@@ -492,6 +490,9 @@ function ArmorTrackSection({
                   slot={slot}
                   currentLabel={currentLabel}
                   targetLabel={targetLabel}
+                  showStartPanel={!isStarted && pendingStartSlot === slot}
+                  startHint={startHint}
+                  onStartChain={!isStarted ? () => { onStartChain?.(ref, stages[0] as EurekaStage); setPendingStartSlot(null); } : undefined}
                 />
               </div>
             </AccordionItem>

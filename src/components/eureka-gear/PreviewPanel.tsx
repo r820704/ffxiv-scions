@@ -20,6 +20,10 @@ export type PreviewPanelProps = {
   /** Optional display name overrides (falls back to STAGE_TC_LABEL) */
   currentLabel?: string;
   targetLabel?: string;
+  /** When true, show prerequisite hint + confirm button instead of the default placeholder. */
+  showStartPanel?: boolean;
+  startHint?: string;
+  onStartChain?: () => void;
 };
 
 export function PreviewPanel({
@@ -34,6 +38,9 @@ export function PreviewPanel({
   slot,
   currentLabel,
   targetLabel,
+  showStartPanel,
+  startHint,
+  onStartChain,
 }: PreviewPanelProps) {
   const seq = stages ?? EUREKA_STAGES;
   const currentIdx = seq.indexOf(currentStage);
@@ -57,7 +64,53 @@ export function PreviewPanel({
     [currentStage, targetStage, direction, slot],
   );
 
+  const startMaterials = useMemo(
+    () => {
+      if (!showStartPanel) return [];
+      return costBetweenInSequence('antiquated', currentStage, seq, costs ?? STAGE_UPGRADE_COSTS, slot);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [showStartPanel, currentStage, slot],
+  );
+
   if (direction === 'none') {
+    if (showStartPanel && onStartChain) {
+      const stageName = currentLabel ?? STAGE_TC_LABEL[currentStage];
+      return (
+        <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
+          <div className="text-yellow-400 font-semibold mb-2">
+            獲得 {stageName} 需要
+          </div>
+          {startMaterials.length > 0 && (
+            <ul className="space-y-1 mb-3">
+              {startMaterials.map((m) => {
+                const have = inventory[m.materialId] ?? 0;
+                const name = materialsMap[m.materialId]?.nameTC ?? `#${m.materialId}`;
+                const short = Math.max(0, m.quantity - have);
+                return (
+                  <li key={m.materialId} className="flex justify-between">
+                    <span>{name} × {m.quantity}</span>
+                    <span className={short === 0 ? 'text-green-400' : 'text-red-400'}>
+                      有 {have}{short > 0 ? ` / 缺 ${short}` : ' ✓'}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          {startHint && <p className="text-gray-400 mb-3">{startHint}</p>}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={onStartChain}
+              className="px-3 py-1.5 rounded font-bold text-sm bg-green-500 text-black"
+            >
+              ⬆ 📍 設為目前階段 ({stageName})
+            </button>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="text-sm text-gray-500 italic p-4 border border-dashed border-gray-700 rounded">
         選擇下方任一階段以查看升降所需

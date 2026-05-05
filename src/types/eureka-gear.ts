@@ -261,6 +261,16 @@ export type ArmorZoneGroupDef = {
   stages: readonly EurekaStage[];
 };
 
+/** Zone groups for the weapon overview dots (matches the 6 zone sections in ChainStepper). */
+export const WEAPON_ZONE_GROUPS: ArmorZoneGroupDef[] = [
+  { key: 'start',   label: '起點',    stages: ['antiquated'] },
+  { key: 'anemos',  label: '常風之地', stages: ['anemos-base', 'anemos+1', 'anemos+2', 'anemos'] },
+  { key: 'pagos',   label: '恆冰之地', stages: ['pagos', 'pagos+1'] },
+  { key: 'pyros',   label: '湧火之地', stages: ['elemental', 'elemental+1', 'elemental+2', 'pyros'] },
+  { key: 'hydatos', label: '豐水之地', stages: ['hydatos', 'hydatos+1', 'base-eureka', 'eureka'] },
+  { key: 'final',   label: '最終形態', stages: ['physeos'] },
+];
+
 /** Zone groups for the anemos armor stepper. */
 export const ANEMOS_ARMOR_ZONE_GROUPS: ArmorZoneGroupDef[] = [
   { key: 'start',  label: '起點',    stages: ['antiquated'] },

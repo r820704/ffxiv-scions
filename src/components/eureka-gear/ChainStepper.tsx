@@ -3,7 +3,6 @@ import type { ArmorZoneGroupDef, EurekaStage, EurekaZone } from '../../types/eur
 import { Tooltip } from '../ui/Tooltip';
 
 const ZONE_HINT: Record<string, string> = {
-  start: '起始狀態。Stage 1 對應 70 級職業套裝（antiquated），是禁地兵裝的前置物。',
   anemos: '常風之地（Eureka Anemos）取得的素材用於升級常風系列防具。',
   pagos: '恆冰之地（Eureka Pagos）取得的素材主要用於升 stage 6-7。',
   pyros: '湧火之地（Eureka Pyros）取得的湧火水晶用於兌換元素系列防具基礎形態，或升元素武器。',
@@ -143,7 +142,7 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
           data-testid={`zone-group-${group.key}`}
           role="group"
           aria-labelledby={`zone-label-${group.key}`}
-          className={`flex flex-col gap-1 ${gi > 0 ? 'md:pl-3 md:border-l md:border-gray-700' : ''}`}
+          className={`flex flex-col gap-1 ${gi > 0 ? 'border-t border-gray-700 pt-2 md:border-t-0 md:pt-0 md:pl-3 md:border-l md:border-gray-700' : ''}`}
         >
           <span
             id={`zone-label-${group.key}`}
