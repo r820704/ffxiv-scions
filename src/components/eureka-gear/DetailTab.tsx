@@ -302,6 +302,7 @@ export function DetailTab({
         onStartChain={onStartChain}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
+        startHint="前置：需持有元素系列防具基礎形態（禁地兵裝·元素），可於湧火之地（Eureka Pyros）以湧火水晶兌換取得"
       />
 
       {resetDialogRef && (
