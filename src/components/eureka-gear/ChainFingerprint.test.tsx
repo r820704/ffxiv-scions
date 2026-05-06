@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ChainFingerprint } from './ChainFingerprint';
+import { WEAPON_GLOW_STAGES, EUREKA_STAGES } from '../../types/eureka-gear';
 
 describe('ChainFingerprint', () => {
   it('renders 16 dots total', () => {
@@ -50,6 +51,37 @@ describe('ChainFingerprint zone separators', () => {
     const dots = container.querySelectorAll('[data-dot]');
     dots.forEach((dot) => {
       expect(dot.getAttribute('data-filled')).toBe('false');
+    });
+  });
+});
+
+describe('ChainFingerprint glow stages', () => {
+  it('marks anemos / pyros / eureka / physeos as glow when filled and glowStages provided', () => {
+    const { container } = render(
+      <ChainFingerprint currentStage="physeos" glowStages={WEAPON_GLOW_STAGES} />
+    );
+    const dots = container.querySelectorAll('[data-dot]');
+    EUREKA_STAGES.forEach((stage, i) => {
+      const dot = dots[i];
+      const expectedGlow = WEAPON_GLOW_STAGES.has(stage);
+      expect(dot?.getAttribute('data-glow')).toBe(expectedGlow ? 'true' : null);
+    });
+  });
+
+  it('does not mark elemental as glow (regression: elemental was previously incorrectly classified)', () => {
+    const { container } = render(
+      <ChainFingerprint currentStage="physeos" glowStages={WEAPON_GLOW_STAGES} />
+    );
+    const dots = container.querySelectorAll('[data-dot]');
+    const elementalIdx = EUREKA_STAGES.indexOf('elemental');
+    expect(dots[elementalIdx]?.getAttribute('data-glow')).toBe(null);
+  });
+
+  it('does not mark glow stages when no glowStages prop passed', () => {
+    const { container } = render(<ChainFingerprint currentStage="physeos" />);
+    const dots = container.querySelectorAll('[data-dot]');
+    dots.forEach((dot) => {
+      expect(dot.getAttribute('data-glow')).toBe(null);
     });
   });
 });

@@ -3,7 +3,7 @@ import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
 import type { JobProgress } from '../../utils/eurekaGear';
 import type { EurekaStage, EurekaWeapon, ArmorSlot } from '../../types/eureka-gear';
-import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK, STAGE_TC_LABEL } from '../../types/eureka-gear';
+import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK, STAGE_TC_LABEL, WEAPON_GLOW_STAGES } from '../../types/eureka-gear';
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,
@@ -70,7 +70,7 @@ export function JobCard({ job, progress, weapons, onSelect }: JobCardProps) {
                     {name}
                     {info && <span className="text-gray-500 ml-1">iL{info.itemLevel}</span>}
                   </div>
-                  <ChainFingerprint currentStage={p.currentStage} showLabel />
+                  <ChainFingerprint currentStage={p.currentStage} showLabel glowStages={WEAPON_GLOW_STAGES} />
                   <div className="text-xs text-gray-400">
                     {started ? (
                       <>
