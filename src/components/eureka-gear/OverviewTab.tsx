@@ -41,6 +41,8 @@ export type OverviewTabProps = {
   role?: Role;
   /** Callback when user clicks a chip. */
   onRoleChange?: (role: Role) => void;
+  /** Callback to clear all chain progress (weapons + armor, NOT material inventory). */
+  onResetAllProgress?: () => void;
 };
 
 export function OverviewTab({
@@ -49,9 +51,11 @@ export function OverviewTab({
   onSelectJob,
   role = 'all',
   onRoleChange,
+  onResetAllProgress,
 }: OverviewTabProps) {
   const { mainJobs, setMainJobs, mainJobsActive, setMainJobsActive } = useMainJobs();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
 
   const jobProgresses = useMemo(
     () => JOBS_WITH_WEAPONS.map((job) => ({ job, progress: getJobProgress(job, inventory) })),
@@ -78,6 +82,17 @@ export function OverviewTab({
     if (role === 'all') return ARMOR_SET_IDS;
     return ARMOR_SET_IDS.filter((set) => ARMOR_SET_TO_ROLE[set] === role);
   }, [role, filteringByMain, mainJobs]);
+
+  const hasAnyProgress = useMemo(() => {
+    if (Object.keys(inventory.weapons).length > 0) return true;
+    for (const jobPieces of Object.values(inventory.armor.anemos)) {
+      if (jobPieces && Object.keys(jobPieces).length > 0) return true;
+    }
+    for (const setPieces of Object.values(inventory.armor.elemental)) {
+      if (setPieces && Object.keys(setPieces).length > 0) return true;
+    }
+    return false;
+  }, [inventory]);
 
   const handleMainJobChipClick = () => {
     if (mainJobs.length === 0) {
@@ -152,6 +167,16 @@ export function OverviewTab({
             ✎
           </button>
         )}
+        {onResetAllProgress && hasAnyProgress && (
+          <button
+            type="button"
+            aria-label="重置所有進度"
+            onClick={() => setResetConfirmOpen(true)}
+            className="ml-auto text-xs px-2 py-1 rounded border border-red-900/50 text-red-400/70 hover:text-red-300 hover:border-red-500 transition-colors"
+          >
+            🗑 重置所有進度
+          </button>
+        )}
       </div>
 
       <section>
@@ -197,6 +222,39 @@ export function OverviewTab({
         onConfirm={handlePickerConfirm}
         onCancel={() => setPickerOpen(false)}
       />
+
+      {resetConfirmOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 border-2 border-red-600 rounded-lg p-5 max-w-sm">
+            <h2 className="text-lg font-bold text-red-400 mb-3">重置所有升級進度</h2>
+            <p className="text-sm text-gray-200 mb-2">
+              此動作會清除全部職業的武器、常風防具、元素防具進度。素材庫存不會受影響。
+            </p>
+            <p className="text-xs text-gray-400 mb-4">
+              無法還原。確定要繼續嗎？
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setResetConfirmOpen(false)}
+                className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onResetAllProgress?.();
+                  setResetConfirmOpen(false);
+                }}
+                className="px-3 py-1.5 rounded bg-red-700 text-white text-sm hover:bg-red-600"
+              >
+                確認重置
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

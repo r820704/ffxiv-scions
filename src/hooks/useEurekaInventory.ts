@@ -205,6 +205,17 @@ export function useEurekaInventory() {
     setInventory(emptyInventoryV5());
   }, []);
 
+  const clearMaterials = useCallback(() => {
+    setInventory((prev) => ({ ...prev, materials: {} }));
+  }, []);
+
+  const clearAllProgress = useCallback(() => {
+    setInventory((prev) => {
+      const empty = emptyInventoryV5();
+      return { ...empty, materials: prev.materials };
+    });
+  }, []);
+
   const clearChain = useCallback((ref: ChainRef) => {
     setInventory((prev) => {
       if (ref.kind === 'weapon') {
@@ -244,6 +255,8 @@ export function useEurekaInventory() {
     setTarget,
     performUpgrade,
     clearAll,
+    clearMaterials,
+    clearAllProgress,
     clearChain,
     hasEnoughMaterials: (stage: EurekaStage) =>
       hasEnoughMaterials(stage, inventory.materials, STAGE_UPGRADE_COSTS),
