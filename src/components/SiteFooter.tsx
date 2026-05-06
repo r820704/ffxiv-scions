@@ -1,8 +1,8 @@
 export default function SiteFooter() {
   const noticesHref = `${import.meta.env.BASE_URL}THIRD-PARTY-NOTICES.md`;
   return (
-    <footer className="mt-8 pt-4 border-t border-border/30 text-[10px] text-muted-foreground/70 text-center">
-      © SQUARE ENIX ｜
+    <footer className="mt-8 pt-4 border-t border-border/30 text-xs text-muted-foreground/70 text-center">
+      © SQUARE ENIX ｜ 找我玩：TC 迦樓羅 Skuld · CN 柔风海湾 Skuld ｜
       <a
         href={noticesHref}
         target="_blank"
