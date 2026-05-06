@@ -10,6 +10,13 @@ export type StageListPanelProps = {
   /** Returns display name for a stage (item name). Falls back to STAGE_TC_LABEL. */
   getItemName?: (stage: EurekaStage) => string | undefined;
   onSelectTarget: (stage: EurekaStage) => void;
+  /**
+   * Mirrors ChainStepper.onSelectStart: when the chain is not started
+   * (currentStage === null), clicking any row routes here so the parent can
+   * open the start-with-target flow in one click instead of forcing the user
+   * through a separate "click stage 1 first" step.
+   */
+  onSelectStart?: (stage: EurekaStage) => void;
 };
 
 export function StageListPanel({
@@ -19,6 +26,7 @@ export function StageListPanel({
   itemLevels,
   getItemName,
   onSelectTarget,
+  onSelectStart,
 }: StageListPanelProps) {
   const [open, setOpen] = useState(false);
 
@@ -45,7 +53,13 @@ export function StageListPanel({
               <li key={stage}>
                 <button
                   type="button"
-                  onClick={() => onSelectTarget(stage)}
+                  onClick={() => {
+                    if (currentStage === null && onSelectStart) {
+                      onSelectStart(stage);
+                    } else {
+                      onSelectTarget(stage);
+                    }
+                  }}
                   className={`w-full text-left px-2 py-1 rounded flex items-center gap-2 transition-colors ${
                     isCurrent
                       ? 'bg-green-900/40 text-green-300'

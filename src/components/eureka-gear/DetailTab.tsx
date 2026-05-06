@@ -285,10 +285,20 @@ export function DetailTab({
                   <StageListPanel
                     stages={EUREKA_STAGES}
                     currentStage={stepperCurrent}
-                    targetStage={p.targetStage}
+                    targetStage={isStarted ? p.targetStage : (isPendingStart ? pendingStartTarget ?? undefined : undefined)}
                     itemLevels={STAGE_ITEM_LEVELS}
                     getItemName={(stage) => weaponInfoAt(weapons, chainId, stage)?.tcName}
                     onSelectTarget={isStarted ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage) : () => {}}
+                    onSelectStart={!isStarted ? (clickedStage) => {
+                      const goal = clickedStage === 'antiquated' ? null : clickedStage;
+                      if (pendingStartChain === chainId && pendingStartTarget === goal) {
+                        setPendingStartChain(null);
+                        setPendingStartTarget(null);
+                      } else {
+                        setPendingStartChain(chainId);
+                        setPendingStartTarget(goal);
+                      }
+                    } : undefined}
                   />
                   <PreviewPanel
                     currentStage={p.currentStage}
@@ -579,10 +589,20 @@ function ArmorTrackSection({
                 <StageListPanel
                   stages={stages}
                   currentStage={stepperCurrent}
-                  targetStage={p.targetStage}
+                  targetStage={isStarted ? p.targetStage : (isPendingStart ? pendingStartTarget ?? undefined : undefined)}
                   itemLevels={itemLevels}
                   getItemName={(stage) => getItemName?.(slot, stage)}
                   onSelectTarget={isStarted ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage) : () => {}}
+                  onSelectStart={!isStarted ? (clickedStage) => {
+                    const goal = clickedStage === stages[0] ? null : clickedStage;
+                    if (pendingStartSlot === slot && pendingStartTarget === goal) {
+                      setPendingStartSlot(null);
+                      setPendingStartTarget(null);
+                    } else {
+                      setPendingStartSlot(slot);
+                      setPendingStartTarget(goal);
+                    }
+                  } : undefined}
                 />
                 <PreviewPanel
                   currentStage={p.currentStage}
