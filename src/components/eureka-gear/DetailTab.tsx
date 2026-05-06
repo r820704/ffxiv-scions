@@ -33,10 +33,12 @@ import {
   ANEMOS_ARMOR_ZONE_GROUPS,
   ARMOR_SLOTS,
   ARMOR_STAGES_BY_TRACK,
+  ELEMENTAL_ARMOR_GLOW_STAGES,
   ELEMENTAL_ARMOR_ZONE_GROUPS,
   EUREKA_STAGES,
   STAGE_ITEM_LEVELS,
   STAGE_TC_LABEL,
+  WEAPON_GLOW_STAGES,
 } from '../../types/eureka-gear';
 
 const JOBS = Object.keys(ARMOR_SET_FOR_JOB);
@@ -70,6 +72,22 @@ export type DetailTabProps = {
 
 function weaponInfoAt(weapons: EurekaWeapon[], chainId: string, stage: EurekaStage) {
   return weapons.find((w) => w.chainId === chainId && w.stage === stage);
+}
+
+/**
+ * Inline legend explaining the amber halo on stage circles. Rendered next to
+ * section titles (武器, 元素防具) where any stage in that section glows in-game.
+ */
+function GlowLegend() {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[11px] text-amber-400/80 font-normal">
+      <span
+        aria-hidden="true"
+        className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_4px_2px_rgba(251,191,36,0.6)]"
+      />
+      帶光暈的階段＝遊戲中會發光
+    </span>
+  );
 }
 
 function SharedJobIcons({ set }: { set: ArmorSetId }) {
@@ -138,7 +156,10 @@ export function DetailTab({
 
       {primaryChains.length > 0 && (
         <section className="space-y-2">
-          <h3 className="text-yellow-400 font-bold">武器</h3>
+          <h3 className="text-yellow-400 font-bold flex items-center flex-wrap gap-x-3">
+            <span>武器</span>
+            <GlowLegend />
+          </h3>
           {primaryChains.map(({ chainId, progress: p }) => {
             const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
             const ref: ChainRef = { kind: 'weapon', chainId };
@@ -240,6 +261,7 @@ export function DetailTab({
                   <ChainStepper
                     currentStage={stepperCurrent}
                     targetStage={p.targetStage}
+                    glowStages={WEAPON_GLOW_STAGES}
                     onSelectTarget={isStarted
                       ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                       : () => {}}
@@ -329,6 +351,7 @@ export function DetailTab({
         makeRef={(slot) => ({ kind: 'armor-elemental', set: progress.elemental.set, slot })}
         getItemName={(slot, stage) => getElementalArmorName(progress.elemental.set, slot, stage)}
         itemLevels={ELEMENTAL_ARMOR_ITEM_LEVELS}
+        glowStages={ELEMENTAL_ARMOR_GLOW_STAGES}
         sharedHeader={
           isArmorSetShared(progress.elemental.set)
             ? <SharedJobIcons set={progress.elemental.set} />
@@ -389,6 +412,7 @@ type ArmorTrackSectionProps = {
   getItemName?: (slot: ArmorSlot, stage: EurekaStage) => string | undefined;
   itemLevels?: Partial<Record<EurekaStage, number>>;
   sharedHeader?: ReactNode;
+  glowStages?: ReadonlySet<EurekaStage>;
   materials: Record<number, number>;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
@@ -400,7 +424,7 @@ type ArmorTrackSectionProps = {
 };
 
 function ArmorTrackSection({
-  title, colorClass, slotColorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader,
+  title, colorClass, slotColorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader, glowStages,
   materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onRequestReset, globalExpand, startHint,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
@@ -423,11 +447,12 @@ function ArmorTrackSection({
         aria-expanded={sectionExpanded}
         aria-label={`${sectionExpanded ? '收合' : '展開'} ${title}`}
         onClick={() => setSectionExpanded((v) => !v)}
-        className={`${colorClass} font-bold flex items-center flex-wrap w-full text-left gap-1 hover:opacity-80 transition-opacity`}
+        className={`${colorClass} font-bold flex items-center flex-wrap w-full text-left gap-x-3 gap-y-1 hover:opacity-80 transition-opacity`}
       >
         <span className="text-xs text-gray-500 mr-1">{sectionExpanded ? '▼' : '▶'}</span>
         <span>{title}</span>
         {sharedHeader}
+        {glowStages && glowStages.size > 0 && <GlowLegend />}
       </button>
       {sectionExpanded && (
       <div className="space-y-3 pl-2 border-l-2 border-gray-700">
@@ -510,6 +535,7 @@ function ArmorTrackSection({
                   targetStage={p.targetStage}
                   stages={stages}
                   zoneGroups={zoneGroups}
+                  glowStages={glowStages}
                   onSelectTarget={isStarted
                     ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                     : () => {}}

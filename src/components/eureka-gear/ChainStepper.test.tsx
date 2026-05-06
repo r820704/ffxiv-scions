@@ -1,7 +1,12 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { ChainStepper } from './ChainStepper';
-import { ANEMOS_ARMOR_STAGES, ELEMENTAL_ARMOR_STAGES } from '../../types/eureka-gear';
+import {
+  ANEMOS_ARMOR_STAGES,
+  ELEMENTAL_ARMOR_STAGES,
+  WEAPON_GLOW_STAGES,
+  ELEMENTAL_ARMOR_GLOW_STAGES,
+} from '../../types/eureka-gear';
 
 afterEach(() => cleanup());
 
@@ -136,8 +141,14 @@ describe('ChainStepper', () => {
 });
 
 describe('ChainStepper glow stage marking', () => {
-  it('marks anemos / pyros / eureka / physeos buttons with data-glow on weapon track', () => {
-    render(<ChainStepper currentStage="anemos" onSelectTarget={() => {}} />);
+  it('marks anemos / pyros / eureka / physeos buttons with data-glow when weapon glowStages is passed', () => {
+    render(
+      <ChainStepper
+        currentStage="anemos"
+        onSelectTarget={() => {}}
+        glowStages={WEAPON_GLOW_STAGES}
+      />
+    );
     const buttons = screen.getAllByRole('button', { name: /^stage \d+:/ });
     // EUREKA_STAGES indices: anemos=4, pyros=10, eureka=14, physeos=15
     expect(buttons[4]?.getAttribute('data-glow')).toBe('true');
@@ -146,24 +157,36 @@ describe('ChainStepper glow stage marking', () => {
     expect(buttons[15]?.getAttribute('data-glow')).toBe('true');
   });
 
-  it('does not mark elemental as glow (regression)', () => {
-    render(<ChainStepper currentStage="anemos" onSelectTarget={() => {}} />);
+  it('does not mark elemental base as glow on weapon track (regression: elemental does not glow)', () => {
+    render(
+      <ChainStepper
+        currentStage="anemos"
+        onSelectTarget={() => {}}
+        glowStages={WEAPON_GLOW_STAGES}
+      />
+    );
     const buttons = screen.getAllByRole('button', { name: /^stage \d+:/ });
-    // elemental is idx 7
+    // elemental is idx 7 in EUREKA_STAGES
     expect(buttons[7]?.getAttribute('data-glow')).toBe(null);
   });
 
-  it('renders visible 發光 label for glow stages on weapon track', () => {
-    render(<ChainStepper currentStage="anemos" onSelectTarget={() => {}} />);
-    // Every button has a label (for layout alignment); only glow ones are visible.
-    const visibleLabels = screen
-      .getAllByText('發光')
-      .filter((el) => !el.classList.contains('invisible'));
-    // anemos / pyros / eureka / physeos = 4 visible labels
-    expect(visibleLabels.length).toBe(4);
+  it('marks elemental+1 / +2 with data-glow when elemental armor glowStages is passed', () => {
+    render(
+      <ChainStepper
+        currentStage="elemental"
+        onSelectTarget={() => {}}
+        stages={ELEMENTAL_ARMOR_STAGES}
+        glowStages={ELEMENTAL_ARMOR_GLOW_STAGES}
+      />
+    );
+    const buttons = screen.getAllByRole('button', { name: /^stage \d+:/ });
+    // ELEMENTAL_ARMOR_STAGES = [elemental, elemental+1, elemental+2]
+    expect(buttons[0]?.getAttribute('data-glow')).toBe(null);
+    expect(buttons[1]?.getAttribute('data-glow')).toBe('true');
+    expect(buttons[2]?.getAttribute('data-glow')).toBe('true');
   });
 
-  it('does not show visible glow labels on armor track (shorter sequence)', () => {
+  it('does not mark any stage as glow on anemos armor track (no glowStages)', () => {
     render(
       <ChainStepper
         currentStage="anemos"
@@ -173,9 +196,16 @@ describe('ChainStepper glow stage marking', () => {
     );
     const buttons = screen.getAllByRole('button', { name: /^stage \d+:/ });
     buttons.forEach((b) => expect(b.getAttribute('data-glow')).toBe(null));
-    const visibleLabels = screen
-      .queryAllByText('發光')
-      .filter((el) => !el.classList.contains('invisible'));
-    expect(visibleLabels.length).toBe(0);
+  });
+
+  it('does not render 發光 text label anywhere (legend approach replaces per-button labels)', () => {
+    render(
+      <ChainStepper
+        currentStage="anemos"
+        onSelectTarget={() => {}}
+        glowStages={WEAPON_GLOW_STAGES}
+      />
+    );
+    expect(screen.queryByText('發光')).not.toBeInTheDocument();
   });
 });
