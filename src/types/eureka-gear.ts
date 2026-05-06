@@ -90,9 +90,9 @@ export const STAGE_ITEM_LEVELS: Record<EurekaStage, number> = {
   anemos: 355,
   pagos: 360,
   'pagos+1': 365,
-  elemental: 370,
-  'elemental+1': 375,
-  'elemental+2': 380,
+  elemental: 380,
+  'elemental+1': 390,
+  'elemental+2': 390,
   pyros: 385,
   hydatos: 390,
   'hydatos+1': 395,
@@ -107,10 +107,27 @@ export const STAGE_ITEM_LEVELS: Record<EurekaStage, number> = {
  * - pyros (iL 385): white-blue flame particle effect
  * - eureka (iL 405): swirling particle effects (final appearance)
  * - physeos (iL 405): inherits eureka particle effects
+ *
+ * NOTE: the `anemos` stage key is also reused on the anemos armor track,
+ * but the armor at that stage does NOT glow (only weapons do). Use
+ * ELEMENTAL_ARMOR_GLOW_STAGES for the elemental armor track instead.
+ *
  * Source: ffxiv.consolegameswiki.com + in-game verification.
  */
 export const WEAPON_GLOW_STAGES: ReadonlySet<EurekaStage> = new Set([
   'anemos', 'pyros', 'eureka', 'physeos',
+]);
+
+/**
+ * Stages whose completed elemental armor visually glows in-game.
+ * - elemental+1 (iL 390): recolored with added glowing light effects
+ * - elemental+2 (iL 390): visually identical to +1 (only adds Eureka stat bonus)
+ *
+ * The base `elemental` stage does not glow.
+ * Source: ffxiv.consolegameswiki.com/wiki/Eurekan_Armor.
+ */
+export const ELEMENTAL_ARMOR_GLOW_STAGES: ReadonlySet<EurekaStage> = new Set([
+  'elemental+1', 'elemental+2',
 ]);
 
 export const STAGE_TC_LABEL: Record<EurekaStage, string> = {

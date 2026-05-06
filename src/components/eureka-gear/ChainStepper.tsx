@@ -1,4 +1,4 @@
-import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME, ZONE_ENDPOINT_TC_NAME, WEAPON_GLOW_STAGES } from '../../types/eureka-gear';
+import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME, ZONE_ENDPOINT_TC_NAME } from '../../types/eureka-gear';
 import type { ArmorZoneGroupDef, EurekaStage, EurekaZone } from '../../types/eureka-gear';
 import { Tooltip } from '../ui/Tooltip';
 
@@ -23,6 +23,8 @@ export type ChainStepperProps = {
   stages?: readonly EurekaStage[];
   /** When provided, render zone group labels (for armor tracks). */
   zoneGroups?: readonly ArmorZoneGroupDef[];
+  /** Stages that should render with an amber halo to indicate the in-game gear glows. */
+  glowStages?: ReadonlySet<EurekaStage>;
 };
 
 function stageState(
@@ -88,7 +90,7 @@ function groupByZone(seq: readonly EurekaStage[]): ZoneGroup[] {
   return groups;
 }
 
-export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSelectStart, pendingStartActive, stages, zoneGroups }: ChainStepperProps) {
+export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSelectStart, pendingStartActive, stages, zoneGroups, glowStages }: ChainStepperProps) {
   const seq = stages ?? EUREKA_STAGES;
   // currentStage === null → currentIdx -1, which stageState reads as "not started".
   const currentIdx = currentStage ? seq.indexOf(currentStage) : -1;
@@ -98,38 +100,27 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
   const renderButton = (stage: EurekaStage, i: number) => {
     const state = stageState(i, currentIdx, targetIdx, pendingStartActive ?? false);
     const isFirstNotStarted = i === 0 && currentIdx < 0;
-    const isGlow = WEAPON_GLOW_STAGES.has(stage) && (seq === EUREKA_STAGES);
-    // Always reserve space for the 發光 label so glow / non-glow buttons align;
-    // the label itself is only visible on glow stages.
+    const isGlow = glowStages?.has(stage) ?? false;
     return (
-      <div key={stage} className="flex flex-col items-center gap-0.5">
-        <button
-          type="button"
-          data-state={state}
-          data-glow={isGlow ? 'true' : undefined}
-          aria-label={`stage ${i + 1}: ${stage}${isGlow ? '（發光階段）' : ''}`}
-          className={`w-10 h-10 md:w-7 md:h-7 rounded-full text-sm md:text-xs font-bold flex items-center justify-center transition ${STATE_STYLE[state]} ${
-            isGlow ? 'shadow-[0_0_6px_2px_rgba(251,191,36,0.55)]' : ''
-          }`}
-          onClick={() => {
-            if (isFirstNotStarted && onSelectStart) {
-              onSelectStart();
-            } else {
-              onSelectTarget(stage);
-            }
-          }}
-        >
-          {i + 1}
-        </button>
-        <span
-          aria-hidden={isGlow ? undefined : 'true'}
-          className={`text-[9px] leading-none font-medium select-none ${
-            isGlow ? 'text-amber-400' : 'invisible'
-          }`}
-        >
-          發光
-        </span>
-      </div>
+      <button
+        key={stage}
+        type="button"
+        data-state={state}
+        data-glow={isGlow ? 'true' : undefined}
+        aria-label={`stage ${i + 1}: ${stage}${isGlow ? '（發光階段）' : ''}`}
+        className={`w-10 h-10 md:w-7 md:h-7 rounded-full text-sm md:text-xs font-bold flex items-center justify-center transition ${STATE_STYLE[state]} ${
+          isGlow ? 'shadow-[0_0_6px_2px_rgba(251,191,36,0.55)]' : ''
+        }`}
+        onClick={() => {
+          if (isFirstNotStarted && onSelectStart) {
+            onSelectStart();
+          } else {
+            onSelectTarget(stage);
+          }
+        }}
+      >
+        {i + 1}
+      </button>
     );
   };
 
