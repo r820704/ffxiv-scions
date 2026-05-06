@@ -109,7 +109,9 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
         data-glow={isGlow ? 'true' : undefined}
         aria-label={`stage ${i + 1}: ${stage}${isGlow ? '（發光階段）' : ''}`}
         className={`w-10 h-10 md:w-7 md:h-7 rounded-full text-sm md:text-xs font-bold flex items-center justify-center transition ${STATE_STYLE[state]} ${
-          isGlow ? 'shadow-[0_0_6px_2px_rgba(251,191,36,0.55)]' : ''
+          // drop-shadow uses CSS filter, not box-shadow, so it coexists with the
+          // current/target ring (which uses box-shadow via Tailwind ring-*).
+          isGlow ? 'drop-shadow-[0_0_4px_rgba(251,191,36,0.95)]' : ''
         }`}
         onClick={() => {
           if (isFirstNotStarted && onSelectStart) {
