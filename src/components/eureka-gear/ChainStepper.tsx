@@ -99,6 +99,8 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
     const state = stageState(i, currentIdx, targetIdx, pendingStartActive ?? false);
     const isFirstNotStarted = i === 0 && currentIdx < 0;
     const isGlow = WEAPON_GLOW_STAGES.has(stage) && (seq === EUREKA_STAGES);
+    // Always reserve space for the 發光 label so glow / non-glow buttons align;
+    // the label itself is only visible on glow stages.
     return (
       <div key={stage} className="flex flex-col items-center gap-0.5">
         <button
@@ -119,9 +121,14 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
         >
           {i + 1}
         </button>
-        {isGlow && (
-          <span className="text-[9px] leading-none text-amber-400 font-medium select-none">發光</span>
-        )}
+        <span
+          aria-hidden={isGlow ? undefined : 'true'}
+          className={`text-[9px] leading-none font-medium select-none ${
+            isGlow ? 'text-amber-400' : 'invisible'
+          }`}
+        >
+          發光
+        </span>
       </div>
     );
   };

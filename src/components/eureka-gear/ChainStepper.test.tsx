@@ -153,14 +153,17 @@ describe('ChainStepper glow stage marking', () => {
     expect(buttons[7]?.getAttribute('data-glow')).toBe(null);
   });
 
-  it('renders 發光 label for glow stages on weapon track', () => {
+  it('renders visible 發光 label for glow stages on weapon track', () => {
     render(<ChainStepper currentStage="anemos" onSelectTarget={() => {}} />);
-    const labels = screen.getAllByText('發光');
-    // anemos / pyros / eureka / physeos = 4 labels
-    expect(labels.length).toBe(4);
+    // Every button has a label (for layout alignment); only glow ones are visible.
+    const visibleLabels = screen
+      .getAllByText('發光')
+      .filter((el) => !el.classList.contains('invisible'));
+    // anemos / pyros / eureka / physeos = 4 visible labels
+    expect(visibleLabels.length).toBe(4);
   });
 
-  it('does not show glow markers on armor track (shorter sequence)', () => {
+  it('does not show visible glow labels on armor track (shorter sequence)', () => {
     render(
       <ChainStepper
         currentStage="anemos"
@@ -170,6 +173,9 @@ describe('ChainStepper glow stage marking', () => {
     );
     const buttons = screen.getAllByRole('button', { name: /^stage \d+:/ });
     buttons.forEach((b) => expect(b.getAttribute('data-glow')).toBe(null));
-    expect(screen.queryByText('發光')).not.toBeInTheDocument();
+    const visibleLabels = screen
+      .queryAllByText('發光')
+      .filter((el) => !el.classList.contains('invisible'));
+    expect(visibleLabels.length).toBe(0);
   });
 });
