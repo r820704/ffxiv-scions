@@ -134,3 +134,42 @@ describe('ChainStepper', () => {
     expect(onSelectTarget).toHaveBeenCalledWith('antiquated');
   });
 });
+
+describe('ChainStepper glow stage marking', () => {
+  it('marks anemos / pyros / eureka / physeos buttons with data-glow on weapon track', () => {
+    render(<ChainStepper currentStage="anemos" onSelectTarget={() => {}} />);
+    const buttons = screen.getAllByRole('button', { name: /^stage \d+:/ });
+    // EUREKA_STAGES indices: anemos=4, pyros=10, eureka=14, physeos=15
+    expect(buttons[4]?.getAttribute('data-glow')).toBe('true');
+    expect(buttons[10]?.getAttribute('data-glow')).toBe('true');
+    expect(buttons[14]?.getAttribute('data-glow')).toBe('true');
+    expect(buttons[15]?.getAttribute('data-glow')).toBe('true');
+  });
+
+  it('does not mark elemental as glow (regression)', () => {
+    render(<ChainStepper currentStage="anemos" onSelectTarget={() => {}} />);
+    const buttons = screen.getAllByRole('button', { name: /^stage \d+:/ });
+    // elemental is idx 7
+    expect(buttons[7]?.getAttribute('data-glow')).toBe(null);
+  });
+
+  it('renders 發光 label for glow stages on weapon track', () => {
+    render(<ChainStepper currentStage="anemos" onSelectTarget={() => {}} />);
+    const labels = screen.getAllByText('發光');
+    // anemos / pyros / eureka / physeos = 4 labels
+    expect(labels.length).toBe(4);
+  });
+
+  it('does not show glow markers on armor track (shorter sequence)', () => {
+    render(
+      <ChainStepper
+        currentStage="anemos"
+        onSelectTarget={() => {}}
+        stages={ANEMOS_ARMOR_STAGES}
+      />
+    );
+    const buttons = screen.getAllByRole('button', { name: /^stage \d+:/ });
+    buttons.forEach((b) => expect(b.getAttribute('data-glow')).toBe(null));
+    expect(screen.queryByText('發光')).not.toBeInTheDocument();
+  });
+});

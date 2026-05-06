@@ -101,6 +101,18 @@ export const STAGE_ITEM_LEVELS: Record<EurekaStage, number> = {
   physeos: 405,
 };
 
+/**
+ * Stages whose completed weapon visually glows in-game.
+ * - anemos (iL 355): subtle shimmer on the final Anemos form
+ * - pyros (iL 385): white-blue flame particle effect
+ * - eureka (iL 405): swirling particle effects (final appearance)
+ * - physeos (iL 405): inherits eureka particle effects
+ * Source: ffxiv.consolegameswiki.com + in-game verification.
+ */
+export const WEAPON_GLOW_STAGES: ReadonlySet<EurekaStage> = new Set([
+  'anemos', 'pyros', 'eureka', 'physeos',
+]);
+
 export const STAGE_TC_LABEL: Record<EurekaStage, string> = {
   antiquated: '70級職業套裝',
   'anemos-base': '禁地兵裝',

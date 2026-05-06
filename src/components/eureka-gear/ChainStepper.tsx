@@ -1,4 +1,4 @@
-import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME, ZONE_ENDPOINT_TC_NAME } from '../../types/eureka-gear';
+import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME, ZONE_ENDPOINT_TC_NAME, WEAPON_GLOW_STAGES } from '../../types/eureka-gear';
 import type { ArmorZoneGroupDef, EurekaStage, EurekaZone } from '../../types/eureka-gear';
 import { Tooltip } from '../ui/Tooltip';
 
@@ -98,23 +98,31 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
   const renderButton = (stage: EurekaStage, i: number) => {
     const state = stageState(i, currentIdx, targetIdx, pendingStartActive ?? false);
     const isFirstNotStarted = i === 0 && currentIdx < 0;
+    const isGlow = WEAPON_GLOW_STAGES.has(stage) && (seq === EUREKA_STAGES);
     return (
-      <button
-        key={stage}
-        type="button"
-        data-state={state}
-        aria-label={`stage ${i + 1}: ${stage}`}
-        className={`w-10 h-10 md:w-7 md:h-7 rounded-full text-sm md:text-xs font-bold flex items-center justify-center transition ${STATE_STYLE[state]}`}
-        onClick={() => {
-          if (isFirstNotStarted && onSelectStart) {
-            onSelectStart();
-          } else {
-            onSelectTarget(stage);
-          }
-        }}
-      >
-        {i + 1}
-      </button>
+      <div key={stage} className="flex flex-col items-center gap-0.5">
+        <button
+          type="button"
+          data-state={state}
+          data-glow={isGlow ? 'true' : undefined}
+          aria-label={`stage ${i + 1}: ${stage}${isGlow ? '（發光階段）' : ''}`}
+          className={`w-10 h-10 md:w-7 md:h-7 rounded-full text-sm md:text-xs font-bold flex items-center justify-center transition ${STATE_STYLE[state]} ${
+            isGlow ? 'shadow-[0_0_6px_2px_rgba(251,191,36,0.55)]' : ''
+          }`}
+          onClick={() => {
+            if (isFirstNotStarted && onSelectStart) {
+              onSelectStart();
+            } else {
+              onSelectTarget(stage);
+            }
+          }}
+        >
+          {i + 1}
+        </button>
+        {isGlow && (
+          <span className="text-[9px] leading-none text-amber-400 font-medium select-none">發光</span>
+        )}
+      </div>
     );
   };
 

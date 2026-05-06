@@ -5,6 +5,7 @@ import {
   ANEMOS_ARMOR_STAGES,
   ANEMOS_ARMOR_ZONE_GROUPS,
   WEAPON_ZONE_GROUPS,
+  WEAPON_GLOW_STAGES,
   type EurekaStage,
   type EurekaWeapon,
 } from '../../types/eureka-gear';
@@ -12,10 +13,6 @@ import { ArmorDots } from './ArmorDots';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
 import type { JobProgress } from '../../utils/eurekaGear';
-
-const WEAPON_GLOW_STAGES = new Set<EurekaStage>([
-  'anemos', 'elemental', 'pyros', 'eureka', 'physeos',
-]);
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,

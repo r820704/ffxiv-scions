@@ -46,8 +46,13 @@ export function ChainFingerprint({
         key={stage}
         data-dot
         data-filled={isFilled ? 'true' : 'false'}
+        data-glow={isGlow ? 'true' : undefined}
         className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${
-          isFilled ? (isGlow ? 'bg-amber-400' : 'bg-green-400') : 'bg-gray-600'
+          isFilled
+            ? isGlow
+              ? 'bg-amber-400 shadow-[0_0_4px_rgba(251,191,36,0.9)]'
+              : 'bg-green-400'
+            : 'bg-gray-600'
         }`}
       />
     );
