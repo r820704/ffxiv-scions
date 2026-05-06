@@ -28,7 +28,7 @@ describe('NextEdgeShortage', () => {
     const { container } = render(
       <NextEdgeShortage inventory={inv} materialsMap={looseMap} />,
     );
-    expect(container.querySelector('section[aria-label="下一階段最缺素材"]')).not.toBeNull();
+    expect(container.querySelector('section[aria-label="升下一階差多少素材"]')).not.toBeNull();
   });
 
   it('hides the section once the player has enough for every next-edge material', () => {

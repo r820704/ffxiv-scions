@@ -129,8 +129,13 @@ export function DetailTab({
   const [resetDialogRef, setResetDialogRef] = useState<{ ref: ChainRef; label: string } | null>(null);
   const [weaponExpanded, setWeaponExpanded] = useState<Record<string, boolean>>({});
   const [pendingStartChain, setPendingStartChain] = useState<string | null>(null);
+  const [pendingStartTarget, setPendingStartTarget] = useState<EurekaStage | null>(null);
 
-  useEffect(() => { setWeaponExpanded({}); setPendingStartChain(null); }, [selectedJob]);
+  useEffect(() => {
+    setWeaponExpanded({});
+    setPendingStartChain(null);
+    setPendingStartTarget(null);
+  }, [selectedJob]);
 
   const primaryChains = progress.weapons.filter(({ chainId }) => {
     const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
@@ -260,12 +265,21 @@ export function DetailTab({
                 <div className="space-y-2">
                   <ChainStepper
                     currentStage={stepperCurrent}
-                    targetStage={p.targetStage}
+                    targetStage={isStarted ? p.targetStage : (isPendingStart ? pendingStartTarget ?? undefined : undefined)}
                     glowStages={WEAPON_GLOW_STAGES}
                     onSelectTarget={isStarted
                       ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                       : () => {}}
-                    onSelectStart={!isStarted ? () => setPendingStartChain((prev) => prev === chainId ? null : chainId) : undefined}
+                    onSelectStart={!isStarted ? (clickedStage) => {
+                      const goal = clickedStage === 'antiquated' ? null : clickedStage;
+                      if (pendingStartChain === chainId && pendingStartTarget === goal) {
+                        setPendingStartChain(null);
+                        setPendingStartTarget(null);
+                      } else {
+                        setPendingStartChain(chainId);
+                        setPendingStartTarget(goal);
+                      }
+                    } : undefined}
                     pendingStartActive={isPendingStart}
                   />
                   <StageListPanel
@@ -287,8 +301,18 @@ export function DetailTab({
                     targetLabel={targetInfo?.tcName}
                     showStartPanel={!isStarted && pendingStartChain === chainId}
                     startHint="完成70級職業任務"
-                    onStartChain={!isStarted ? () => { onStartChain(ref); setPendingStartChain(null); } : undefined}
-                    onClearStart={!isStarted ? () => setPendingStartChain(null) : undefined}
+                    pendingStartTargetStage={isPendingStart && pendingStartTarget ? pendingStartTarget : undefined}
+                    pendingStartTargetLabel={isPendingStart && pendingStartTarget ? weaponInfoAt(weapons, chainId, pendingStartTarget)?.tcName : undefined}
+                    onStartChain={!isStarted ? () => {
+                      onStartChain(ref);
+                      if (pendingStartTarget) onSetTarget(ref, pendingStartTarget);
+                      setPendingStartChain(null);
+                      setPendingStartTarget(null);
+                    } : undefined}
+                    onClearStart={!isStarted ? () => {
+                      setPendingStartChain(null);
+                      setPendingStartTarget(null);
+                    } : undefined}
                   />
                 </div>
               </AccordionItem>
@@ -432,6 +456,7 @@ function ArmorTrackSection({
   });
   const [sectionExpanded, setSectionExpanded] = useState(true);
   const [pendingStartSlot, setPendingStartSlot] = useState<ArmorSlot | null>(null);
+  const [pendingStartTarget, setPendingStartTarget] = useState<EurekaStage | null>(null);
 
   useEffect(() => {
     if (globalExpand == null) return;
@@ -532,14 +557,23 @@ function ArmorTrackSection({
               <div className="space-y-2">
                 <ChainStepper
                   currentStage={stepperCurrent}
-                  targetStage={p.targetStage}
+                  targetStage={isStarted ? p.targetStage : (isPendingStart ? pendingStartTarget ?? undefined : undefined)}
                   stages={stages}
                   zoneGroups={zoneGroups}
                   glowStages={glowStages}
                   onSelectTarget={isStarted
                     ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
                     : () => {}}
-                  onSelectStart={!isStarted ? () => setPendingStartSlot((prev) => prev === slot ? null : slot) : undefined}
+                  onSelectStart={!isStarted ? (clickedStage) => {
+                    const goal = clickedStage === stages[0] ? null : clickedStage;
+                    if (pendingStartSlot === slot && pendingStartTarget === goal) {
+                      setPendingStartSlot(null);
+                      setPendingStartTarget(null);
+                    } else {
+                      setPendingStartSlot(slot);
+                      setPendingStartTarget(goal);
+                    }
+                  } : undefined}
                   pendingStartActive={isPendingStart}
                 />
                 <StageListPanel
@@ -564,8 +598,22 @@ function ArmorTrackSection({
                   targetLabel={targetLabel}
                   showStartPanel={!isStarted && pendingStartSlot === slot}
                   startHint={startHint}
-                  onStartChain={!isStarted ? () => { onStartChain?.(ref, stages[0] as EurekaStage); setPendingStartSlot(null); } : undefined}
-                  onClearStart={!isStarted ? () => setPendingStartSlot(null) : undefined}
+                  pendingStartTargetStage={isPendingStart && pendingStartTarget ? pendingStartTarget : undefined}
+                  pendingStartTargetLabel={
+                    isPendingStart && pendingStartTarget
+                      ? (getItemName?.(slot, pendingStartTarget) ?? STAGE_TC_LABEL[pendingStartTarget])
+                      : undefined
+                  }
+                  onStartChain={!isStarted ? () => {
+                    onStartChain?.(ref, stages[0] as EurekaStage);
+                    if (pendingStartTarget) onSetTarget(ref, pendingStartTarget);
+                    setPendingStartSlot(null);
+                    setPendingStartTarget(null);
+                  } : undefined}
+                  onClearStart={!isStarted ? () => {
+                    setPendingStartSlot(null);
+                    setPendingStartTarget(null);
+                  } : undefined}
                 />
               </div>
             </AccordionItem>

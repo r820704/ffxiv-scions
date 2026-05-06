@@ -138,6 +138,25 @@ describe('ChainStepper', () => {
     fireEvent.click(buttons[0]!);
     expect(onSelectTarget).toHaveBeenCalledWith('antiquated');
   });
+
+  it('forwards the clicked stage to onSelectStart when chain not started (any stage, not just stage 1)', () => {
+    const onSelectStart = vi.fn();
+    const onSelectTarget = vi.fn();
+    render(
+      <ChainStepper
+        currentStage={null}
+        onSelectStart={onSelectStart}
+        onSelectTarget={onSelectTarget}
+      />,
+    );
+    const buttons = screen.getAllByRole('button', { name: /^stage \d+:/ });
+    // Click stage 5 (anemos) on a not-started chain.
+    fireEvent.click(buttons[4]!);
+    expect(onSelectStart).toHaveBeenCalledWith('anemos');
+    // onSelectTarget must not fire while not-started — the parent decides
+    // how to handle the click via the start flow instead.
+    expect(onSelectTarget).not.toHaveBeenCalled();
+  });
 });
 
 describe('ChainStepper glow stage marking', () => {

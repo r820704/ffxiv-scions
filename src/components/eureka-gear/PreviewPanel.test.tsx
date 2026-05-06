@@ -173,5 +173,27 @@ describe('PreviewPanel', () => {
       fireEvent.click(screen.getByRole('button', { name: /設為目前階段/ }));
       expect(onStartChain).toHaveBeenCalledOnce();
     });
+
+    it('shows full antiquated → pendingStartTargetStage path when target is preset', () => {
+      render(
+        <PreviewPanel
+          currentStage="antiquated"
+          targetStage={undefined}
+          inventory={{}}
+          onSetCurrent={() => {}}
+          onClearTarget={() => {}}
+          materialsMap={materials}
+          showStartPanel
+          startHint="前置：完成 70 級職業任務"
+          onStartChain={() => {}}
+          pendingStartTargetStage="anemos"
+          pendingStartTargetLabel="嘉拉汀·常風"
+        />,
+      );
+      // Heading switches from "獲得 X 需要" to "從 X → Y 需要" when target preset.
+      expect(screen.getByText(/從.*→.*嘉拉汀·常風.*需要/)).toBeInTheDocument();
+      // Confirm button label mentions both start AND target.
+      expect(screen.getByRole('button', { name: /設目標.*嘉拉汀·常風/ })).toBeInTheDocument();
+    });
   });
 });
