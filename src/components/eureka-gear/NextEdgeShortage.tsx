@@ -109,10 +109,10 @@ export function NextEdgeShortage({ inventory, materialsMap }: NextEdgeShortagePr
 
   return (
     <section
-      aria-label="下一階段最缺素材"
+      aria-label="升下一階差多少素材"
       className="bg-amber-950/30 border border-amber-700/40 rounded p-3 mb-3"
     >
-      <h3 className="text-sm font-bold text-amber-300 mb-2">⚡ 下一階段最缺（前 {top.length} 名）</h3>
+      <h3 className="text-sm font-bold text-amber-300 mb-2">⚡ 升下一階差多少（前 {top.length} 名）</h3>
       <ul className="space-y-1">
         {top.map(({ materialId, shortage, totalNeeded, have }) => {
           const meta = materialsMap[materialId];

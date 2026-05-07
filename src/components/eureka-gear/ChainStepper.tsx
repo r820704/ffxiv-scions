@@ -15,8 +15,12 @@ export type ChainStepperProps = {
   currentStage: EurekaStage | null;
   targetStage?: EurekaStage;
   onSelectTarget: (stage: EurekaStage) => void;
-  /** Called instead of onSelectTarget when stage 1 is clicked and chain is not started. */
-  onSelectStart?: () => void;
+  /**
+   * Called instead of onSelectTarget when the chain is not started yet.
+   * Receives the clicked stage so the caller can both initiate the start
+   * flow and remember the user's desired target in one go.
+   */
+  onSelectStart?: (stage: EurekaStage) => void;
   /** When true and chain is not started, render stage 1 with the target-style ring. */
   pendingStartActive?: boolean;
   /** Optional stage sequence for armor tracks (shorter than EUREKA_STAGES). */
@@ -99,7 +103,7 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
 
   const renderButton = (stage: EurekaStage, i: number) => {
     const state = stageState(i, currentIdx, targetIdx, pendingStartActive ?? false);
-    const isFirstNotStarted = i === 0 && currentIdx < 0;
+    const notStarted = currentIdx < 0;
     const isGlow = glowStages?.has(stage) ?? false;
     return (
       <button
@@ -114,8 +118,11 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
           isGlow ? 'drop-shadow-[0_0_4px_rgba(251,191,36,0.95)]' : ''
         }`}
         onClick={() => {
-          if (isFirstNotStarted && onSelectStart) {
-            onSelectStart();
+          // While not started, clicking any stage funnels into onSelectStart so
+          // the caller can both kick off the start flow and remember the
+          // desired target in one click.
+          if (notStarted && onSelectStart) {
+            onSelectStart(stage);
           } else {
             onSelectTarget(stage);
           }

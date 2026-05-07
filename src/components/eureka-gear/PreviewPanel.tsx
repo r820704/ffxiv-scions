@@ -4,6 +4,17 @@ import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { EUREKA_STAGES, STAGE_TC_LABEL } from '../../types/eureka-gear';
 import type { ArmorSlot, EurekaStage, StageUpgradeCost } from '../../types/eureka-gear';
 
+const MATERIAL_ICON_MODULES = import.meta.glob('../../assets/material-icons/*.png', {
+  eager: true,
+  import: 'default',
+}) as Record<string, string>;
+const MATERIAL_ICONS: Record<number, string> = Object.fromEntries(
+  Object.entries(MATERIAL_ICON_MODULES).map(([path, url]) => {
+    const match = path.match(/(\d+)\.png$/);
+    return [match ? Number(match[1]) : 0, url];
+  }),
+);
+
 export type PreviewPanelProps = {
   currentStage: EurekaStage;
   targetStage: EurekaStage | undefined;
@@ -26,6 +37,15 @@ export type PreviewPanelProps = {
   onStartChain?: () => void;
   /** Optional cancel callback for the start panel; renders a clear button when provided. */
   onClearStart?: () => void;
+  /**
+   * When the start panel is active and the user clicked a stage past the
+   * starting one, show the full antiquated → pendingStartTargetStage cost so
+   * they can preview the whole upgrade path before confirming. The single
+   * confirm action both starts the chain (current = first stage) and sets
+   * pendingStartTargetStage as the target.
+   */
+  pendingStartTargetStage?: EurekaStage;
+  pendingStartTargetLabel?: string;
 };
 
 export function PreviewPanel({
@@ -44,6 +64,8 @@ export function PreviewPanel({
   startHint,
   onStartChain,
   onClearStart,
+  pendingStartTargetStage,
+  pendingStartTargetLabel,
 }: PreviewPanelProps) {
   const seq = stages ?? EUREKA_STAGES;
   const currentIdx = seq.indexOf(currentStage);
@@ -70,35 +92,53 @@ export function PreviewPanel({
   const startMaterials = useMemo(
     () => {
       if (!showStartPanel) return [];
-      return costBetweenInSequence('antiquated', currentStage, seq, costs ?? STAGE_UPGRADE_COSTS, slot);
+      // When user clicked a later stage as their desired goal, preview the
+      // FULL chain cost (first stage → pendingStartTargetStage). Otherwise
+      // fall back to the legacy "antiquated → currentStage" path.
+      const endStage = pendingStartTargetStage ?? currentStage;
+      return costBetweenInSequence('antiquated', endStage, seq, costs ?? STAGE_UPGRADE_COSTS, slot);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [showStartPanel, currentStage, slot],
+    [showStartPanel, currentStage, pendingStartTargetStage, slot],
   );
+
+  const renderMaterialRow = (m: { materialId: number; quantity: number }) => {
+    const have = inventory[m.materialId] ?? 0;
+    const meta = materialsMap[m.materialId];
+    const name = meta?.nameTC ?? `#${m.materialId}`;
+    const iconUrl = MATERIAL_ICONS[meta?.icon ?? 0];
+    const short = Math.max(0, m.quantity - have);
+    return (
+      <li key={m.materialId} className="flex items-center justify-between gap-2">
+        <span className="flex items-center gap-2 min-w-0">
+          {iconUrl && <img src={iconUrl} alt="" aria-hidden="true" className="w-5 h-5 shrink-0" loading="lazy" />}
+          <span className="truncate">{name} × {m.quantity}</span>
+        </span>
+        <span className={`shrink-0 ${short === 0 ? 'text-green-400' : 'text-red-400'}`}>
+          有 {have}{short > 0 ? ` / 缺 ${short}` : ' ✓'}
+        </span>
+      </li>
+    );
+  };
 
   if (direction === 'none') {
     if (showStartPanel && onStartChain) {
-      const stageName = currentLabel ?? STAGE_TC_LABEL[currentStage];
+      const startName = currentLabel ?? STAGE_TC_LABEL[currentStage];
+      const targetName = pendingStartTargetStage
+        ? (pendingStartTargetLabel ?? STAGE_TC_LABEL[pendingStartTargetStage])
+        : null;
+      const heading = targetName
+        ? `從 ${startName} → ${targetName} 需要`
+        : `獲得 ${startName} 需要`;
+      const buttonLabel = targetName
+        ? `⬆ 📍 設為目前階段 (${startName})，並設目標 (${targetName})`
+        : `⬆ 📍 設為目前階段 (${startName})`;
       return (
         <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
-          <div className="text-yellow-400 font-semibold mb-2">
-            獲得 {stageName} 需要
-          </div>
+          <div className="text-yellow-400 font-semibold mb-2">{heading}</div>
           {startMaterials.length > 0 && (
             <ul className="space-y-1 mb-3">
-              {startMaterials.map((m) => {
-                const have = inventory[m.materialId] ?? 0;
-                const name = materialsMap[m.materialId]?.nameTC ?? `#${m.materialId}`;
-                const short = Math.max(0, m.quantity - have);
-                return (
-                  <li key={m.materialId} className="flex justify-between">
-                    <span>{name} × {m.quantity}</span>
-                    <span className={short === 0 ? 'text-green-400' : 'text-red-400'}>
-                      有 {have}{short > 0 ? ` / 缺 ${short}` : ' ✓'}
-                    </span>
-                  </li>
-                );
-              })}
+              {startMaterials.map(renderMaterialRow)}
             </ul>
           )}
           {startHint && <p className="text-gray-400 mb-3">{startHint}</p>}
@@ -108,7 +148,7 @@ export function PreviewPanel({
               onClick={onStartChain}
               className="px-3 py-1.5 rounded font-bold text-sm bg-green-500 text-black"
             >
-              ⬆ 📍 設為目前階段 ({stageName})
+              {buttonLabel}
             </button>
             {onClearStart && (
               <button
@@ -138,19 +178,7 @@ export function PreviewPanel({
             從 {currentLabel ?? STAGE_TC_LABEL[currentStage]} → {targetStage ? (targetLabel ?? STAGE_TC_LABEL[targetStage]) : ''} 需要
           </div>
           <ul className="space-y-1 mb-3">
-            {materials.map((m) => {
-              const have = inventory[m.materialId] ?? 0;
-              const name = materialsMap[m.materialId]?.nameTC ?? `#${m.materialId}`;
-              const short = Math.max(0, m.quantity - have);
-              return (
-                <li key={m.materialId} className="flex justify-between">
-                  <span>{name} × {m.quantity}</span>
-                  <span className={short === 0 ? 'text-green-400' : 'text-red-400'}>
-                    有 {have}{short > 0 ? ` / 缺 ${short}` : ' ✓'}
-                  </span>
-                </li>
-              );
-            })}
+            {materials.map(renderMaterialRow)}
           </ul>
         </>
       ) : (

@@ -73,4 +73,23 @@ describe('StageListPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: /展開階段列表/ }));
     expect(screen.getByText('目標')).toBeInTheDocument();
   });
+
+  it('routes clicks to onSelectStart when chain not started and handler provided', () => {
+    const onSelectStart = vi.fn();
+    const onSelectTarget = vi.fn();
+    render(
+      <StageListPanel
+        stages={stages}
+        currentStage={null}
+        onSelectTarget={onSelectTarget}
+        onSelectStart={onSelectStart}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /展開階段列表/ }));
+    const rows = screen.getAllByRole('button');
+    // Click stage row 3 (anemos+1)
+    fireEvent.click(rows[3]!);
+    expect(onSelectStart).toHaveBeenCalledWith(stages[2]);
+    expect(onSelectTarget).not.toHaveBeenCalled();
+  });
 });
