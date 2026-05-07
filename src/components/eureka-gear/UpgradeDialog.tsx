@@ -23,13 +23,13 @@ export function UpgradeDialog({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 border-2 border-blue-500 rounded-lg p-5 max-w-md">
-        <h2 className="text-lg font-bold text-yellow-400 mb-3">
+      <div className="bg-card border border-border rounded-lg p-5 max-w-md">
+        <h2 className="text-lg font-bold text-primary mb-3">
           📍 設為目前階段：{targetStage}
         </h2>
-        <div className="text-sm text-gray-200 mb-4 leading-relaxed">
+        <div className="text-sm text-foreground mb-4 leading-relaxed">
           {direction === 'down' ? (
-            <p className="text-red-400">這會捨棄 {targetStage} 之後的進度。確定嗎？</p>
+            <p className="text-destructive">這會捨棄 {targetStage} 之後的進度。確定嗎？</p>
           ) : (
             <p>將此部位設為 {targetStage}。</p>
           )}
@@ -39,13 +39,13 @@ export function UpgradeDialog({
               <ul className="list-disc list-inside mt-1">
                 {sharedJobs.map((job) => (
                   <li key={job} className="inline-block mr-2">
-                    <span className="inline-block px-2 py-0.5 bg-blue-600 text-white rounded text-xs">
+                    <span className="inline-block px-2 py-0.5 bg-primary text-primary-foreground rounded text-xs">
                       {job}
                     </span>
                   </li>
                 ))}
               </ul>
-              <p className="text-xs text-gray-500 mt-1">（這些職業共用防具）</p>
+              <p className="text-xs text-muted-foreground mt-1">（這些職業共用防具）</p>
             </>
           )}
         </div>
@@ -53,7 +53,7 @@ export function UpgradeDialog({
           <button
             type="button"
             onClick={onCancel}
-            className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
+            className="px-3 py-1.5 rounded border border-border text-muted-foreground text-sm hover:text-foreground hover:border-primary transition-colors"
           >
             取消
           </button>
@@ -61,7 +61,9 @@ export function UpgradeDialog({
             type="button"
             onClick={onConfirm}
             className={`px-3 py-1.5 rounded font-bold text-sm ${
-              direction === 'down' ? 'bg-red-500 text-white' : 'bg-green-500 text-black'
+              direction === 'down'
+                ? 'bg-destructive text-white hover:bg-destructive/90'
+                : 'bg-emerald-600 text-white hover:bg-emerald-500'
             }`}
           >
             確定
