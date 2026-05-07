@@ -162,7 +162,7 @@ export default function EurekaPage() {
           <CalcModeToggle calcMode={calcMode} onChange={setCalcMode} />
           <AlbumStateBar
             learnedCount={learnedSkills.size}
-            total={56}
+            total={eurekaData.logosActions.length}
             disabled={calcMode === 'slots'}
             onLearnAll={learnAll}
             onReset={resetAll}

@@ -161,10 +161,6 @@ function aggregateMaterialsByZone(inv: EurekaInventoryV5, opts: AggOpts): ZoneAg
   return zoneAgg;
 }
 
-// referenced only to keep ArmorSlot type-import alive under strict unused checks
-const _ArmorSlotHint: ArmorSlot = 'head';
-void _ArmorSlotHint;
-
 function weaponInfoAt(weapons: EurekaWeapon[], chainId: string, stage: EurekaStage) {
   return weapons.find((w) => w.chainId === chainId && w.stage === stage);
 }
