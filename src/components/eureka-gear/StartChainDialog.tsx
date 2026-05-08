@@ -1,3 +1,11 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+
 export type StartChainDialogProps = {
   isOpen: boolean;
   onConfirm: () => void;
@@ -5,16 +13,17 @@ export type StartChainDialogProps = {
 };
 
 export function StartChainDialog({ isOpen, onConfirm, onCancel }: StartChainDialogProps) {
-  if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-card border border-border rounded-lg p-5 max-w-sm">
-        <h2 className="text-lg font-bold text-primary mb-3">標記為已開始</h2>
-        <p className="text-sm text-foreground mb-4 leading-relaxed">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="text-primary text-lg">標記為已開始</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-foreground leading-relaxed">
           起點裝備（antiquated）需透過 70 級職業任務取得，或從 Sundry Splendors 兌換。<br />
           確認你已持有，將此裝備鏈標記為已開始？
         </p>
-        <div className="flex gap-2 justify-end">
+        <DialogFooter>
           <button
             type="button"
             onClick={onCancel}
@@ -29,8 +38,8 @@ export function StartChainDialog({ isOpen, onConfirm, onCancel }: StartChainDial
           >
             確認已持有，標記為已開始
           </button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

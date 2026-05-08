@@ -6,10 +6,8 @@ afterEach(() => cleanup());
 
 describe('StartChainDialog', () => {
   it('renders nothing when isOpen is false', () => {
-    const { container } = render(
-      <StartChainDialog isOpen={false} onConfirm={vi.fn()} onCancel={vi.fn()} />
-    );
-    expect(container.firstChild).toBeNull();
+    render(<StartChainDialog isOpen={false} onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('renders dialog when isOpen is true', () => {
