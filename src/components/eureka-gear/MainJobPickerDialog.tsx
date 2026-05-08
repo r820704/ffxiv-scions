@@ -55,9 +55,9 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
       aria-label="設定我的職業"
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
     >
-      <div className="bg-gray-800 border-2 border-blue-500 rounded-lg p-5 max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <h2 className="text-lg font-bold text-yellow-400 mb-2">⭐ 設定我的職業</h2>
-        <p className="text-xs text-gray-400 mb-4">
+      <div className="bg-card border border-border rounded-lg p-5 max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <h2 className="text-lg font-bold text-primary mb-2">⭐ 設定我的職業</h2>
+        <p className="text-xs text-muted-foreground mb-4">
           選一個或多個自己常玩的職業，總覽會多一個「我的職業」chip 可以一鍵篩選。
         </p>
 
@@ -66,7 +66,7 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
             const jobs = setIds.flatMap((setId) => JOBS_FOR_ARMOR_SET[setId]);
             return (
               <div key={label}>
-                <div className="text-xs text-gray-500 mb-1">{label}</div>
+                <div className="text-xs text-muted-foreground mb-1">{label}</div>
                 <div className="flex flex-wrap gap-1.5">
                   {jobs.map((job) => {
                     const active = selected.has(job);
@@ -79,8 +79,8 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
                         onClick={() => toggle(job)}
                         className={`text-xs px-2 py-1 rounded border transition-colors ${
                           active
-                            ? 'bg-yellow-500 text-black border-yellow-300'
-                            : 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500'
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-secondary text-secondary-foreground border-border hover:border-primary'
                         }`}
                       >
                         {tc}
@@ -97,7 +97,7 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
           <button
             type="button"
             onClick={handleClear}
-            className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm hover:text-gray-200"
+            className="px-3 py-1.5 rounded border border-border text-muted-foreground text-sm hover:text-foreground"
           >
             全部清空
           </button>
@@ -105,14 +105,14 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
             <button
               type="button"
               onClick={onCancel}
-              className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
+              className="px-3 py-1.5 rounded border border-border text-muted-foreground text-sm hover:text-foreground hover:border-primary transition-colors"
             >
               取消
             </button>
             <button
               type="button"
               onClick={handleSave}
-              className="px-3 py-1.5 rounded font-bold text-sm bg-yellow-500 text-black"
+              className="px-3 py-1.5 rounded font-bold text-sm bg-primary text-primary-foreground"
             >
               儲存（{selected.size}）
             </button>
