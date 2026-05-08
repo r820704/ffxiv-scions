@@ -34,7 +34,7 @@ export function StartChainDialog({ isOpen, onConfirm, onCancel }: StartChainDial
           <button
             type="button"
             onClick={onConfirm}
-            className="px-3 py-1.5 rounded bg-emerald-600 text-white text-sm hover:bg-emerald-500"
+            className="px-3 py-1.5 rounded bg-success text-success-foreground text-sm hover:bg-success/90"
           >
             確認已持有，標記為已開始
           </button>

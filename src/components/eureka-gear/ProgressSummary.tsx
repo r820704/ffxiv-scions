@@ -58,15 +58,15 @@ export function ProgressSummary({ inventory }: ProgressSummaryProps) {
     >
       <span>📊 整體進度：</span>
       <span>
-        <span className="text-amber-400 font-semibold">武器</span>{' '}
+        <span className="text-primary font-semibold">武器</span>{' '}
         {stats.weaponJobs}/{TOTAL_WEAPON_JOBS} 職業已開始
       </span>
       <span>
-        <span className="text-emerald-400 font-semibold">常風防具</span>{' '}
+        <span className="text-success font-semibold">常風防具</span>{' '}
         {stats.anemos}/{TOTAL_ANEMOS_PIECES} 件已開始
       </span>
       <span>
-        <span className="text-cyan-300 font-semibold">元素防具</span>{' '}
+        <span className="text-night font-semibold">元素防具</span>{' '}
         {stats.elemental}/{TOTAL_ELEMENTAL_PIECES} 件已開始
       </span>
     </div>

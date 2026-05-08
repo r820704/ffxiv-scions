@@ -176,7 +176,7 @@ export default function EurekaWeatherPage() {
           <span className="text-muted-foreground mx-1">·</span>
           <span className="text-xs text-muted-foreground">艾奧傑亞</span>
           <span className="font-mono font-semibold text-foreground">{eorzeaClock}</span>
-          <span className={`px-2 py-0.5 rounded text-xs font-medium ${isDay ? 'bg-amber-500/20 text-amber-300' : 'bg-indigo-500/20 text-indigo-300'}`}>
+          <span className={`px-2 py-0.5 rounded text-xs font-medium ${isDay ? 'bg-day/20 text-day-foreground' : 'bg-night/20 text-night-foreground'}`}>
             {isDay ? '☀ 白天' : '🌙 夜晚'}
           </span>
           <span className="text-xs text-muted-foreground">距{isDay ? '夜晚' : '白天'} {formatCountdown(msUntilTransition)}</span>
