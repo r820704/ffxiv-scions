@@ -70,7 +70,7 @@ export function UpgradeDialog({
             className={`px-3 py-1.5 rounded font-bold text-sm ${
               direction === 'down'
                 ? 'bg-destructive text-white hover:bg-destructive/90'
-                : 'bg-emerald-600 text-white hover:bg-emerald-500'
+                : 'bg-success text-success-foreground hover:bg-success/90'
             }`}
           >
             確定

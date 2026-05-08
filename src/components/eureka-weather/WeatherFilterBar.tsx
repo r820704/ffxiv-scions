@@ -41,7 +41,7 @@ export default function WeatherFilterBar({
         onClick={() => onToggle(w)}
         className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded transition-colors cursor-pointer ${
           isOn
-            ? 'bg-amber-600 text-amber-50'
+            ? 'bg-primary text-primary-foreground'
             : 'bg-muted text-muted-foreground hover:bg-muted/80'
         }`}
       >
@@ -59,8 +59,8 @@ export default function WeatherFilterBar({
           onClick={() => onToggle(NIGHT_FILTER_KEY)}
           className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded border transition-colors cursor-pointer ${
             isOn
-              ? 'bg-indigo-600 text-indigo-50 border-indigo-400'
-              : 'bg-muted text-muted-foreground border-indigo-500/40 hover:bg-muted/80'
+              ? 'bg-night text-night-foreground border-night/60'
+              : 'bg-muted text-muted-foreground border-night/40 hover:bg-muted/80'
           }`}
         >
           <span>🌙</span>

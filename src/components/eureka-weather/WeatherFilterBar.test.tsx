@@ -22,10 +22,10 @@ describe('WeatherFilterBar', () => {
     expect(onToggle).toHaveBeenCalledWith('Umbral Wind');
   });
 
-  it('marks selected chips with amber background', () => {
+  it('marks selected chips with primary background', () => {
     render(<WeatherFilterBar selected={new Set(['Gales'])} onToggle={vi.fn()} />);
     const btn = screen.getByRole('button', { name: /強風/ });
-    expect(btn.className).toContain('bg-amber-600');
+    expect(btn.className).toContain('bg-primary');
   });
 
   it('renders a weather icon in each weather chip', () => {
@@ -129,8 +129,8 @@ describe('WeatherFilterBar', () => {
         />,
       );
       const btn = screen.getByRole('button', { name: /夜間/ });
-      // Selected pseudo-chip should have a distinguishing class (we use indigo accent)
-      expect(btn.className).toMatch(/indigo|amber-600/);
+      // Selected pseudo-chip should have the night accent class
+      expect(btn.className).toMatch(/bg-night/);
     });
   });
 
