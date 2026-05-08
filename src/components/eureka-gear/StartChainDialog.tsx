@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -18,6 +19,9 @@ export function StartChainDialog({ isOpen, onConfirm, onCancel }: StartChainDial
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle className="text-primary text-lg">標記為已開始</DialogTitle>
+          <DialogDescription className="sr-only">
+            確認已持有起點裝備，將此裝備鏈標記為已開始
+          </DialogDescription>
         </DialogHeader>
         <p className="text-sm text-foreground leading-relaxed">
           起點裝備（antiquated）需透過 70 級職業任務取得，或從 Sundry Splendors 兌換。<br />

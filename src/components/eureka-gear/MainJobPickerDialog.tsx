@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -57,10 +58,10 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-primary text-lg">⭐ 設定我的職業</DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            選一個或多個自己常玩的職業，總覽會多一個「我的職業」chip 可以一鍵篩選。
+          </DialogDescription>
         </DialogHeader>
-        <p className="text-xs text-muted-foreground">
-          選一個或多個自己常玩的職業，總覽會多一個「我的職業」chip 可以一鍵篩選。
-        </p>
 
         <div className="space-y-3">
           {ROLE_GROUPS.map(({ label, setIds }) => {

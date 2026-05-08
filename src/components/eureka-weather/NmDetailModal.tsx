@@ -5,6 +5,7 @@ import { triggerMobAttrs } from '@/data/eureka-trigger-mob-data';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -75,6 +76,9 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
               </DialogTitle>
               <span className="text-xs text-muted-foreground">{nm.nameEn}</span>
               <span className="text-xs text-muted-foreground">Lv.{nm.level}</span>
+              <DialogDescription className="sr-only">
+                此 NM 的觸發條件、座標、觸發怪詳情
+              </DialogDescription>
             </>
           )}
         </DialogHeader>

@@ -4,6 +4,7 @@ import { zoneShortNamesTw, weatherNamesTw, type EurekaZone } from '@/data/weathe
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -56,6 +57,9 @@ export default function NmListModal({ zone, onClose, onOpenDetail }: NmListModal
               <span className="text-xs text-muted-foreground">
                 Lv.{minLv}-{maxLv}・共 {sorted.length} 隻
               </span>
+              <DialogDescription className="sr-only">
+                {zoneShort} 區域 Lv.{minLv}-{maxLv} 共 {sorted.length} 隻 NM 的清單與觸發條件
+              </DialogDescription>
             </>
           )}
         </DialogHeader>

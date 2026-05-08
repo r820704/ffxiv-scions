@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -17,6 +18,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-amber-300 text-lg">優雷卡天氣 — 使用說明</DialogTitle>
+          <DialogDescription className="sr-only">優雷卡天氣表的格子讀法、篩選、提醒、NM 搜尋說明</DialogDescription>
         </DialogHeader>
         <div className="text-sm">
           <Section title="怎麼讀格子">
