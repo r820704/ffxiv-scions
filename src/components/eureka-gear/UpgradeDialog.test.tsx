@@ -39,10 +39,19 @@ describe('UpgradeDialog', () => {
     expect(screen.queryByText(/此更動會同步反映到/)).toBeNull();
   });
 
-  it('returns null when isOpen is false', () => {
-    const { container } = render(
+  it('does not render dialog when isOpen is false', () => {
+    render(
       <UpgradeDialog isOpen={false} direction="up" targetStage="pyros" sharedJobs={[]} onConfirm={() => {}} onCancel={() => {}} />,
     );
-    expect(container.firstChild).toBeNull();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('calls onCancel when Escape is pressed', () => {
+    const onCancel = vi.fn();
+    render(
+      <UpgradeDialog isOpen direction="up" targetStage="pyros" sharedJobs={[]} onConfirm={() => {}} onCancel={onCancel} />,
+    );
+    fireEvent.keyDown(document.body, { key: 'Escape' });
+    expect(onCancel).toHaveBeenCalled();
   });
 });

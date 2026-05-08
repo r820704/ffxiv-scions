@@ -1,3 +1,10 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import type { EurekaStage } from '../../types/eureka-gear';
 
 export type UpgradeDialogProps = {
@@ -17,17 +24,17 @@ export function UpgradeDialog({
   onConfirm,
   onCancel,
 }: UpgradeDialogProps) {
-  if (!isOpen) return null;
-
   const isShared = sharedJobs.length > 1;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-card border border-border rounded-lg p-5 max-w-md">
-        <h2 className="text-lg font-bold text-primary mb-3">
-          📍 設為目前階段：{targetStage}
-        </h2>
-        <div className="text-sm text-foreground mb-4 leading-relaxed">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-primary text-lg">
+            📍 設為目前階段：{targetStage}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="text-sm text-foreground leading-relaxed">
           {direction === 'down' ? (
             <p className="text-destructive">這會捨棄 {targetStage} 之後的進度。確定嗎？</p>
           ) : (
@@ -49,7 +56,7 @@ export function UpgradeDialog({
             </>
           )}
         </div>
-        <div className="flex gap-2 justify-end">
+        <DialogFooter>
           <button
             type="button"
             onClick={onCancel}
@@ -68,8 +75,8 @@ export function UpgradeDialog({
           >
             確定
           </button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
