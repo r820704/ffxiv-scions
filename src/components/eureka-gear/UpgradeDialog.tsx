@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -33,6 +34,9 @@ export function UpgradeDialog({
           <DialogTitle className="text-primary text-lg">
             📍 設為目前階段：{targetStage}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {direction === 'down' ? `降回 ${targetStage}，會捨棄之後的進度` : `設為 ${targetStage}`}
+          </DialogDescription>
         </DialogHeader>
         <div className="text-sm text-foreground leading-relaxed">
           {direction === 'down' ? (
