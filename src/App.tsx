@@ -1,6 +1,7 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
 import SiteFooter from '@/components/SiteFooter';
+import { Toaster } from '@/components/ui/sonner';
 import HomePage from '@/pages/HomePage';
 import EurekaWeatherPage from '@/pages/EurekaWeatherPage';
 import EurekaPage from '@/pages/EurekaPage';
@@ -19,6 +20,7 @@ export default function App() {
         </Routes>
         <SiteFooter />
       </div>
+      <Toaster position="bottom-center" />
     </HashRouter>
   );
 }
