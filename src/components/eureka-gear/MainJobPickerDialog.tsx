@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   JOB_TC_NAME,
   JOBS_FOR_ARMOR_SET,
   type AnyJobId,
@@ -29,8 +35,6 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
     if (isOpen) setSelected(new Set(initial));
   }, [isOpen, initial]);
 
-  if (!isOpen) return null;
-
   const toggle = (job: AnyJobId) => {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -49,15 +53,12 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
   };
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="設定我的職業"
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-    >
-      <div className="bg-card border border-border rounded-lg p-5 max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <h2 className="text-lg font-bold text-primary mb-2">⭐ 設定我的職業</h2>
-        <p className="text-xs text-muted-foreground mb-4">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-primary text-lg">⭐ 設定我的職業</DialogTitle>
+        </DialogHeader>
+        <p className="text-xs text-muted-foreground">
           選一個或多個自己常玩的職業，總覽會多一個「我的職業」chip 可以一鍵篩選。
         </p>
 
@@ -93,7 +94,7 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
           })}
         </div>
 
-        <div className="flex items-center justify-between gap-2 mt-5">
+        <div className="flex items-center justify-between gap-2 mt-2">
           <button
             type="button"
             onClick={handleClear}
@@ -118,7 +119,7 @@ export function MainJobPickerDialog({ isOpen, initial, onConfirm, onCancel }: Ma
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

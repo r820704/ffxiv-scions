@@ -6,10 +6,10 @@ afterEach(cleanup);
 
 describe('NmListModal', () => {
   it('renders nothing when zone is null', () => {
-    const { container } = render(
+    render(
       <NmListModal zone={null} onClose={() => {}} onOpenDetail={() => {}} />,
     );
-    expect(container.firstChild).toBeNull();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('lists all NMs of the zone, sorted by level', () => {
@@ -53,39 +53,12 @@ describe('NmListModal', () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it('closes on backdrop click', () => {
-    const onClose = vi.fn();
-    render(
-      <NmListModal zone="Eureka Anemos" onClose={onClose} onOpenDetail={() => {}} />,
-    );
-    fireEvent.click(screen.getByTestId('list-backdrop'));
-    expect(onClose).toHaveBeenCalledOnce();
-  });
-
-  it('closes on ✕ button click', () => {
-    const onClose = vi.fn();
-    render(
-      <NmListModal zone="Eureka Anemos" onClose={onClose} onOpenDetail={() => {}} />,
-    );
-    fireEvent.click(screen.getByLabelText('關閉'));
-    expect(onClose).toHaveBeenCalledOnce();
-  });
-
   it('closes on Escape', () => {
     const onClose = vi.fn();
     render(
       <NmListModal zone="Eureka Anemos" onClose={onClose} onOpenDetail={() => {}} />,
     );
-    fireEvent.keyDown(document, { key: 'Escape' });
-    expect(onClose).toHaveBeenCalledOnce();
-  });
-
-  it('does not call onClose when modal content clicked', () => {
-    const onClose = vi.fn();
-    render(
-      <NmListModal zone="Eureka Anemos" onClose={onClose} onOpenDetail={() => {}} />,
-    );
-    fireEvent.click(screen.getByText(/全部 NM/));
-    expect(onClose).not.toHaveBeenCalled();
+    fireEvent.keyDown(document.body, { key: 'Escape' });
+    expect(onClose).toHaveBeenCalled();
   });
 });

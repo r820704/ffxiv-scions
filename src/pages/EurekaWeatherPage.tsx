@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { EUREKA_ZONES } from '@/data/weather-data';
 import { useUrlSelectedWeathers } from '@/hooks/useUrlSelectedWeathers';
 import { useGameClock } from '@/hooks/useGameClock';
@@ -58,7 +59,6 @@ export default function EurekaWeatherPage() {
   const loadMore = useCallback(() => {
     setForecastCount((c) => Math.min(c + FORECAST_STEP, FORECAST_MAX));
   }, []);
-  const [toast, setToast] = useState<string | null>(null);
   const scrollRefs = useRef<Array<HTMLDivElement | null>>([]);
   const isSyncingRef = useRef(false);
 
@@ -111,17 +111,11 @@ export default function EurekaWeatherPage() {
   const copyLink = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      setToast('已複製連結');
+      toast.success('已複製連結');
     } catch {
-      setToast('複製失敗');
+      toast.error('複製失敗');
     }
   }, []);
-
-  useEffect(() => {
-    if (!toast) return;
-    const timer = setTimeout(() => setToast(null), 3000);
-    return () => clearTimeout(timer);
-  }, [toast]);
 
   const registerRef = (index: number) => (el: HTMLDivElement | null) => {
     scrollRefs.current[index] = el;
@@ -175,11 +169,6 @@ export default function EurekaWeatherPage() {
       />
       <NmDetailModal nmId={detailNmId} onClose={closeDetail} />
       <NmListModal zone={listZone} onClose={closeList} onOpenDetail={openDetailFromList} />
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-md px-4 py-2 text-sm shadow-lg animate-in fade-in">
-          {toast}
-        </div>
-      )}
       <div className="flex flex-col gap-3">
         <div className="bg-secondary rounded-lg px-3 py-2 flex items-center gap-2 flex-wrap text-sm">
           <span className="text-xs text-muted-foreground">現實時間</span>
@@ -248,7 +237,7 @@ export default function EurekaWeatherPage() {
           now={now}
           forecastCount={forecastCount}
           onScrollToCell={scrollToCell}
-          onToast={setToast}
+          onToast={(msg) => toast(msg)}
         />
         <div className="flex flex-col gap-3">
           {EUREKA_ZONES.map((z, i) => (

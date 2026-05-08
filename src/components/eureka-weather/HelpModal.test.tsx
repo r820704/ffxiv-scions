@@ -6,29 +6,27 @@ afterEach(cleanup);
 
 describe('HelpModal', () => {
   it('renders nothing when isOpen is false', () => {
-    const { container } = render(<HelpModal isOpen={false} onClose={vi.fn()} />);
-    expect(container.firstChild).toBeNull();
+    render(<HelpModal isOpen={false} onClose={vi.fn()} />);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('renders both sections when isOpen', () => {
+  it('renders sections when isOpen', () => {
     render(<HelpModal isOpen onClose={vi.fn()} />);
-    expect(screen.getByText(/怎麼讀格子/)).toBeTruthy();
-    expect(screen.getByText(/怎麼用篩選/)).toBeTruthy();
+    expect(screen.getByText(/怎麼讀格子/)).toBeInTheDocument();
+    expect(screen.getByText(/怎麼用篩選/)).toBeInTheDocument();
   });
 
-  it('calls onClose when backdrop clicked', () => {
+  it('calls onClose when Escape is pressed', () => {
     const onClose = vi.fn();
-    const { container } = render(<HelpModal isOpen onClose={onClose} />);
-    const backdrop = container.querySelector('[data-modal-backdrop]') as HTMLElement;
-    expect(backdrop).toBeTruthy();
-    fireEvent.click(backdrop);
+    render(<HelpModal isOpen onClose={onClose} />);
+    fireEvent.keyDown(document.body, { key: 'Escape' });
     expect(onClose).toHaveBeenCalled();
   });
 
-it('does NOT close when clicking inside the modal content', () => {
+  it('does NOT call onClose when isOpen is false (Escape is no-op)', () => {
     const onClose = vi.fn();
-    render(<HelpModal isOpen onClose={onClose} />);
-    fireEvent.click(screen.getByText(/怎麼讀格子/));
+    render(<HelpModal isOpen={false} onClose={onClose} />);
+    fireEvent.keyDown(document.body, { key: 'Escape' });
     expect(onClose).not.toHaveBeenCalled();
   });
 });

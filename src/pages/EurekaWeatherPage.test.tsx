@@ -96,7 +96,7 @@ describe('EurekaWeatherPage - NM detail integration', () => {
       </MemoryRouter>,
     );
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    fireEvent.click(screen.getByLabelText('關閉'));
+    fireEvent.keyDown(document.body, { key: 'Escape' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

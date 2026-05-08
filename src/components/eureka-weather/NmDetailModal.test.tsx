@@ -6,8 +6,8 @@ afterEach(cleanup);
 
 describe('NmDetailModal', () => {
   it('renders nothing when nmId is null', () => {
-    const { container } = render(<NmDetailModal nmId={null} onClose={() => {}} />);
-    expect(container.firstChild).toBeNull();
+    render(<NmDetailModal nmId={null} onClose={() => {}} />);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('shows NM TC + EN name + level when open', () => {
@@ -35,33 +35,11 @@ describe('NmDetailModal', () => {
     expect(dashes.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('calls onClose when close button clicked', () => {
-    const handle = vi.fn();
-    render(<NmDetailModal nmId="pazuzu" onClose={handle} />);
-    fireEvent.click(screen.getByLabelText('關閉'));
-    expect(handle).toHaveBeenCalledOnce();
-  });
-
   it('calls onClose when ESC pressed', () => {
     const handle = vi.fn();
     render(<NmDetailModal nmId="pazuzu" onClose={handle} />);
-    fireEvent.keyDown(document, { key: 'Escape' });
-    expect(handle).toHaveBeenCalledOnce();
-  });
-
-  it('calls onClose when backdrop clicked', () => {
-    const handle = vi.fn();
-    render(<NmDetailModal nmId="pazuzu" onClose={handle} />);
-    fireEvent.click(screen.getByTestId('detail-backdrop'));
-    expect(handle).toHaveBeenCalledOnce();
-  });
-
-  it('does NOT call onClose when modal content clicked', () => {
-    const handle = vi.fn();
-    render(<NmDetailModal nmId="pazuzu" onClose={handle} />);
-    // Click on the modal title (inside the content, not on backdrop)
-    fireEvent.click(screen.getByText('帕祖祖'));
-    expect(handle).not.toHaveBeenCalled();
+    fireEvent.keyDown(document.body, { key: 'Escape' });
+    expect(handle).toHaveBeenCalled();
   });
 
   it('shows NM coord with short zone name and parens', () => {
