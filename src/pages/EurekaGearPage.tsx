@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useEurekaWeaponsData } from '@/hooks/useEurekaWeaponsData';
 import { useEurekaInventory } from '@/hooks/useEurekaInventory';
 import type { ChainRef, UpgradeOutcome } from '@/hooks/useEurekaInventory';
@@ -57,7 +58,6 @@ export default function EurekaGearPage() {
     targetStage: EurekaStage;
     sharedJobs: string[];
   } | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
 
   const setTab = (tab: TabKey) => {
     const p = new URLSearchParams(searchParams);
@@ -89,8 +89,7 @@ export default function EurekaGearPage() {
     const msg = outcome.hadEnough
       ? `已升到 ${outcome.to}${mats ? ` · 扣除 ${mats}` : ''}`
       : `已升到 ${outcome.to}（素材未足額紀錄、僅推進階段）`;
-    setToast(msg);
-    setTimeout(() => setToast(null), 4000);
+    toast.success(msg);
   };
 
   const executeUpgrade = (ref: ChainRef) => {
@@ -221,12 +220,6 @@ export default function EurekaGearPage() {
           }}
           onCancel={() => setPendingDialog(null)}
         />
-      )}
-
-      {toast && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-800 border border-gray-600 rounded px-4 py-2 text-sm shadow z-50">
-          {toast}
-        </div>
       )}
     </div>
   );
