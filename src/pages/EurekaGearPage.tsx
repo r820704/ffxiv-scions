@@ -18,6 +18,7 @@ import type { Role } from '@/types/eureka';
 type TabKey = 'overview' | 'detail' | 'farming';
 
 const LAST_TAB_KEY = 'eureka-gear-last-tab';
+const LAST_JOB_KEY = 'eureka-gear-last-job';
 
 function isTabKey(value: unknown): value is TabKey {
   return value === 'overview' || value === 'detail' || value === 'farming';
@@ -33,6 +34,16 @@ function getInitialTab(searchParams: URLSearchParams): TabKey {
   return 'overview';
 }
 
+function getInitialJob(searchParams: URLSearchParams): string {
+  const fromUrl = searchParams.get('job');
+  if (fromUrl) return fromUrl;
+  if (typeof window !== 'undefined') {
+    const stored = window.localStorage.getItem(LAST_JOB_KEY);
+    if (stored) return stored;
+  }
+  return 'PLD';
+}
+
 const VALID_ROLES: ReadonlyArray<Role> = ['all', 'tank', 'melee', 'ranged', 'healer', 'caster'];
 
 function parseRole(raw: string | null): Role {
@@ -45,7 +56,7 @@ function parseRole(raw: string | null): Role {
 export default function EurekaGearPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const view = getInitialTab(searchParams);
-  const selectedJob = searchParams.get('job') ?? 'PLD';
+  const selectedJob = getInitialJob(searchParams);
   const overviewRole = parseRole(searchParams.get('role'));
 
   const { weapons: weaponsList, materials: materialsList, loading, error } = useEurekaWeaponsData();
@@ -89,6 +100,9 @@ export default function EurekaGearPage() {
     p.set('view', 'detail');
     p.set('job', job);
     setSearchParams(p);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(LAST_JOB_KEY, job);
+    }
   };
 
   const setOverviewRole = (role: Role) => {
