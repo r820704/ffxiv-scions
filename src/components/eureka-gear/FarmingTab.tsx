@@ -88,8 +88,7 @@ function aggregateWeaponCosts(inv: EurekaInventoryV5, agg: ZoneAgg, opts: AggOpt
       const from = EUREKA_STAGES[i];
       const to = EUREKA_STAGES[i + 1];
       if (!from || !to) continue;
-      const zone = ZONE_OF_STAGE[to];
-      if (!zone) continue;
+      const zone = zoneForCostEdge(to);
       addMaterialsToZone(agg, zone, costBetween(from, to, STAGE_UPGRADE_COSTS));
     }
   }
@@ -134,19 +133,20 @@ function walkAndAggregate(
     const f = sequence[i];
     const t = sequence[i + 1];
     if (!f || !t) continue;
-    const zone = zoneForArmorEdge(t);
-    if (!zone) continue;
+    const zone = zoneForCostEdge(t);
     addMaterialsToZone(agg, zone, costBetweenInSequence(f, t, sequence, costs, slot));
   }
 }
 
-function zoneForArmorEdge(to: EurekaStage): EurekaZone | null {
-  // Anemos track stays in anemos zone. Elemental stages (elemental / +1 / +2)
-  // map via ZONE_OF_STAGE (elemental→pyros zone, which is where Pyros Crystal
-  // drops; Hydatos Crystal drops in Hydatos zone; Fragment from BA in hydatos).
-  const zone = ZONE_OF_STAGE[to];
-  if (zone) return zone;
-  return 'hydatos'; // fallback (physeos etc. — Eureka Fragment from BA)
+/**
+ * Resolve the zone for aggregating an upgrade edge's materials.
+ * Falls back to 'hydatos' for null-zone stages (physeos endpoint, where
+ * Eureka Fragments drop in Baldesion Arsenal in Hydatos zone).
+ *
+ * Used by both weapon and armor aggregation to keep behaviour symmetric.
+ */
+function zoneForCostEdge(to: EurekaStage): EurekaZone {
+  return ZONE_OF_STAGE[to] ?? 'hydatos';
 }
 
 function aggregateMaterialsByZone(inv: EurekaInventoryV5, opts: AggOpts): ZoneAgg {

@@ -66,4 +66,21 @@ describe('FarmingTab', () => {
     // No further materials — empty state should be shown with expandAll message.
     expect(screen.getByText(/所有目標已達成 — 沒有需要的升級素材/)).toBeInTheDocument();
   });
+
+  it('aggregates eureka → physeos materials (EUREKA_FRAGMENT × 100) into hydatos zone', () => {
+    const inv: EurekaInventoryV5 = emptyInventoryV3();
+    inv.weapons['pld-galatyn'] = { currentStage: 'eureka', targetStage: 'physeos' };
+    const fullMaterialsMap = {
+      ...materialsMap,
+      24808: { nameTC: '優雷卡的斷片', icon: 0 },
+    };
+    render(<FarmingTab inventory={inv} weapons={[]} materialsMap={fullMaterialsMap} />);
+    // The hydatos ZoneGroup should render with 缺 100 (fragment shortage)
+    const hydatosHeader = screen.getByText(/豐水之地.*缺 100 單位素材/);
+    expect(hydatosHeader).toBeInTheDocument();
+    // The ZoneGroup section should contain a 優雷卡的斷片 list item with 缺 100
+    const section = hydatosHeader.closest('section');
+    expect(section?.textContent).toMatch(/優雷卡的斷片/);
+    expect(section?.textContent).toMatch(/缺 100/);
+  });
 });
