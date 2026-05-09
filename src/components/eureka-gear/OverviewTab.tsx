@@ -15,6 +15,7 @@ import {
   type AnyJobId,
 } from '../../data/eureka-armor-sets';
 import { ROLE_LABELS, ROLE_COLORS, type Role } from '../../types/eureka';
+import { Button } from '@/components/ui/button';
 
 /** Filter role values supported by the chip bar (excludes 'all' which is its own UI state). */
 type FilterRole = Exclude<Role, 'all'>;
@@ -234,23 +235,25 @@ export function OverviewTab({
               無法還原。確定要繼續嗎？
             </p>
             <div className="flex gap-2 justify-end">
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 onClick={() => setResetConfirmOpen(false)}
-                className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
               >
                 取消
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="destructive"
+                size="sm"
                 onClick={() => {
                   onResetAllProgress?.();
                   setResetConfirmOpen(false);
                 }}
-                className="px-3 py-1.5 rounded bg-red-700 text-white text-sm hover:bg-red-600"
               >
                 確認重置
-              </button>
+              </Button>
             </div>
           </div>
         </div>

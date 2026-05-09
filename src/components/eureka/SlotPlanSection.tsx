@@ -1,6 +1,7 @@
 import type { LogogramPrice } from '@/types/eureka';
 import type { SlotOptimizationResult } from '@/utils/slot-optimizer';
 import type { McDerivedCosts } from '@/utils/mc-analysis';
+import { Button } from '@/components/ui/button';
 
 interface SlotPlanSectionProps {
   slotConfig: [string | null, string | null][];
@@ -45,13 +46,15 @@ export default function SlotPlanSection({
           預估：50% 分位（中位數）；保底：95% 分位
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button
+          <Button
+            variant="destructive"
+            size="xs"
             onClick={onResetSlots}
             disabled={filledSlotCount === 0}
-            className="text-xs px-3 py-1 rounded bg-destructive/70 text-destructive-foreground hover:bg-destructive transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="bg-destructive/70 hover:bg-destructive"
           >
             重置技能格
-          </button>
+          </Button>
           <button
             onClick={onRunOptimizer}
             disabled={slotOptimizing || priceLoading || prices.length === 0 || filledSlotCount === 0}

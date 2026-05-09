@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import type { EurekaStage } from '../../types/eureka-gear';
 
 export type UpgradeDialogProps = {
@@ -61,24 +62,23 @@ export function UpgradeDialog({
           )}
         </div>
         <DialogFooter>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={onCancel}
-            className="px-3 py-1.5 rounded border border-border text-muted-foreground text-sm hover:text-foreground hover:border-primary transition-colors"
           >
             取消
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant={direction === 'down' ? 'destructive' : 'default'}
+            size="sm"
+            className={`font-bold ${direction === 'down' ? '' : 'bg-success text-success-foreground hover:bg-success/90'}`}
             onClick={onConfirm}
-            className={`px-3 py-1.5 rounded font-bold text-sm ${
-              direction === 'down'
-                ? 'bg-destructive text-white hover:bg-destructive/90'
-                : 'bg-success text-success-foreground hover:bg-success/90'
-            }`}
           >
             確定
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
