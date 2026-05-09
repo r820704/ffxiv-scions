@@ -66,6 +66,30 @@ export default function SkillRecipeList({
   const [stateFilter, setStateFilter] = useState<StateFilter>('all');
   const [expandedSet, setExpandedSet] = useState<Set<string>>(() => new Set(ALBUM_ORDER));
 
+  // Per-slot per-side recipe overrides for slot-pick + guide interactive mode.
+  // Resets when leaving that mode; not persisted to localStorage.
+  type SlotOverrides = Record<number, { skill1RecipeIdx?: number; skill2RecipeIdx?: number }>;
+  const [slotOverrides, setSlotOverrides] = useState<SlotOverrides>({});
+
+  useEffect(() => {
+    if (!(mode === 'slots' && stateFilter === 'guide')) {
+      setSlotOverrides({});
+    }
+  }, [mode, stateFilter]);
+
+  const updateSlotOverride = useCallback(
+    (slotIdx: number, side: 'skill1' | 'skill2', recipeIdx: number) => {
+      setSlotOverrides((prev) => ({
+        ...prev,
+        [slotIdx]: {
+          ...prev[slotIdx],
+          [`${side}RecipeIdx`]: recipeIdx,
+        },
+      }));
+    },
+    [],
+  );
+
   // Auto-switch to 'guide' when a fresh result arrives (both modes)
   useEffect(() => {
     if (mode === 'album' && optimizationResult) {
@@ -325,6 +349,7 @@ export default function SkillRecipeList({
           renderSlotGroups({
             filtered, slotConfig, slotResult,
             prices, priceLoading, learnedSkills, onToggle,
+            slotOverrides, updateSlotOverride,
           })
         ) : (
           filtered.map((action) => {
@@ -378,10 +403,13 @@ interface RenderSlotGroupsArgs {
   priceLoading: boolean;
   learnedSkills: Set<string>;
   onToggle: (skillId: string) => void;
+  slotOverrides: Record<number, { skill1RecipeIdx?: number; skill2RecipeIdx?: number }>;
+  updateSlotOverride: (slotIdx: number, side: 'skill1' | 'skill2', recipeIdx: number) => void;
 }
 
 function renderSlotGroups({
   filtered, slotConfig, slotResult, prices, priceLoading, learnedSkills, onToggle,
+  slotOverrides, updateSlotOverride,
 }: RenderSlotGroupsArgs) {
   if (!slotConfig || !slotResult) return null;
   const filteredIds = new Set(filtered.map((a) => a.id));
@@ -409,14 +437,40 @@ function renderSlotGroups({
   return (
     <div className="space-y-3">
       {groups.map(({ slotIdx, skill1Id, skill2Id }) => {
-        const combo = slotResult.slotCombinations[slotIdx]?.[0];
-        if (!combo) return null;
+        const recommended = slotResult.slotCombinations[slotIdx]?.[0];
+        if (!recommended) return null;
         const skill1 = skill1Id ? actionMap.get(skill1Id) : null;
         const skill2 = skill2Id ? actionMap.get(skill2Id) : null;
-        const skills = [
-          skill1 ? { action: skill1, recipeIdx: combo.skill1RecipeIdx } : null,
-          skill2 ? { action: skill2, recipeIdx: combo.skill2RecipeIdx } : null,
-        ].filter((x): x is { action: LogosAction; recipeIdx: number | undefined } => !!x);
+
+        const override = slotOverrides[slotIdx];
+        const effective1 = override?.skill1RecipeIdx ?? recommended.skill1RecipeIdx;
+        const effective2 = override?.skill2RecipeIdx ?? recommended.skill2RecipeIdx;
+        const effectiveCombo =
+          slotResult.slotCombinations[slotIdx]?.find(
+            (c) => c.skill1RecipeIdx === effective1 && c.skill2RecipeIdx === effective2,
+          ) ?? null;
+        const successRate = effectiveCombo?.successRate ?? null;
+        const totalMnemes = effectiveCombo?.totalMnemes ?? null;
+
+        const buildSkillEntry = (
+          action: LogosAction,
+          side: 'skill1' | 'skill2',
+          effectiveIdx: number,
+          recommendedIdx: number,
+        ) => {
+          const allIdx = action.recipes.map((_, i) => i);
+          const sortedIndices = [effectiveIdx, ...allIdx.filter((i) => i !== effectiveIdx)];
+          return { action, side, effectiveIdx, recommendedIdx, sortedIndices };
+        };
+
+        type SkillEntry = ReturnType<typeof buildSkillEntry>;
+        const skills: SkillEntry[] = [];
+        if (skill1) {
+          skills.push(buildSkillEntry(skill1, 'skill1', effective1, recommended.skill1RecipeIdx));
+        }
+        if (skill2 && recommended.skill2RecipeIdx != null && effective2 != null) {
+          skills.push(buildSkillEntry(skill2, 'skill2', effective2, recommended.skill2RecipeIdx));
+        }
 
         return (
           <div key={slotIdx} className="space-y-1.5">
@@ -428,11 +482,16 @@ function renderSlotGroups({
               <span
                 className={cn(
                   'ml-auto shrink-0',
-                  combo.successRate >= 1.0 ? 'text-green-400' : 'text-warning'
+                  successRate == null
+                    ? 'text-muted-foreground'
+                    : successRate >= 1.0
+                      ? 'text-green-400'
+                      : 'text-warning',
                 )}
               >
-                {Math.round(combo.successRate * 100)}% 成功
-                {combo.totalMnemes > 3 && `（${combo.totalMnemes} 記憶）`}
+                {successRate != null
+                  ? `${Math.round(successRate * 100)}% 成功${(totalMnemes ?? 0) > 3 ? `（${totalMnemes} 記憶）` : ''}`
+                  : '—'}
               </span>
             </div>
 
@@ -443,7 +502,7 @@ function renderSlotGroups({
                 skills.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1',
               )}
             >
-              {skills.map(({ action, recipeIdx }) => {
+              {skills.map(({ action, side, recommendedIdx, sortedIndices }) => {
                 const isLearned = learnedSkills.has(action.id);
                 return (
                   <div key={action.id} className="flex items-start gap-2">
@@ -453,8 +512,10 @@ function renderSlotGroups({
                         prices={prices}
                         priceLoading={priceLoading}
                         isExpanded
-                        guideRecipeIdx={recipeIdx}
-                        hidePrice
+                        highlightRecipeIdx={recommendedIdx}
+                        recipeOrder={sortedIndices}
+                        showUnitPriceOnly
+                        onRecipeClick={(idx) => updateSlotOverride(slotIdx, side, idx)}
                       />
                     </div>
                     <button
