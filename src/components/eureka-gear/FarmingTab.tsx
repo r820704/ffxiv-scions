@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { ZoneGroup } from './ZoneGroup';
 import { NextEdgeShortage } from './NextEdgeShortage';
 import { Tooltip } from '../ui/Tooltip';
+import { useLocalStorageBool } from '@/hooks/useLocalStorageBool';
 import { costBetween, costBetweenInSequence } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
@@ -292,7 +293,7 @@ function ActiveTargetsList({ entries }: { entries: ReturnType<typeof computeActi
 }
 
 export function FarmingTab({ inventory, weapons, materialsMap }: FarmingTabProps) {
-  const [showAll, setShowAll] = useState<boolean>(false);
+  const [showAll, setShowAll] = useLocalStorageBool('eureka-gear-farming-expand-all', false);
   const zoneAgg = useMemo(
     () => aggregateMaterialsByZone(inventory, { expandAll: showAll }),
     [inventory, showAll],

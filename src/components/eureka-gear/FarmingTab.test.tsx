@@ -1,9 +1,12 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { FarmingTab } from './FarmingTab';
 import { emptyInventoryV3 } from '../../utils/eureka-gear-migrate';
 import type { EurekaInventoryV5 } from '../../types/eureka-gear';
 
+beforeEach(() => {
+  window.localStorage.clear();
+});
 afterEach(() => cleanup());
 
 const materialsMap = {
