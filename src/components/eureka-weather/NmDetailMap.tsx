@@ -104,20 +104,33 @@ export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
         </defs>
         {placed
           .filter((p) => p.offset)
-          .map((p, i) => (
-            <line
-              key={`leader-${i}`}
-              x1={p.displayX}
-              y1={p.displayY}
-              x2={p.actualX}
-              y2={p.actualY}
-              stroke="rgb(244 63 94)"
-              strokeWidth={1}
-              strokeDasharray="2,1.2"
-              strokeLinecap="round"
-              markerEnd="url(#nm-leader-arrow)"
-            />
-          ))}
+          .map((p, i) => {
+            // Arrow tip should land just outside the trigger pin sitting at
+            // (actualX, actualY) so it isn't covered. Trigger pin radius is
+            // ~3.5 viewBox units at typical modal width; stop the line ~4 units
+            // short and let the arrow marker render in the gap.
+            const dx = p.actualX - p.displayX;
+            const dy = p.actualY - p.displayY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const STOP_BEFORE = 4;
+            const ratio = dist > STOP_BEFORE ? (dist - STOP_BEFORE) / dist : 0;
+            const endX = p.displayX + dx * ratio;
+            const endY = p.displayY + dy * ratio;
+            return (
+              <line
+                key={`leader-${i}`}
+                x1={p.displayX}
+                y1={p.displayY}
+                x2={endX}
+                y2={endY}
+                stroke="rgb(244 63 94)"
+                strokeWidth={1}
+                strokeDasharray="2,1.2"
+                strokeLinecap="round"
+                markerEnd="url(#nm-leader-arrow)"
+              />
+            );
+          })}
       </svg>
       {placed.map((p, idx) => {
         const isNm = p.pin.kind === 'nm';
