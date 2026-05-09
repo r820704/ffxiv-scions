@@ -46,6 +46,10 @@
   --color-night: var(--night);
   --color-night-foreground: var(--night-foreground);
   --color-gil: var(--gil);
+  --color-nm: var(--nm);
+  --color-nm-foreground: var(--nm-foreground);
+  --color-trigger-mob: var(--trigger-mob);
+  --color-trigger-mob-foreground: var(--trigger-mob-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -104,6 +108,10 @@
   --night: #818cf8;
   --night-foreground: #c7d2fe;
   --gil: #fbbf24;
+  --nm: #e11d48;
+  --nm-foreground: #fda4af;
+  --trigger-mob: #f59e0b;
+  --trigger-mob-foreground: #fcd34d;
   --border: #2a2440;
   --input: #2a2440;
   --ring: #C5B69D;
