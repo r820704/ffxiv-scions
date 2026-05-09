@@ -1,14 +1,5 @@
 import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME, ZONE_ENDPOINT_TC_NAME } from '../../types/eureka-gear';
 import type { ArmorZoneGroupDef, EurekaStage, EurekaZone } from '../../types/eureka-gear';
-import { Tooltip } from '../ui/Tooltip';
-
-const ZONE_HINT: Record<string, string> = {
-  anemos: '常風之地取得的素材用於升級常風系列防具。',
-  pagos: '恆冰之地取得的素材主要用於升至恆冰之地～恆冰之地+1。',
-  pyros: '湧火之地取得的湧火水晶用於兌換元素系列防具基礎形態，或升元素武器。',
-  hydatos: '豐水之地取得的豐水水晶用於強化元素防具至 +1。',
-  final: '最終形態 — 需使用優雷卡的斷片（於巴爾德西昂分館取得）升級。武器為禁地兵裝·改裝（iL405），防具為元素系列 +2（iL390）。',
-};
 
 export type ChainStepperProps = {
   /** null = the player has not even owned the prereq stage 1 (antiquated). */
@@ -166,20 +157,9 @@ export function ChainStepper({ currentStage, targetStage, onSelectTarget, onSele
           <span
             id={`zone-label-${group.key}`}
             data-testid={`zone-label-${group.key}`}
-            className="text-xs text-gray-400 inline-flex items-center gap-1"
+            className="text-xs text-gray-400"
           >
             {group.label}
-            {ZONE_HINT[group.key] && (
-              <Tooltip label={ZONE_HINT[group.key]!}>
-                <button
-                  type="button"
-                  aria-label={`${group.label} 說明`}
-                  className="w-4 h-4 rounded-full bg-gray-700 text-gray-300 text-[10px] leading-4 text-center hover:bg-gray-600 transition-colors"
-                >
-                  ⓘ
-                </button>
-              </Tooltip>
-            )}
           </span>
           <div className="flex flex-wrap gap-1 items-center">
             {group.entries.map(({ stage, index }) => renderButton(stage, index))}

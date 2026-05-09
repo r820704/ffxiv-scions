@@ -117,7 +117,7 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
                 </div>
 
                 <div>
-                  <div className="text-foreground mb-2">在以下地點擊殺：</div>
+                  <div className="text-foreground mb-2">觸發方式：在以下地點擊殺</div>
                   <ul className="flex flex-col gap-1">
                     {spawn.trigger.map((mob, mobIdx) => {
                       const baseLabel = spawn.trigger

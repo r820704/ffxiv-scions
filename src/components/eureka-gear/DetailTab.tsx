@@ -177,6 +177,10 @@ export function DetailTab({
             const isExpanded = weaponExpanded[chainId] ?? true;
 
             const isPendingStart = !isStarted && pendingStartChain === chainId;
+            const pendingTargetStage = isPendingStart ? (pendingStartTarget ?? p.currentStage) : null;
+            const pendingTargetInfo = pendingTargetStage
+              ? weaponInfoAt(weapons, chainId, pendingTargetStage) ?? undefined
+              : undefined;
             const weaponHeader = (
               <div className="flex items-center flex-wrap gap-x-3 gap-y-0.5 text-sm">
                 <span className="text-gray-100 font-semibold flex items-center gap-1">
@@ -187,12 +191,12 @@ export function DetailTab({
                   <span className="text-xs text-gray-400 font-normal">
                     {isStarted ? stageSuffix(currentInfo, p.currentStage) : '未開始'}
                   </span>
-                  {isPendingStart && currentInfo && (
+                  {isPendingStart && pendingTargetStage && (
                     <>
                       <span className="text-yellow-400">→</span>
-                      <span className="text-yellow-200">{currentInfo.tcName}</span>
+                      <span className="text-yellow-200">{pendingTargetInfo?.tcName ?? STAGE_TC_LABEL[pendingTargetStage]}</span>
                       <span className="text-xs text-gray-400 font-normal">
-                        （{STAGE_TC_LABEL[p.currentStage]}）
+                        {stageSuffix(pendingTargetInfo, pendingTargetStage)}
                       </span>
                     </>
                   )}
