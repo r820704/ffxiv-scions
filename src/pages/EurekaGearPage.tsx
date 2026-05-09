@@ -17,6 +17,22 @@ import type { Role } from '@/types/eureka';
 
 type TabKey = 'overview' | 'detail' | 'farming';
 
+const LAST_TAB_KEY = 'eureka-gear-last-tab';
+
+function isTabKey(value: unknown): value is TabKey {
+  return value === 'overview' || value === 'detail' || value === 'farming';
+}
+
+function getInitialTab(searchParams: URLSearchParams): TabKey {
+  const fromUrl = searchParams.get('view');
+  if (isTabKey(fromUrl)) return fromUrl;
+  if (typeof window !== 'undefined') {
+    const stored = window.localStorage.getItem(LAST_TAB_KEY);
+    if (isTabKey(stored)) return stored;
+  }
+  return 'overview';
+}
+
 const VALID_ROLES: ReadonlyArray<Role> = ['all', 'tank', 'melee', 'ranged', 'healer', 'caster'];
 
 function parseRole(raw: string | null): Role {
@@ -28,7 +44,7 @@ function parseRole(raw: string | null): Role {
 
 export default function EurekaGearPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const view = ((searchParams.get('view') as TabKey) ?? 'overview');
+  const view = getInitialTab(searchParams);
   const selectedJob = searchParams.get('job') ?? 'PLD';
   const overviewRole = parseRole(searchParams.get('role'));
 
@@ -63,6 +79,9 @@ export default function EurekaGearPage() {
     const p = new URLSearchParams(searchParams);
     p.set('view', tab);
     setSearchParams(p);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(LAST_TAB_KEY, tab);
+    }
   };
 
   const selectJob = (job: string) => {
