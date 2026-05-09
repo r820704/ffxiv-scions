@@ -50,8 +50,8 @@ describe('NmDetailMap', () => {
     ]} />);
     const nmPin = screen.getByText('NM');
     const triggerPin = screen.getByText('1');
-    expect(nmPin.className).toMatch(/bg-rose-/);
-    expect(triggerPin.className).toMatch(/bg-amber-/);
+    expect(nmPin.className).toMatch(/bg-nm/);
+    expect(triggerPin.className).toMatch(/bg-trigger-mob/);
     expect(nmPin.getAttribute('data-pin-kind')).toBe('nm');
     expect(triggerPin.getAttribute('data-pin-kind')).toBe('trigger');
   });
