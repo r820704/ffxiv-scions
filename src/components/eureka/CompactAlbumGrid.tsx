@@ -173,7 +173,7 @@ export default function CompactAlbumGrid({
                             'w-full text-xs py-1.5 rounded cursor-pointer transition-colors font-medium',
                             selectedSlot === null
                               ? 'bg-muted text-muted-foreground cursor-not-allowed'
-                              : 'bg-amber-600 text-amber-50 hover:bg-amber-500',
+                              : 'bg-primary text-primary-foreground hover:bg-primary/90',
                           )}
                         >
                           {selectedSlot === null ? '先選擇一個格子' : `放入格子 ${selectedSlot + 1}`}

@@ -149,10 +149,10 @@ export function OverviewTab({
           onClick={handleMainJobChipClick}
           className={`text-xs px-2 py-1 rounded transition-colors ${
             filteringByMain
-              ? 'bg-yellow-500 text-black ring-2 ring-yellow-300'
+              ? 'bg-target text-target-foreground ring-2 ring-target/70'
               : mainJobs.length > 0
                 ? 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                : 'bg-secondary/50 text-secondary-foreground border border-dashed border-yellow-700/60 hover:border-yellow-500'
+                : 'bg-secondary/50 text-secondary-foreground border border-dashed border-target/60 hover:border-target'
           }`}
         >
           ⭐ {mainJobs.length > 0 ? `我的職業 (${mainJobs.length})` : '設定我的職業'}

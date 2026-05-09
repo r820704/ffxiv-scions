@@ -55,7 +55,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
       </div>
 
       {/* Weapons section */}
-      <span className="text-[10px] font-bold text-yellow-400/90 bg-yellow-950/40 px-1.5 py-0.5 rounded shrink-0">
+      <span className="text-[10px] font-bold text-target/90 bg-target/20 px-1.5 py-0.5 rounded shrink-0">
         武器
       </span>
       {progress.weapons.map(({ chainId, progress: p, started }) => {
@@ -66,16 +66,16 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
         const done = filled === EUREKA_STAGES.length;
         return (
           <div key={chainId} className="flex items-center gap-1 text-xs shrink-0">
-            <span className="text-yellow-400/40 text-[10px]">{slotLabel}</span>
+            <span className="text-target/40 text-[10px]">{slotLabel}</span>
             <ArmorDots
               stages={EUREKA_STAGES}
               zoneGroups={WEAPON_ZONE_GROUPS}
               currentStage={p.currentStage}
               started={started}
-              colorFilled="bg-green-400"
+              colorFilled="bg-owned"
               glowStages={WEAPON_GLOW_STAGES}
             />
-            <span className={`tabular-nums shrink-0 ${done ? 'text-green-400' : 'text-gray-400'}`}>
+            <span className={`tabular-nums shrink-0 ${done ? 'text-owned' : 'text-gray-400'}`}>
               {started ? filled : 0}<span className="text-gray-600">/{EUREKA_STAGES.length}</span>
             </span>
           </div>
@@ -87,7 +87,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
       <div className="w-[108px] shrink-0 hidden sm:block" />
 
       {/* Anemos armor section */}
-      <span className="text-[10px] font-bold text-green-400/90 bg-green-900/50 px-1.5 py-0.5 rounded shrink-0">
+      <span className="text-[10px] font-bold text-owned/90 bg-owned/20 px-1.5 py-0.5 rounded shrink-0">
         常風防具
       </span>
 
@@ -107,7 +107,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
                 zoneGroups={ANEMOS_ARMOR_ZONE_GROUPS}
                 currentStage={stage}
                 started={started}
-                colorFilled="bg-green-400"
+                colorFilled="bg-owned"
               />
             </div>
           );
@@ -123,15 +123,15 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
         const done = stage === 'anemos';
         return (
           <div key={slot} className="hidden sm:flex items-center gap-1 text-xs shrink-0">
-            <span className="text-green-400/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
+            <span className="text-owned/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
             <ArmorDots
               stages={ARMOR_STAGES_BY_TRACK.anemos}
               zoneGroups={ANEMOS_ARMOR_ZONE_GROUPS}
               currentStage={stage}
               started={started}
-              colorFilled="bg-green-400"
+              colorFilled="bg-owned"
             />
-            <span className={`tabular-nums shrink-0 ${done ? 'text-green-400' : 'text-gray-400'}`}>
+            <span className={`tabular-nums shrink-0 ${done ? 'text-owned' : 'text-gray-400'}`}>
               {started ? filled : 0}<span className="text-gray-600">/5</span>
             </span>
           </div>

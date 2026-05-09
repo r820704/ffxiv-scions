@@ -39,7 +39,7 @@ export default function AlbumPlanSection({
         <button
           onClick={onRunOptimizer}
           disabled={optimizing || priceLoading || prices.length === 0}
-          className="text-xs px-3 py-1 rounded bg-amber-600 text-amber-50 hover:bg-amber-500 transition-colors cursor-pointer disabled:bg-amber-600/40 disabled:cursor-not-allowed"
+          className="text-xs px-3 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer disabled:bg-primary/40 disabled:cursor-not-allowed"
         >
           {optimizing ? '計算中...' : optimizationResult ? '重新計算' : '計算最佳合成'}
         </button>

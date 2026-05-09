@@ -51,9 +51,9 @@ function stageState(
 }
 
 const STATE_STYLE: Record<string, string> = {
-  owned: 'bg-green-500 text-black',
-  current: 'bg-green-500 text-black ring-2 ring-white',
-  target: 'bg-transparent border-2 border-yellow-400 text-yellow-400 ring-2 ring-white',
+  owned: 'bg-owned text-owned-foreground',
+  current: 'bg-owned text-owned-foreground ring-2 ring-white',
+  target: 'bg-transparent border-2 border-target text-target ring-2 ring-white',
   unowned: 'bg-gray-700 text-gray-500',
   // not-started: empty-slot look (Diablo 4 wardrobe style) — dashed faint ring.
   'not-started': 'bg-transparent border border-dashed border-gray-600 text-gray-600',

@@ -34,7 +34,7 @@ export function ArmorDots({ stages, zoneGroups, currentStage, started, colorFill
                 className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${
                   filled
                     ? glow
-                      ? 'bg-amber-400 shadow-[0_0_4px_rgba(251,191,36,0.9)]'
+                      ? 'bg-glow shadow-[0_0_4px_rgba(251,191,36,0.9)]' // shadow color tracks --glow; update both if changing
                       : colorFilled
                     : 'bg-gray-600'
                 }`}

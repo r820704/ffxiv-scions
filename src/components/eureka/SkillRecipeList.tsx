@@ -229,7 +229,7 @@ export default function SkillRecipeList({
             className={cn(
               'text-xs px-2 py-1 rounded transition-colors',
               stateFilter === 'guide'
-                ? 'bg-amber-600 text-amber-50'
+                ? 'bg-primary text-primary-foreground'
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
               !guideEnabled && 'opacity-50 cursor-not-allowed'
             )}
@@ -273,7 +273,7 @@ export default function SkillRecipeList({
             onClick={() => toggleTag(tag)}
             className={`text-[0.65rem] px-1.5 py-0.5 rounded transition-colors ${
               selectedTags.has(tag)
-                ? 'bg-amber-600 text-amber-50'
+                ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
