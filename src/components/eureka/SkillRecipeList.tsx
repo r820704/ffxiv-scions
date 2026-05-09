@@ -347,7 +347,7 @@ export default function SkillRecipeList({
                     isExpanded={isExpanded}
                     onToggleExpand={isGuideMode ? undefined : () => toggleCardExpand(action.id)}
                     guideRecipeIdx={guideIdx}
-                    hidePrice={isGuideMode}
+                    showUnitPriceOnly={isGuideMode}
                   />
                 </div>
                 <button
@@ -413,10 +413,19 @@ function renderSlotGroups({
         if (!combo) return null;
         const skill1 = skill1Id ? actionMap.get(skill1Id) : null;
         const skill2 = skill2Id ? actionMap.get(skill2Id) : null;
-        const skills = [
-          skill1 ? { action: skill1, recipeIdx: combo.skill1RecipeIdx } : null,
-          skill2 ? { action: skill2, recipeIdx: combo.skill2RecipeIdx } : null,
-        ].filter((x): x is { action: LogosAction; recipeIdx: number | undefined } => !!x);
+
+        const buildSkillEntry = (action: LogosAction, recommendedIdx: number) => {
+          const allIdx = action.recipes.map((_, i) => i);
+          const sortedIndices = [recommendedIdx, ...allIdx.filter((i) => i !== recommendedIdx)];
+          return { action, recommendedIdx, sortedIndices };
+        };
+
+        type SkillEntry = ReturnType<typeof buildSkillEntry>;
+        const skills: SkillEntry[] = [];
+        if (skill1) skills.push(buildSkillEntry(skill1, combo.skill1RecipeIdx));
+        if (skill2 && combo.skill2RecipeIdx != null) {
+          skills.push(buildSkillEntry(skill2, combo.skill2RecipeIdx));
+        }
 
         return (
           <div key={slotIdx} className="space-y-1.5">
@@ -428,7 +437,7 @@ function renderSlotGroups({
               <span
                 className={cn(
                   'ml-auto shrink-0',
-                  combo.successRate >= 1.0 ? 'text-green-400' : 'text-warning'
+                  combo.successRate >= 1.0 ? 'text-green-400' : 'text-warning',
                 )}
               >
                 {Math.round(combo.successRate * 100)}% 成功
@@ -443,7 +452,7 @@ function renderSlotGroups({
                 skills.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1',
               )}
             >
-              {skills.map(({ action, recipeIdx }) => {
+              {skills.map(({ action, recommendedIdx, sortedIndices }) => {
                 const isLearned = learnedSkills.has(action.id);
                 return (
                   <div key={action.id} className="flex items-start gap-2">
@@ -453,8 +462,10 @@ function renderSlotGroups({
                         prices={prices}
                         priceLoading={priceLoading}
                         isExpanded
-                        guideRecipeIdx={recipeIdx}
-                        hidePrice
+                        highlightRecipeIdx={recommendedIdx}
+                        recipeOrder={sortedIndices}
+                        showUnitPriceOnly
+                        compactLayout
                       />
                     </div>
                     <button
