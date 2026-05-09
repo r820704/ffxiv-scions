@@ -233,7 +233,7 @@ export default function LogosActionCard({
                       className={`rounded px-2.5 py-1.5 ${wrapperBg} ${clickable ? 'cursor-pointer hover:ring-1 hover:ring-primary/30' : ''}`}
                       onClick={clickable ? () => onRecipeClick(ri) : undefined}
                     >
-                      <div className="flex flex-col gap-0.5">
+                      <div className="grid gap-x-2 gap-y-0.5 items-baseline" style={{ gridTemplateColumns: 'max-content max-content max-content' }}>
                         {recipe.ingredients.map((ing, ii) => {
                           const mneme = getMneme(ing.mnemeId);
                           const logogram = getLogogramForMneme(ing.mnemeId);
@@ -241,28 +241,26 @@ export default function LogosActionCard({
                             ? prices.find((p) => p.itemId === logogram.itemId)
                             : undefined;
                           return (
-                            <div key={ii} className="flex items-baseline flex-wrap gap-x-2 gap-y-0.5">
+                            <Fragment key={ii}>
                               <span className="text-foreground">
                                 {mneme?.nameTw ?? ing.mnemeId}
                                 {ing.quantity > 1 && <span className="text-primary"> ×{ing.quantity}</span>}
                               </span>
-                              {logogram && (
-                                <>
-                                  <span className="text-[0.65rem] text-muted-foreground">{logogram.nameTw}</span>
-                                  {!hidePrice && (
-                                    priceLoading ? (
-                                      <span className="inline-block h-3 w-12 bg-muted animate-pulse rounded" />
-                                    ) : logogramPrice?.price != null ? (
-                                      <span className="text-[0.65rem] text-gil tabular-nums">
-                                        {logogramPrice.price.toLocaleString()} gil
-                                      </span>
-                                    ) : (
-                                      <span className="text-[0.65rem] text-muted-foreground">價格未知</span>
-                                    )
-                                  )}
-                                </>
-                              )}
-                            </div>
+                              <span className="text-[0.65rem] text-muted-foreground">
+                                {logogram?.nameTw ?? ''}
+                              </span>
+                              <span className="text-[0.65rem] text-gil tabular-nums">
+                                {!hidePrice && logogram && (
+                                  priceLoading ? (
+                                    <span className="inline-block h-3 w-12 bg-muted animate-pulse rounded" />
+                                  ) : logogramPrice?.price != null ? (
+                                    `${logogramPrice.price.toLocaleString()} gil`
+                                  ) : (
+                                    <span className="text-muted-foreground">價格未知</span>
+                                  )
+                                )}
+                              </span>
+                            </Fragment>
                           );
                         })}
                       </div>
