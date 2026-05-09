@@ -7,7 +7,7 @@ export default function OnboardingHint() {
   );
   if (dismissed) return null;
   return (
-    <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs px-3 py-2 rounded-md">
+    <div className="flex items-center gap-2 bg-day/10 border border-day/30 text-day-foreground text-xs px-3 py-2 rounded-md">
       <span>💡 移到標有 🔴NM 或 🌙 的格子，可查看該時段滿足天氣或時間條件的可觸發 NM</span>
       <button
         type="button"

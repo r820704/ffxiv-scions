@@ -51,12 +51,12 @@ export default function TriggerMobChips({ attrs }: TriggerMobChipsProps) {
         />
       )}
       {attrs.timeOfDay === 'night' && (
-        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-indigo-950/50 text-indigo-200 text-[11px]">
+        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-night/20 text-night-foreground text-[11px]">
           夜間
         </span>
       )}
       {attrs.timeOfDay === 'day' && (
-        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-amber-950/40 text-amber-200 text-[11px]">
+        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-day/20 text-day-foreground text-[11px]">
           白天
         </span>
       )}

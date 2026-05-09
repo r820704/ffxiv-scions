@@ -28,7 +28,7 @@ export default function GameClock() {
       </div>
       <div
         className={`px-2 py-1 rounded text-xs font-medium ${
-          isDay ? 'bg-amber-500/20 text-amber-300' : 'bg-indigo-500/20 text-indigo-300'
+          isDay ? 'bg-day/20 text-day-foreground' : 'bg-night/20 text-night-foreground'
         }`}
       >
         {isDay ? '☀ 白天' : '🌙 夜晚'}

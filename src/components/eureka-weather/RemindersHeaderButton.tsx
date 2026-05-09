@@ -44,7 +44,7 @@ export default function RemindersHeaderButton() {
       >
         🔔
         {reminders.length > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-amber-500 text-[10px] text-black font-bold flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-day text-[10px] text-day-foreground font-bold flex items-center justify-center">
             {reminders.length}
           </span>
         )}
@@ -98,7 +98,7 @@ export default function RemindersHeaderButton() {
                     className={cn(
                       'w-6 h-6 rounded transition-colors',
                       r.recurring
-                        ? 'bg-amber-500/20 text-amber-300'
+                        ? 'bg-day/20 text-day-foreground'
                         : 'text-muted-foreground hover:text-foreground',
                     )}
                   >

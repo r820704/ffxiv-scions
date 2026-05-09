@@ -95,7 +95,7 @@ export default function AddReminderButton({
       onClick={handleClick}
       className={cn(
         'inline-flex items-center justify-center w-6 h-6 rounded transition-colors text-xs',
-        visualState === 'set' && 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30',
+        visualState === 'set' && 'bg-day/20 text-day-foreground hover:bg-day/30',
         visualState === 'default' && 'text-muted-foreground hover:text-amber-300',
         visualState === 'disabled' && 'text-muted-foreground/50 cursor-not-allowed',
         className,

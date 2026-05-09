@@ -55,7 +55,7 @@ export default function SlotPlanSection({
           <button
             onClick={onRunOptimizer}
             disabled={slotOptimizing || priceLoading || prices.length === 0 || filledSlotCount === 0}
-            className="text-xs px-3 py-1 rounded bg-amber-600 text-amber-50 hover:bg-amber-500 transition-colors cursor-pointer disabled:bg-amber-600/40 disabled:cursor-not-allowed"
+            className="text-xs px-3 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer disabled:bg-primary/40 disabled:cursor-not-allowed"
           >
             {slotOptimizing ? '計算中...' : slotResult && !isStale ? '重新計算' : '計算最佳合成'}
           </button>
