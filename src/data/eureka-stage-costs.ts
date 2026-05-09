@@ -16,7 +16,7 @@ export const STAGE_UPGRADE_COSTS: StageUpgradeCost[] = [
   { from: 'antiquated',  to: 'anemos-base', materials: [{ materialId: PROTEAN_CRYSTAL, quantity: 100 }] },
   { from: 'anemos-base', to: 'anemos+1',    materials: [{ materialId: PROTEAN_CRYSTAL, quantity: 400 }] },
   { from: 'anemos+1',    to: 'anemos+2',    materials: [{ materialId: PROTEAN_CRYSTAL, quantity: 800 }] },
-  { from: 'anemos+2',    to: 'anemos',      materials: [{ materialId: PAZUZU_FEATHER, quantity: 3 }, { materialId: ANEMOS_CRYSTAL, quantity: 5 }] },
+  { from: 'anemos+2',    to: 'anemos',      materials: [{ materialId: PAZUZU_FEATHER, quantity: 3 }] },
   { from: 'anemos',      to: 'pagos',       materials: [{ materialId: FROSTED_PROTEAN, quantity: 5 }] },
   { from: 'pagos',       to: 'pagos+1',     materials: [
     { materialId: FROSTED_PROTEAN, quantity: 10 },
