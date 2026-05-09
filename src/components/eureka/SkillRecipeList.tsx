@@ -347,7 +347,7 @@ export default function SkillRecipeList({
                     isExpanded={isExpanded}
                     onToggleExpand={isGuideMode ? undefined : () => toggleCardExpand(action.id)}
                     guideRecipeIdx={guideIdx}
-                    hidePrice={isGuideMode}
+                    showUnitPriceOnly={isGuideMode}
                   />
                 </div>
                 <button
