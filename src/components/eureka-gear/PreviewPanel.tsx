@@ -127,12 +127,12 @@ export function PreviewPanel({
       const targetName = pendingStartTargetStage
         ? (pendingStartTargetLabel ?? STAGE_TC_LABEL[pendingStartTargetStage])
         : null;
-      const heading = targetName
+      const heading = targetName && targetName !== startName
         ? `從 ${startName} → ${targetName} 需要`
         : `獲得 ${startName} 需要`;
-      const buttonLabel = targetName
-        ? `⬆ 📍 設為目前階段 (${startName})，並設目標 (${targetName})`
-        : `⬆ 📍 設為目前階段 (${startName})`;
+      const buttonLabel = targetName && targetName !== startName
+        ? `⬆ 取得 (${targetName})`
+        : `⬆ 取得 (${startName})`;
       return (
         <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
           <div className="text-yellow-400 font-semibold mb-2">{heading}</div>

@@ -201,6 +201,30 @@ export function useEurekaInventory() {
     [inventory],
   );
 
+  const startAndUpgradeTo = useCallback(
+    (ref: ChainRef, target: EurekaStage): UpgradeOutcome | null => {
+      const startFrom: EurekaStage = 'antiquated';
+      const materials = startFrom === target ? [] : costsForRef(ref, startFrom, target);
+      const hadEnough = materials.every(
+        (m) => (inventory.materials[m.materialId] ?? 0) >= m.quantity,
+      );
+      const outcome: UpgradeOutcome = { from: startFrom, to: target, materials, hadEnough };
+
+      setInventory((prev) => {
+        const nextMaterials = materials.length > 0
+          ? deductMaterials(prev.materials, materials)
+          : prev.materials;
+        return setSlotInInventory(
+          { ...prev, materials: nextMaterials },
+          ref,
+          () => ({ currentStage: target }),
+        );
+      });
+      return outcome;
+    },
+    [inventory],
+  );
+
   const clearAll = useCallback(() => {
     setInventory(emptyInventoryV5());
   }, []);
@@ -254,6 +278,7 @@ export function useEurekaInventory() {
     setCurrent,
     setTarget,
     performUpgrade,
+    startAndUpgradeTo,
     clearAll,
     clearMaterials,
     clearAllProgress,

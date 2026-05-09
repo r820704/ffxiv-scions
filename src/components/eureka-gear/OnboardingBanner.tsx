@@ -73,6 +73,13 @@ export function OnboardingBanner() {
       <p className="mt-2 text-xs text-muted-foreground">
         優雷卡元素加持：在優雷卡區域內均衡提升六種元素屬性，影響傷害計算。
       </p>
+      <p className="mt-2 text-xs text-muted-foreground inline-flex items-center gap-1.5">
+        <span
+          aria-hidden="true"
+          className="inline-block w-2.5 h-2.5 rounded-full bg-glow shadow-[0_0_4px_2px_rgba(251,191,36,0.6)]"
+        />
+        <span className="text-glow/90">帶光暈</span>＝遊戲中會發光（後續同模型再強化的階段不另外標）
+      </p>
     </div>
   );
 }

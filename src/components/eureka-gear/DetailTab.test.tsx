@@ -184,7 +184,7 @@ describe('DetailTab', () => {
     // Circle 1 click on unstarted chain shows prereq panel; inventory must not be touched
     expect(onSetTarget).not.toHaveBeenCalled();
     expect(onStartChain).not.toHaveBeenCalled();
-    expect(screen.getByText(/設為目前階段/)).toBeInTheDocument();
+    expect(screen.getAllByText(/取得/).length).toBeGreaterThan(0);
   });
 
   it('clicking armor stage 1 when slot not started shows prereq panel (does not call onSetTarget)', () => {
@@ -208,7 +208,7 @@ describe('DetailTab', () => {
     // Circle 1 click on unstarted armor slot shows prereq panel; inventory must not be touched
     expect(onSetTarget).not.toHaveBeenCalled();
     expect(onStartChain).not.toHaveBeenCalled();
-    expect(screen.getAllByText(/設為目前階段/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/取得/).length).toBeGreaterThan(0);
   });
 
   it('全展開 button expands all armor slot accordions', () => {
