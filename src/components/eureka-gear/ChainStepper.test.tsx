@@ -169,7 +169,7 @@ describe('ChainStepper', () => {
 });
 
 describe('ChainStepper glow stage marking', () => {
-  it('marks anemos / pyros / eureka / physeos buttons with data-glow when weapon glowStages is passed', () => {
+  it('marks anemos / pyros / eureka buttons with data-glow when weapon glowStages is passed', () => {
     render(
       <ChainStepper
         currentStage="anemos"
@@ -182,7 +182,8 @@ describe('ChainStepper glow stage marking', () => {
     expect(buttons[4]?.getAttribute('data-glow')).toBe('true');
     expect(buttons[10]?.getAttribute('data-glow')).toBe('true');
     expect(buttons[14]?.getAttribute('data-glow')).toBe('true');
-    expect(buttons[15]?.getAttribute('data-glow')).toBe('true');
+    // physeos shares the same model as eureka — does not get its own glow mark
+    expect(buttons[15]?.getAttribute('data-glow')).toBe(null);
   });
 
   it('does not mark elemental base as glow on weapon track (regression: elemental does not glow)', () => {
@@ -198,7 +199,7 @@ describe('ChainStepper glow stage marking', () => {
     expect(buttons[7]?.getAttribute('data-glow')).toBe(null);
   });
 
-  it('marks elemental+1 / +2 with data-glow when elemental armor glowStages is passed', () => {
+  it('marks elemental+1 with data-glow when elemental armor glowStages is passed', () => {
     render(
       <ChainStepper
         currentStage="elemental"
@@ -211,7 +212,8 @@ describe('ChainStepper glow stage marking', () => {
     // ELEMENTAL_ARMOR_STAGES = [elemental, elemental+1, elemental+2]
     expect(buttons[0]?.getAttribute('data-glow')).toBe(null);
     expect(buttons[1]?.getAttribute('data-glow')).toBe('true');
-    expect(buttons[2]?.getAttribute('data-glow')).toBe('true');
+    // elemental+2 shares the same model as elemental+1 — does not get its own glow mark
+    expect(buttons[2]?.getAttribute('data-glow')).toBe(null);
   });
 
   it('does not mark any stage as glow on anemos armor track (no glowStages)', () => {

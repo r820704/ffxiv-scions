@@ -79,7 +79,7 @@ describe('NmDetailModal', () => {
   it('omits timeOfDay chip for trigger mob without time-of-day attribute', () => {
     // sabotender-corrido's trigger mob (Flowering Sabotender) has no timeOfDay.
     render(<NmDetailModal nmId="sabotender-corrido" onClose={() => {}} />);
-    const trigList = screen.getByText('在以下地點擊殺：').parentElement!;
+    const trigList = screen.getByText('觸發方式：在以下地點擊殺').parentElement!;
     expect(trigList.querySelector('[class*="indigo-950"]')).toBeNull();
   });
 });

@@ -115,7 +115,7 @@ export const STAGE_ITEM_LEVELS: Record<EurekaStage, number> = {
  * Source: ffxiv.consolegameswiki.com + in-game verification.
  */
 export const WEAPON_GLOW_STAGES: ReadonlySet<EurekaStage> = new Set([
-  'anemos', 'pyros', 'eureka', 'physeos',
+  'anemos', 'pyros', 'eureka',
 ]);
 
 /**
@@ -127,7 +127,7 @@ export const WEAPON_GLOW_STAGES: ReadonlySet<EurekaStage> = new Set([
  * Source: ffxiv.consolegameswiki.com/wiki/Eurekan_Armor.
  */
 export const ELEMENTAL_ARMOR_GLOW_STAGES: ReadonlySet<EurekaStage> = new Set([
-  'elemental+1', 'elemental+2',
+  'elemental+1',
 ]);
 
 export const STAGE_TC_LABEL: Record<EurekaStage, string> = {
