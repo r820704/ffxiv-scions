@@ -69,7 +69,7 @@ export default function CompactAlbumGrid({
   return (
     <div>
       {mode === 'slot-pick' && selectedSlot !== null && (
-        <div className="text-[10px] text-amber-400 mb-1">
+        <div className="text-[10px] text-target mb-1">
           👆 已選格子 {selectedSlot + 1}，點擊技能放入
         </div>
       )}
@@ -100,7 +100,7 @@ export default function CompactAlbumGrid({
                   isLearned
                     ? 'border-primary-dark border-2 bg-card opacity-100'
                     : 'border-border bg-card',
-                  mode === 'slot-pick' && isUsed && 'ring-1 ring-amber-500/60',
+                  mode === 'slot-pick' && isUsed && 'ring-1 ring-target/60',
                   dim && 'opacity-40',
                   !dim && 'hover:border-muted-foreground hover:opacity-90',
                   pickDisabled && 'cursor-default',

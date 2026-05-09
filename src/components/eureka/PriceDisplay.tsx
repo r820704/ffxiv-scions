@@ -15,7 +15,7 @@ export default function PriceDisplay({ price, worldName, loading }: PriceDisplay
 
   return (
     <span className="text-xs">
-      <span className="text-amber-400 font-medium">{price.toLocaleString()} gil</span>
+      <span className="text-gil font-medium">{price.toLocaleString()} gil</span>
       {worldName && (
         <span className="text-muted-foreground ml-1">@ {worldName}</span>
       )}

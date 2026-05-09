@@ -242,7 +242,7 @@ export default function CrystalOverview({
                 >
                   {hasOptResult ? remaining95 : '—'}
                 </span>
-                <span className="text-amber-400 text-right">
+                <span className="text-gil text-right">
                   {!hasOptResult
                     ? '—'
                     : priceLoading
@@ -314,7 +314,7 @@ export default function CrystalOverview({
               <span className="text-primary">
                 預估 {Math.round(mcCosts.totalCost50).toLocaleString()}
               </span>
-              <span className="text-amber-400">
+              <span className="text-gil">
                 保底 {Math.round(mcCosts.totalCost95).toLocaleString()}
               </span>
             </span>
@@ -329,7 +329,7 @@ export default function CrystalOverview({
         >
           <div className="space-y-2">
             <div>
-              <span className="font-semibold text-amber-400">保底</span>
+              <span className="font-semibold text-gil">保底</span>
               <span className="ml-1">— 95% 的人不會超過這個金額（保險預算）</span>
             </div>
             <div>

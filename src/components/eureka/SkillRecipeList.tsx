@@ -428,7 +428,7 @@ function renderSlotGroups({
               <span
                 className={cn(
                   'ml-auto shrink-0',
-                  combo.successRate >= 1.0 ? 'text-green-400' : 'text-amber-400'
+                  combo.successRate >= 1.0 ? 'text-green-400' : 'text-warning'
                 )}
               >
                 {Math.round(combo.successRate * 100)}% 成功
