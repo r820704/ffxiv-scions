@@ -50,7 +50,7 @@ describe('NmDetailModal', () => {
       (el) => el.getAttribute('data-pin-kind') === 'nm',
     );
     expect(nmPin).toBeDefined();
-    expect(nmPin?.className).toMatch(/bg-rose-/);
+    expect(nmPin?.className).toMatch(/bg-nm/);
   });
 
   it('does not render the deprecated zone+aliases header row', () => {

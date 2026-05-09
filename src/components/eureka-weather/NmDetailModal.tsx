@@ -108,8 +108,8 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
               <>
                 <div>
                   <div className="text-xs text-muted-foreground mb-1">NM 座標</div>
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-950/40 text-xs">
-                    <span className="text-rose-400 font-bold">NM</span>
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-nm/15 text-xs">
+                    <span className="text-nm-foreground font-bold">NM</span>
                     <span className="text-muted-foreground">
                       📍 {zoneShort} ({spawn.nmCoord.x.toFixed(1)}, {spawn.nmCoord.y.toFixed(1)})
                     </span>

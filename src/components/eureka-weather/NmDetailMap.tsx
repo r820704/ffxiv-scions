@@ -107,8 +107,8 @@ export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
       </svg>
       {placed.map((p, idx) => {
         const isNm = p.pin.kind === 'nm';
-        const bg = isNm ? 'bg-rose-600' : 'bg-amber-500';
-        const ringHi = isNm ? 'ring-rose-300' : 'ring-amber-300';
+        const bg = isNm ? 'bg-nm' : 'bg-trigger-mob';
+        const ringHi = isNm ? 'ring-nm-foreground' : 'ring-trigger-mob-foreground';
         const size = isNm ? 'w-7 h-7' : 'w-6 h-6';
         return (
           <div
