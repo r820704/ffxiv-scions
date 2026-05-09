@@ -86,4 +86,13 @@ describe('FarmingTab', () => {
     expect(section?.textContent).toMatch(/優雷卡的斷片/);
     expect(section?.textContent).toMatch(/缺 100/);
   });
+
+  it('shows item levels in active targets list', () => {
+    const inv: EurekaInventoryV5 = emptyInventoryV3();
+    inv.weapons['pld-galatyn'] = { currentStage: 'pyros', targetStage: 'hydatos' };
+    render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
+    // pyros = iL 385, hydatos = iL 390
+    expect(screen.getByText(/iL 385/)).toBeInTheDocument();
+    expect(screen.getByText(/iL 390/)).toBeInTheDocument();
+  });
 });
