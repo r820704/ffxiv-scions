@@ -81,22 +81,6 @@ function weaponInfoAt(weapons: EurekaWeapon[], chainId: string, stage: EurekaSta
   return weapons.find((w) => w.chainId === chainId && w.stage === stage);
 }
 
-/**
- * Inline legend explaining the amber halo on stage circles. Rendered next to
- * section titles (武器, 元素防具) where any stage in that section glows in-game.
- */
-function GlowLegend() {
-  return (
-    <span className="inline-flex items-center gap-1.5 text-[11px] text-glow/80 font-normal">
-      <span
-        aria-hidden="true"
-        className="inline-block w-2.5 h-2.5 rounded-full bg-glow shadow-[0_0_4px_2px_rgba(251,191,36,0.6)]" // shadow color tracks --glow; update both if changing
-      />
-      帶光暈＝遊戲中會發光（後續同模型再強化的階段不另外標）
-    </span>
-  );
-}
-
 function SharedJobIcons({ set }: { set: ArmorSetId }) {
   const jobs = JOBS_FOR_ARMOR_SET[set] ?? [];
   if (jobs.length <= 1) return null;
@@ -169,10 +153,7 @@ export function DetailTab({
 
       {primaryChains.length > 0 && (
         <section className="space-y-2">
-          <h3 className="text-yellow-400 font-bold flex items-center flex-wrap gap-x-3">
-            <span>武器</span>
-            <GlowLegend />
-          </h3>
+          <h3 className="text-yellow-400 font-bold">武器</h3>
           {primaryChains.map(({ chainId, progress: p }) => {
             const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
             const ref: ChainRef = { kind: 'weapon', chainId };
@@ -505,7 +486,6 @@ function ArmorTrackSection({
         <span className="text-xs text-gray-500 mr-1">{sectionExpanded ? '▼' : '▶'}</span>
         <span>{title}</span>
         {sharedHeader}
-        {glowStages && glowStages.size > 0 && <GlowLegend />}
       </button>
       {sectionExpanded && (
       <div className="space-y-3 pl-2 border-l-2 border-gray-700">
