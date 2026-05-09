@@ -220,7 +220,6 @@ export default function LogosActionCard({
                     ? 'bg-primary-dark/15 ring-1 ring-primary-dark/40'
                     : 'bg-muted/50';
                 const clickable = onRecipeClick != null;
-                const isTopmost = idx === 0;
                 return (
                   <Fragment key={ri}>
                     {hasMultiple && idx > 0 && (
@@ -234,9 +233,6 @@ export default function LogosActionCard({
                       className={`rounded px-2.5 py-1.5 ${wrapperBg} ${clickable ? 'cursor-pointer hover:ring-1 hover:ring-primary/30' : ''}`}
                       onClick={clickable ? () => onRecipeClick(ri) : undefined}
                     >
-                      {hasMultiple && isTopmost && (
-                        <div className="text-[0.6rem] text-primary font-bold mb-1">▶ 用於計算</div>
-                      )}
                       <div className="flex flex-col gap-0.5">
                         {recipe.ingredients.map((ing, ii) => {
                           const mneme = getMneme(ing.mnemeId);
