@@ -2,7 +2,6 @@ import type { StageUpgradeCost } from '../types/eureka-gear';
 
 const PROTEAN_CRYSTAL = 21801;
 const PAZUZU_FEATHER = 21802;
-const ANEMOS_CRYSTAL = 21803;
 const FROSTED_PROTEAN = 23309;
 const PAGOS_CRYSTAL = 22976;
 const LOUHI_ICE = 22975;

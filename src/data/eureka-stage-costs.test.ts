@@ -25,7 +25,8 @@ describe('eureka-stage-costs', () => {
     const edge = STAGE_UPGRADE_COSTS.find((c) => c.from === 'anemos+2' && c.to === 'anemos');
     expect(edge).toBeTruthy();
     expect(edge!.materials).toHaveLength(1);
-    expect(edge!.materials[0].materialId).toBe(21802); // PAZUZU_FEATHER
-    expect(edge!.materials[0].quantity).toBe(3);
+    const onlyMaterial = edge!.materials[0]!;
+    expect(onlyMaterial.materialId).toBe(21802); // PAZUZU_FEATHER
+    expect(onlyMaterial.quantity).toBe(3);
   });
 });
