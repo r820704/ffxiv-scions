@@ -1,7 +1,10 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import InventorySidebar from './InventorySidebar';
 
+beforeEach(() => {
+  window.localStorage.clear();
+});
 afterEach(() => cleanup());
 
 const mats = [
@@ -26,22 +29,19 @@ describe('InventorySidebar', () => {
     expect(helpButton).toHaveTextContent('?');
   });
 
-  it('renders OCR button with disabled state', () => {
+  it('renders expanded by default', () => {
     render(<InventorySidebar materials={mats} inventory={{}} onMaterialChange={() => {}} onClear={() => {}} />);
-    const ocrButton = screen.getByRole('button', { name: '截圖匯入（即將推出）' });
-    expect(ocrButton).toBeInTheDocument();
-    expect(ocrButton).toHaveTextContent('📷 截圖匯入（即將推出）');
+    // Material tile should be visible immediately (default expanded)
+    expect(screen.getByText('異質結晶')).toBeInTheDocument();
   });
 
-  it('OCR button has aria-disabled="true"', () => {
-    render(<InventorySidebar materials={mats} inventory={{}} onMaterialChange={() => {}} onClear={() => {}} />);
-    const ocrButton = screen.getByRole('button', { name: '截圖匯入（即將推出）' });
-    expect(ocrButton).toHaveAttribute('aria-disabled', 'true');
-  });
-
-  it('expands to show MaterialTile when 展開 clicked', () => {
+  it('toggles between 收合 and 展開 when clicked', () => {
     const fn = vi.fn();
     render(<InventorySidebar materials={mats} inventory={{}} onMaterialChange={fn} onClear={() => {}} />);
+    // Default: expanded, button reads 收合
+    fireEvent.click(screen.getByRole('button', { name: '收合' }));
+    // After collapse, tile is hidden and button reads 展開
+    expect(screen.queryByText('異質結晶')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '展開' }));
     expect(screen.getByText('異質結晶')).toBeInTheDocument();
   });

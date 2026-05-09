@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import type { EurekaMaterial } from '@/types/eureka-gear';
 import { Tooltip } from '../ui/Tooltip';
+import { useLocalStorageBool } from '@/hooks/useLocalStorageBool';
 import MaterialTile from './MaterialTile';
 
 interface InventorySidebarProps {
@@ -13,7 +13,7 @@ interface InventorySidebarProps {
 export default function InventorySidebar({
   materials, inventory, onMaterialChange, onClear,
 }: InventorySidebarProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useLocalStorageBool('eureka-gear-inventory-expanded', true);
   const registered = materials.filter((m) => (inventory[m.id] ?? 0) > 0).length;
 
   return (
@@ -32,20 +32,9 @@ export default function InventorySidebar({
           </Tooltip>
         </div>
         <div className="flex gap-2">
-          <Tooltip label="未來功能：貼上道具欄截圖自動匯入持有量">
-            <button
-              type="button"
-              aria-disabled="true"
-              onClick={(e) => e.preventDefault()}
-              className="text-xs px-2 py-0.5 rounded border border-border/50 text-muted-foreground cursor-not-allowed opacity-50"
-              aria-label="截圖匯入（即將推出）"
-            >
-              📷 截圖匯入（即將推出）
-            </button>
-          </Tooltip>
           <button
             type="button"
-            onClick={() => setExpanded((v) => !v)}
+            onClick={() => setExpanded(!expanded)}
             className="text-xs px-2 py-0.5 rounded border border-border/50 hover:border-primary"
           >
             {expanded ? '收合' : '展開'}
