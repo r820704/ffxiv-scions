@@ -123,7 +123,7 @@ export default function LogosActionCard({
             </span>
           )}
           <span
-            className={`ml-auto shrink-0 ${slotBadge.successRate >= 1.0 ? 'text-green-400' : 'text-amber-400'}`}
+            className={`ml-auto shrink-0 ${slotBadge.successRate >= 1.0 ? 'text-green-400' : 'text-warning'}`}
           >
             {Math.round(slotBadge.successRate * 100)}% 成功
           </span>
@@ -245,7 +245,7 @@ export default function LogosActionCard({
                                 <span className="inline-block h-3 w-16 bg-muted animate-pulse rounded ml-1" />
                               ) : logogramPrice?.price != null ? (
                                 <>
-                                  <span className="text-amber-400 font-medium tabular-nums min-w-[4.5rem] text-right ml-0.5">
+                                  <span className="text-gil font-medium tabular-nums min-w-[4.5rem] text-right ml-0.5">
                                     {logogramPrice.price.toLocaleString()} gil
                                   </span>
                                   {logogramPrice.worldName && (
@@ -270,7 +270,7 @@ export default function LogosActionCard({
                         <span className="text-muted-foreground">計算中...</span>
                       ) : cost50 != null && cost95 != null ? (
                         <>
-                          <span className="font-medium text-amber-400">
+                          <span className="font-medium text-gil">
                             預估 {cost50.toLocaleString()} gil
                           </span>
                           <span className="text-[0.6rem] text-muted-foreground">
