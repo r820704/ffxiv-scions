@@ -12,6 +12,7 @@ import {
   type JobId,
 } from '../../data/eureka-armor-sets';
 import { Tooltip } from '../ui/Tooltip';
+import { Button } from '@/components/ui/button';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
 import {
@@ -409,23 +410,25 @@ export function DetailTab({
               確認要清除「{resetDialogRef.label}」的所有進度紀錄？此操作不可還原。
             </p>
             <div className="flex gap-2 justify-end">
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 onClick={() => setResetDialogRef(null)}
-                className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
               >
                 取消
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="destructive"
+                size="sm"
                 onClick={() => {
                   if (resetDialogRef) onClearChain?.(resetDialogRef.ref);
                   setResetDialogRef(null);
                 }}
-                className="px-3 py-1.5 rounded bg-red-700 text-white text-sm hover:bg-red-600"
               >
                 確認重置
-              </button>
+              </Button>
             </div>
           </div>
         </div>
