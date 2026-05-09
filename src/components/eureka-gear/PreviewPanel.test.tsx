@@ -169,7 +169,7 @@ describe('PreviewPanel', () => {
           onStartChain={onStartChain}
         />,
       );
-      fireEvent.click(screen.getByRole('button', { name: /設為目前階段/ }));
+      fireEvent.click(screen.getByRole('button', { name: /取得/ }));
       expect(onStartChain).toHaveBeenCalledOnce();
     });
 
@@ -191,8 +191,8 @@ describe('PreviewPanel', () => {
       );
       // Heading switches from "獲得 X 需要" to "從 X → Y 需要" when target preset.
       expect(screen.getByText(/從.*→.*嘉拉汀·常風.*需要/)).toBeInTheDocument();
-      // Confirm button label mentions both start AND target.
-      expect(screen.getByRole('button', { name: /設目標.*嘉拉汀·常風/ })).toBeInTheDocument();
+      // Confirm button label uses Option B "取得 (target)" when target preset.
+      expect(screen.getByRole('button', { name: /取得.*嘉拉汀·常風/ })).toBeInTheDocument();
     });
   });
 });

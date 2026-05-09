@@ -68,6 +68,12 @@ export type DetailTabProps = {
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
   onStartChain: (ref: ChainRef, stage?: EurekaStage) => void;
+  /**
+   * Atomic start-and-upgrade for null-current chains.
+   * Sets currentStage to target and deducts the antiquated→target materials
+   * in a single setInventory call. Used by the start panel "取得" button.
+   */
+  onStartAndUpgradeTo?: (ref: ChainRef, target: EurekaStage) => void;
   onClearChain?: (ref: ChainRef) => void;
 };
 
@@ -123,6 +129,7 @@ export function DetailTab({
   onSetTarget,
   onRequestUpgrade,
   onStartChain,
+  onStartAndUpgradeTo,
   onClearChain,
 }: DetailTabProps) {
   const progress = useMemo(() => getJobProgress(selectedJob as JobId, inventory), [selectedJob, inventory]);
@@ -315,8 +322,13 @@ export function DetailTab({
                     pendingStartTargetStage={isPendingStart && pendingStartTarget ? pendingStartTarget : undefined}
                     pendingStartTargetLabel={isPendingStart && pendingStartTarget ? weaponInfoAt(weapons, chainId, pendingStartTarget)?.tcName : undefined}
                     onStartChain={!isStarted ? () => {
-                      onStartChain(ref);
-                      if (pendingStartTarget) onSetTarget(ref, pendingStartTarget);
+                      const goal: EurekaStage = pendingStartTarget ?? 'antiquated';
+                      if (onStartAndUpgradeTo) {
+                        onStartAndUpgradeTo(ref, goal);
+                      } else {
+                        onStartChain(ref);
+                        if (pendingStartTarget) onSetTarget(ref, pendingStartTarget);
+                      }
                       setPendingStartChain(null);
                       setPendingStartTarget(null);
                     } : undefined}
@@ -369,6 +381,7 @@ export function DetailTab({
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
         onStartChain={onStartChain}
+        onStartAndUpgradeTo={onStartAndUpgradeTo}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
         startHint="完成70級職業任務"
@@ -397,6 +410,7 @@ export function DetailTab({
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
         onStartChain={onStartChain}
+        onStartAndUpgradeTo={onStartAndUpgradeTo}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
         startHint="前置：持有 70 級職業套裝（antiquated）、解鎖 50 個文理技能圖鑑、至少擁有一件元素武器；於湧火之地（Eureka Pyros）以湧火水晶兌換取得"
@@ -455,6 +469,7 @@ type ArmorTrackSectionProps = {
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
   onStartChain?: (ref: ChainRef, stage?: EurekaStage) => void;
+  onStartAndUpgradeTo?: (ref: ChainRef, target: EurekaStage) => void;
   onRequestReset?: (ref: ChainRef, label: string) => void;
   globalExpand?: { rev: number; expand: boolean } | null;
   startHint?: string;
@@ -462,7 +477,7 @@ type ArmorTrackSectionProps = {
 
 function ArmorTrackSection({
   title, colorClass, slotColorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader, glowStages,
-  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onRequestReset, globalExpand, startHint,
+  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onStartAndUpgradeTo, onRequestReset, globalExpand, startHint,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
     head: true, body: false, hands: false, legs: false, feet: false,
@@ -628,8 +643,13 @@ function ArmorTrackSection({
                       : undefined
                   }
                   onStartChain={!isStarted ? () => {
-                    onStartChain?.(ref, stages[0] as EurekaStage);
-                    if (pendingStartTarget) onSetTarget(ref, pendingStartTarget);
+                    const goal: EurekaStage = pendingStartTarget ?? (stages[0] as EurekaStage);
+                    if (onStartAndUpgradeTo) {
+                      onStartAndUpgradeTo(ref, goal);
+                    } else {
+                      onStartChain?.(ref, stages[0] as EurekaStage);
+                      if (pendingStartTarget) onSetTarget(ref, pendingStartTarget);
+                    }
                     setPendingStartSlot(null);
                     setPendingStartTarget(null);
                   } : undefined}

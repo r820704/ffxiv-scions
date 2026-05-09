@@ -66,6 +66,7 @@ export default function EurekaGearPage() {
     setCurrent,
     setTarget,
     performUpgrade,
+    startAndUpgradeTo,
     clearMaterials,
     clearAllProgress,
     clearChain,
@@ -132,6 +133,11 @@ export default function EurekaGearPage() {
 
   const handleStartChain = (ref: ChainRef, stage: EurekaStage = 'antiquated') => {
     setCurrent(ref, stage);
+  };
+
+  const handleStartAndUpgradeTo = (ref: ChainRef, target: EurekaStage) => {
+    const outcome = startAndUpgradeTo(ref, target);
+    if (outcome) showUpgradeToast(outcome);
   };
 
   const handleRequestUpgrade = (ref: ChainRef) => {
@@ -220,6 +226,7 @@ export default function EurekaGearPage() {
               onSetTarget={setTarget}
               onRequestUpgrade={handleRequestUpgrade}
               onStartChain={handleStartChain}
+              onStartAndUpgradeTo={handleStartAndUpgradeTo}
               onClearChain={clearChain}
             />
           )}
