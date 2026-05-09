@@ -472,6 +472,11 @@ function renderSlotGroups({
           skills.push(buildSkillEntry(skill2, 'skill2', effective2, recommended.skill2RecipeIdx));
         }
 
+        const calcParts: string[] = [];
+        if (skill1) calcParts.push(`${skill1.nameTw}#${effective1 + 1}`);
+        if (skill2 && effective2 != null) calcParts.push(`${skill2.nameTw}#${effective2 + 1}`);
+        const calcLabel = calcParts.length > 0 ? `計算：${calcParts.join(' + ')}` : '';
+
         return (
           <div key={slotIdx} className="space-y-1.5">
             {/* Slot header */}
@@ -479,6 +484,11 @@ function renderSlotGroups({
               <span className="text-muted-foreground bg-muted rounded px-1.5 py-0.5 shrink-0">
                 格 {slotIdx + 1}
               </span>
+              {calcLabel && (
+                <span className="text-[0.65rem] text-muted-foreground truncate min-w-0">
+                  {calcLabel}
+                </span>
+              )}
               <span
                 className={cn(
                   'ml-auto shrink-0',
@@ -515,6 +525,7 @@ function renderSlotGroups({
                         highlightRecipeIdx={recommendedIdx}
                         recipeOrder={sortedIndices}
                         showUnitPriceOnly
+                        compactLayout
                         onRecipeClick={(idx) => updateSlotOverride(slotIdx, side, idx)}
                       />
                     </div>
