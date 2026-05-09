@@ -45,6 +45,7 @@
   --color-day-foreground: var(--day-foreground);
   --color-night: var(--night);
   --color-night-foreground: var(--night-foreground);
+  --color-gil: var(--gil);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -102,6 +103,7 @@
   --day-foreground: #fde68a;
   --night: #818cf8;
   --night-foreground: #c7d2fe;
+  --gil: #fbbf24;
   --border: #2a2440;
   --input: #2a2440;
   --ring: #C5B69D;
