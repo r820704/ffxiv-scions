@@ -260,7 +260,7 @@ export const ZONE_OF_STAGE: Record<EurekaStage, EurekaZone | null> = {
   anemos: 'anemos',
   pagos: 'pagos',
   'pagos+1': 'pagos',
-  elemental: 'pyros',
+  elemental: 'pagos',
   'elemental+1': 'pyros',
   'elemental+2': 'pyros',
   pyros: 'pyros',
