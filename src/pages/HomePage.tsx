@@ -10,7 +10,7 @@ export default function HomePage() {
           <OzmaLogo size={130} />
         </div>
         <h1 className="font-title text-3xl font-bold text-primary">
-          FFXIV 巴爾德西昂
+          FFXIV Scions
         </h1>
         <p className="text-sm text-muted-foreground mt-2">
           Final Fantasy XIV 繁中伺服器優雷卡工具

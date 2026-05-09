@@ -1,4 +1,4 @@
-# FFXIV 巴爾德西昂
+# FFXIV Scions
 
 為 Final Fantasy XIV 繁體中文伺服器玩家打造的優雷卡工具網站。
 
