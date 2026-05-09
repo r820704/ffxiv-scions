@@ -88,7 +88,7 @@ describe('PreviewPanel', () => {
   });
 
   describe('start panel', () => {
-    it('uses 獲得 X 需要 header (weapon track, no materials)', () => {
+    it('uses 獲得 X 需要 header and renders startHint as a material list item', () => {
       render(
         <PreviewPanel
           currentStage="antiquated"
@@ -103,9 +103,8 @@ describe('PreviewPanel', () => {
         />,
       );
       expect(screen.getByText(/獲得.*70級職業套裝.*需要/)).toBeInTheDocument();
-      expect(screen.getByText(/前置：需持有 70 級職業套裝/)).toBeInTheDocument();
-      // weapon start has no materials cost
-      expect(screen.queryByText(/×/)).toBeNull();
+      // startHint is now rendered as a material list item with quantity × 1
+      expect(screen.getByText(/前置：需持有 70 級職業套裝.*取得.*× 1/)).toBeInTheDocument();
     });
 
     it('shows materials list for elemental armor first stage (湧火水晶 × 40)', () => {

@@ -1,9 +1,12 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { FarmingTab } from './FarmingTab';
 import { emptyInventoryV3 } from '../../utils/eureka-gear-migrate';
 import type { EurekaInventoryV5 } from '../../types/eureka-gear';
 
+beforeEach(() => {
+  window.localStorage.clear();
+});
 afterEach(() => cleanup());
 
 const materialsMap = {
@@ -82,5 +85,14 @@ describe('FarmingTab', () => {
     const section = hydatosHeader.closest('section');
     expect(section?.textContent).toMatch(/優雷卡的斷片/);
     expect(section?.textContent).toMatch(/缺 100/);
+  });
+
+  it('shows item levels in active targets list', () => {
+    const inv: EurekaInventoryV5 = emptyInventoryV3();
+    inv.weapons['pld-galatyn'] = { currentStage: 'pyros', targetStage: 'hydatos' };
+    render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
+    // pyros = iL 385, hydatos = iL 390
+    expect(screen.getByText(/iL 385/)).toBeInTheDocument();
+    expect(screen.getByText(/iL 390/)).toBeInTheDocument();
   });
 });

@@ -86,7 +86,7 @@ function GlowLegend() {
         aria-hidden="true"
         className="inline-block w-2.5 h-2.5 rounded-full bg-glow shadow-[0_0_4px_2px_rgba(251,191,36,0.6)]" // shadow color tracks --glow; update both if changing
       />
-      帶光暈的階段＝遊戲中會發光
+      帶光暈＝遊戲中會發光（後續同模型再強化的階段不另外標）
     </span>
   );
 }

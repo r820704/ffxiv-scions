@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { ZoneGroup } from './ZoneGroup';
 import { NextEdgeShortage } from './NextEdgeShortage';
 import { Tooltip } from '../ui/Tooltip';
+import { useLocalStorageBool } from '@/hooks/useLocalStorageBool';
 import { costBetween, costBetweenInSequence } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
@@ -10,6 +11,7 @@ import {
   ARMOR_SLOTS,
   ARMOR_STAGES_BY_TRACK,
   EUREKA_STAGES,
+  STAGE_ITEM_LEVELS,
   STAGE_TC_LABEL,
   ZONE_OF_STAGE,
 } from '../../types/eureka-gear';
@@ -60,6 +62,8 @@ type TargetEntry = {
   label: string;
   fromName: string;
   toName: string;
+  fromIl: number;
+  toIl: number;
 };
 
 type AggregatedMaterial = { materialId: number; totalNeeded: number; shortage: number };
@@ -189,6 +193,8 @@ function computeActiveTargets(
       label: chain.displayName,
       fromName,
       toName,
+      fromIl: STAGE_ITEM_LEVELS[slot.currentStage],
+      toIl: STAGE_ITEM_LEVELS[target],
     });
   }
 
@@ -212,6 +218,8 @@ function computeActiveTargets(
         label: `${jobName} · ${SLOT_TC[slot]}`,
         fromName,
         toName,
+        fromIl: STAGE_ITEM_LEVELS[p.currentStage],
+        toIl: STAGE_ITEM_LEVELS[target],
       });
     }
   }
@@ -235,6 +243,8 @@ function computeActiveTargets(
         label: `[${SET_SHORT_LABEL[setId]}] ${SLOT_TC[slot]}`,
         fromName,
         toName,
+        fromIl: STAGE_ITEM_LEVELS[p.currentStage],
+        toIl: STAGE_ITEM_LEVELS[target],
       });
     }
   }
@@ -258,9 +268,9 @@ function ActiveTargetsList({ entries }: { entries: ReturnType<typeof computeActi
           {items.map((e) => (
             <li key={e.key} className="text-xs text-gray-300 flex flex-wrap gap-x-2">
               <span className="text-gray-200 font-semibold shrink-0">{e.label}</span>
-              <span className="text-gray-400">{e.fromName}</span>
+              <span className="text-gray-400">{e.fromName} (iL {e.fromIl})</span>
               <span className="text-yellow-400">→</span>
-              <span className="text-yellow-200">{e.toName}</span>
+              <span className="text-yellow-200">{e.toName} (iL {e.toIl})</span>
             </li>
           ))}
         </ul>
@@ -292,7 +302,7 @@ function ActiveTargetsList({ entries }: { entries: ReturnType<typeof computeActi
 }
 
 export function FarmingTab({ inventory, weapons, materialsMap }: FarmingTabProps) {
-  const [showAll, setShowAll] = useState<boolean>(false);
+  const [showAll, setShowAll] = useLocalStorageBool('eureka-gear-farming-expand-all', false);
   const zoneAgg = useMemo(
     () => aggregateMaterialsByZone(inventory, { expandAll: showAll }),
     [inventory, showAll],
