@@ -136,12 +136,19 @@ export function PreviewPanel({
       return (
         <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
           <div className="text-yellow-400 font-semibold mb-2">{heading}</div>
-          {startMaterials.length > 0 && (
+          {(startMaterials.length > 0 || startHint) && (
             <ul className="space-y-1 mb-3">
               {startMaterials.map(renderMaterialRow)}
+              {startHint && (
+                <li className="flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-2 min-w-0">
+                    <span aria-hidden="true" className="w-5 h-5 shrink-0 inline-flex items-center justify-center text-base">📜</span>
+                    <span className="truncate">{startHint}取得{startName} × 1</span>
+                  </span>
+                </li>
+              )}
             </ul>
           )}
-          {startHint && <p className="text-gray-400 mb-3">{startHint}</p>}
           <div className="flex gap-2">
             <button
               type="button"
