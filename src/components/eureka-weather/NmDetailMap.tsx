@@ -107,10 +107,10 @@ export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
           .map((p, i) => (
             <line
               key={`leader-${i}`}
-              x1={p.actualX}
-              y1={p.actualY}
-              x2={p.displayX}
-              y2={p.displayY}
+              x1={p.displayX}
+              y1={p.displayY}
+              x2={p.actualX}
+              y2={p.actualY}
               stroke="rgb(244 63 94)"
               strokeWidth={1}
               strokeDasharray="2,1.2"
