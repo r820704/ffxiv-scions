@@ -89,6 +89,19 @@ export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
         preserveAspectRatio="none"
         viewBox="0 0 100 100"
       >
+        <defs>
+          <marker
+            id="nm-leader-arrow"
+            markerWidth="3"
+            markerHeight="3"
+            refX="2.5"
+            refY="1.5"
+            orient="auto"
+            markerUnits="strokeWidth"
+          >
+            <path d="M0,0 L3,1.5 L0,3 Z" fill="rgb(244 63 94)" />
+          </marker>
+        </defs>
         {placed
           .filter((p) => p.offset)
           .map((p, i) => (
@@ -102,6 +115,7 @@ export default function NmDetailMap({ zone, pins }: NmDetailMapProps) {
               strokeWidth={1}
               strokeDasharray="2,1.2"
               strokeLinecap="round"
+              markerEnd="url(#nm-leader-arrow)"
             />
           ))}
       </svg>

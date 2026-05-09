@@ -24,7 +24,7 @@ export function StartChainDialog({ isOpen, onConfirm, onCancel }: StartChainDial
           </DialogDescription>
         </DialogHeader>
         <p className="text-sm text-foreground leading-relaxed">
-          起點裝備（antiquated）需透過 70 級職業任務取得，或從 Sundry Splendors 兌換。<br />
+          起點裝備需透過 70 級職業任務取得，或從失物管理人兌換。<br />
           確認你已持有，將此裝備鏈標記為已開始？
         </p>
         <DialogFooter>

@@ -394,7 +394,7 @@ export function DetailTab({
         onStartAndUpgradeTo={onStartAndUpgradeTo}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
-        startHint="前置：持有 70 級職業套裝（antiquated）、解鎖 50 個文理技能圖鑑、至少擁有一件元素武器；於湧火之地（Eureka Pyros）以湧火水晶兌換取得"
+        startHint="前置：持有 70 級職業套裝、解鎖 50 個文理技能圖鑑、至少擁有一件元素武器；於湧火之地以湧火水晶兌換取得"
       />
 
       {resetDialogRef && (
