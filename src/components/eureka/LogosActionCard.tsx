@@ -18,16 +18,25 @@ interface LogosActionCardProps {
   priceLoading: boolean;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
-  /** When set, only show the recipe at this index (guide mode) */
+  /** When set, only show the recipe at this index (album guide mode — single-recipe filter) */
   guideRecipeIdx?: number;
-  /** When true, hide all price/cost information (guide mode) */
+  /** Highlight this recipe with primary color (slot guide mode — does NOT filter to only-this) */
+  highlightRecipeIdx?: number;
+  /** When true, hide all price/cost information */
   hidePrice?: boolean;
+  /** Show full materials + per-ingredient unit prices but skip the per-recipe total-cost summary */
+  showUnitPriceOnly?: boolean;
+  /** Render recipes in this index order (slot guide mode — user selection sorted to top) */
+  recipeOrder?: number[];
+  /** When set, recipe wrapper becomes clickable; receives original recipe index */
+  onRecipeClick?: (recipeIdx: number) => void;
   /** Slot context badge shown in the card header (slot-mode only) */
   slotBadge?: SlotBadgeInfo;
 }
 
 export default function LogosActionCard({
   action, prices, priceLoading, isExpanded, onToggleExpand, guideRecipeIdx, hidePrice, slotBadge,
+  highlightRecipeIdx, showUnitPriceOnly, recipeOrder, onRecipeClick,
 }: LogosActionCardProps) {
   const [internalExpanded, setInternalExpanded] = useState(false);
   const expanded = isExpanded !== undefined ? isExpanded : internalExpanded;
@@ -189,12 +198,14 @@ export default function LogosActionCard({
       {/* Recipes - collapsible */}
       {expanded && (() => {
         const isGuide = guideRecipeIdx != null;
+        const baseOrder = recipeOrder ?? action.recipes.map((_, i) => i);
         const recipesToShow = isGuide
           ? [{ recipe: action.recipes[guideRecipeIdx]!, ri: guideRecipeIdx }]
-          : action.recipes.map((recipe, ri) => ({ recipe, ri }));
+          : baseOrder.map((ri) => ({ recipe: action.recipes[ri]!, ri }));
         const hasMultiple = !isGuide && action.recipes.length > 1;
         const maxCols = Math.max(...recipesToShow.map((r) => r.recipe.ingredients.length));
-        const templateCols = `repeat(${maxCols}, max-content)${hidePrice ? '' : ' auto'}`;
+        const showTotalCost = !hidePrice && !showUnitPriceOnly;
+        const templateCols = `repeat(${maxCols}, max-content)${showTotalCost ? ' auto' : ''}`;
         return (
         <div
           className="mt-2 pt-2 border-t border-border/50 grid text-xs"
@@ -205,6 +216,13 @@ export default function LogosActionCard({
             const cost95 = costs?.cost95 ?? null;
             const cost50 = costs?.cost50 ?? null;
             const isCheapest = hasMultiple && cheapestIdx === ri;
+            const isHighlighted = highlightRecipeIdx === ri;
+            const wrapperBg = isHighlighted
+              ? 'bg-primary/15 ring-1 ring-primary/40'
+              : isCheapest
+                ? 'bg-primary-dark/15 ring-1 ring-primary-dark/40'
+                : 'bg-muted/50';
+            const clickable = onRecipeClick != null;
             return (
               <Fragment key={ri}>
                 {hasMultiple && idx > 0 && (
@@ -215,8 +233,9 @@ export default function LogosActionCard({
                   </div>
                 )}
                 <div
-                  className={`rounded px-3 py-2 items-baseline gap-x-4 ${isCheapest ? 'bg-primary-dark/15 ring-1 ring-primary-dark/40' : 'bg-muted/50'}`}
+                  className={`rounded px-3 py-2 items-baseline gap-x-4 ${wrapperBg} ${clickable ? 'cursor-pointer hover:ring-1 hover:ring-primary/30' : ''}`}
                   style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'subgrid' }}
+                  onClick={clickable ? () => onRecipeClick(ri) : undefined}
                 >
                   {recipe.ingredients.map((ing, ii) => {
                     const mneme = getMneme(ing.mnemeId);
@@ -264,7 +283,7 @@ export default function LogosActionCard({
                   {Array.from({ length: maxCols - recipe.ingredients.length }, (_, i) => (
                     <div key={`empty-${i}`} />
                   ))}
-                  {!hidePrice && (
+                  {showTotalCost && (
                     <div className="text-right justify-self-end flex flex-col items-end gap-0.5">
                       {priceLoading ? (
                         <span className="text-muted-foreground">計算中...</span>
