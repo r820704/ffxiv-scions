@@ -20,4 +20,13 @@ describe('eureka-stage-costs', () => {
       }
     }
   });
+
+  it('anemos+2 → anemos for weapons requires only PAZUZU_FEATHER (no ANEMOS_CRYSTAL)', () => {
+    const edge = STAGE_UPGRADE_COSTS.find((c) => c.from === 'anemos+2' && c.to === 'anemos');
+    expect(edge).toBeTruthy();
+    expect(edge!.materials).toHaveLength(1);
+    const onlyMaterial = edge!.materials[0]!;
+    expect(onlyMaterial.materialId).toBe(21802); // PAZUZU_FEATHER
+    expect(onlyMaterial.quantity).toBe(3);
+  });
 });

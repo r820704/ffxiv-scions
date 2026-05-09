@@ -74,6 +74,15 @@ describe('ChainStepper', () => {
     expect(screen.getByText('最終形態')).toBeTruthy();
   });
 
+  it('groups elemental (stage 8) under pagos zone, not pyros', () => {
+    const { getByTestId } = render(
+      <ChainStepper currentStage="anemos" targetStage={undefined} onSelectTarget={() => {}} />
+    );
+    const pagosGroup = getByTestId('zone-group-pagos');
+    const stage8Btn = screen.getByRole('button', { name: /^stage 8: elemental/ });
+    expect(pagosGroup.contains(stage8Btn)).toBe(true);
+  });
+
   it('still renders all 16 buttons + each remains clickable when grouped', () => {
     const onSelectTarget = vi.fn();
     render(<ChainStepper currentStage="anemos" targetStage={undefined} onSelectTarget={onSelectTarget} />);
