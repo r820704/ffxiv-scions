@@ -27,7 +27,7 @@ export default function NavBar() {
           <OzmaLogo size={32} />
         </div>
         <span className="font-title text-base font-bold text-primary">
-          FFXIV 巴爾德西昂
+          FFXIV Scions
         </span>
       </Link>
       <div className="flex gap-0.5">
