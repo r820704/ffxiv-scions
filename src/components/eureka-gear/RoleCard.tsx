@@ -68,7 +68,7 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
       </div>
 
       {/* Line 2: elemental armor chip */}
-      <span className="text-[10px] font-bold text-cyan-400/90 bg-cyan-950/40 px-1.5 py-0.5 rounded shrink-0">
+      <span className="text-[10px] font-bold text-elemental/90 bg-elemental/20 px-1.5 py-0.5 rounded shrink-0">
         元素防具
       </span>
 
@@ -88,7 +88,7 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
                 zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
                 currentStage={stage}
                 started={started}
-                colorFilled="bg-cyan-400"
+                colorFilled="bg-elemental"
               />
             </div>
           );
@@ -104,15 +104,15 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
         const done = stage === lastStage;
         return (
           <div key={slot} className="hidden sm:flex items-center gap-1 text-xs shrink-0">
-            <span className="text-cyan-400/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
+            <span className="text-elemental/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
             <ArmorDots
               stages={elementalStages}
               zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
               currentStage={stage}
               started={started}
-              colorFilled="bg-cyan-400"
+              colorFilled="bg-elemental"
             />
-            <span className={`tabular-nums shrink-0 ${done ? 'text-green-400' : 'text-gray-400'}`}>
+            <span className={`tabular-nums shrink-0 ${done ? 'text-owned' : 'text-gray-400'}`}>
               {started ? filled : 0}<span className="text-gray-600">/{elementalStages.length}</span>
             </span>
           </div>

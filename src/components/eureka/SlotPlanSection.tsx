@@ -62,7 +62,7 @@ export default function SlotPlanSection({
         </div>
       </div>
       {isStale && (
-        <div className="text-[10px] text-amber-400 bg-amber-400/10 rounded px-2 py-1 mt-1.5">
+        <div className="text-[10px] text-warning bg-warning/10 rounded px-2 py-1 mt-1.5">
           ⚠ 技能格已變更，請重新計算
         </div>
       )}

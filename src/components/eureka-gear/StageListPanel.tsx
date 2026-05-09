@@ -62,9 +62,9 @@ export function StageListPanel({
                   }}
                   className={`w-full text-left px-2 py-1 rounded flex items-center gap-2 transition-colors ${
                     isCurrent
-                      ? 'bg-green-900/40 text-green-300'
+                      ? 'bg-owned/20 text-owned'
                       : isTarget
-                      ? 'bg-yellow-900/40 text-yellow-300'
+                      ? 'bg-target/20 text-target'
                       : 'text-gray-400 hover:bg-gray-800 hover:text-gray-200'
                   }`}
                 >
