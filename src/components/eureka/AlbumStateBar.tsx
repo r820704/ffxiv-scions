@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ui/Tooltip';
+import { Button } from '@/components/ui/button';
 
 interface AlbumStateBarProps {
   learnedCount: number;
@@ -41,13 +42,15 @@ export default function AlbumStateBar({
       >
         全開
       </button>
-      <button
+      <Button
+        variant="destructive"
+        size="xs"
         onClick={onReset}
         disabled={disabled}
-        className="text-xs px-2 py-1 rounded bg-destructive/70 text-destructive-foreground hover:bg-destructive transition-colors cursor-pointer whitespace-nowrap font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+        className="bg-destructive/70 hover:bg-destructive font-medium whitespace-nowrap"
       >
         重置
-      </button>
+      </Button>
     </div>
     </Tooltip>
   );
