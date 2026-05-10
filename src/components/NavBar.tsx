@@ -67,11 +67,11 @@ export default function NavBar() {
         <img
           src={`${base}brand/lantern-symbol.png`}
           alt=""
-          width={32}
-          height={32}
+          width={40}
+          height={40}
           loading="eager"
           decoding="async"
-          className="w-8 h-8 object-contain drop-shadow-[0_2px_8px_rgba(197,182,157,0.25)]"
+          className="w-10 h-10 object-contain drop-shadow-[0_2px_8px_rgba(197,182,157,0.25)]"
         />
         <span
           translate="no"
