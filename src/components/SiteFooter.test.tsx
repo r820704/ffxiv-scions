@@ -10,11 +10,9 @@ describe('SiteFooter', () => {
     expect(screen.getByText(/SQUARE ENIX/)).toBeInTheDocument();
   });
 
-  it('renders author info with TC and CN servers', () => {
+  it('renders friendly greeting line', () => {
     render(<SiteFooter />);
-    expect(screen.getByText(/找我玩/)).toBeInTheDocument();
-    expect(screen.getByText(/TC 迦樓羅 Skuld/)).toBeInTheDocument();
-    expect(screen.getByText(/CN 柔风海湾 Skuld/)).toBeInTheDocument();
+    expect(screen.getByText(/路過打聲招呼/)).toBeInTheDocument();
   });
 
   it('renders third-party notices link', () => {
