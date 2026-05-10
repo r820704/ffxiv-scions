@@ -15,6 +15,7 @@ const links = [
 export default function NavBar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,7 +28,10 @@ export default function NavBar() {
       if (e.key === 'Escape') setOpen(false);
     }
     function onClick(e: MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const insideNav = navRef.current?.contains(target);
+      const insidePanel = panelRef.current?.contains(target);
+      if (!insideNav && !insidePanel) {
         setOpen(false);
       }
     }
@@ -52,7 +56,7 @@ export default function NavBar() {
     <nav
       aria-label="primary"
       className="relative flex items-center justify-between gap-6 px-6 sm:px-8 py-4 border-b border-[rgba(197,182,157,0.08)] bg-background/80 backdrop-blur-sm"
-      ref={panelRef}
+      ref={navRef}
     >
       <NavLink
         to="/"
@@ -101,6 +105,7 @@ export default function NavBar() {
         createPortal(
           <div
             id="mobile-nav-panel"
+            ref={panelRef}
             className="sm:hidden fixed left-0 right-0 top-[60px] z-[60] border-b border-[rgba(197,182,157,0.10)] bg-background/95 backdrop-blur-md shadow-xl"
           >
             <ul className="flex flex-col gap-1 list-none p-3 m-0">
