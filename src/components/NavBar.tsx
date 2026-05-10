@@ -13,7 +13,7 @@ export default function NavBar() {
   return (
     <nav
       aria-label="primary"
-      className="flex items-center justify-between gap-6 max-w-[1280px] mx-auto px-6 py-4"
+      className="flex items-center justify-between gap-6 px-8 py-4"
     >
       <NavLink to="/" className="inline-flex items-center gap-3 text-primary no-underline">
         <img

@@ -14,7 +14,7 @@ export default function Hero() {
   return (
     <section
       aria-label="hero"
-      className="hero-root relative w-full overflow-hidden isolate h-[clamp(420px,60vh,720px)]"
+      className="hero-root relative w-full overflow-hidden isolate h-[clamp(480px,65vh,800px)]"
     >
       <style>{HERO_CSS}</style>
 
