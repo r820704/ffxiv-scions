@@ -13,7 +13,7 @@ const motes = Array.from({ length: 22 }, (_, i) => {
 export default function Hero() {
   return (
     <section
-      aria-label="hero"
+      aria-label="網站首頁標頭"
       className="hero-root relative w-full overflow-hidden isolate h-[clamp(480px,65vh,800px)]"
     >
       <style>{HERO_CSS}</style>
@@ -23,6 +23,8 @@ export default function Hero() {
         <img
           src={`${base}brand/hero-desktop.png`}
           alt=""
+          width={1672}
+          height={941}
           {...{ fetchpriority: 'high' }}
           loading="eager"
           decoding="async"
@@ -79,6 +81,7 @@ export default function Hero() {
         "
       >
         <div
+          translate="no"
           className="
             hero-eyebrow
             hidden sm:inline-flex items-center gap-3
@@ -92,8 +95,10 @@ export default function Hero() {
         </div>
 
         <h1
+          translate="no"
           className="
             hero-title
+            hidden sm:block
             font-title m-0 leading-[1] font-semibold
             text-[clamp(2.5rem,6vw,4.5rem)]
             tracking-[0.08em]

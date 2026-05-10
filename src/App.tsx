@@ -15,34 +15,42 @@ function Contained({ children }: { children: ReactNode }) {
 export default function App() {
   return (
     <HashRouter>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-3 focus:py-2 focus:rounded-md focus:bg-background focus:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      >
+        跳至主要內容
+      </a>
       <NavBar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route
-          path="/eureka-weather"
-          element={
-            <Contained>
-              <EurekaWeatherPage />
-            </Contained>
-          }
-        />
-        <Route
-          path="/eureka"
-          element={
-            <Contained>
-              <EurekaPage />
-            </Contained>
-          }
-        />
-        <Route
-          path="/eureka-gear"
-          element={
-            <Contained>
-              <EurekaGearPage />
-            </Contained>
-          }
-        />
-      </Routes>
+      <main id="main">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/eureka-weather"
+            element={
+              <Contained>
+                <EurekaWeatherPage />
+              </Contained>
+            }
+          />
+          <Route
+            path="/eureka"
+            element={
+              <Contained>
+                <EurekaPage />
+              </Contained>
+            }
+          />
+          <Route
+            path="/eureka-gear"
+            element={
+              <Contained>
+                <EurekaGearPage />
+              </Contained>
+            }
+          />
+        </Routes>
+      </main>
       <Contained>
         <SiteFooter />
       </Contained>

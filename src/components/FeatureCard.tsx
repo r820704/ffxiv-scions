@@ -34,9 +34,10 @@ export default function FeatureCard({
         bg-[#12101c]
         no-underline text-inherit
         transition-[transform,border-color,box-shadow] duration-300 ease-out
-        hover:-translate-y-[3px]
-        hover:border-[color-mix(in_oklab,var(--accent)_40%,rgba(197,182,157,0.10))]
-        hover:shadow-[0_20px_50px_-22px_rgba(0,0,0,0.85)]
+        hover:-translate-y-[5px]
+        hover:border-[color-mix(in_oklab,var(--accent)_55%,rgba(197,182,157,0.10))]
+        hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.9)]
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-background
       "
     >
       <span
@@ -96,9 +97,9 @@ export default function FeatureCard({
           {eyebrow}
         </span>
 
-        <h3 className="font-title m-0 text-[24px] leading-[1.05] tracking-[0.06em] font-semibold text-foreground">
+        <h2 className="font-title m-0 text-[24px] leading-[1.05] tracking-[0.06em] font-semibold text-foreground">
           {title}
-        </h3>
+        </h2>
 
         <p className="font-title m-0 text-[13.5px] leading-[1.5] tracking-[0.04em] text-muted-foreground">
           {description}

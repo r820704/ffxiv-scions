@@ -6,18 +6,10 @@ export default function HomePage() {
     <>
       <Hero />
 
-      <div className="max-w-[1280px] mx-auto px-4">
-        <div className="mt-12 sm:mt-14" />
-
-        <div className="flex items-center justify-center gap-3.5 py-6" aria-hidden>
-          <span className="h-px flex-[0_1_160px] bg-gradient-to-r from-transparent via-[rgba(197,182,157,0.45)] to-transparent" />
-          <span className="block w-2 h-2 rotate-45 bg-primary shadow-[0_0_12px_rgba(197,182,157,0.5)]" />
-          <span className="h-px flex-[0_1_160px] bg-gradient-to-r from-transparent via-[rgba(197,182,157,0.45)] to-transparent" />
-        </div>
-
+      <div className="max-w-[1280px] mx-auto px-4 mt-16 sm:mt-20">
         <section
           aria-label="工具"
-          className="grid gap-[22px] sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-2"
+          className="grid gap-[22px] sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
         >
           <FeatureCard
             to="/eureka-weather"

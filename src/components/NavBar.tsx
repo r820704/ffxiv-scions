@@ -13,9 +13,13 @@ export default function NavBar() {
   return (
     <nav
       aria-label="primary"
-      className="flex items-center justify-between gap-6 px-8 py-4"
+      className="flex items-center justify-between gap-6 px-8 py-4 border-b border-[rgba(197,182,157,0.08)] bg-background/80 backdrop-blur-sm"
     >
-      <NavLink to="/" className="inline-flex items-center gap-3 text-primary no-underline">
+      <NavLink
+        to="/"
+        end
+        className="inline-flex items-center gap-3 text-primary no-underline rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
         <img
           src={`${base}brand/lantern-symbol.png`}
           alt=""
@@ -25,31 +29,40 @@ export default function NavBar() {
           decoding="async"
           className="w-8 h-8 object-contain drop-shadow-[0_2px_8px_rgba(197,182,157,0.25)]"
         />
-        <span className="font-title text-[20px] tracking-[0.08em] leading-none pt-[2px] text-primary whitespace-nowrap">
+        <span
+          translate="no"
+          className="font-title text-[20px] tracking-[0.08em] leading-none pt-[2px] text-primary whitespace-nowrap"
+        >
           FFXIV Scions
         </span>
       </NavLink>
 
-      <ul className="flex gap-1.5 list-none p-0 m-0 overflow-x-auto">
-        {links.map((l) => (
-          <li key={l.to}>
-            <NavLink
-              to={l.to}
-              end={l.to === '/'}
-              className={({ isActive }) =>
-                [
-                  'inline-block whitespace-nowrap px-3.5 py-2 rounded-lg text-sm transition-colors',
-                  isActive
-                    ? 'text-primary bg-[rgba(165,123,24,0.10)]'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-[rgba(197,182,157,0.06)]',
-                ].join(' ')
-              }
-            >
-              {l.label}
-            </NavLink>
-          </li>
-        ))}
-      </ul>
+      <div className="relative min-w-0 flex-1">
+        <ul className="flex justify-end gap-1.5 list-none p-0 m-0 overflow-x-auto">
+          {links.map((l) => (
+            <li key={l.to}>
+              <NavLink
+                to={l.to}
+                end={l.to === '/'}
+                className={({ isActive }) =>
+                  [
+                    'inline-block whitespace-nowrap px-3.5 py-2 rounded-lg text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                    isActive
+                      ? 'text-primary bg-[rgba(165,123,24,0.18)]'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-[rgba(197,182,157,0.06)]',
+                  ].join(' ')
+                }
+              >
+                {l.label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+        <div
+          aria-hidden
+          className="sm:hidden pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent"
+        />
+      </div>
     </nav>
   );
 }
