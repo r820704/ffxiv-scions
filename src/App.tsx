@@ -7,6 +7,7 @@ import HomePage from '@/pages/HomePage';
 import EurekaWeatherPage from '@/pages/EurekaWeatherPage';
 import EurekaPage from '@/pages/EurekaPage';
 import EurekaGearPage from '@/pages/EurekaGearPage';
+import AboutPage from '@/pages/AboutPage';
 
 function Contained({ children }: { children: ReactNode }) {
   return <div className="max-w-[1280px] mx-auto px-4 py-4">{children}</div>;
@@ -46,6 +47,14 @@ export default function App() {
             element={
               <Contained>
                 <EurekaGearPage />
+              </Contained>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <Contained>
+                <AboutPage />
               </Contained>
             }
           />
