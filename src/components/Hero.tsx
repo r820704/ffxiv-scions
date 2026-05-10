@@ -79,20 +79,6 @@ export default function Hero() {
           pb-[clamp(28px,8vh,56px)] sm:pb-[clamp(36px,7vh,88px)]
         "
       >
-        <div
-          translate="no"
-          className="
-            hero-eyebrow
-            hidden sm:inline-flex items-center gap-3
-            text-[12px] tracking-[0.32em] uppercase
-            text-primary/90 mb-4
-            before:content-[''] before:w-9 before:h-px
-            before:bg-gradient-to-r before:from-transparent before:to-primary
-          "
-        >
-          Mana · Final Fantasy XIV
-        </div>
-
         <h1
           translate="no"
           className="
@@ -112,8 +98,21 @@ export default function Hero() {
 
         <p
           className="
+            hero-description
+            mt-[14px] mb-0 max-w-[42ch]
+            text-[clamp(0.9rem,1.4vw,1.05rem)]
+            tracking-[0.04em]
+            text-foreground/85
+          "
+          style={{ textShadow: '0 1px 10px rgba(0,0,0,0.55)' }}
+        >
+          Final&nbsp;Fantasy&nbsp;XIV 繁中伺服器優雷卡工具
+        </p>
+
+        <p
+          className="
             hero-slogan
-            font-title mt-[18px] mb-2 max-w-[38ch]
+            font-title mt-[14px] mb-2 max-w-[38ch]
             text-[clamp(1.1rem,2.2vw,1.5rem)]
             tracking-[0.2em]
             text-primary
@@ -167,10 +166,10 @@ const HERO_CSS = `
   animation-delay: var(--delay, 0s), var(--delay, 0s);
 }
 
-.hero-title    { animation: heroTitleReveal 1.4s cubic-bezier(.2,.7,.2,1) both; }
-.hero-eyebrow  { animation: heroCopyReveal 1.0s 0.15s cubic-bezier(.2,.7,.2,1) both; }
-.hero-slogan   { animation: heroCopyReveal 1.2s 0.45s cubic-bezier(.2,.7,.2,1) both; }
-.hero-subtitle { animation: heroCopyReveal 1.0s 0.75s cubic-bezier(.2,.7,.2,1) both; }
+.hero-title       { animation: heroTitleReveal 1.4s cubic-bezier(.2,.7,.2,1) both; }
+.hero-description { animation: heroCopyReveal 1.0s 0.30s cubic-bezier(.2,.7,.2,1) both; }
+.hero-slogan      { animation: heroCopyReveal 1.2s 0.55s cubic-bezier(.2,.7,.2,1) both; }
+.hero-subtitle    { animation: heroCopyReveal 1.0s 0.85s cubic-bezier(.2,.7,.2,1) both; }
 
 @keyframes heroKenBurns {
   0%   { transform: scale(1.00) translate3d(0, 0, 0); }
@@ -204,7 +203,7 @@ const HERO_CSS = `
   .hero-mist,
   .hero-motes .mote,
   .hero-title,
-  .hero-eyebrow,
+  .hero-description,
   .hero-slogan,
   .hero-subtitle {
     animation: none !important;
