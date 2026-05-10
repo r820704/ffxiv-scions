@@ -27,7 +27,7 @@ export default function Hero() {
           {...{ fetchpriority: 'high' }}
           loading="eager"
           decoding="async"
-          className="w-full h-full object-cover object-[62%_30%] sm:object-[center_30%] block"
+          className="w-full h-full object-cover object-right sm:object-[center_30%] block"
         />
       </picture>
 
