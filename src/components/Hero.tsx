@@ -158,6 +158,20 @@ const HERO_CSS = `
 .hero-description { animation: heroCopyReveal 1.0s 0.30s cubic-bezier(.2,.7,.2,1) both; }
 .hero-slogan      { animation: heroCopyReveal 1.2s 0.55s cubic-bezier(.2,.7,.2,1) both; }
 
+.hero-slogan::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #C5B69D;
+  transform: rotate(45deg);
+  margin-right: 14px;
+  vertical-align: middle;
+  box-shadow: 0 0 8px rgba(197, 182, 157, 0.6);
+  position: relative;
+  top: -3px;
+}
+
 @keyframes heroKenBurns {
   0%   { transform: scale(1.00) translate3d(0, 0, 0); }
   100% { transform: scale(1.07) translate3d(-1.5%, -1%, 0); }
