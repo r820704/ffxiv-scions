@@ -112,7 +112,7 @@ export default function Hero() {
         <p
           className="
             hero-slogan
-            font-title mt-[14px] mb-2 max-w-[38ch]
+            font-title mt-[14px] m-0 max-w-[38ch]
             text-[clamp(1.1rem,2.2vw,1.5rem)]
             tracking-[0.2em]
             text-primary
@@ -120,18 +120,6 @@ export default function Hero() {
           style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}
         >
           為你的冒險點一盞燈
-        </p>
-
-        <p
-          className="
-            hero-subtitle
-            italic m-0 opacity-70
-            text-[clamp(0.85rem,1.2vw,1rem)]
-            tracking-[0.06em]
-            text-muted-foreground
-          "
-        >
-          A Light for the Path Ahead
         </p>
       </div>
     </section>
@@ -169,7 +157,6 @@ const HERO_CSS = `
 .hero-title       { animation: heroTitleReveal 1.4s cubic-bezier(.2,.7,.2,1) both; }
 .hero-description { animation: heroCopyReveal 1.0s 0.30s cubic-bezier(.2,.7,.2,1) both; }
 .hero-slogan      { animation: heroCopyReveal 1.2s 0.55s cubic-bezier(.2,.7,.2,1) both; }
-.hero-subtitle    { animation: heroCopyReveal 1.0s 0.85s cubic-bezier(.2,.7,.2,1) both; }
 
 @keyframes heroKenBurns {
   0%   { transform: scale(1.00) translate3d(0, 0, 0); }
@@ -204,8 +191,7 @@ const HERO_CSS = `
   .hero-motes .mote,
   .hero-title,
   .hero-description,
-  .hero-slogan,
-  .hero-subtitle {
+  .hero-slogan {
     animation: none !important;
   }
 }
