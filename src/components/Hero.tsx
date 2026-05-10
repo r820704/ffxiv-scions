@@ -19,7 +19,6 @@ export default function Hero() {
       <style>{HERO_CSS}</style>
 
       <picture className="hero-media absolute inset-0 z-0">
-        <source media="(max-width: 640px)" srcSet={`${base}brand/hero-mobile.png`} />
         <img
           src={`${base}brand/hero-desktop.png`}
           alt=""
@@ -28,7 +27,7 @@ export default function Hero() {
           {...{ fetchpriority: 'high' }}
           loading="eager"
           decoding="async"
-          className="w-full h-full object-cover object-[center_30%] block"
+          className="w-full h-full object-cover object-[62%_30%] sm:object-[center_30%] block"
         />
       </picture>
 
@@ -58,7 +57,7 @@ export default function Hero() {
         className="absolute inset-0 z-[1] pointer-events-none"
         style={{
           background:
-            'linear-gradient(180deg, rgba(18,16,28,0.20) 0%, rgba(18,16,28,0.65) 100%)',
+            'linear-gradient(180deg, rgba(18,16,28,0.15) 0%, rgba(18,16,28,0.55) 100%)',
         }}
       />
       <div
@@ -98,7 +97,6 @@ export default function Hero() {
           translate="no"
           className="
             hero-title
-            hidden sm:block
             font-title m-0 leading-[1] font-semibold
             text-[clamp(2.5rem,6vw,4.5rem)]
             tracking-[0.08em]
