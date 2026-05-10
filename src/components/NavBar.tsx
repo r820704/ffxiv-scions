@@ -10,6 +10,7 @@ const links = [
   { to: '/eureka-weather', label: '優雷卡天氣' },
   { to: '/eureka', label: '文理技能' },
   { to: '/eureka-gear', label: '禁地兵裝' },
+  { to: '/about', label: '關於作者' },
 ];
 
 export default function NavBar() {

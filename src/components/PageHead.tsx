@@ -4,7 +4,7 @@ const base = import.meta.env.BASE_URL;
 
 export interface PageHeadProps {
   title: string;
-  description: string;
+  description?: string;
   numeral?: string;
   actions?: ReactNode;
 }
@@ -32,9 +32,11 @@ export default function PageHead({ title, description, numeral, actions }: PageH
             </span>
           )}
         </div>
-        <p className="text-sm text-muted-foreground mt-1.5 max-w-[60ch] leading-relaxed">
-          {description}
-        </p>
+        {description && (
+          <p className="text-sm text-muted-foreground mt-1.5 max-w-[60ch] leading-relaxed">
+            {description}
+          </p>
+        )}
       </div>
       {actions && <div className="flex items-center gap-2 flex-shrink-0">{actions}</div>}
     </header>
