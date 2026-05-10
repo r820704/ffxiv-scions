@@ -83,12 +83,14 @@ export default function Hero() {
           translate="no"
           className="
             hero-title
-            font-title m-0 leading-[1] font-semibold
+            m-0 leading-[1]
             text-[clamp(2.5rem,6vw,4.5rem)]
             tracking-[0.08em]
             text-foreground
           "
           style={{
+            fontFamily: "'Cinzel Decorative', serif",
+            fontWeight: 900,
             textShadow:
               '0 2px 18px rgba(0,0,0,0.55), 0 0 1px rgba(232,224,208,0.4)',
           }}

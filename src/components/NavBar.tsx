@@ -74,7 +74,8 @@ export default function NavBar() {
         />
         <span
           translate="no"
-          className="font-title text-[20px] tracking-[0.08em] leading-none pt-[2px] text-primary whitespace-nowrap"
+          className="text-[20px] tracking-[0.12em] leading-none pt-[2px] text-primary whitespace-nowrap"
+          style={{ fontFamily: "'Cinzel', serif", fontWeight: 500 }}
         >
           FFXIV Scions
         </span>
