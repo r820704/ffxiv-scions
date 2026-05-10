@@ -15,6 +15,7 @@ import OnboardingHint from '@/components/eureka-weather/OnboardingHint';
 import WeatherSummaryBar from '@/components/eureka-weather/WeatherSummaryBar';
 import { RemindersProvider } from '@/hooks/useReminders';
 import RemindersHeaderButton from '@/components/eureka-weather/RemindersHeaderButton';
+import PageHead from '@/components/PageHead';
 import type { EurekaZone } from '@/data/weather-data';
 
 const SCROLL_REVEAL_THRESHOLD = 80;
@@ -155,9 +156,11 @@ export default function EurekaWeatherPage() {
   return (
     <RemindersProvider>
     <NmTooltipProvider>
-      <div className="mb-4">
-        <h1 className="font-title text-2xl font-bold text-primary">優雷卡天氣</h1>
-      </div>
+      <PageHead
+        title="優雷卡天氣"
+        description="優雷卡四地圖天氣時間軸、NM 出現時段與日夜指示"
+        numeral="Tool · Ⅰ"
+      />
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
       <NmSearchPanel
         isOpen={searchOpen}

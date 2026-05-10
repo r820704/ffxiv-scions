@@ -14,6 +14,7 @@ import { EUREKA_STAGES } from '@/types/eureka-gear';
 import type { EurekaStage } from '@/types/eureka-gear';
 import { sharedJobNames } from '@/data/eureka-armor-sets';
 import type { Role } from '@/types/eureka';
+import PageHead from '@/components/PageHead';
 
 type TabKey = 'overview' | 'detail' | 'farming';
 
@@ -180,17 +181,21 @@ export default function EurekaGearPage() {
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="font-title text-2xl font-bold text-primary">禁地兵裝</h1>
-        <button
-          type="button"
-          aria-label="切換說明"
-          onClick={toggleOnboarding}
-          className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
-        >
-          ?
-        </button>
-      </div>
+      <PageHead
+        title="禁地兵裝"
+        description="優雷卡武器與防具升級進度追蹤"
+        numeral="Tool · Ⅲ"
+        actions={
+          <button
+            type="button"
+            aria-label="切換說明"
+            onClick={toggleOnboarding}
+            className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
+          >
+            ?
+          </button>
+        }
+      />
       {error && <div className="text-red-400 text-sm mb-2">載入失敗：{error}</div>}
 
       <OnboardingBanner />

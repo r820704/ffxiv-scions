@@ -19,6 +19,7 @@ import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumPlanSection from '@/components/eureka/AlbumPlanSection';
 import SlotPlanSection from '@/components/eureka/SlotPlanSection';
 import SkillRecipeList from '@/components/eureka/SkillRecipeList';
+import PageHead from '@/components/PageHead';
 
 export default function EurekaPage() {
   const { calcMode, setCalcMode } = useCalcMode();
@@ -133,26 +134,27 @@ export default function EurekaPage() {
     <div className="relative">
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 40% at 10% 20%,rgba(74,48,120,.06),transparent),radial-gradient(ellipse 50% 35% at 85% 70%,rgba(40,80,140,.05),transparent),radial-gradient(ellipse 45% 30% at 50% 90%,rgba(120,50,50,.04),transparent)' }} />
       <div className="relative">
-        <div className="flex items-start justify-between mb-4 flex-wrap gap-2">
-          <div>
-            <h1 className="font-title text-2xl font-bold text-primary">文理技能</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">依圖鑑狀態與素材計算最佳文理技能合成路徑</p>
-          </div>
-          <div className="flex items-center gap-3">
-            {lastFetched && (
-              <span className="text-xs text-muted-foreground">
-                更新於 {lastFetched.toLocaleTimeString('zh-TW')}
-              </span>
-            )}
-            <button
-              onClick={loadPrices}
-              disabled={priceLoading}
-              className="px-3 py-1.5 text-xs rounded-md border border-border bg-card text-foreground hover:bg-secondary transition-colors disabled:opacity-50 cursor-pointer"
-            >
-              {priceLoading ? '查詢中...' : '重新查詢價格'}
-            </button>
-          </div>
-        </div>
+        <PageHead
+          title="文理技能"
+          description="優雷卡文理技能查詢、材料反查與市場價格"
+          numeral="Tool · Ⅱ"
+          actions={
+            <>
+              {lastFetched && (
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                  更新於 {lastFetched.toLocaleTimeString('zh-TW')}
+                </span>
+              )}
+              <button
+                onClick={loadPrices}
+                disabled={priceLoading}
+                className="px-3 py-1.5 text-xs rounded-md border border-border bg-card text-foreground hover:bg-secondary transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                {priceLoading ? '查詢中...' : '重新查詢價格'}
+              </button>
+            </>
+          }
+        />
 
         {priceError && (
           <div className="text-xs text-destructive mb-3">價格查詢失敗，請稍後重試</div>

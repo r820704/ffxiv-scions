@@ -8,7 +8,7 @@
 @theme {
   --color-primary-dark: #A57B18;
   --color-muted-dim: #6a5e4a;
-  --font-title: 'LXGW WenKai', serif;
+  --font-title: 'LXGW WenKai', 'Noto Serif TC', serif;
 }
 
 @theme inline {
