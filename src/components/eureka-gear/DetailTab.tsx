@@ -298,7 +298,7 @@ export function DetailTab({
                     } : undefined}
                   />
                   <PreviewPanel
-                    currentStage={safeCurrent}
+                    currentStage={p.currentStage}
                     targetStage={p.targetStage}
                     inventory={inventory.materials}
                     onSetCurrent={() => onRequestUpgrade(ref)}
@@ -306,25 +306,7 @@ export function DetailTab({
                     materialsMap={materialsMap}
                     currentLabel={currentInfo?.tcName}
                     targetLabel={targetInfo?.tcName}
-                    showStartPanel={!isStarted && pendingStartChain === chainId}
                     startHint="完成70級職業任務或從失物管理人兌換"
-                    pendingStartTargetStage={isPendingStart && pendingStartTarget ? pendingStartTarget : undefined}
-                    pendingStartTargetLabel={isPendingStart && pendingStartTarget ? weaponInfoAt(weapons, chainId, pendingStartTarget)?.tcName : undefined}
-                    onStartChain={!isStarted ? () => {
-                      const goal: EurekaStage = pendingStartTarget ?? 'antiquated';
-                      if (onStartAndUpgradeTo) {
-                        onStartAndUpgradeTo(ref, goal);
-                      } else {
-                        onStartChain(ref);
-                        if (pendingStartTarget) onSetTarget(ref, pendingStartTarget);
-                      }
-                      setPendingStartChain(null);
-                      setPendingStartTarget(null);
-                    } : undefined}
-                    onClearStart={!isStarted ? () => {
-                      setPendingStartChain(null);
-                      setPendingStartTarget(null);
-                    } : undefined}
                   />
                 </div>
               </AccordionItem>
@@ -466,7 +448,7 @@ type ArmorTrackSectionProps = {
 
 function ArmorTrackSection({
   title, colorClass, slotColorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader, glowStages,
-  materials, materialsMap, onSetTarget, onRequestUpgrade, onStartChain, onStartAndUpgradeTo, onRequestReset, globalExpand, startHint,
+  materials, materialsMap, onSetTarget, onRequestUpgrade, onRequestReset, globalExpand, startHint,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
     head: true, body: false, hands: false, legs: false, feet: false,
@@ -615,7 +597,7 @@ function ArmorTrackSection({
                   } : undefined}
                 />
                 <PreviewPanel
-                  currentStage={p.currentStage}
+                  currentStage={slotData?.currentStage}
                   targetStage={p.targetStage}
                   inventory={materials}
                   onSetCurrent={() => onRequestUpgrade(ref)}
@@ -626,29 +608,7 @@ function ArmorTrackSection({
                   slot={slot}
                   currentLabel={currentLabel}
                   targetLabel={targetLabel}
-                  showStartPanel={!isStarted && pendingStartSlot === slot}
                   startHint={startHint}
-                  pendingStartTargetStage={isPendingStart && pendingStartTarget ? pendingStartTarget : undefined}
-                  pendingStartTargetLabel={
-                    isPendingStart && pendingStartTarget
-                      ? (getItemName?.(slot, pendingStartTarget) ?? STAGE_TC_LABEL[pendingStartTarget])
-                      : undefined
-                  }
-                  onStartChain={!isStarted ? () => {
-                    const goal: EurekaStage = pendingStartTarget ?? (stages[0] as EurekaStage);
-                    if (onStartAndUpgradeTo) {
-                      onStartAndUpgradeTo(ref, goal);
-                    } else {
-                      onStartChain?.(ref, stages[0] as EurekaStage);
-                      if (pendingStartTarget) onSetTarget(ref, pendingStartTarget);
-                    }
-                    setPendingStartSlot(null);
-                    setPendingStartTarget(null);
-                  } : undefined}
-                  onClearStart={!isStarted ? () => {
-                    setPendingStartSlot(null);
-                    setPendingStartTarget(null);
-                  } : undefined}
                 />
               </div>
             </AccordionItem>

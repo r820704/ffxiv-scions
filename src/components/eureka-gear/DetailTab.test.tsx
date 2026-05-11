@@ -164,52 +164,7 @@ describe('DetailTab', () => {
     });
   });
 
-  it('clicking stage 1 button when chain not started shows prereq panel (does not call onSetTarget)', () => {
-    const onStartChain = vi.fn();
-    const onSetTarget = vi.fn();
-    render(
-      <DetailTab
-        inventory={emptyInventoryV3()}
-        selectedJob="PLD"
-        weapons={[]}
-        materialsMap={{}}
-        onSelectJob={() => {}}
-        onSetTarget={onSetTarget}
-        onRequestUpgrade={() => {}}
-        onStartChain={onStartChain}
-      />,
-    );
-    const stageButtons = screen.getAllByRole('button', { name: /stage 1/ });
-    fireEvent.click(stageButtons[0]!);
-    // Circle 1 click on unstarted chain shows prereq panel; inventory must not be touched
-    expect(onSetTarget).not.toHaveBeenCalled();
-    expect(onStartChain).not.toHaveBeenCalled();
-    expect(screen.getAllByText(/取得/).length).toBeGreaterThan(0);
-  });
-
-  it('clicking armor stage 1 when slot not started shows prereq panel (does not call onSetTarget)', () => {
-    const onStartChain = vi.fn();
-    const onSetTarget = vi.fn();
-    render(
-      <DetailTab
-        inventory={emptyInventoryV3()}
-        selectedJob="PLD"
-        weapons={[]}
-        materialsMap={{}}
-        onSelectJob={() => {}}
-        onSetTarget={onSetTarget}
-        onRequestUpgrade={() => {}}
-        onStartChain={onStartChain}
-      />,
-    );
-    const allStage1Buttons = screen.getAllByRole('button', { name: /^stage 1:/ });
-    const armorStage1 = allStage1Buttons[allStage1Buttons.length - 1]!;
-    fireEvent.click(armorStage1);
-    // Circle 1 click on unstarted armor slot shows prereq panel; inventory must not be touched
-    expect(onSetTarget).not.toHaveBeenCalled();
-    expect(onStartChain).not.toHaveBeenCalled();
-    expect(screen.getAllByText(/取得/).length).toBeGreaterThan(0);
-  });
+  // Task 8 will add unified click-stage tests; pendingStart panel removed in B1 redesign.
 
   it('全展開 button expands all armor slot accordions', () => {
     render(
