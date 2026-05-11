@@ -165,7 +165,8 @@ export function useEurekaInventory() {
   const setTarget = useCallback((ref: ChainRef, stage: EurekaStage | undefined) => {
     setInventory((prev) =>
       setSlotInInventory(prev, ref, (p) => ({
-        currentStage: p?.currentStage ?? 'antiquated',
+        // 不再 fallback 到 'antiquated'：preserve undefined 代表「尚未取得舊化」
+        currentStage: p?.currentStage,
         targetStage: stage,
       })),
     );
