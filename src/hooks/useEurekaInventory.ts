@@ -179,7 +179,10 @@ export function useEurekaInventory() {
       if (slot?.targetStage) {
         const from = slot.currentStage;
         const to = slot.targetStage;
-        if (from !== to) {
+        // 首步：尚未取得舊化 → 前進到 antiquated（無材料、目標保留）
+        if (from === undefined) {
+          outcome = { from: undefined, to: 'antiquated', materials: [], hadEnough: true };
+        } else if (from !== to) {
           const materials = costsForRef(ref, from, to);
           const hadEnough = materials.every(
             (m) => (inventory.materials[m.materialId] ?? 0) >= m.quantity,
@@ -193,13 +196,20 @@ export function useEurekaInventory() {
         if (!s?.targetStage) return prev;
         const from = s.currentStage;
         const to = s.targetStage;
+        // 首步：current=undefined → 'antiquated'，target 保留
+        if (from === undefined) {
+          return setSlotInInventory(prev, ref, (p) => ({
+            currentStage: 'antiquated',
+            targetStage: p?.targetStage,
+          }));
+        }
         if (from === to) return prev;
         const materials = costsForRef(ref, from, to);
         const nextMaterials = deductMaterials(prev.materials, materials);
         return setSlotInInventory(
           { ...prev, materials: nextMaterials },
           ref,
-          () => ({ currentStage: to }),
+          (p) => ({ currentStage: to, targetStage: p?.targetStage }),
         );
       });
       return outcome;

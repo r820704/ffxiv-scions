@@ -66,6 +66,26 @@ describe('useEurekaInventory (v5)', () => {
     expect(slot?.targetStage).toBe('pyros');
   });
 
+  it('performUpgrade on undefined currentStage advances to antiquated with no materials', () => {
+    const { result } = renderHook(() => useEurekaInventory());
+    act(() => {
+      result.current.setTarget({ kind: 'weapon', chainId: 'pld-galatyn' }, 'anemos-base');
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let outcome: any = null;
+    act(() => {
+      outcome = result.current.performUpgrade({ kind: 'weapon', chainId: 'pld-galatyn' });
+    });
+    expect(outcome).not.toBeNull();
+    expect(outcome?.from).toBeUndefined();
+    expect(outcome?.to).toBe('antiquated');
+    expect(outcome?.materials).toEqual([]);
+    expect(outcome?.hadEnough).toBe(true);
+    const slot = result.current.inventory.weapons['pld-galatyn'];
+    expect(slot?.currentStage).toBe('antiquated');
+    expect(slot?.targetStage).toBe('anemos-base');
+  });
+
   it('performUpgrade on weapon advances stage and deducts materials', () => {
     const { result } = renderHook(() => useEurekaInventory());
     act(() => {
