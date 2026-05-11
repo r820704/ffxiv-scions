@@ -68,13 +68,6 @@ export type DetailTabProps = {
   onSelectJob: (job: string) => void;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
-  onStartChain: (ref: ChainRef, stage?: EurekaStage) => void;
-  /**
-   * Atomic start-and-upgrade for null-current chains.
-   * Sets currentStage to target and deducts the antiquated→target materials
-   * in a single setInventory call. Used by the start panel "取得" button.
-   */
-  onStartAndUpgradeTo?: (ref: ChainRef, target: EurekaStage) => void;
   onClearChain?: (ref: ChainRef) => void;
 };
 
@@ -113,21 +106,15 @@ export function DetailTab({
   onSelectJob,
   onSetTarget,
   onRequestUpgrade,
-  onStartChain,
-  onStartAndUpgradeTo,
   onClearChain,
 }: DetailTabProps) {
   const progress = useMemo(() => getJobProgress(selectedJob as JobId, inventory), [selectedJob, inventory]);
   const [globalArmorExpand, setGlobalArmorExpand] = useState<{ rev: number; expand: boolean } | null>(null);
   const [resetDialogRef, setResetDialogRef] = useState<{ ref: ChainRef; label: string } | null>(null);
   const [weaponExpanded, setWeaponExpanded] = useState<Record<string, boolean>>({});
-  const [pendingStartChain, setPendingStartChain] = useState<string | null>(null);
-  const [pendingStartTarget, setPendingStartTarget] = useState<EurekaStage | null>(null);
 
   useEffect(() => {
     setWeaponExpanded({});
-    setPendingStartChain(null);
-    setPendingStartTarget(null);
   }, [selectedJob]);
 
   const primaryChains = progress.weapons.filter(({ chainId }) => {
@@ -158,12 +145,10 @@ export function DetailTab({
           {primaryChains.map(({ chainId, progress: p }) => {
             const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
             const ref: ChainRef = { kind: 'weapon', chainId };
-            // 「已開始」= 已取得 antiquated（currentStage 已定義），不只是 inventory entry 存在
+            // 「已開始」= 已取得 antiquated（currentStage 已定義）
             const isStarted = p.currentStage !== undefined;
-            // Task 2 中介層 fallback：Task 8 重寫後移除
-            const safeCurrent: EurekaStage = p.currentStage ?? 'antiquated';
-            const stepperCurrent: EurekaStage | null = isStarted ? safeCurrent : null;
-            const currentInfo = weaponInfoAt(weapons, chainId, safeCurrent);
+            const stepperCurrent: EurekaStage | undefined = p.currentStage;
+            const currentInfo = isStarted ? weaponInfoAt(weapons, chainId, p.currentStage!) : undefined;
             const targetInfo = p.targetStage ? weaponInfoAt(weapons, chainId, p.targetStage) : undefined;
             const slotLabel = chain?.isShield ? '盾' : '主手';
 
@@ -171,7 +156,7 @@ export function DetailTab({
             const mirrorInfos = mirrorChains.map((mc) => ({
               chainId: mc.chainId,
               chain: mc,
-              current: weaponInfoAt(weapons, mc.chainId, safeCurrent),
+              current: isStarted ? weaponInfoAt(weapons, mc.chainId, p.currentStage!) : undefined,
               target: p.targetStage ? weaponInfoAt(weapons, mc.chainId, p.targetStage) : undefined,
             }));
 
@@ -179,12 +164,18 @@ export function DetailTab({
               `（${STAGE_TC_LABEL[stage]}${info ? ` · iL${info.itemLevel}` : ''}）`;
 
             const isExpanded = weaponExpanded[chainId] ?? true;
+            const hasEntry = inventory.weapons[chainId] !== undefined;
 
-            const isPendingStart = !isStarted && pendingStartChain === chainId;
-            const pendingTargetStage = isPendingStart ? (pendingStartTarget ?? safeCurrent) : null;
-            const pendingTargetInfo = pendingTargetStage
-              ? weaponInfoAt(weapons, chainId, pendingTargetStage) ?? undefined
-              : undefined;
+            // Unified click handler — works for both 0階 and started states.
+            // Click currentStage = clear target (undefined); click else = set target.
+            const handleSelectStage = (stage: EurekaStage) => {
+              if (p.currentStage !== undefined && stage === p.currentStage) {
+                onSetTarget(ref, undefined);
+              } else {
+                onSetTarget(ref, stage);
+              }
+            };
+
             const weaponHeader = (
               <div className="flex items-center flex-wrap gap-x-3 gap-y-0.5 text-sm">
                 <span className="text-gray-100 font-semibold flex items-center gap-1">
@@ -193,18 +184,9 @@ export function DetailTab({
                     <span className="font-normal">{currentInfo.tcName}</span>
                   )}
                   <span className="text-xs text-gray-400 font-normal">
-                    {isStarted ? stageSuffix(currentInfo, safeCurrent) : '未開始'}
+                    {isStarted ? stageSuffix(currentInfo, p.currentStage!) : '未開始'}
                   </span>
-                  {isPendingStart && pendingTargetStage && (
-                    <>
-                      <span className="text-yellow-400">→</span>
-                      <span className="text-yellow-200">{pendingTargetInfo?.tcName ?? STAGE_TC_LABEL[pendingTargetStage]}</span>
-                      <span className="text-xs text-gray-400 font-normal">
-                        {stageSuffix(pendingTargetInfo, pendingTargetStage)}
-                      </span>
-                    </>
-                  )}
-                  {isStarted && targetInfo && p.targetStage && p.targetStage !== p.currentStage && (
+                  {targetInfo && p.targetStage && p.targetStage !== p.currentStage && (
                     <>
                       <span className="text-yellow-400">→</span>
                       <span className="text-yellow-200 font-normal">{targetInfo.tcName}</span>
@@ -219,18 +201,9 @@ export function DetailTab({
                       <span className="font-normal">{m.current.tcName}</span>
                     )}
                     <span className="text-xs text-gray-400 font-normal">
-                      {isStarted ? stageSuffix(m.current, safeCurrent) : '未開始'}
+                      {isStarted ? stageSuffix(m.current, p.currentStage!) : '未開始'}
                     </span>
-                    {isPendingStart && m.current && (
-                      <>
-                        <span className="text-yellow-400">→</span>
-                        <span className="text-yellow-200">{m.current.tcName}</span>
-                        <span className="text-xs text-gray-400 font-normal">
-                          （{STAGE_TC_LABEL[safeCurrent]}）
-                        </span>
-                      </>
-                    )}
-                    {isStarted && m.target && p.targetStage && p.targetStage !== p.currentStage && (
+                    {m.target && p.targetStage && p.targetStage !== p.currentStage && (
                       <>
                         <span className="text-yellow-400">→</span>
                         <span className="text-yellow-200 font-normal">{m.target.tcName}</span>
@@ -239,7 +212,7 @@ export function DetailTab({
                     )}
                   </span>
                 ))}
-                {isStarted && (
+                {hasEntry && (
                   <button
                     type="button"
                     aria-label={`重置${slotLabel}武器進度`}
@@ -262,40 +235,17 @@ export function DetailTab({
                 <div className="space-y-2">
                   <ChainStepper
                     currentStage={stepperCurrent}
-                    targetStage={isStarted ? p.targetStage : (isPendingStart ? pendingStartTarget ?? undefined : undefined)}
+                    targetStage={p.targetStage}
                     glowStages={WEAPON_GLOW_STAGES}
-                    onSelectTarget={isStarted
-                      ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
-                      : () => {}}
-                    onSelectStart={!isStarted ? (clickedStage) => {
-                      const goal = clickedStage === 'antiquated' ? null : clickedStage;
-                      if (pendingStartChain === chainId && pendingStartTarget === goal) {
-                        setPendingStartChain(null);
-                        setPendingStartTarget(null);
-                      } else {
-                        setPendingStartChain(chainId);
-                        setPendingStartTarget(goal);
-                      }
-                    } : undefined}
-                    pendingStartActive={isPendingStart}
+                    onSelectTarget={handleSelectStage}
                   />
                   <StageListPanel
                     stages={EUREKA_STAGES}
                     currentStage={stepperCurrent}
-                    targetStage={isStarted ? p.targetStage : (isPendingStart ? pendingStartTarget ?? undefined : undefined)}
+                    targetStage={p.targetStage}
                     itemLevels={STAGE_ITEM_LEVELS}
                     getItemName={(stage) => weaponInfoAt(weapons, chainId, stage)?.tcName}
-                    onSelectTarget={isStarted ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage) : () => {}}
-                    onSelectStart={!isStarted ? (clickedStage) => {
-                      const goal = clickedStage === 'antiquated' ? null : clickedStage;
-                      if (pendingStartChain === chainId && pendingStartTarget === goal) {
-                        setPendingStartChain(null);
-                        setPendingStartTarget(null);
-                      } else {
-                        setPendingStartChain(chainId);
-                        setPendingStartTarget(goal);
-                      }
-                    } : undefined}
+                    onSelectTarget={handleSelectStage}
                   />
                   <PreviewPanel
                     currentStage={p.currentStage}
@@ -351,8 +301,6 @@ export function DetailTab({
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
-        onStartChain={onStartChain}
-        onStartAndUpgradeTo={onStartAndUpgradeTo}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
         startHint="完成70級職業任務或從失物管理人兌換"
@@ -380,8 +328,6 @@ export function DetailTab({
         materialsMap={materialsMap}
         onSetTarget={onSetTarget}
         onRequestUpgrade={onRequestUpgrade}
-        onStartChain={onStartChain}
-        onStartAndUpgradeTo={onStartAndUpgradeTo}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
         startHint="前置：持有 70 級職業套裝、解鎖 50 個文理技能圖鑑、至少擁有一件元素武器；於湧火之地以湧火水晶兌換取得"
@@ -439,8 +385,6 @@ type ArmorTrackSectionProps = {
   materialsMap: Record<number, { nameTC: string; icon: number }>;
   onSetTarget: (ref: ChainRef, stage: EurekaStage | undefined) => void;
   onRequestUpgrade: (ref: ChainRef) => void;
-  onStartChain?: (ref: ChainRef, stage?: EurekaStage) => void;
-  onStartAndUpgradeTo?: (ref: ChainRef, target: EurekaStage) => void;
   onRequestReset?: (ref: ChainRef, label: string) => void;
   globalExpand?: { rev: number; expand: boolean } | null;
   startHint?: string;
@@ -454,8 +398,6 @@ function ArmorTrackSection({
     head: true, body: false, hands: false, legs: false, feet: false,
   });
   const [sectionExpanded, setSectionExpanded] = useState(true);
-  const [pendingStartSlot, setPendingStartSlot] = useState<ArmorSlot | null>(null);
-  const [pendingStartTarget, setPendingStartTarget] = useState<EurekaStage | null>(null);
 
   useEffect(() => {
     if (globalExpand == null) return;
@@ -482,25 +424,28 @@ function ArmorTrackSection({
         {ARMOR_SLOTS.map((slot) => {
           const slotData = pieces[slot];
           const isStarted = slotData?.currentStage !== undefined;
-          // Task 2 中介層 fallback：Task 8 重寫後消失
-          const safeCurrent: EurekaStage = slotData?.currentStage ?? (stages[0] as EurekaStage);
-          const p: { currentStage: EurekaStage; targetStage?: EurekaStage } = {
-            currentStage: safeCurrent,
-            targetStage: slotData?.targetStage,
-          };
-          const stepperCurrent = isStarted ? p.currentStage : null;
           const ref = makeRef(slot);
-          const currentItemName = getItemName?.(slot, p.currentStage);
-          const currentLabel = currentItemName ?? STAGE_TC_LABEL[p.currentStage];
-          const targetLabel = p.targetStage
-            ? (getItemName?.(slot, p.targetStage) ?? STAGE_TC_LABEL[p.targetStage])
+          const currentItemName = isStarted ? getItemName?.(slot, slotData!.currentStage!) : undefined;
+          const currentLabel = currentItemName ?? (isStarted ? STAGE_TC_LABEL[slotData!.currentStage!] : undefined);
+          const targetLabel = slotData?.targetStage
+            ? (getItemName?.(slot, slotData.targetStage) ?? STAGE_TC_LABEL[slotData.targetStage])
             : undefined;
-          const currentIL = isStarted ? itemLevels?.[p.currentStage] : undefined;
+          const currentIL = isStarted ? itemLevels?.[slotData!.currentStage!] : undefined;
           const currentStageSuffix = isStarted
-            ? `（${STAGE_TC_LABEL[p.currentStage]}${currentIL != null ? ` · iL${currentIL}` : ''}）`
+            ? `（${STAGE_TC_LABEL[slotData!.currentStage!]}${currentIL != null ? ` · iL${currentIL}` : ''}）`
             : '（未開始）';
-          const targetIL = p.targetStage ? itemLevels?.[p.targetStage] : undefined;
-          const isPendingStart = !isStarted && pendingStartSlot === slot;
+          const targetIL = slotData?.targetStage ? itemLevels?.[slotData.targetStage] : undefined;
+          const hasEntry = slotData !== undefined;
+
+          // Unified click handler — click currentStage = clear target; click else = set target.
+          const handleSelectStage = (stage: EurekaStage) => {
+            if (slotData?.currentStage !== undefined && stage === slotData.currentStage) {
+              onSetTarget(ref, undefined);
+            } else {
+              onSetTarget(ref, stage);
+            }
+          };
+
           const header = (
             <div className="flex items-center text-sm text-gray-100 font-semibold">
               <span className="flex-1">
@@ -511,32 +456,21 @@ function ArmorTrackSection({
                 <span className="text-xs text-gray-400 font-normal ml-1">
                   {currentStageSuffix}
                 </span>
-                {isPendingStart && currentItemName && (
-                  <>
-                    <span className="text-yellow-400 mx-2">→</span>
-                    <span className="text-yellow-200">
-                      {currentItemName}
-                      <span className="text-xs text-gray-400 font-normal ml-1">
-                        {`（${STAGE_TC_LABEL[p.currentStage]}）`}
-                      </span>
-                    </span>
-                  </>
-                )}
-                {p.targetStage && p.targetStage !== p.currentStage && (
+                {slotData?.targetStage && slotData.targetStage !== slotData.currentStage && (
                   <>
                     <span className="text-yellow-400 mx-2">→</span>
                     <span className="text-yellow-200">
                       {targetLabel}
                       {targetIL != null && (
                         <span className="text-xs text-gray-400 font-normal ml-1">
-                          {`（${STAGE_TC_LABEL[p.targetStage]} · iL${targetIL}）`}
+                          {`（${STAGE_TC_LABEL[slotData.targetStage]} · iL${targetIL}）`}
                         </span>
                       )}
                     </span>
                   </>
                 )}
               </span>
-              {isStarted && (
+              {hasEntry && (
                 <button
                   type="button"
                   aria-label={`重置${SLOT_TC[slot]}防具進度`}
@@ -558,47 +492,24 @@ function ArmorTrackSection({
             >
               <div className="space-y-2">
                 <ChainStepper
-                  currentStage={stepperCurrent}
-                  targetStage={isStarted ? p.targetStage : (isPendingStart ? pendingStartTarget ?? undefined : undefined)}
+                  currentStage={slotData?.currentStage}
+                  targetStage={slotData?.targetStage}
                   stages={stages}
                   zoneGroups={zoneGroups}
                   glowStages={glowStages}
-                  onSelectTarget={isStarted
-                    ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage)
-                    : () => {}}
-                  onSelectStart={!isStarted ? (clickedStage) => {
-                    const goal = clickedStage === stages[0] ? null : clickedStage;
-                    if (pendingStartSlot === slot && pendingStartTarget === goal) {
-                      setPendingStartSlot(null);
-                      setPendingStartTarget(null);
-                    } else {
-                      setPendingStartSlot(slot);
-                      setPendingStartTarget(goal);
-                    }
-                  } : undefined}
-                  pendingStartActive={isPendingStart}
+                  onSelectTarget={handleSelectStage}
                 />
                 <StageListPanel
                   stages={stages}
-                  currentStage={stepperCurrent}
-                  targetStage={isStarted ? p.targetStage : (isPendingStart ? pendingStartTarget ?? undefined : undefined)}
+                  currentStage={slotData?.currentStage}
+                  targetStage={slotData?.targetStage}
                   itemLevels={itemLevels}
                   getItemName={(stage) => getItemName?.(slot, stage)}
-                  onSelectTarget={isStarted ? (stage) => onSetTarget(ref, stage === p.currentStage ? undefined : stage) : () => {}}
-                  onSelectStart={!isStarted ? (clickedStage) => {
-                    const goal = clickedStage === stages[0] ? null : clickedStage;
-                    if (pendingStartSlot === slot && pendingStartTarget === goal) {
-                      setPendingStartSlot(null);
-                      setPendingStartTarget(null);
-                    } else {
-                      setPendingStartSlot(slot);
-                      setPendingStartTarget(goal);
-                    }
-                  } : undefined}
+                  onSelectTarget={handleSelectStage}
                 />
                 <PreviewPanel
                   currentStage={slotData?.currentStage}
-                  targetStage={p.targetStage}
+                  targetStage={slotData?.targetStage}
                   inventory={materials}
                   onSetCurrent={() => onRequestUpgrade(ref)}
                   onClearTarget={() => onSetTarget(ref, undefined)}
