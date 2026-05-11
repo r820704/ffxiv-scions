@@ -160,6 +160,25 @@ export function DetailTab({
               target: p.targetStage ? weaponInfoAt(weapons, mc.chainId, p.targetStage) : undefined,
             }));
 
+            // 「0 階」前置道具：主鏈 + 鏡像鏈各自的舊化裝備
+            const antiquatedItems: { name: string; obtainMethod?: string }[] = [];
+            const primaryAntiquated = weaponInfoAt(weapons, chainId, 'antiquated');
+            if (primaryAntiquated) {
+              antiquatedItems.push({
+                name: primaryAntiquated.tcName,
+                obtainMethod: '完成70級職業任務或從失物管理人兌換取得',
+              });
+            }
+            for (const mc of mirrorChains) {
+              const mAnt = weaponInfoAt(weapons, mc.chainId, 'antiquated');
+              if (mAnt) {
+                antiquatedItems.push({
+                  name: mAnt.tcName,
+                  obtainMethod: '完成70級職業任務或從失物管理人兌換取得',
+                });
+              }
+            }
+
             const stageSuffix = (info: typeof currentInfo, stage: EurekaStage) =>
               `（${STAGE_TC_LABEL[stage]}${info ? ` · iL${info.itemLevel}` : ''}）`;
 
@@ -256,7 +275,7 @@ export function DetailTab({
                     materialsMap={materialsMap}
                     currentLabel={currentInfo?.tcName}
                     targetLabel={targetInfo?.tcName}
-                    startHint="完成70級職業任務或從失物管理人兌換"
+                    prereqRows={antiquatedItems}
                   />
                 </div>
               </AccordionItem>
@@ -303,7 +322,10 @@ export function DetailTab({
         onRequestUpgrade={onRequestUpgrade}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
-        startHint="完成70級職業任務或從失物管理人兌換"
+        getPrereqRows={(slot) => {
+          const name = getAnemosArmorName(selectedJob, slot, 'antiquated') ?? STAGE_TC_LABEL['antiquated'];
+          return [{ name, obtainMethod: '完成70級職業任務或從失物管理人兌換取得' }];
+        }}
       />
 
       {/* 元素防具 — per-role, shared badge */}
@@ -330,7 +352,14 @@ export function DetailTab({
         onRequestUpgrade={onRequestUpgrade}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
-        startHint="前置：持有 70 級職業套裝、解鎖 50 個文理技能圖鑑、至少擁有一件元素武器；於湧火之地以湧火水晶兌換取得"
+        getPrereqRows={(slot) => {
+          // 元素防具：antiquated 起點（AF 套裝）作為前置道具，前置條件文字寫在 obtainMethod
+          const antName = getAnemosArmorName(selectedJob, slot, 'antiquated') ?? STAGE_TC_LABEL['antiquated'];
+          return [{
+            name: antName,
+            obtainMethod: '前置：持有 70 級職業套裝、解鎖 50 個文理技能圖鑑、至少擁有一件元素武器',
+          }];
+        }}
       />
 
       {resetDialogRef && (
@@ -387,12 +416,16 @@ type ArmorTrackSectionProps = {
   onRequestUpgrade: (ref: ChainRef) => void;
   onRequestReset?: (ref: ChainRef, label: string) => void;
   globalExpand?: { rev: number; expand: boolean } | null;
-  startHint?: string;
+  /**
+   * Returns prereq item rows for a given slot (e.g. anemos armor → 舊化的XX頭 + obtain method).
+   * Only used when currentStage is undefined. Return [] to skip.
+   */
+  getPrereqRows?: (slot: ArmorSlot) => Array<{ name: string; obtainMethod?: string }>;
 };
 
 function ArmorTrackSection({
   title, colorClass, slotColorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader, glowStages,
-  materials, materialsMap, onSetTarget, onRequestUpgrade, onRequestReset, globalExpand, startHint,
+  materials, materialsMap, onSetTarget, onRequestUpgrade, onRequestReset, globalExpand, getPrereqRows,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
     head: true, body: false, hands: false, legs: false, feet: false,
@@ -519,7 +552,7 @@ function ArmorTrackSection({
                   slot={slot}
                   currentLabel={currentLabel}
                   targetLabel={targetLabel}
-                  startHint={startHint}
+                  prereqRows={getPrereqRows?.(slot)}
                 />
               </div>
             </AccordionItem>

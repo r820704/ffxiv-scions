@@ -57,7 +57,22 @@ describe('PreviewPanel', () => {
     expect(screen.getByRole('button', { name: /設為目前階段/ })).toBeInTheDocument();
   });
 
-  it('calls onSetCurrent when 升階段 button clicked (upgrade path)', () => {
+  it('button label is 升階段 with target name on upgrade path', () => {
+    render(
+      <PreviewPanel
+        currentStage="antiquated"
+        targetStage="anemos-base"
+        inventory={{ 21801: 100 }}
+        onSetCurrent={() => {}}
+        onClearTarget={() => {}}
+        materialsMap={materials}
+        targetLabel="anemos-base 武器"
+      />,
+    );
+    expect(screen.getByRole('button', { name: /升階段.*anemos-base 武器/ })).toBeInTheDocument();
+  });
+
+  it('clicking 升階段 button fires onSetCurrent', () => {
     const onSetCurrent = vi.fn();
     render(
       <PreviewPanel
@@ -84,11 +99,11 @@ describe('PreviewPanel', () => {
         materialsMap={materials}
       />,
     );
-    expect(screen.queryByRole('button', { name: /升階段|取得/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /升階段/ })).toBeNull();
   });
 
   describe('未取得舊化 state (currentStage=undefined)', () => {
-    it('shows 從 未開始 → target 需要 heading when target is set', () => {
+    it('shows 從 未開始 → target 需要 heading', () => {
       render(
         <PreviewPanel
           currentStage={undefined}
@@ -97,13 +112,12 @@ describe('PreviewPanel', () => {
           onSetCurrent={() => {}}
           onClearTarget={() => {}}
           materialsMap={materials}
-          startHint="完成70級職業任務或從失物管理人兌換"
         />,
       );
       expect(screen.getByText(/從.*未開始.*→.*禁地兵裝.*需要/)).toBeInTheDocument();
     });
 
-    it('renders startHint as the first material list item', () => {
+    it('renders prereqRows as list items with × 1 and obtain method in parens', () => {
       render(
         <PreviewPanel
           currentStage={undefined}
@@ -112,13 +126,19 @@ describe('PreviewPanel', () => {
           onSetCurrent={() => {}}
           onClearTarget={() => {}}
           materialsMap={materials}
-          startHint="完成70級職業任務或從失物管理人兌換"
+          prereqRows={[
+            { name: '舊化的嘉拉汀', obtainMethod: '完成70級職業任務或從失物管理人兌換取得' },
+            { name: '舊化的艾瓦拉克血十字盾', obtainMethod: '完成70級職業任務或從失物管理人兌換取得' },
+          ]}
         />,
       );
-      expect(screen.getByText(/完成70級職業任務或從失物管理人兌換.*× 1/)).toBeInTheDocument();
+      expect(screen.getByText(/舊化的嘉拉汀 × 1/)).toBeInTheDocument();
+      expect(screen.getByText(/舊化的艾瓦拉克血十字盾 × 1/)).toBeInTheDocument();
+      const obtainMethodEls = screen.getAllByText(/完成70級職業任務或從失物管理人兌換取得/);
+      expect(obtainMethodEls.length).toBe(2);
     });
 
-    it('button label is 取得 (not 升階段) when currentStage is undefined', () => {
+    it('button label is 升階段 (target) — no special "取得舊化" case', () => {
       render(
         <PreviewPanel
           currentStage={undefined}
@@ -127,14 +147,13 @@ describe('PreviewPanel', () => {
           onSetCurrent={() => {}}
           onClearTarget={() => {}}
           materialsMap={materials}
-          startHint="完成70級職業任務或從失物管理人兌換"
+          targetLabel="嘉拉汀·常風"
         />,
       );
-      expect(screen.getByRole('button', { name: /取得/ })).toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /升階段/ })).toBeNull();
+      expect(screen.getByRole('button', { name: /升階段.*嘉拉汀·常風/ })).toBeInTheDocument();
     });
 
-    it('clicking 取得 button calls onSetCurrent', () => {
+    it('clicking 升階段 button calls onSetCurrent', () => {
       const onSetCurrent = vi.fn();
       render(
         <PreviewPanel
@@ -146,11 +165,11 @@ describe('PreviewPanel', () => {
           materialsMap={materials}
         />,
       );
-      fireEvent.click(screen.getByRole('button', { name: /取得/ }));
+      fireEvent.click(screen.getByRole('button', { name: /升階段/ }));
       expect(onSetCurrent).toHaveBeenCalledOnce();
     });
 
-    it('does not show startHint when currentStage is defined', () => {
+    it('does not show prereqRows when currentStage is defined', () => {
       render(
         <PreviewPanel
           currentStage="antiquated"
@@ -159,13 +178,14 @@ describe('PreviewPanel', () => {
           onSetCurrent={() => {}}
           onClearTarget={() => {}}
           materialsMap={materials}
-          startHint="完成70級職業任務或從失物管理人兌換"
+          prereqRows={[{ name: '舊化的嘉拉汀', obtainMethod: '完成70級職業任務' }]}
         />,
       );
+      expect(screen.queryByText(/舊化的嘉拉汀 × 1/)).toBeNull();
       expect(screen.queryByText(/完成70級職業任務/)).toBeNull();
     });
 
-    it('shows full antiquated → target material cost (currentStage undefined, target anemos)', () => {
+    it('shows full antiquated → target material cost (currentStage undefined)', () => {
       render(
         <PreviewPanel
           currentStage={undefined}
@@ -174,7 +194,6 @@ describe('PreviewPanel', () => {
           onSetCurrent={() => {}}
           onClearTarget={() => {}}
           materialsMap={materials}
-          startHint="完成70級職業任務或從失物管理人兌換"
         />,
       );
       // antiquated → anemos-base = 100 × 禁地水晶

@@ -66,9 +66,10 @@ describe('useEurekaInventory (v5)', () => {
     expect(slot?.targetStage).toBe('pyros');
   });
 
-  it('performUpgrade on undefined currentStage advances to antiquated with no materials', () => {
+  it('performUpgrade on undefined currentStage jumps directly to target with antiquated→target materials', () => {
     const { result } = renderHook(() => useEurekaInventory());
     act(() => {
+      result.current.setMaterial(21801, 1000);
       result.current.setTarget({ kind: 'weapon', chainId: 'pld-galatyn' }, 'anemos-base');
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,12 +79,29 @@ describe('useEurekaInventory (v5)', () => {
     });
     expect(outcome).not.toBeNull();
     expect(outcome?.from).toBeUndefined();
-    expect(outcome?.to).toBe('antiquated');
-    expect(outcome?.materials).toEqual([]);
+    expect(outcome?.to).toBe('anemos-base');
+    // antiquated → anemos-base costs 100 × 21801 (PROTEAN_CRYSTAL)
+    expect(outcome?.materials).toEqual([{ materialId: 21801, quantity: 100 }]);
     expect(outcome?.hadEnough).toBe(true);
     const slot = result.current.inventory.weapons['pld-galatyn'];
-    expect(slot?.currentStage).toBe('antiquated');
+    expect(slot?.currentStage).toBe('anemos-base');
     expect(slot?.targetStage).toBe('anemos-base');
+  });
+
+  it('performUpgrade with target=antiquated from undefined sets currentStage to antiquated, no materials', () => {
+    const { result } = renderHook(() => useEurekaInventory());
+    act(() => {
+      result.current.setTarget({ kind: 'weapon', chainId: 'pld-galatyn' }, 'antiquated');
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let outcome: any = null;
+    act(() => {
+      outcome = result.current.performUpgrade({ kind: 'weapon', chainId: 'pld-galatyn' });
+    });
+    expect(outcome?.from).toBeUndefined();
+    expect(outcome?.to).toBe('antiquated');
+    expect(outcome?.materials).toEqual([]);
+    expect(result.current.inventory.weapons['pld-galatyn']?.currentStage).toBe('antiquated');
   });
 
   it('performUpgrade on weapon advances stage and deducts materials', () => {

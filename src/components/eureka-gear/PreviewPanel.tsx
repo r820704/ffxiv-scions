@@ -20,7 +20,7 @@ export type PreviewPanelProps = {
   currentStage: EurekaStage | undefined;
   targetStage: EurekaStage | undefined;
   inventory: Record<number, number>;
-  /** 點「⬆ 取得」/「⬆ 升階段」會呼叫此 callback（內部呼叫 performUpgrade）。 */
+  /** 點「⬆ 升階段」會呼叫此 callback（內部呼叫 performUpgrade，一次跳到 target）。 */
   onSetCurrent: () => void;
   onClearTarget: () => void;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
@@ -34,10 +34,11 @@ export type PreviewPanelProps = {
   currentLabel?: string;
   targetLabel?: string;
   /**
-   * 顯示在「未取得舊化」狀態下的取得方式提示，例如
-   * 「完成70級職業任務或從失物管理人兌換」。會列為 materials 列表的第一項。
+   * 玩家「尚未取得舊化」時要列在 materials 清單最前面的「前置道具」，
+   * 例如武器的舊化裝備、鏡像鏈的另一件武器。當 currentStage 已定義時不顯示。
+   * 每個 row 顯示為「📜 name × 1（obtainMethod）」。
    */
-  startHint?: string;
+  prereqRows?: Array<{ name: string; obtainMethod?: string }>;
 };
 
 export function PreviewPanel({
@@ -52,7 +53,7 @@ export function PreviewPanel({
   slot,
   currentLabel,
   targetLabel,
-  startHint,
+  prereqRows,
 }: PreviewPanelProps) {
   const seq = stages ?? EUREKA_STAGES;
   // currentStage 未取得舊化（undefined）→ 視為 stage 0 的前面
@@ -67,13 +68,12 @@ export function PreviewPanel({
         ? 'up'
         : 'down';
 
-  // 升階段所需材料：currentStage undefined 時以 antiquated 為起點計算（首步本身無材料）
+  // 升階段所需材料：currentStage undefined 時以 antiquated 為起點（一次跳到 target）
   const materials = useMemo(
     () => {
       if (!targetStage || direction !== 'up') return [];
       const effectiveFrom: EurekaStage = currentStage ?? 'antiquated';
-      // 首步（undefined → antiquated）本身無材料；若 target === 'antiquated'，仍回傳 []
-      if (isPreObtained && targetStage === 'antiquated') return [];
+      if (effectiveFrom === targetStage) return [];
       if (stages || costs) {
         return costBetweenInSequence(effectiveFrom, targetStage, seq, costs ?? STAGE_UPGRADE_COSTS, slot);
       }
@@ -147,27 +147,31 @@ export function PreviewPanel({
     );
   }
 
-  // 升階段（含首步 undefined → antiquated）
+  // 升階段（current undefined 時亦同 — 一次跳到 target）
   const headingFromName = isPreObtained ? '未開始' : (currentLabel ?? STAGE_TC_LABEL[currentStage!]);
   const headingToName = targetLabel ?? STAGE_TC_LABEL[targetStage];
-  // 首步特殊文案：玩家剛從零開始、這次點下只會推進到舊化（不會直接到 target）
-  const buttonLabel = isPreObtained ? '⬆ 取得舊化' : `⬆ 升階段 (${headingToName})`;
+  const showPrereqs = isPreObtained && prereqRows && prereqRows.length > 0;
 
   return (
     <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
       <div className="text-yellow-400 font-semibold mb-2">
         從 {headingFromName} → {headingToName} 需要
       </div>
-      {(materials.length > 0 || (isPreObtained && startHint)) && (
+      {(materials.length > 0 || showPrereqs) && (
         <ul className="space-y-1 mb-3">
-          {isPreObtained && startHint && (
-            <li className="flex items-center justify-between gap-2">
+          {showPrereqs && prereqRows!.map((row, i) => (
+            <li key={`prereq-${i}`} className="flex items-center justify-between gap-2">
               <span className="flex items-center gap-2 min-w-0">
                 <span aria-hidden="true" className="w-5 h-5 shrink-0 inline-flex items-center justify-center text-base">📜</span>
-                <span className="truncate">{startHint}取得 舊化的{headingToName !== STAGE_TC_LABEL['antiquated'] ? '裝備' : headingToName} × 1</span>
+                <span className="truncate">
+                  {row.name} × 1
+                  {row.obtainMethod && (
+                    <span className="text-gray-400">（{row.obtainMethod}）</span>
+                  )}
+                </span>
               </span>
             </li>
-          )}
+          ))}
           {materials.map(renderMaterialRow)}
         </ul>
       )}
@@ -177,7 +181,7 @@ export function PreviewPanel({
           onClick={onSetCurrent}
           className="px-3 py-1.5 rounded font-bold text-sm bg-green-500 text-black"
         >
-          {buttonLabel}
+          ⬆ 升階段 ({headingToName})
         </button>
         <button
           type="button"
