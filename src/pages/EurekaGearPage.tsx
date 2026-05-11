@@ -10,7 +10,7 @@ import { FarmingTab } from '@/components/eureka-gear/FarmingTab';
 import InventorySidebar from '@/components/eureka-gear/InventorySidebar';
 import { UpgradeDialog } from '@/components/eureka-gear/UpgradeDialog';
 import { OnboardingBanner, toggleOnboarding } from '@/components/eureka-gear/OnboardingBanner';
-import { EUREKA_STAGES } from '@/types/eureka-gear';
+import { EUREKA_STAGES, STAGE_TC_LABEL } from '@/types/eureka-gear';
 import type { EurekaStage, SlotProgress } from '@/types/eureka-gear';
 import { sharedJobNames } from '@/data/eureka-armor-sets';
 import type { Role } from '@/types/eureka';
@@ -116,12 +116,18 @@ export default function EurekaGearPage() {
   };
 
   const showUpgradeToast = (outcome: UpgradeOutcome) => {
+    // 首步：undefined → antiquated（玩家剛取得 70 級職業套裝）
+    if (outcome.from === undefined && outcome.to === 'antiquated') {
+      toast.success('已取得舊化裝備');
+      return;
+    }
     const mats = outcome.materials
       .map((m) => `${m.quantity} × ${materialsMap[m.materialId]?.nameTC ?? m.materialId}`)
       .join('、');
+    const toLabel = STAGE_TC_LABEL[outcome.to];
     const msg = outcome.hadEnough
-      ? `已升到 ${outcome.to}${mats ? ` · 扣除 ${mats}` : ''}`
-      : `已升到 ${outcome.to}（素材未足額紀錄、僅推進階段）`;
+      ? `已升到 ${toLabel}${mats ? ` · 扣除 ${mats}` : ''}`
+      : `已升到 ${toLabel}（素材未足額紀錄、僅推進階段）`;
     toast.success(msg);
   };
 
