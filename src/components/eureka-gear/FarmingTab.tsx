@@ -189,7 +189,11 @@ function computeActiveTargets(
     if (toIdx <= fromIdx) continue;
     const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
     if (!chain) continue;
-    const fromName = weaponInfoAt(weapons, chainId, effectiveFrom)?.tcName ?? STAGE_TC_LABEL[effectiveFrom];
+    // currentStage undefined → fromName 顯示「未開始」（跟 DetailTab 一致）；
+    // fromIl 仍以 antiquated 給數值，方便 UI 顯示「→ iL355」的對比。
+    const fromName = slot.currentStage === undefined
+      ? '未開始'
+      : (weaponInfoAt(weapons, chainId, effectiveFrom)?.tcName ?? STAGE_TC_LABEL[effectiveFrom]);
     const toName = weaponInfoAt(weapons, chainId, target)?.tcName ?? STAGE_TC_LABEL[target];
     out.weapons.push({
       key: `weapon:${chainId}`,
@@ -215,7 +219,9 @@ function computeActiveTargets(
       const fromIdx = seq.indexOf(effectiveFrom);
       const toIdx = seq.indexOf(target);
       if (toIdx <= fromIdx) continue;
-      const fromName = getAnemosArmorName(job, slot, effectiveFrom) ?? STAGE_TC_LABEL[effectiveFrom];
+      const fromName = p.currentStage === undefined
+        ? '未開始'
+        : (getAnemosArmorName(job, slot, effectiveFrom) ?? STAGE_TC_LABEL[effectiveFrom]);
       const toName = getAnemosArmorName(job, slot, target) ?? STAGE_TC_LABEL[target];
       out.anemos.push({
         key: `anemos:${job}:${slot}`,
@@ -241,7 +247,9 @@ function computeActiveTargets(
       const fromIdx = seq.indexOf(effectiveFrom);
       const toIdx = seq.indexOf(target);
       if (toIdx <= fromIdx) continue;
-      const fromName = getElementalArmorName(setId, slot, effectiveFrom) ?? STAGE_TC_LABEL[effectiveFrom];
+      const fromName = p.currentStage === undefined
+        ? '未開始'
+        : (getElementalArmorName(setId, slot, effectiveFrom) ?? STAGE_TC_LABEL[effectiveFrom]);
       const toName = getElementalArmorName(setId, slot, target) ?? STAGE_TC_LABEL[target];
       out.elemental.push({
         key: `elemental:${setId}:${slot}`,
@@ -255,6 +263,64 @@ function computeActiveTargets(
   }
 
   return out;
+}
+
+type PrereqEntry = { key: string; name: string; obtainMethod: string };
+
+/**
+ * Collects 前置道具 (AF gear) for chains whose currentStage is undefined
+ * and have a target set. Each chain contributes one item per primary +
+ * mirror chain. Armor contributes the antiquated head/body/etc. for each
+ * affected slot.
+ */
+function computePrereqItems(inv: EurekaInventoryV5, weapons: EurekaWeapon[]): PrereqEntry[] {
+  const out: PrereqEntry[] = [];
+  const AF_METHOD = '完成70級職業任務或從失物管理人兌換取得';
+
+  // Weapons: include primary + mirror chains' antiquated items
+  for (const [chainId, slot] of Object.entries(inv.weapons) as [string, SlotProgress][]) {
+    if (MIRROR_CHAIN_IDS.has(chainId)) continue;
+    if (slot.currentStage !== undefined) continue;
+    if (!slot.targetStage) continue;
+    const primaryAnt = weaponInfoAt(weapons, chainId, 'antiquated');
+    if (primaryAnt) {
+      out.push({ key: `weapon-prereq:${chainId}`, name: primaryAnt.tcName, obtainMethod: AF_METHOD });
+    }
+    const mirrors = EUREKA_CHAINS.filter((c) => c.mirrorsChainId === chainId);
+    for (const mc of mirrors) {
+      const mAnt = weaponInfoAt(weapons, mc.chainId, 'antiquated');
+      if (mAnt) {
+        out.push({ key: `weapon-prereq:${mc.chainId}`, name: mAnt.tcName, obtainMethod: AF_METHOD });
+      }
+    }
+  }
+
+  // Anemos armor: antiquated AF set piece per slot
+  for (const [job, jobPieces] of Object.entries(inv.armor.anemos)) {
+    if (!jobPieces) continue;
+    for (const slotName of ARMOR_SLOTS) {
+      const p = jobPieces[slotName];
+      if (!p) continue;
+      if (p.currentStage !== undefined) continue;
+      if (!p.targetStage) continue;
+      const name = getAnemosArmorName(job, slotName, 'antiquated') ?? STAGE_TC_LABEL['antiquated'];
+      out.push({ key: `anemos-prereq:${job}:${slotName}`, name, obtainMethod: AF_METHOD });
+    }
+  }
+
+  // Elemental armor: the AF gear prereq is already covered by the anemos armor prereq above
+  // (same physical item — 舊化的 XX). Adding a duplicate entry adds noise. The other elemental
+  // prereqs (50 文理技能 + 元素武器) aren't items so they don't fit this row format — surface
+  // them in the elemental armor's DetailTab preview instead.
+
+  // De-duplicate by (name, obtainMethod) so the same AF piece isn't repeated.
+  const seen = new Set<string>();
+  return out.filter((e) => {
+    const k = `${e.name}::${e.obtainMethod}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 }
 
 function ActiveTargetsList({ entries }: { entries: ReturnType<typeof computeActiveTargets> }) {
@@ -306,6 +372,37 @@ function ActiveTargetsList({ entries }: { entries: ReturnType<typeof computeActi
   );
 }
 
+function PrereqList({ items }: { items: PrereqEntry[] }) {
+  const [open, setOpen] = useState(true);
+  if (items.length === 0) return null;
+  return (
+    <div className="mb-3 rounded border border-gray-700 bg-gray-900/50">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="w-full px-3 py-2 text-left flex items-center gap-2 text-sm hover:bg-gray-800/50 transition-colors"
+      >
+        <span className="text-gray-500 text-xs">{open ? '▼' : '▶'}</span>
+        <span className="text-yellow-400 font-semibold">📜 前置道具</span>
+        <span className="text-xs text-gray-500">（{items.length} 件 · 任務 / NPC 兌換、非素材農）</span>
+      </button>
+      {open && (
+        <ul className="px-3 pb-3 space-y-1 text-xs">
+          {items.map((it) => (
+            <li key={it.key} className="flex items-baseline gap-2 text-gray-300">
+              <span className="text-gray-500 shrink-0">•</span>
+              <span className="font-medium">{it.name}</span>
+              <span className="text-gray-500">× 1</span>
+              <span className="text-gray-400 text-[11px]">（{it.obtainMethod}）</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function FarmingTab({ inventory, weapons, materialsMap }: FarmingTabProps) {
   const [showAll, setShowAll] = useLocalStorageBool('eureka-gear-farming-expand-all', false);
   const zoneAgg = useMemo(
@@ -316,7 +413,11 @@ export function FarmingTab({ inventory, weapons, materialsMap }: FarmingTabProps
     () => computeActiveTargets(inventory, weapons, showAll),
     [inventory, weapons, showAll],
   );
-  const hasAny = Object.values(zoneAgg).some((m) => m.size > 0);
+  const prereqItems = useMemo(
+    () => computePrereqItems(inventory, weapons),
+    [inventory, weapons],
+  );
+  const hasAny = Object.values(zoneAgg).some((m) => m.size > 0) || prereqItems.length > 0;
 
   const toggle = (
     <div className="flex items-center gap-2 mb-3">
@@ -359,6 +460,7 @@ export function FarmingTab({ inventory, weapons, materialsMap }: FarmingTabProps
   return (
     <div>
       {toggle}
+      <PrereqList items={prereqItems} />
       <ActiveTargetsList entries={activeTargets} />
       <NextEdgeShortage inventory={inventory} materialsMap={materialsMap} />
       <div className="space-y-3">
