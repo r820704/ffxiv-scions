@@ -29,6 +29,7 @@ import type {
   EurekaInventoryV5,
   EurekaStage,
   EurekaWeapon,
+  SlotProgress,
 } from '../../types/eureka-gear';
 import {
   ANEMOS_ARMOR_ZONE_GROUPS,
@@ -158,8 +159,10 @@ export function DetailTab({
             const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
             const ref: ChainRef = { kind: 'weapon', chainId };
             const isStarted = inventory.weapons[chainId] !== undefined;
-            const stepperCurrent = isStarted ? p.currentStage : null;
-            const currentInfo = weaponInfoAt(weapons, chainId, p.currentStage);
+            // Task 2 中介層 fallback：runtime 仍永遠定義，Task 8 重寫後移除
+            const safeCurrent: EurekaStage = p.currentStage ?? 'antiquated';
+            const stepperCurrent: EurekaStage | null = isStarted ? safeCurrent : null;
+            const currentInfo = weaponInfoAt(weapons, chainId, safeCurrent);
             const targetInfo = p.targetStage ? weaponInfoAt(weapons, chainId, p.targetStage) : undefined;
             const slotLabel = chain?.isShield ? '盾' : '主手';
 
@@ -167,7 +170,7 @@ export function DetailTab({
             const mirrorInfos = mirrorChains.map((mc) => ({
               chainId: mc.chainId,
               chain: mc,
-              current: weaponInfoAt(weapons, mc.chainId, p.currentStage),
+              current: weaponInfoAt(weapons, mc.chainId, safeCurrent),
               target: p.targetStage ? weaponInfoAt(weapons, mc.chainId, p.targetStage) : undefined,
             }));
 
@@ -177,7 +180,7 @@ export function DetailTab({
             const isExpanded = weaponExpanded[chainId] ?? true;
 
             const isPendingStart = !isStarted && pendingStartChain === chainId;
-            const pendingTargetStage = isPendingStart ? (pendingStartTarget ?? p.currentStage) : null;
+            const pendingTargetStage = isPendingStart ? (pendingStartTarget ?? safeCurrent) : null;
             const pendingTargetInfo = pendingTargetStage
               ? weaponInfoAt(weapons, chainId, pendingTargetStage) ?? undefined
               : undefined;
@@ -189,7 +192,7 @@ export function DetailTab({
                     <span className="font-normal">{currentInfo.tcName}</span>
                   )}
                   <span className="text-xs text-gray-400 font-normal">
-                    {isStarted ? stageSuffix(currentInfo, p.currentStage) : '未開始'}
+                    {isStarted ? stageSuffix(currentInfo, safeCurrent) : '未開始'}
                   </span>
                   {isPendingStart && pendingTargetStage && (
                     <>
@@ -215,14 +218,14 @@ export function DetailTab({
                       <span className="font-normal">{m.current.tcName}</span>
                     )}
                     <span className="text-xs text-gray-400 font-normal">
-                      {isStarted ? stageSuffix(m.current, p.currentStage) : '未開始'}
+                      {isStarted ? stageSuffix(m.current, safeCurrent) : '未開始'}
                     </span>
                     {isPendingStart && m.current && (
                       <>
                         <span className="text-yellow-400">→</span>
                         <span className="text-yellow-200">{m.current.tcName}</span>
                         <span className="text-xs text-gray-400 font-normal">
-                          （{STAGE_TC_LABEL[p.currentStage]}）
+                          （{STAGE_TC_LABEL[safeCurrent]}）
                         </span>
                       </>
                     )}
@@ -294,7 +297,7 @@ export function DetailTab({
                     } : undefined}
                   />
                   <PreviewPanel
-                    currentStage={p.currentStage}
+                    currentStage={safeCurrent}
                     targetStage={p.targetStage}
                     inventory={inventory.materials}
                     onSetCurrent={() => onRequestUpgrade(ref)}
@@ -440,7 +443,7 @@ type ArmorTrackSectionProps = {
   title: string;
   colorClass: string;
   slotColorClass: string;
-  pieces: Partial<Record<ArmorSlot, { currentStage: EurekaStage; targetStage?: EurekaStage }>>;
+  pieces: Partial<Record<ArmorSlot, SlotProgress>>;
   stages: EurekaStage[];
   costs: typeof ANEMOS_ARMOR_COSTS;
   makeRef: (slot: ArmorSlot) => ChainRef;
@@ -495,9 +498,13 @@ function ArmorTrackSection({
       <div className="space-y-3 pl-2 border-l-2 border-gray-700">
         {ARMOR_SLOTS.map((slot) => {
           const slotData = pieces[slot];
-          const isStarted = slotData !== undefined;
-          const p: { currentStage: EurekaStage; targetStage?: EurekaStage } =
-            slotData ?? { currentStage: stages[0] as EurekaStage };
+          const isStarted = slotData?.currentStage !== undefined;
+          // Task 2 中介層 fallback：Task 8 重寫後消失
+          const safeCurrent: EurekaStage = slotData?.currentStage ?? (stages[0] as EurekaStage);
+          const p: { currentStage: EurekaStage; targetStage?: EurekaStage } = {
+            currentStage: safeCurrent,
+            targetStage: slotData?.targetStage,
+          };
           const stepperCurrent = isStarted ? p.currentStage : null;
           const ref = makeRef(slot);
           const currentItemName = getItemName?.(slot, p.currentStage);

@@ -11,7 +11,7 @@ import InventorySidebar from '@/components/eureka-gear/InventorySidebar';
 import { UpgradeDialog } from '@/components/eureka-gear/UpgradeDialog';
 import { OnboardingBanner, toggleOnboarding } from '@/components/eureka-gear/OnboardingBanner';
 import { EUREKA_STAGES } from '@/types/eureka-gear';
-import type { EurekaStage } from '@/types/eureka-gear';
+import type { EurekaStage, SlotProgress } from '@/types/eureka-gear';
 import { sharedJobNames } from '@/data/eureka-armor-sets';
 import type { Role } from '@/types/eureka';
 import PageHead from '@/components/PageHead';
@@ -142,7 +142,7 @@ export default function EurekaGearPage() {
   };
 
   const handleRequestUpgrade = (ref: ChainRef) => {
-    let slot: { currentStage: typeof EUREKA_STAGES[number]; targetStage?: typeof EUREKA_STAGES[number] } | undefined;
+    let slot: SlotProgress | undefined;
     if (ref.kind === 'weapon') {
       slot = inventory.weapons[ref.chainId];
     } else if (ref.kind === 'armor-anemos') {
@@ -151,7 +151,8 @@ export default function EurekaGearPage() {
       slot = inventory.armor.elemental[ref.set]?.[ref.slot];
     }
     if (!slot?.targetStage) return;
-    const currentIdx = EUREKA_STAGES.indexOf(slot.currentStage);
+    // currentStage undefined（尚未取得舊化）以 antiquated 為起點計算方向
+    const currentIdx = EUREKA_STAGES.indexOf(slot.currentStage ?? 'antiquated');
     const targetIdx = EUREKA_STAGES.indexOf(slot.targetStage);
     const direction: 'up' | 'down' = targetIdx < currentIdx ? 'down' : 'up';
     // Only elemental armor is role-shared; anemos is per-job so no shared warning

@@ -49,12 +49,14 @@ function aggregateNextEdge(inv: EurekaInventoryV5): Map<number, number> {
   for (const [chainId, slot] of Object.entries(inv.weapons)) {
     if (MIRROR_CHAIN_IDS.has(chainId)) continue;
     if (!slot.targetStage) continue;
-    const fromIdx = EUREKA_STAGES.indexOf(slot.currentStage);
+    // currentStage undefined（尚未取得舊化）視為 antiquated 起算
+    const effectiveFrom: EurekaStage = slot.currentStage ?? 'antiquated';
+    const fromIdx = EUREKA_STAGES.indexOf(effectiveFrom);
     const toIdx = EUREKA_STAGES.indexOf(slot.targetStage);
     if (toIdx <= fromIdx) continue;
     const next: EurekaStage | undefined = EUREKA_STAGES[fromIdx + 1];
     if (!next) continue;
-    addCost(costBetween(slot.currentStage, next, STAGE_UPGRADE_COSTS));
+    addCost(costBetween(effectiveFrom, next, STAGE_UPGRADE_COSTS));
   }
 
   // Anemos armor: next edge in anemos sequence per slot.
@@ -63,12 +65,13 @@ function aggregateNextEdge(inv: EurekaInventoryV5): Map<number, number> {
       const p = jobPieces?.[slotName];
       if (!p?.targetStage) continue;
       const seq = ARMOR_STAGES_BY_TRACK.anemos;
-      const fromIdx = seq.indexOf(p.currentStage);
+      const effectiveFrom: EurekaStage = p.currentStage ?? 'antiquated';
+      const fromIdx = seq.indexOf(effectiveFrom);
       const toIdx = seq.indexOf(p.targetStage);
       if (toIdx <= fromIdx) continue;
       const next = seq[fromIdx + 1];
       if (!next) continue;
-      addCost(costBetweenInSequence(p.currentStage, next, seq, ANEMOS_ARMOR_COSTS, slotName));
+      addCost(costBetweenInSequence(effectiveFrom, next, seq, ANEMOS_ARMOR_COSTS, slotName));
     }
   }
 
@@ -79,12 +82,13 @@ function aggregateNextEdge(inv: EurekaInventoryV5): Map<number, number> {
       const p = setData[slotName];
       if (!p?.targetStage) continue;
       const seq = ARMOR_STAGES_BY_TRACK.elemental;
-      const fromIdx = seq.indexOf(p.currentStage);
+      const effectiveFrom: EurekaStage = p.currentStage ?? 'elemental';
+      const fromIdx = seq.indexOf(effectiveFrom);
       const toIdx = seq.indexOf(p.targetStage);
       if (toIdx <= fromIdx) continue;
       const next = seq[fromIdx + 1];
       if (!next) continue;
-      addCost(costBetweenInSequence(p.currentStage, next, seq, ELEMENTAL_ARMOR_COSTS, slotName));
+      addCost(costBetweenInSequence(effectiveFrom, next, seq, ELEMENTAL_ARMOR_COSTS, slotName));
     }
   }
 

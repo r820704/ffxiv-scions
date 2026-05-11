@@ -61,7 +61,8 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
       {progress.weapons.map(({ chainId, progress: p, started }) => {
         const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
         const slotLabel = chain?.isShield ? '盾' : '主';
-        const idx = EUREKA_STAGES.indexOf(p.currentStage);
+        const effectiveCurrent = p.currentStage ?? 'antiquated';
+        const idx = EUREKA_STAGES.indexOf(effectiveCurrent);
         const filled = idx + 1;
         const done = filled === EUREKA_STAGES.length;
         return (
@@ -70,7 +71,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
             <ArmorDots
               stages={EUREKA_STAGES}
               zoneGroups={WEAPON_ZONE_GROUPS}
-              currentStage={p.currentStage}
+              currentStage={effectiveCurrent}
               started={started}
               colorFilled="bg-owned"
               glowStages={WEAPON_GLOW_STAGES}

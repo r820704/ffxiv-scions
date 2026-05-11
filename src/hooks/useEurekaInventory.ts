@@ -5,6 +5,7 @@ import type {
   EurekaInventoryV5,
   EurekaStage,
   MaterialCost,
+  SlotProgress,
   StageUpgradeCost,
 } from '../types/eureka-gear';
 import { ARMOR_STAGES_BY_TRACK } from '../types/eureka-gear';
@@ -38,7 +39,11 @@ export type ChainRef =
   | { kind: 'armor-elemental'; set: ArmorSetId; slot: ArmorSlot };
 
 export type UpgradeOutcome = {
-  from: EurekaStage;
+  /**
+   * `undefined` = 玩家尚未取得舊化（first step：null → antiquated）。
+   * 其他情況皆為一個 EurekaStage 值。
+   */
+  from: EurekaStage | undefined;
   to: EurekaStage;
   materials: MaterialCost[];
   hadEnough: boolean;
@@ -74,7 +79,7 @@ function sequenceForArmorKind(kind: 'armor-anemos' | 'armor-elemental') {
     : ARMOR_STAGES_BY_TRACK.elemental;
 }
 
-function getSlotFromRef(inv: EurekaInventoryV5, ref: ChainRef): { currentStage: EurekaStage; targetStage?: EurekaStage } | undefined {
+function getSlotFromRef(inv: EurekaInventoryV5, ref: ChainRef): SlotProgress | undefined {
   if (ref.kind === 'weapon') {
     const chain = EUREKA_CHAINS.find((c) => c.chainId === ref.chainId);
     const primaryId = chain?.mirrorsChainId ?? ref.chainId;
@@ -89,7 +94,7 @@ function getSlotFromRef(inv: EurekaInventoryV5, ref: ChainRef): { currentStage: 
 function setSlotInInventory(
   inv: EurekaInventoryV5,
   ref: ChainRef,
-  update: (prev: { currentStage: EurekaStage; targetStage?: EurekaStage } | undefined) => { currentStage: EurekaStage; targetStage?: EurekaStage },
+  update: (prev: SlotProgress | undefined) => SlotProgress,
 ): EurekaInventoryV5 {
   if (ref.kind === 'weapon') {
     const chainIds = getSyncedChainIds(ref.chainId);

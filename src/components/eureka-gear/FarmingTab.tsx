@@ -85,7 +85,9 @@ function aggregateWeaponCosts(inv: EurekaInventoryV5, agg: ZoneAgg, opts: AggOpt
       ? WEAPON_ENDPOINT
       : slot.targetStage;
     if (!target) continue;
-    const fromIdx = EUREKA_STAGES.indexOf(slot.currentStage);
+    // currentStage undefined（尚未取得舊化）視為 antiquated 起算成本
+    const effectiveFrom = slot.currentStage ?? 'antiquated';
+    const fromIdx = EUREKA_STAGES.indexOf(effectiveFrom);
     const toIdx = EUREKA_STAGES.indexOf(target);
     if (toIdx <= fromIdx) continue;
     for (let i = fromIdx; i < toIdx; i++) {
@@ -106,7 +108,7 @@ function aggregateArmorCosts(inv: EurekaInventoryV5, agg: ZoneAgg, opts: AggOpts
       if (!p) continue;
       const target: EurekaStage | undefined = opts.expandAll ? ANEMOS_ENDPOINT : p.targetStage;
       if (!target) continue;
-      walkAndAggregate(p.currentStage, target, ARMOR_STAGES_BY_TRACK.anemos, ANEMOS_ARMOR_COSTS, slot, agg);
+      walkAndAggregate(p.currentStage ?? 'antiquated', target, ARMOR_STAGES_BY_TRACK.anemos, ANEMOS_ARMOR_COSTS, slot, agg);
     }
   }
   // Elemental armor: per-role
@@ -117,7 +119,7 @@ function aggregateArmorCosts(inv: EurekaInventoryV5, agg: ZoneAgg, opts: AggOpts
       if (!p) continue;
       const target: EurekaStage | undefined = opts.expandAll ? ELEMENTAL_ENDPOINT : p.targetStage;
       if (!target) continue;
-      walkAndAggregate(p.currentStage, target, ARMOR_STAGES_BY_TRACK.elemental, ELEMENTAL_ARMOR_COSTS, slot, agg);
+      walkAndAggregate(p.currentStage ?? 'elemental', target, ARMOR_STAGES_BY_TRACK.elemental, ELEMENTAL_ARMOR_COSTS, slot, agg);
     }
   }
 }
@@ -181,19 +183,20 @@ function computeActiveTargets(
     if (MIRROR_CHAIN_IDS.has(chainId)) continue;
     const target: EurekaStage | undefined = expandAll ? WEAPON_ENDPOINT : slot.targetStage;
     if (!target) continue;
-    const fromIdx = EUREKA_STAGES.indexOf(slot.currentStage);
+    const effectiveFrom: EurekaStage = slot.currentStage ?? 'antiquated';
+    const fromIdx = EUREKA_STAGES.indexOf(effectiveFrom);
     const toIdx = EUREKA_STAGES.indexOf(target);
     if (toIdx <= fromIdx) continue;
     const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
     if (!chain) continue;
-    const fromName = weaponInfoAt(weapons, chainId, slot.currentStage)?.tcName ?? STAGE_TC_LABEL[slot.currentStage];
+    const fromName = weaponInfoAt(weapons, chainId, effectiveFrom)?.tcName ?? STAGE_TC_LABEL[effectiveFrom];
     const toName = weaponInfoAt(weapons, chainId, target)?.tcName ?? STAGE_TC_LABEL[target];
     out.weapons.push({
       key: `weapon:${chainId}`,
       label: chain.displayName,
       fromName,
       toName,
-      fromIl: STAGE_ITEM_LEVELS[slot.currentStage],
+      fromIl: STAGE_ITEM_LEVELS[effectiveFrom],
       toIl: STAGE_ITEM_LEVELS[target],
     });
   }
@@ -208,17 +211,18 @@ function computeActiveTargets(
       const target: EurekaStage | undefined = expandAll ? ANEMOS_ENDPOINT : p.targetStage;
       if (!target) continue;
       const seq = ARMOR_STAGES_BY_TRACK.anemos;
-      const fromIdx = seq.indexOf(p.currentStage);
+      const effectiveFrom: EurekaStage = p.currentStage ?? 'antiquated';
+      const fromIdx = seq.indexOf(effectiveFrom);
       const toIdx = seq.indexOf(target);
       if (toIdx <= fromIdx) continue;
-      const fromName = getAnemosArmorName(job, slot, p.currentStage) ?? STAGE_TC_LABEL[p.currentStage];
+      const fromName = getAnemosArmorName(job, slot, effectiveFrom) ?? STAGE_TC_LABEL[effectiveFrom];
       const toName = getAnemosArmorName(job, slot, target) ?? STAGE_TC_LABEL[target];
       out.anemos.push({
         key: `anemos:${job}:${slot}`,
         label: `${jobName} · ${SLOT_TC[slot]}`,
         fromName,
         toName,
-        fromIl: STAGE_ITEM_LEVELS[p.currentStage],
+        fromIl: STAGE_ITEM_LEVELS[effectiveFrom],
         toIl: STAGE_ITEM_LEVELS[target],
       });
     }
@@ -233,17 +237,18 @@ function computeActiveTargets(
       const target: EurekaStage | undefined = expandAll ? ELEMENTAL_ENDPOINT : p.targetStage;
       if (!target) continue;
       const seq = ARMOR_STAGES_BY_TRACK.elemental;
-      const fromIdx = seq.indexOf(p.currentStage);
+      const effectiveFrom: EurekaStage = p.currentStage ?? 'elemental';
+      const fromIdx = seq.indexOf(effectiveFrom);
       const toIdx = seq.indexOf(target);
       if (toIdx <= fromIdx) continue;
-      const fromName = getElementalArmorName(setId, slot, p.currentStage) ?? STAGE_TC_LABEL[p.currentStage];
+      const fromName = getElementalArmorName(setId, slot, effectiveFrom) ?? STAGE_TC_LABEL[effectiveFrom];
       const toName = getElementalArmorName(setId, slot, target) ?? STAGE_TC_LABEL[target];
       out.elemental.push({
         key: `elemental:${setId}:${slot}`,
         label: `[${SET_SHORT_LABEL[setId]}] ${SLOT_TC[slot]}`,
         fromName,
         toName,
-        fromIl: STAGE_ITEM_LEVELS[p.currentStage],
+        fromIl: STAGE_ITEM_LEVELS[effectiveFrom],
         toIl: STAGE_ITEM_LEVELS[target],
       });
     }

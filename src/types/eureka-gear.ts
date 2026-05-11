@@ -160,7 +160,11 @@ export const JOB_TC_LABEL: Record<FFXIVJob, string> = {
 // ============ v3 schema ============
 
 export type SlotProgress = {
-  currentStage: EurekaStage;
+  /**
+   * 玩家當前持有的階段。`undefined` 表示「未開始 / 尚未取得舊化」—
+   * v6 schema 之後新加入的狀態。v5 entries 一律有此欄位、不會是 undefined。
+   */
+  currentStage?: EurekaStage;
   targetStage?: EurekaStage;
 };
 
