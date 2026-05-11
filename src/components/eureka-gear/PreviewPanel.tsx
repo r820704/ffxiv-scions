@@ -150,8 +150,8 @@ export function PreviewPanel({
   // 升階段（含首步 undefined → antiquated）
   const headingFromName = isPreObtained ? '未開始' : (currentLabel ?? STAGE_TC_LABEL[currentStage!]);
   const headingToName = targetLabel ?? STAGE_TC_LABEL[targetStage];
-  // 首步特殊文案：玩家剛從零開始想拿到舊化，按鈕只說「取得」、不是「升階段」
-  const buttonLabel = isPreObtained ? '⬆ 取得' : '⬆ 升階段';
+  // 首步特殊文案：玩家剛從零開始、這次點下只會推進到舊化（不會直接到 target）
+  const buttonLabel = isPreObtained ? '⬆ 取得舊化' : `⬆ 升階段 (${headingToName})`;
 
   return (
     <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
@@ -177,7 +177,7 @@ export function PreviewPanel({
           onClick={onSetCurrent}
           className="px-3 py-1.5 rounded font-bold text-sm bg-green-500 text-black"
         >
-          {buttonLabel} ({headingToName})
+          {buttonLabel}
         </button>
         <button
           type="button"
