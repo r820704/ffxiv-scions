@@ -158,8 +158,9 @@ export function DetailTab({
           {primaryChains.map(({ chainId, progress: p }) => {
             const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
             const ref: ChainRef = { kind: 'weapon', chainId };
-            const isStarted = inventory.weapons[chainId] !== undefined;
-            // Task 2 中介層 fallback：runtime 仍永遠定義，Task 8 重寫後移除
+            // 「已開始」= 已取得 antiquated（currentStage 已定義），不只是 inventory entry 存在
+            const isStarted = p.currentStage !== undefined;
+            // Task 2 中介層 fallback：Task 8 重寫後移除
             const safeCurrent: EurekaStage = p.currentStage ?? 'antiquated';
             const stepperCurrent: EurekaStage | null = isStarted ? safeCurrent : null;
             const currentInfo = weaponInfoAt(weapons, chainId, safeCurrent);
