@@ -20,7 +20,7 @@ export default function Hero() {
 
       <picture className="hero-media absolute inset-0 z-0">
         <img
-          src={`${base}brand/hero-desktop.png`}
+          src={`${base}brand/hero-desktop.webp`}
           alt=""
           width={1672}
           height={941}
