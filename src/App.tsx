@@ -10,7 +10,7 @@ import EurekaGearPage from '@/pages/EurekaGearPage';
 import AboutPage from '@/pages/AboutPage';
 
 function Contained({ children }: { children: ReactNode }) {
-  return <div className="max-w-[1280px] mx-auto px-4 py-4">{children}</div>;
+  return <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-4">{children}</div>;
 }
 
 export default function App() {

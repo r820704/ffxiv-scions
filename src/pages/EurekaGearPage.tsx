@@ -171,7 +171,7 @@ export default function EurekaGearPage() {
   );
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
+    <div>
       <PageHead
         title="禁地兵裝"
         description="優雷卡武器與防具升級進度追蹤"
@@ -193,7 +193,7 @@ export default function EurekaGearPage() {
 
       <nav
         role="tablist"
-        className="sticky top-0 z-30 -mx-4 px-4 bg-background flex border-b-2 border-primary mb-4"
+        className="sticky top-0 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 bg-background flex border-b-2 border-primary mb-4"
       >
         {tabBtn('overview', '總覽')}
         {tabBtn('detail', '職業詳情')}
