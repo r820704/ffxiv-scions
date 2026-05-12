@@ -82,7 +82,7 @@ export default function NavBar() {
         </span>
       </NavLink>
 
-      <ul className="hidden sm:flex gap-1.5 list-none p-0 m-0">
+      <ul className="hidden md:flex gap-1.5 list-none p-0 m-0">
         {links.map((l) => (
           <li key={l.to}>
             <NavLink to={l.to} end={l.to === '/'} className={({ isActive }) => linkClass(isActive)}>
@@ -98,7 +98,7 @@ export default function NavBar() {
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
         onClick={() => setOpen((o) => !o)}
-        className="sm:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-primary hover:bg-[rgba(197,182,157,0.06)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-primary hover:bg-[rgba(197,182,157,0.06)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         {open ? <X size={20} aria-hidden /> : <Menu size={20} aria-hidden />}
       </button>
@@ -108,7 +108,7 @@ export default function NavBar() {
           <div
             id="mobile-nav-panel"
             ref={panelRef}
-            className="sm:hidden fixed left-0 right-0 top-[60px] z-[60] border-b border-[rgba(197,182,157,0.10)] bg-background/95 backdrop-blur-md shadow-xl"
+            className="md:hidden fixed left-0 right-0 top-[60px] z-[60] border-b border-[rgba(197,182,157,0.10)] bg-background/95 backdrop-blur-md shadow-xl"
           >
             <ul className="flex flex-col gap-1 list-none p-3 m-0">
               {links.map((l) => (

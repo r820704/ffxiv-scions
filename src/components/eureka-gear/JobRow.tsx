@@ -85,7 +85,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
 
       {/* Force new line; spacer aligns armor chip with weapon chip (desktop only) */}
       <div className="w-full" />
-      <div className="w-[108px] shrink-0 hidden sm:block" />
+      <div className="w-[108px] shrink-0 hidden md:block" />
 
       {/* Anemos armor section */}
       <span className="text-[10px] font-bold text-owned/90 bg-owned/20 px-1.5 py-0.5 rounded shrink-0">
@@ -93,7 +93,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
       </span>
 
       {/* Mobile: compact 5×5 dot groups with zone separators */}
-      <div className="flex sm:hidden gap-[2px] items-center shrink-0 flex-wrap">
+      <div className="flex md:hidden gap-[2px] items-center shrink-0 flex-wrap">
         {ARMOR_SLOTS.map((slot, slotIdx) => {
           const p = progress.anemos[slot];
           const stage: EurekaStage = p?.currentStage ?? 'antiquated';
@@ -123,7 +123,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
         const filled = ANEMOS_ARMOR_STAGES.indexOf(stage) + 1;
         const done = stage === 'anemos';
         return (
-          <div key={slot} className="hidden sm:flex items-center gap-1 text-xs shrink-0">
+          <div key={slot} className="hidden md:flex items-center gap-1 text-xs shrink-0">
             <span className="text-owned/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
             <ArmorDots
               stages={ARMOR_STAGES_BY_TRACK.anemos}
