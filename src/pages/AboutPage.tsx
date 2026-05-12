@@ -21,7 +21,7 @@ export default function AboutPage() {
       <div className="grid grid-cols-1 md:grid-cols-[minmax(280px,420px)_1fr] gap-8 lg:gap-12 items-start">
         <figure className="relative rounded-xl overflow-hidden border border-[rgba(197,182,157,0.18)] shadow-[0_20px_50px_-22px_rgba(0,0,0,0.85)]">
           <img
-            src={`${base}brand/author-portrait.png`}
+            src={`${base}brand/author-portrait.webp`}
             alt="作者角色 Skuld 的肖像"
             width={1672}
             height={941}
