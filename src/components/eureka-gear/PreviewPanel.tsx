@@ -125,7 +125,7 @@ export function PreviewPanel({
     return (
       <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
         <div className="text-red-400 font-semibold mb-2">
-          {targetLabel ?? STAGE_TC_LABEL[targetStage]} — 已擁有（設為目前會捨棄中間進度）
+          從 {currentLabel ?? STAGE_TC_LABEL[currentStage!]} → {targetLabel ?? STAGE_TC_LABEL[targetStage]}（已擁有，會捨棄中間進度）
         </div>
         <div className="flex gap-2">
           <button
