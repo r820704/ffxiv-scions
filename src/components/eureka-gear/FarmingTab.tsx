@@ -385,7 +385,7 @@ function PrereqList({ items }: { items: PrereqEntry[] }) {
       >
         <span className="text-gray-500 text-xs">{open ? '▼' : '▶'}</span>
         <span className="text-yellow-400 font-semibold">📜 前置道具</span>
-        <span className="text-xs text-gray-500">（{items.length} 件 · 任務 / NPC 兌換、非素材農）</span>
+        <span className="text-xs text-gray-500">（{items.length} 件 · 任務 / NPC 兌換）</span>
       </button>
       {open && (
         <ul className="px-3 pb-3 space-y-1 text-xs">

@@ -147,7 +147,7 @@ export default function EurekaGearPage() {
     const direction: 'up' | 'down' = targetIdx < currentIdx ? 'down' : 'up';
     // Only elemental armor is role-shared; anemos is per-job so no shared warning
     const sharedJobs = ref.kind === 'armor-elemental' ? sharedJobNames(ref.set) : [];
-    if (direction === 'down' || sharedJobs.length > 1) {
+    if (sharedJobs.length > 1) {
       setPendingDialog({ ref, direction, targetStage: slot.targetStage, sharedJobs });
     } else {
       executeUpgrade(ref);
