@@ -60,7 +60,7 @@ export default function EurekaGearPage() {
   const selectedJob = getInitialJob(searchParams);
   const overviewRole = parseRole(searchParams.get('role'));
 
-  const { weapons: weaponsList, materials: materialsList, loading, error } = useEurekaWeaponsData();
+  const { weapons: weaponsList, materials: materialsList } = useEurekaWeaponsData();
   const {
     inventory,
     setMaterial,
@@ -154,10 +154,6 @@ export default function EurekaGearPage() {
     }
   };
 
-  if (loading) {
-    return <div className="p-4 text-gray-400">載入中...</div>;
-  }
-
   const tabBtn = (key: TabKey, label: string) => (
     <button
       key={key}
@@ -187,8 +183,6 @@ export default function EurekaGearPage() {
           </button>
         }
       />
-      {error && <div className="text-red-400 text-sm mb-2">載入失敗：{error}</div>}
-
       <OnboardingBanner />
 
       <nav

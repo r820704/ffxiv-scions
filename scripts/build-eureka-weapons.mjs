@@ -348,8 +348,8 @@ async function main() {
   console.log(`Wrote review CSV to ${reviewPath}`);
 
   // Output JSON (chainId/job null for now; Task 5 fills them)
-  mkdirSync(resolve(REPO_ROOT, 'public/data'), { recursive: true });
-  const jsonPath = resolve(REPO_ROOT, 'public/data/eureka-weapons.json');
+  mkdirSync(resolve(REPO_ROOT, 'src/data'), { recursive: true });
+  const jsonPath = resolve(REPO_ROOT, 'src/data/eureka-weapons.json');
   const jsonOut = weapons.map(({ _familyKey, _categoryId, ...rest }) => rest);
   writeFileSync(jsonPath, JSON.stringify(jsonOut, null, 2));
   console.log(`Wrote ${jsonOut.length} weapons to ${jsonPath}`);
@@ -370,7 +370,7 @@ async function main() {
     });
   }
   writeFileSync(
-    resolve(REPO_ROOT, 'public/data/eureka-materials.json'),
+    resolve(REPO_ROOT, 'src/data/eureka-materials.json'),
     JSON.stringify(materials, null, 2),
   );
   console.log(`Wrote ${materials.length} materials`);
