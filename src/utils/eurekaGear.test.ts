@@ -190,4 +190,40 @@ describe('getJobProgress', () => {
     expect(p.elemental.set).toBe('maiming');
     expect(p.elemental.pieces).toEqual({});
   });
+
+  it('weapons without inventory entry have undefined currentStage and started=false', () => {
+    const emptyInv: EurekaInventoryV5 = {
+      schemaVersion: 5,
+      weapons: {},
+      armor: {
+        anemos: {},
+        elemental: { fending: {}, maiming: {}, striking: {}, scouting: {}, aiming: {}, healing: {}, casting: {} },
+      },
+      materials: {},
+    };
+    const p = getJobProgress('PLD', emptyInv);
+    expect(p.weapons.length).toBeGreaterThan(0);
+    const first = p.weapons[0]!;
+    expect(first.progress.currentStage).toBeUndefined();
+    expect(first.started).toBe(false);
+  });
+
+  it('weapon entry with target-only (currentStage undefined) reports started=false', () => {
+    const inv: EurekaInventoryV5 = {
+      schemaVersion: 5,
+      weapons: {
+        'pld-galatyn': { targetStage: 'anemos' }, // 注意：沒有 currentStage
+      },
+      armor: {
+        anemos: {},
+        elemental: { fending: {}, maiming: {}, striking: {}, scouting: {}, aiming: {}, healing: {}, casting: {} },
+      },
+      materials: {},
+    };
+    const p = getJobProgress('PLD', inv);
+    const slot = p.weapons.find((w) => w.chainId === 'pld-galatyn');
+    expect(slot?.progress.currentStage).toBeUndefined();
+    expect(slot?.progress.targetStage).toBe('anemos');
+    expect(slot?.started).toBe(false);
+  });
 });

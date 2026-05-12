@@ -2,17 +2,21 @@ import { EUREKA_STAGES, ZONE_OF_STAGE, ZONE_TC_NAME, ZONE_ENDPOINT_TC_NAME } fro
 import type { ArmorZoneGroupDef, EurekaStage, EurekaZone } from '../../types/eureka-gear';
 
 export type ChainStepperProps = {
-  /** null = the player has not even owned the prereq stage 1 (antiquated). */
-  currentStage: EurekaStage | null;
+  /**
+   * null/undefined = 玩家尚未取得舊化（未開始）。null 與 undefined 等價，
+   * 兩種都接受以方便 caller。
+   */
+  currentStage: EurekaStage | null | undefined;
   targetStage?: EurekaStage;
   onSelectTarget: (stage: EurekaStage) => void;
   /**
-   * Called instead of onSelectTarget when the chain is not started yet.
-   * Receives the clicked stage so the caller can both initiate the start
-   * flow and remember the user's desired target in one go.
+   * @deprecated 0 階階段統一後（B1 design）不再需要分流；保留以維持向後相容、
+   * 但 DetailTab 已不再傳入。
    */
   onSelectStart?: (stage: EurekaStage) => void;
-  /** When true and chain is not started, render stage 1 with the target-style ring. */
+  /**
+   * @deprecated 同 onSelectStart — pendingStart 概念已砍除。
+   */
   pendingStartActive?: boolean;
   /** Optional stage sequence for armor tracks (shorter than EUREKA_STAGES). */
   stages?: readonly EurekaStage[];

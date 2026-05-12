@@ -16,7 +16,7 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={() => {}}
         onRequestUpgrade={() => {}}
-        onStartChain={() => {}}
+
       />,
     );
     expect(screen.getAllByText(/武器/).length).toBeGreaterThan(0);
@@ -33,7 +33,7 @@ describe('DetailTab', () => {
         onSelectJob={onSelectJob}
         onSetTarget={() => {}}
         onRequestUpgrade={() => {}}
-        onStartChain={() => {}}
+
       />,
     );
     const select = screen.getByRole('combobox');
@@ -56,7 +56,7 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={onSetTarget}
         onRequestUpgrade={() => {}}
-        onStartChain={() => {}}
+
       />,
     );
     const nodes = screen.getAllByRole('button', { name: /stage/ });
@@ -75,7 +75,7 @@ describe('DetailTab', () => {
           onSelectJob={() => {}}
           onSetTarget={() => {}}
           onRequestUpgrade={() => {}}
-          onStartChain={() => {}}
+
         />,
       );
     }
@@ -164,8 +164,7 @@ describe('DetailTab', () => {
     });
   });
 
-  it('clicking stage 1 button when chain not started shows prereq panel (does not call onSetTarget)', () => {
-    const onStartChain = vi.fn();
+  it('clicking any stage on an unstarted chain calls onSetTarget directly (B1 unified behavior)', () => {
     const onSetTarget = vi.fn();
     render(
       <DetailTab
@@ -176,39 +175,40 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={onSetTarget}
         onRequestUpgrade={() => {}}
-        onStartChain={onStartChain}
       />,
     );
-    const stageButtons = screen.getAllByRole('button', { name: /stage 1/ });
-    fireEvent.click(stageButtons[0]!);
-    // Circle 1 click on unstarted chain shows prereq panel; inventory must not be touched
-    expect(onSetTarget).not.toHaveBeenCalled();
-    expect(onStartChain).not.toHaveBeenCalled();
-    expect(screen.getAllByText(/取得/).length).toBeGreaterThan(0);
+    // Click stage 4 on the first weapon chain (anemos)
+    const stageButtons = screen.getAllByRole('button', { name: /stage/ });
+    fireEvent.click(stageButtons[3]!);
+    expect(onSetTarget).toHaveBeenCalled();
+    // First arg is the ChainRef; second is the stage
+    const [, stage] = onSetTarget.mock.calls[0]!;
+    expect(typeof stage).toBe('string');
   });
 
-  it('clicking armor stage 1 when slot not started shows prereq panel (does not call onSetTarget)', () => {
-    const onStartChain = vi.fn();
+  it('clicking the currentStage on a started chain clears the target', () => {
     const onSetTarget = vi.fn();
+    const inv = {
+      ...emptyInventoryV3(),
+      weapons: { 'pld-galatyn': { currentStage: 'anemos-base' as const, targetStage: 'anemos' as const } },
+    };
     render(
       <DetailTab
-        inventory={emptyInventoryV3()}
+        inventory={inv}
         selectedJob="PLD"
         weapons={[]}
         materialsMap={{}}
         onSelectJob={() => {}}
         onSetTarget={onSetTarget}
         onRequestUpgrade={() => {}}
-        onStartChain={onStartChain}
       />,
     );
-    const allStage1Buttons = screen.getAllByRole('button', { name: /^stage 1:/ });
-    const armorStage1 = allStage1Buttons[allStage1Buttons.length - 1]!;
-    fireEvent.click(armorStage1);
-    // Circle 1 click on unstarted armor slot shows prereq panel; inventory must not be touched
-    expect(onSetTarget).not.toHaveBeenCalled();
-    expect(onStartChain).not.toHaveBeenCalled();
-    expect(screen.getAllByText(/取得/).length).toBeGreaterThan(0);
+    // Click stage 2 (anemos-base = current); should clear target
+    const stageButtons = screen.getAllByRole('button', { name: /stage/ });
+    fireEvent.click(stageButtons[1]!);
+    expect(onSetTarget).toHaveBeenCalled();
+    const [, stage] = onSetTarget.mock.calls[0]!;
+    expect(stage).toBeUndefined();
   });
 
   it('全展開 button expands all armor slot accordions', () => {
@@ -221,7 +221,7 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={() => {}}
         onRequestUpgrade={() => {}}
-        onStartChain={() => {}}
+
       />,
     );
     const allAccordions = screen.getAllByRole('button').filter((b) => b.hasAttribute('aria-expanded'));
@@ -256,7 +256,7 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={() => {}}
         onRequestUpgrade={() => {}}
-        onStartChain={() => {}}
+
         onClearChain={onClearChain}
       />,
     );
@@ -277,7 +277,7 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={() => {}}
         onRequestUpgrade={() => {}}
-        onStartChain={() => {}}
+
       />,
     );
     fireEvent.click(screen.getByRole('button', { name: '收合所有防具欄位' }));
@@ -311,7 +311,7 @@ describe('DetailTab', () => {
         onSelectJob={() => {}}
         onSetTarget={() => {}}
         onRequestUpgrade={() => {}}
-        onStartChain={() => {}}
+
       />,
     );
     expect(screen.getByText(/俠義頭冠/)).toBeInTheDocument();
@@ -329,7 +329,7 @@ describe('DetailTab', () => {
           onSelectJob={() => {}}
           onSetTarget={() => {}}
           onRequestUpgrade={() => {}}
-          onStartChain={() => {}}
+
         />,
       );
     }
@@ -362,7 +362,7 @@ describe('DetailTab', () => {
           onSelectJob={() => {}}
           onSetTarget={() => {}}
           onRequestUpgrade={() => {}}
-          onStartChain={() => {}}
+
         />,
       );
       // Collapse the 常風防具 section manually

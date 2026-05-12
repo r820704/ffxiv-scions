@@ -16,9 +16,11 @@ const MATERIAL_ICONS: Record<number, string> = Object.fromEntries(
 );
 
 export type PreviewPanelProps = {
-  currentStage: EurekaStage;
+  /** undefined = 玩家尚未取得舊化（未開始）。 */
+  currentStage: EurekaStage | undefined;
   targetStage: EurekaStage | undefined;
   inventory: Record<number, number>;
+  /** 點「⬆ 升階段」會呼叫此 callback（內部呼叫 performUpgrade，一次跳到 target）。 */
   onSetCurrent: () => void;
   onClearTarget: () => void;
   materialsMap: Record<number, { nameTC: string; icon: number }>;
@@ -31,21 +33,12 @@ export type PreviewPanelProps = {
   /** Optional display name overrides (falls back to STAGE_TC_LABEL) */
   currentLabel?: string;
   targetLabel?: string;
-  /** When true, show prerequisite hint + confirm button instead of the default placeholder. */
-  showStartPanel?: boolean;
-  startHint?: string;
-  onStartChain?: () => void;
-  /** Optional cancel callback for the start panel; renders a clear button when provided. */
-  onClearStart?: () => void;
   /**
-   * When the start panel is active and the user clicked a stage past the
-   * starting one, show the full antiquated → pendingStartTargetStage cost so
-   * they can preview the whole upgrade path before confirming. The single
-   * confirm action both starts the chain (current = first stage) and sets
-   * pendingStartTargetStage as the target.
+   * 玩家「尚未取得舊化」時要列在 materials 清單最前面的「前置道具」，
+   * 例如武器的舊化裝備、鏡像鏈的另一件武器。當 currentStage 已定義時不顯示。
+   * 每個 row 顯示為「📜 name × 1（obtainMethod）」。
    */
-  pendingStartTargetStage?: EurekaStage;
-  pendingStartTargetLabel?: string;
+  prereqRows?: Array<{ name: string; obtainMethod?: string }>;
 };
 
 export function PreviewPanel({
@@ -60,16 +53,14 @@ export function PreviewPanel({
   slot,
   currentLabel,
   targetLabel,
-  showStartPanel,
-  startHint,
-  onStartChain,
-  onClearStart,
-  pendingStartTargetStage,
-  pendingStartTargetLabel,
+  prereqRows,
 }: PreviewPanelProps) {
   const seq = stages ?? EUREKA_STAGES;
-  const currentIdx = seq.indexOf(currentStage);
+  // currentStage 未取得舊化（undefined）→ 視為 stage 0 的前面
+  const currentIdx = currentStage ? seq.indexOf(currentStage) : -1;
   const targetIdx = targetStage ? seq.indexOf(targetStage) : -1;
+
+  const isPreObtained = currentStage === undefined;
   const direction: 'up' | 'down' | 'none' =
     targetStage === undefined || targetIdx === currentIdx
       ? 'none'
@@ -77,29 +68,19 @@ export function PreviewPanel({
         ? 'up'
         : 'down';
 
+  // 升階段所需材料：currentStage undefined 時以 antiquated 為起點（一次跳到 target）
   const materials = useMemo(
     () => {
       if (!targetStage || direction !== 'up') return [];
+      const effectiveFrom: EurekaStage = currentStage ?? 'antiquated';
+      if (effectiveFrom === targetStage) return [];
       if (stages || costs) {
-        return costBetweenInSequence(currentStage, targetStage, seq, costs ?? STAGE_UPGRADE_COSTS, slot);
+        return costBetweenInSequence(effectiveFrom, targetStage, seq, costs ?? STAGE_UPGRADE_COSTS, slot);
       }
-      return costBetween(currentStage, targetStage, STAGE_UPGRADE_COSTS);
+      return costBetween(effectiveFrom, targetStage, STAGE_UPGRADE_COSTS);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentStage, targetStage, direction, slot],
-  );
-
-  const startMaterials = useMemo(
-    () => {
-      if (!showStartPanel) return [];
-      // When user clicked a later stage as their desired goal, preview the
-      // FULL chain cost (first stage → pendingStartTargetStage). Otherwise
-      // fall back to the legacy "antiquated → currentStage" path.
-      const endStage = pendingStartTargetStage ?? currentStage;
-      return costBetweenInSequence('antiquated', endStage, seq, costs ?? STAGE_UPGRADE_COSTS, slot);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [showStartPanel, currentStage, pendingStartTargetStage, slot],
+    [currentStage, targetStage, direction, slot, isPreObtained],
   );
 
   const renderMaterialRow = (m: { materialId: number; quantity: number }) => {
@@ -121,55 +102,8 @@ export function PreviewPanel({
     );
   };
 
-  if (direction === 'none') {
-    if (showStartPanel && onStartChain) {
-      const startName = currentLabel ?? STAGE_TC_LABEL[currentStage];
-      const targetName = pendingStartTargetStage
-        ? (pendingStartTargetLabel ?? STAGE_TC_LABEL[pendingStartTargetStage])
-        : null;
-      const heading = targetName && targetName !== startName
-        ? `從 ${startName} → ${targetName} 需要`
-        : `獲得 ${startName} 需要`;
-      const buttonLabel = targetName && targetName !== startName
-        ? `⬆ 取得 (${targetName})`
-        : `⬆ 取得 (${startName})`;
-      return (
-        <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
-          <div className="text-yellow-400 font-semibold mb-2">{heading}</div>
-          {(startMaterials.length > 0 || startHint) && (
-            <ul className="space-y-1 mb-3">
-              {startMaterials.map(renderMaterialRow)}
-              {startHint && (
-                <li className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-2 min-w-0">
-                    <span aria-hidden="true" className="w-5 h-5 shrink-0 inline-flex items-center justify-center text-base">📜</span>
-                    <span className="truncate">{startHint}取得{startName} × 1</span>
-                  </span>
-                </li>
-              )}
-            </ul>
-          )}
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onStartChain}
-              className="px-3 py-1.5 rounded font-bold text-sm bg-green-500 text-black"
-            >
-              {buttonLabel}
-            </button>
-            {onClearStart && (
-              <button
-                type="button"
-                onClick={onClearStart}
-                className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
-              >
-                清除
-              </button>
-            )}
-          </div>
-        </div>
-      );
-    }
+  // 無目標 → 提示
+  if (!targetStage) {
     return (
       <div className="text-sm text-gray-500 italic p-4 border border-dashed border-gray-700 rounded">
         選擇下方任一階段以查看升降所需
@@ -177,31 +111,77 @@ export function PreviewPanel({
     );
   }
 
+  // current === target → 已達目標（無升降可做）
+  if (direction === 'none' && !isPreObtained) {
+    return (
+      <div className="text-sm text-gray-500 italic p-4 border border-dashed border-gray-700 rounded">
+        {currentLabel ?? STAGE_TC_LABEL[currentStage!]}（已達目標）
+      </div>
+    );
+  }
+
+  // 降階段
+  if (direction === 'down') {
+    return (
+      <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
+        <div className="text-red-400 font-semibold mb-2">
+          從 {currentLabel ?? STAGE_TC_LABEL[currentStage!]} → {targetLabel ?? STAGE_TC_LABEL[targetStage]}（已擁有，會捨棄中間進度）
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onSetCurrent}
+            className="px-3 py-1.5 rounded font-bold text-sm bg-red-500 text-white"
+          >
+            ⬇ 📍 設為目前階段 ({targetLabel ?? STAGE_TC_LABEL[targetStage]})
+          </button>
+          <button
+            type="button"
+            onClick={onClearTarget}
+            className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
+          >
+            清除 target
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 升階段（current undefined 時亦同 — 一次跳到 target）
+  const headingFromName = isPreObtained ? '未開始' : (currentLabel ?? STAGE_TC_LABEL[currentStage!]);
+  const headingToName = targetLabel ?? STAGE_TC_LABEL[targetStage];
+  const showPrereqs = isPreObtained && prereqRows && prereqRows.length > 0;
+
   return (
     <div className="p-3 rounded border border-gray-700 bg-gray-900 text-sm">
-      {direction === 'up' ? (
-        <>
-          <div className="text-yellow-400 font-semibold mb-2">
-            從 {currentLabel ?? STAGE_TC_LABEL[currentStage]} → {targetStage ? (targetLabel ?? STAGE_TC_LABEL[targetStage]) : ''} 需要
-          </div>
-          <ul className="space-y-1 mb-3">
-            {materials.map(renderMaterialRow)}
-          </ul>
-        </>
-      ) : (
-        <div className="text-red-400 font-semibold mb-2">
-          {targetStage ? (targetLabel ?? STAGE_TC_LABEL[targetStage]) : ''} — 已擁有（設為目前會捨棄中間進度）
-        </div>
+      <div className="text-yellow-400 font-semibold mb-2">
+        從 {headingFromName} → {headingToName} 需要
+      </div>
+      {(materials.length > 0 || showPrereqs) && (
+        <ul className="space-y-1 mb-3">
+          {showPrereqs && prereqRows!.map((row, i) => (
+            <li key={`prereq-${i}`} className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2 min-w-0">
+                <span aria-hidden="true" className="w-5 h-5 shrink-0 inline-flex items-center justify-center text-base">📜</span>
+                <span className="truncate">
+                  {row.name} × 1
+                  {row.obtainMethod && (
+                    <span className="text-gray-400">（{row.obtainMethod}）</span>
+                  )}
+                </span>
+              </span>
+            </li>
+          ))}
+          {materials.map(renderMaterialRow)}
+        </ul>
       )}
       <div className="flex gap-2">
         <button
           type="button"
           onClick={onSetCurrent}
-          className={`px-3 py-1.5 rounded font-bold text-sm ${
-            direction === 'up' ? 'bg-green-500 text-black' : 'bg-red-500 text-white'
-          }`}
+          className="px-3 py-1.5 rounded font-bold text-sm bg-green-500 text-black"
         >
-          {direction === 'up' ? '⬆' : '⬇'} 📍 設為目前階段 ({targetStage ? (targetLabel ?? STAGE_TC_LABEL[targetStage]) : ''})
+          ⬆ 升階段 ({headingToName})
         </button>
         <button
           type="button"

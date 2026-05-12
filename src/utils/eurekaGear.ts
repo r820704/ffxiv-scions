@@ -108,9 +108,12 @@ export function costBetweenInSequence(
 }
 
 export type JobProgress = {
-  /** `started` is true only when the chain has an explicit slot in inventory; the
-   *  `progress` field falls back to a default antiquated SlotProgress otherwise so
-   *  consumers that don't care about the started/not distinction stay simple. */
+  /**
+   * `started` is true only when the chain has obtained 舊化 (currentStage defined).
+   * A chain with a target set but currentStage=undefined counts as 未開始 — consumers
+   * gate visual "filled" rendering on this flag. `progress.currentStage` propagates
+   * undefined when no inventory entry exists (no auto-fallback to 'antiquated').
+   */
   weapons: { chainId: string; progress: SlotProgress; started: boolean }[];
   /** Anemos armor is per-job — this is just *this* job's anemos set. */
   anemos: Partial<Record<ArmorSlot, SlotProgress>>;
@@ -126,10 +129,11 @@ export function getJobProgress(job: JobId, inv: EurekaInventoryV5): JobProgress 
     .filter((c) => c.job === job)
     .map((c) => {
       const stored = inv.weapons[c.chainId];
+      // 不再 fallback 到 antiquated — 玩家未取得 = currentStage undefined
       return {
         chainId: c.chainId,
-        progress: stored ?? { currentStage: 'antiquated' as const },
-        started: stored !== undefined,
+        progress: { currentStage: stored?.currentStage, targetStage: stored?.targetStage },
+        started: stored?.currentStage !== undefined,
       };
     });
   const set = ARMOR_SET_FOR_JOB[job];

@@ -5,6 +5,7 @@ import type {
   EurekaInventoryV5,
   EurekaStage,
   MaterialCost,
+  SlotProgress,
   StageUpgradeCost,
 } from '../types/eureka-gear';
 import { ARMOR_STAGES_BY_TRACK } from '../types/eureka-gear';
@@ -38,7 +39,11 @@ export type ChainRef =
   | { kind: 'armor-elemental'; set: ArmorSetId; slot: ArmorSlot };
 
 export type UpgradeOutcome = {
-  from: EurekaStage;
+  /**
+   * `undefined` = 玩家尚未取得舊化（first step：null → antiquated）。
+   * 其他情況皆為一個 EurekaStage 值。
+   */
+  from: EurekaStage | undefined;
   to: EurekaStage;
   materials: MaterialCost[];
   hadEnough: boolean;
@@ -74,7 +79,7 @@ function sequenceForArmorKind(kind: 'armor-anemos' | 'armor-elemental') {
     : ARMOR_STAGES_BY_TRACK.elemental;
 }
 
-function getSlotFromRef(inv: EurekaInventoryV5, ref: ChainRef): { currentStage: EurekaStage; targetStage?: EurekaStage } | undefined {
+function getSlotFromRef(inv: EurekaInventoryV5, ref: ChainRef): SlotProgress | undefined {
   if (ref.kind === 'weapon') {
     const chain = EUREKA_CHAINS.find((c) => c.chainId === ref.chainId);
     const primaryId = chain?.mirrorsChainId ?? ref.chainId;
@@ -89,7 +94,7 @@ function getSlotFromRef(inv: EurekaInventoryV5, ref: ChainRef): { currentStage: 
 function setSlotInInventory(
   inv: EurekaInventoryV5,
   ref: ChainRef,
-  update: (prev: { currentStage: EurekaStage; targetStage?: EurekaStage } | undefined) => { currentStage: EurekaStage; targetStage?: EurekaStage },
+  update: (prev: SlotProgress | undefined) => SlotProgress,
 ): EurekaInventoryV5 {
   if (ref.kind === 'weapon') {
     const chainIds = getSyncedChainIds(ref.chainId);
@@ -160,7 +165,8 @@ export function useEurekaInventory() {
   const setTarget = useCallback((ref: ChainRef, stage: EurekaStage | undefined) => {
     setInventory((prev) =>
       setSlotInInventory(prev, ref, (p) => ({
-        currentStage: p?.currentStage ?? 'antiquated',
+        // 不再 fallback 到 'antiquated'：preserve undefined 代表「尚未取得舊化」
+        currentStage: p?.currentStage,
         targetStage: stage,
       })),
     );
@@ -173,8 +179,10 @@ export function useEurekaInventory() {
       if (slot?.targetStage) {
         const from = slot.currentStage;
         const to = slot.targetStage;
-        if (from !== to) {
-          const materials = costsForRef(ref, from, to);
+        // current undefined → 從 antiquated 起算成本一次跳到 target
+        const effectiveFrom: EurekaStage = from ?? 'antiquated';
+        if (from === undefined || from !== to) {
+          const materials = effectiveFrom === to ? [] : costsForRef(ref, effectiveFrom, to);
           const hadEnough = materials.every(
             (m) => (inventory.materials[m.materialId] ?? 0) >= m.quantity,
           );
@@ -187,13 +195,14 @@ export function useEurekaInventory() {
         if (!s?.targetStage) return prev;
         const from = s.currentStage;
         const to = s.targetStage;
-        if (from === to) return prev;
-        const materials = costsForRef(ref, from, to);
+        const effectiveFrom: EurekaStage = from ?? 'antiquated';
+        if (from !== undefined && from === to) return prev;
+        const materials = effectiveFrom === to ? [] : costsForRef(ref, effectiveFrom, to);
         const nextMaterials = deductMaterials(prev.materials, materials);
         return setSlotInInventory(
           { ...prev, materials: nextMaterials },
           ref,
-          () => ({ currentStage: to }),
+          (p) => ({ currentStage: to, targetStage: p?.targetStage }),
         );
       });
       return outcome;

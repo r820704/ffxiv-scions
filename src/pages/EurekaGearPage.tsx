@@ -10,8 +10,8 @@ import { FarmingTab } from '@/components/eureka-gear/FarmingTab';
 import InventorySidebar from '@/components/eureka-gear/InventorySidebar';
 import { UpgradeDialog } from '@/components/eureka-gear/UpgradeDialog';
 import { OnboardingBanner, toggleOnboarding } from '@/components/eureka-gear/OnboardingBanner';
-import { EUREKA_STAGES } from '@/types/eureka-gear';
-import type { EurekaStage } from '@/types/eureka-gear';
+import { EUREKA_STAGES, STAGE_TC_LABEL } from '@/types/eureka-gear';
+import type { EurekaStage, SlotProgress } from '@/types/eureka-gear';
 import { sharedJobNames } from '@/data/eureka-armor-sets';
 import type { Role } from '@/types/eureka';
 import PageHead from '@/components/PageHead';
@@ -64,10 +64,8 @@ export default function EurekaGearPage() {
   const {
     inventory,
     setMaterial,
-    setCurrent,
     setTarget,
     performUpgrade,
-    startAndUpgradeTo,
     clearMaterials,
     clearAllProgress,
     clearChain,
@@ -121,9 +119,10 @@ export default function EurekaGearPage() {
     const mats = outcome.materials
       .map((m) => `${m.quantity} × ${materialsMap[m.materialId]?.nameTC ?? m.materialId}`)
       .join('、');
+    const toLabel = STAGE_TC_LABEL[outcome.to];
     const msg = outcome.hadEnough
-      ? `已升到 ${outcome.to}${mats ? ` · 扣除 ${mats}` : ''}`
-      : `已升到 ${outcome.to}（素材未足額紀錄、僅推進階段）`;
+      ? `已升到 ${toLabel}${mats ? ` · 扣除 ${mats}` : ''}`
+      : `已升到 ${toLabel}（素材未足額紀錄、僅推進階段）`;
     toast.success(msg);
   };
 
@@ -132,17 +131,8 @@ export default function EurekaGearPage() {
     if (outcome) showUpgradeToast(outcome);
   };
 
-  const handleStartChain = (ref: ChainRef, stage: EurekaStage = 'antiquated') => {
-    setCurrent(ref, stage);
-  };
-
-  const handleStartAndUpgradeTo = (ref: ChainRef, target: EurekaStage) => {
-    const outcome = startAndUpgradeTo(ref, target);
-    if (outcome) showUpgradeToast(outcome);
-  };
-
   const handleRequestUpgrade = (ref: ChainRef) => {
-    let slot: { currentStage: typeof EUREKA_STAGES[number]; targetStage?: typeof EUREKA_STAGES[number] } | undefined;
+    let slot: SlotProgress | undefined;
     if (ref.kind === 'weapon') {
       slot = inventory.weapons[ref.chainId];
     } else if (ref.kind === 'armor-anemos') {
@@ -151,12 +141,13 @@ export default function EurekaGearPage() {
       slot = inventory.armor.elemental[ref.set]?.[ref.slot];
     }
     if (!slot?.targetStage) return;
-    const currentIdx = EUREKA_STAGES.indexOf(slot.currentStage);
+    // currentStage undefined（尚未取得舊化）以 antiquated 為起點計算方向
+    const currentIdx = EUREKA_STAGES.indexOf(slot.currentStage ?? 'antiquated');
     const targetIdx = EUREKA_STAGES.indexOf(slot.targetStage);
     const direction: 'up' | 'down' = targetIdx < currentIdx ? 'down' : 'up';
     // Only elemental armor is role-shared; anemos is per-job so no shared warning
     const sharedJobs = ref.kind === 'armor-elemental' ? sharedJobNames(ref.set) : [];
-    if (direction === 'down' || sharedJobs.length > 1) {
+    if (sharedJobs.length > 1) {
       setPendingDialog({ ref, direction, targetStage: slot.targetStage, sharedJobs });
     } else {
       executeUpgrade(ref);
@@ -230,8 +221,8 @@ export default function EurekaGearPage() {
               onSelectJob={selectJob}
               onSetTarget={setTarget}
               onRequestUpgrade={handleRequestUpgrade}
-              onStartChain={handleStartChain}
-              onStartAndUpgradeTo={handleStartAndUpgradeTo}
+      
+
               onClearChain={clearChain}
             />
           )}

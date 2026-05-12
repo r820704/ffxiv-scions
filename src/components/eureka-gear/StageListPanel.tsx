@@ -4,18 +4,14 @@ import type { EurekaStage } from '../../types/eureka-gear';
 
 export type StageListPanelProps = {
   stages: readonly EurekaStage[];
-  currentStage: EurekaStage | null;
+  /** null/undefined = 玩家尚未取得舊化（未開始）。 */
+  currentStage: EurekaStage | null | undefined;
   targetStage?: EurekaStage;
   itemLevels?: Partial<Record<EurekaStage, number>>;
   /** Returns display name for a stage (item name). Falls back to STAGE_TC_LABEL. */
   getItemName?: (stage: EurekaStage) => string | undefined;
   onSelectTarget: (stage: EurekaStage) => void;
-  /**
-   * Mirrors ChainStepper.onSelectStart: when the chain is not started
-   * (currentStage === null), clicking any row routes here so the parent can
-   * open the start-with-target flow in one click instead of forcing the user
-   * through a separate "click stage 1 first" step.
-   */
+  /** @deprecated 0 階階段統一後不再需要分流；保留以維持向後相容。 */
   onSelectStart?: (stage: EurekaStage) => void;
 };
 
@@ -54,7 +50,7 @@ export function StageListPanel({
                 <button
                   type="button"
                   onClick={() => {
-                    if (currentStage === null && onSelectStart) {
+                    if ((currentStage === null || currentStage === undefined) && onSelectStart) {
                       onSelectStart(stage);
                     } else {
                       onSelectTarget(stage);
