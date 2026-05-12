@@ -171,7 +171,7 @@ export default function EurekaGearPage() {
   );
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
+    <div>
       <PageHead
         title="禁地兵裝"
         description="優雷卡武器與防具升級進度追蹤"
