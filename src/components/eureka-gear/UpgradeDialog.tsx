@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import type { EurekaStage } from '../../types/eureka-gear';
+import { STAGE_TC_LABEL, type EurekaStage } from '../../types/eureka-gear';
 
 export type UpgradeDialogProps = {
   isOpen: boolean;
@@ -27,23 +27,24 @@ export function UpgradeDialog({
   onCancel,
 }: UpgradeDialogProps) {
   const isShared = sharedJobs.length > 1;
+  const stageLabel = STAGE_TC_LABEL[targetStage];
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-primary text-lg">
-            📍 設為目前階段：{targetStage}
+            📍 設為目前階段：{stageLabel}
           </DialogTitle>
           <DialogDescription className="sr-only">
-            {direction === 'down' ? `降回 ${targetStage}，會捨棄之後的進度` : `設為 ${targetStage}`}
+            {direction === 'down' ? `降回 ${stageLabel}，會捨棄之後的進度` : `設為 ${stageLabel}`}
           </DialogDescription>
         </DialogHeader>
         <div className="text-sm text-foreground leading-relaxed">
           {direction === 'down' ? (
-            <p className="text-destructive">這會捨棄 {targetStage} 之後的進度。確定嗎？</p>
+            <p className="text-destructive">這會捨棄 {stageLabel} 之後的進度。確定嗎？</p>
           ) : (
-            <p>將此部位設為 {targetStage}。</p>
+            <p>將此部位設為 {stageLabel}。</p>
           )}
           {isShared && (
             <>

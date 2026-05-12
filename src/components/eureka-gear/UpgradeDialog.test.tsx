@@ -7,11 +7,11 @@ describe('UpgradeDialog', () => {
     cleanup();
   });
 
-  it('renders title with target stage', () => {
+  it('renders title with target stage TC label', () => {
     render(
       <UpgradeDialog isOpen direction="up" targetStage="pyros" sharedJobs={[]} onConfirm={() => {}} onCancel={() => {}} />,
     );
-    expect(screen.getByRole('heading', { name: /pyros/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /禁地兵裝·湧火/ })).toBeInTheDocument();
   });
 
   it('calls onConfirm when confirm button clicked', () => {
