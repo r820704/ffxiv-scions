@@ -19,6 +19,7 @@ import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumPlanSection from '@/components/eureka/AlbumPlanSection';
 import SlotPlanSection from '@/components/eureka/SlotPlanSection';
 import SkillRecipeList from '@/components/eureka/SkillRecipeList';
+import { OnboardingBanner, toggleOnboarding } from '@/components/eureka/OnboardingBanner';
 import PageHead from '@/components/PageHead';
 
 export default function EurekaPage() {
@@ -152,9 +153,19 @@ export default function EurekaPage() {
               >
                 {priceLoading ? '查詢中...' : '重新查詢價格'}
               </button>
+              <button
+                type="button"
+                aria-label="切換說明"
+                onClick={toggleOnboarding}
+                className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
+              >
+                ?
+              </button>
             </>
           }
         />
+
+        <OnboardingBanner />
 
         {priceError && (
           <div className="text-xs text-destructive mb-3">價格查詢失敗，請稍後重試</div>
