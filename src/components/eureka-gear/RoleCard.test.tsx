@@ -125,7 +125,8 @@ describe('RoleCard', () => {
 
   it('shows elemental armor chip label', () => {
     render(<RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />);
-    expect(screen.getByText('元素防具')).toBeInTheDocument();
+    // Mobile + desktop variants each render the badge; assert at least one is present.
+    expect(screen.getAllByText('元素防具').length).toBeGreaterThan(0);
   });
 
   it('shows 0/3 count for all unstarted slots', () => {

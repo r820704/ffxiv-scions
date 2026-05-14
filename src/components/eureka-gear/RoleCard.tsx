@@ -43,9 +43,21 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
   const lastStage = elementalStages[elementalStages.length - 1];
 
   return (
-    <article className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 px-3 py-2.5 bg-gray-800 hover:bg-gray-700/60 transition-colors">
+    <article className="relative px-3 py-2.5 bg-gray-800 hover:bg-gray-700/60 transition-colors space-y-1.5">
+      {/* Detail button (absolute top-right) */}
+      {primary && (
+        <button
+          type="button"
+          onClick={() => onSelect(primary)}
+          aria-label="查看詳情"
+          className="absolute right-3 top-2.5 text-xs text-gray-400 hover:text-primary transition-colors"
+        >
+          →
+        </button>
+      )}
+
       {/* Line 1: paired icon+name per job + role label */}
-      <div className="w-full flex items-center gap-x-2.5 gap-y-1 flex-wrap">
+      <div className="flex items-center gap-x-2.5 gap-y-1 flex-wrap pr-6">
         {jobs.map((j) => {
           const tcName = JOB_TC_NAME[j as AnyJobId] ?? j;
           const icon = JOB_ICONS[j];
@@ -63,69 +75,66 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
         <span className="text-xs text-gray-500">[{roleLabel}]</span>
       </div>
 
-      {/* Line 2: elemental armor chip */}
-      <span className="text-[10px] font-bold text-elemental/90 bg-elemental/20 px-1.5 py-0.5 rounded shrink-0">
-        元素防具
-      </span>
-
-      {/* Mobile: compact 5×3 dot groups with zone separators */}
-      <div className="flex sm:hidden gap-[2px] items-center shrink-0 flex-wrap">
-        {ARMOR_SLOTS.map((slot, slotIdx) => {
-          const p = pieces[slot];
-          const stage: EurekaStage = p?.currentStage ?? 'elemental';
-          const started = p !== undefined;
-          return (
-            <div key={slot} className="flex items-center gap-[2px]">
-              {slotIdx > 0 && (
-                <span className="text-gray-600 text-[9px] mx-0.5">·</span>
-              )}
-              <ArmorDots
-                stages={elementalStages}
-                zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
-                currentStage={stage}
-                started={started}
-                colorFilled="bg-elemental"
-              />
-            </div>
-          );
-        })}
+      {/* Mobile: compact armor row (badge + dots inline) */}
+      <div className="flex sm:hidden items-center gap-x-2.5 gap-y-1 flex-wrap pr-6">
+        <span className="text-[10px] font-bold text-elemental/90 bg-elemental/20 px-1.5 py-0.5 rounded shrink-0">
+          元素防具
+        </span>
+        <div className="flex gap-[2px] items-center shrink-0 flex-wrap">
+          {ARMOR_SLOTS.map((slot, slotIdx) => {
+            const p = pieces[slot];
+            const stage: EurekaStage = p?.currentStage ?? 'elemental';
+            const started = p !== undefined;
+            return (
+              <div key={slot} className="flex items-center gap-[2px]">
+                {slotIdx > 0 && (
+                  <span className="text-gray-600 text-[9px] mx-0.5">·</span>
+                )}
+                <ArmorDots
+                  stages={elementalStages}
+                  zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
+                  currentStage={stage}
+                  started={started}
+                  colorFilled="bg-elemental"
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Desktop: per-slot with label, zone-separated dots, count */}
-      {ARMOR_SLOTS.map((slot) => {
-        const p = pieces[slot];
-        const stage: EurekaStage = p?.currentStage ?? 'elemental';
-        const started = p !== undefined;
-        const filled = elementalStages.indexOf(stage) + 1;
-        const done = stage === lastStage;
-        return (
-          <div key={slot} className="hidden sm:flex items-center gap-1 text-xs shrink-0">
-            <span className="text-elemental/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
-            <ArmorDots
-              stages={elementalStages}
-              zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
-              currentStage={stage}
-              started={started}
-              colorFilled="bg-elemental"
-            />
-            <span className={`tabular-nums shrink-0 ${done ? 'text-owned' : 'text-gray-400'}`}>
-              {started ? filled : 0}<span className="text-gray-600">/{elementalStages.length}</span>
-            </span>
-          </div>
-        );
-      })}
-
-      {/* Detail button */}
-      {primary && (
-        <button
-          type="button"
-          onClick={() => onSelect(primary)}
-          aria-label="查看詳情"
-          className="ml-auto text-xs text-gray-400 hover:text-primary transition-colors shrink-0"
-        >
-          →
-        </button>
-      )}
+      {/* Desktop: stacked — 元素防具 badge line, then slot dots wrap beneath */}
+      <div className="hidden sm:block pr-6">
+        <div className="flex items-center">
+          <span className="text-[10px] font-bold text-elemental/90 bg-elemental/20 px-1.5 py-0.5 rounded shrink-0">
+            元素防具
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1">
+          {ARMOR_SLOTS.map((slot) => {
+            const p = pieces[slot];
+            const stage: EurekaStage = p?.currentStage ?? 'elemental';
+            const started = p !== undefined;
+            const filled = elementalStages.indexOf(stage) + 1;
+            const done = stage === lastStage;
+            return (
+              <div key={slot} className="flex items-center gap-1 text-xs shrink-0">
+                <span className="text-elemental/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
+                <ArmorDots
+                  stages={elementalStages}
+                  zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
+                  currentStage={stage}
+                  started={started}
+                  colorFilled="bg-elemental"
+                />
+                <span className={`tabular-nums shrink-0 ${done ? 'text-owned' : 'text-gray-400'}`}>
+                  {started ? filled : 0}<span className="text-gray-600">/{elementalStages.length}</span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </article>
   );
 }
