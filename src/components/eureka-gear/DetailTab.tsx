@@ -5,7 +5,6 @@ import { PreviewPanel } from './PreviewPanel';
 import { AccordionItem } from '../ui/Accordion';
 import { getJobProgress } from '../../utils/eurekaGear';
 import {
-  ARMOR_SET_FOR_JOB,
   JOB_TC_NAME,
   JOBS_FOR_ARMOR_SET,
   isArmorSetShared,
@@ -42,11 +41,79 @@ import {
   WEAPON_GLOW_STAGES,
 } from '../../types/eureka-gear';
 
-const JOBS = Object.keys(ARMOR_SET_FOR_JOB);
-
 const SLOT_TC: Record<ArmorSlot, string> = {
   head: '頭', body: '身', hands: '手', legs: '腿', feet: '腳',
 };
+
+type RoleGroupId = 'tank' | 'melee' | 'ranged' | 'healer' | 'caster';
+
+const JOB_ROLE_GROUPS: ReadonlyArray<{ id: RoleGroupId; label: string; jobs: JobId[] }> = [
+  { id: 'tank',   label: '坦克', jobs: ['PLD', 'WAR', 'DRK'] },
+  { id: 'melee',  label: '近戰', jobs: ['MNK', 'DRG', 'NIN', 'SAM'] },
+  { id: 'ranged', label: '遠程', jobs: ['BRD', 'MCH'] },
+  { id: 'healer', label: '治療', jobs: ['WHM', 'SCH', 'AST'] },
+  { id: 'caster', label: '法職', jobs: ['BLM', 'SMN', 'RDM'] },
+];
+
+const ROLE_ACCENT: Record<RoleGroupId, string> = {
+  tank:   'text-blue-300/80',
+  melee:  'text-red-300/80',
+  ranged: 'text-amber-300/80',
+  healer: 'text-green-300/80',
+  caster: 'text-purple-300/80',
+};
+
+function JobPickerPanel({
+  selectedJob,
+  onSelectJob,
+}: {
+  selectedJob: string;
+  onSelectJob: (job: string) => void;
+}) {
+  return (
+    <aside
+      aria-label="職業選擇"
+      className="rounded-lg border border-gray-700 bg-gray-900/40 p-3 space-y-2.5"
+    >
+      <h3 className="text-sm font-bold text-gray-200">職業</h3>
+      {JOB_ROLE_GROUPS.map((group) => (
+        <div key={group.id} className="space-y-1">
+          <div className={`text-[10px] font-semibold tracking-wider ${ROLE_ACCENT[group.id]}`}>
+            {group.label}
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {group.jobs.map((j) => {
+              const tcName = JOB_TC_NAME[j] ?? j;
+              const icon = JOB_ICONS[j];
+              const active = selectedJob === j;
+              return (
+                <button
+                  key={j}
+                  type="button"
+                  aria-pressed={active}
+                  aria-label={tcName}
+                  onClick={() => onSelectJob(j)}
+                  className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors ${
+                    active
+                      ? 'bg-primary/20 text-primary ring-2 ring-primary'
+                      : 'bg-secondary/60 text-gray-200 hover:bg-secondary'
+                  }`}
+                >
+                  {icon ? (
+                    <img src={icon} alt="" className="w-4 h-4 rounded shrink-0" />
+                  ) : (
+                    <span className="w-4 h-4 rounded bg-gray-700 text-[9px] flex items-center justify-center shrink-0">{j}</span>
+                  )}
+                  <span>{tcName}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </aside>
+  );
+}
 
 const JOB_ICON_MODULES = import.meta.glob('../../assets/job-icons/*.png', {
   eager: true,
@@ -124,24 +191,10 @@ export function DetailTab({
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center gap-3">
-        <label className="text-sm text-gray-400" htmlFor="detail-job-select">職業：</label>
-        <select
-          id="detail-job-select"
-          role="combobox"
-          value={selectedJob}
-          onChange={(e) => onSelectJob(e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm"
-        >
-          {JOBS.map((j) => (
-            <option key={j} value={j}>{JOB_TC_NAME[j as JobId] ?? j}</option>
-          ))}
-        </select>
-      </header>
-
-      {primaryChains.length > 0 && (
-        <section className="space-y-2">
-          <h3 className="text-yellow-400 font-bold">武器</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 lg:gap-6 items-start">
+        {primaryChains.length > 0 ? (
+          <section className="space-y-2 lg:order-1 order-2 min-w-0">
+            <h3 className="text-yellow-400 font-bold">武器</h3>
           {primaryChains.map(({ chainId, progress: p }) => {
             const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
             const ref: ChainRef = { kind: 'weapon', chainId };
@@ -236,7 +289,7 @@ export function DetailTab({
                     type="button"
                     aria-label={`重置${slotLabel}武器進度`}
                     onClick={(e) => { e.stopPropagation(); setResetDialogRef({ ref, label: `${slotLabel}武器` }); }}
-                    className="text-[10px] text-red-400/60 hover:text-red-400 transition-colors px-1 ml-auto shrink-0"
+                    className="text-[10px] px-2 py-0.5 rounded border border-red-900/50 text-red-400/60 hover:text-red-300 hover:border-red-500 transition-colors ml-auto shrink-0"
                   >
                     重置
                   </button>
@@ -282,7 +335,13 @@ export function DetailTab({
             );
           })}
         </section>
-      )}
+        ) : (
+          <div className="lg:order-1 order-2 min-w-0" />
+        )}
+        <div className="lg:order-2 order-1">
+          <JobPickerPanel selectedJob={selectedJob} onSelectJob={onSelectJob} />
+        </div>
+      </div>
 
       <div className="flex items-center gap-2">
         <span className="text-xs text-gray-500">防具欄位：</span>
@@ -510,7 +569,7 @@ function ArmorTrackSection({
                   type="button"
                   aria-label={`重置${SLOT_TC[slot]}防具進度`}
                   onClick={(e) => { e.stopPropagation(); onRequestReset?.(ref, SLOT_TC[slot]); }}
-                  className="text-[10px] text-red-400/60 hover:text-red-400 transition-colors px-1 ml-2"
+                  className="text-[10px] px-2 py-0.5 rounded border border-red-900/50 text-red-400/60 hover:text-red-300 hover:border-red-500 transition-colors ml-auto shrink-0"
                   title="重置此欄位的所有進度"
                 >
                   重置

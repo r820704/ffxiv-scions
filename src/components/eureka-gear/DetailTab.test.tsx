@@ -22,7 +22,7 @@ describe('DetailTab', () => {
     expect(screen.getAllByText(/武器/).length).toBeGreaterThan(0);
   });
 
-  it('job switcher dropdown exists and fires onSelectJob', () => {
+  it('job picker chips fire onSelectJob when clicked', () => {
     const onSelectJob = vi.fn();
     render(
       <DetailTab
@@ -36,9 +36,30 @@ describe('DetailTab', () => {
 
       />,
     );
-    const select = screen.getByRole('combobox');
-    fireEvent.change(select, { target: { value: 'WAR' } });
+    const picker = screen.getByRole('complementary', { name: '職業選擇' });
+    const warChip = within(picker).getByRole('button', { name: '戰士' });
+    fireEvent.click(warChip);
     expect(onSelectJob).toHaveBeenCalledWith('WAR');
+  });
+
+  it('job picker marks the selected job with aria-pressed', () => {
+    render(
+      <DetailTab
+        inventory={emptyInventoryV3()}
+        selectedJob="WAR"
+        weapons={[]}
+        materialsMap={{}}
+        onSelectJob={() => {}}
+        onSetTarget={() => {}}
+        onRequestUpgrade={() => {}}
+
+      />,
+    );
+    const picker = screen.getByRole('complementary', { name: '職業選擇' });
+    const warChip = within(picker).getByRole('button', { name: '戰士' });
+    expect(warChip.getAttribute('aria-pressed')).toBe('true');
+    const pldChip = within(picker).getByRole('button', { name: '騎士' });
+    expect(pldChip.getAttribute('aria-pressed')).toBe('false');
   });
 
   it('clicking a stepper node fires onSetTarget', () => {
