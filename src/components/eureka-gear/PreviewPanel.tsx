@@ -140,7 +140,7 @@ export function PreviewPanel({
             onClick={onClearTarget}
             className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
           >
-            清除 target
+            清除目標
           </button>
         </div>
       </div>
@@ -188,7 +188,7 @@ export function PreviewPanel({
           onClick={onClearTarget}
           className="px-3 py-1.5 rounded border border-gray-600 text-gray-400 text-sm"
         >
-          清除 target
+          清除目標
         </button>
       </div>
     </div>

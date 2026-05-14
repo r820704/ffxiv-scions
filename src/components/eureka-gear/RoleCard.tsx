@@ -1,4 +1,3 @@
-import { Tooltip } from '../ui/Tooltip';
 import { JOBS_FOR_ARMOR_SET, JOB_TC_NAME, type AnyJobId } from '../../data/eureka-armor-sets';
 import type { ArmorSetId, ArmorSlot, EurekaStage, SlotProgress } from '../../types/eureka-gear';
 import { ARMOR_SLOTS, ARMOR_STAGES_BY_TRACK, ELEMENTAL_ARMOR_ZONE_GROUPS } from '../../types/eureka-gear';
@@ -40,30 +39,27 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
   const jobs = JOBS_FOR_ARMOR_SET[set] ?? [];
   const primary = jobs[0];
   const roleLabel = ROLE_TC_NAME[set];
-  const jobNamesHeading = jobs.map((j) => JOB_TC_NAME[j as AnyJobId] ?? j).join(' · ');
   const elementalStages = ARMOR_STAGES_BY_TRACK.elemental;
   const lastStage = elementalStages[elementalStages.length - 1];
 
   return (
     <article className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 px-3 py-2.5 bg-gray-800 hover:bg-gray-700/60 transition-colors">
-      {/* Line 1: job icons + job combination names + role label */}
-      <div className="w-full flex items-center gap-1.5 flex-wrap">
-        <div className="flex gap-0.5 items-center shrink-0">
-          {jobs.map((j) => {
-            const tcName = JOB_TC_NAME[j as AnyJobId] ?? j;
-            const icon = JOB_ICONS[j];
-            return (
-              <Tooltip key={j} label={tcName}>
-                {icon ? (
-                  <img src={icon} alt={j} className="w-4 h-4 rounded shrink-0" />
-                ) : (
-                  <span className="text-[8px] px-0.5 bg-gray-700 rounded shrink-0">{j}</span>
-                )}
-              </Tooltip>
-            );
-          })}
-        </div>
-        <span className="text-sm text-gray-200">{jobNamesHeading}</span>
+      {/* Line 1: paired icon+name per job + role label */}
+      <div className="w-full flex items-center gap-x-2.5 gap-y-1 flex-wrap">
+        {jobs.map((j) => {
+          const tcName = JOB_TC_NAME[j as AnyJobId] ?? j;
+          const icon = JOB_ICONS[j];
+          return (
+            <span key={j} className="inline-flex items-center gap-1">
+              {icon ? (
+                <img src={icon} alt={j} className="w-4 h-4 rounded shrink-0" />
+              ) : (
+                <span className="text-[8px] px-0.5 bg-gray-700 rounded shrink-0">{j}</span>
+              )}
+              <span className="text-sm text-gray-200">{tcName}</span>
+            </span>
+          );
+        })}
         <span className="text-xs text-gray-500">[{roleLabel}]</span>
       </div>
 

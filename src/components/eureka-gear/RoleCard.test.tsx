@@ -21,14 +21,18 @@ describe('RoleCard', () => {
     expect(screen.getByAltText('GNB')).toBeInTheDocument();
   });
 
-  it('renders job combination names as heading text for fending', () => {
+  it('renders each job name beside its icon for fending', () => {
     render(<RoleCard set="fending" pieces={baseSlotProgress} onSelect={() => {}} />);
-    expect(screen.getByText(/騎士 · 戰士 · 暗黑騎士 · 絕槍戰士/)).toBeInTheDocument();
+    for (const name of ['騎士', '戰士', '暗黑騎士', '絕槍戰士']) {
+      expect(screen.getByText(name)).toBeInTheDocument();
+    }
   });
 
-  it('renders job combination names as heading text for maiming', () => {
+  it('renders each job name beside its icon for maiming', () => {
     render(<RoleCard set="maiming" pieces={baseSlotProgress} onSelect={() => {}} />);
-    expect(screen.getByText(/龍騎士 · 奪魂者/)).toBeInTheDocument();
+    for (const name of ['龍騎士', '奪魂者']) {
+      expect(screen.getByText(name)).toBeInTheDocument();
+    }
   });
 
   it('renders job icons for striking (MNK/SAM)', () => {
@@ -115,7 +119,8 @@ describe('RoleCard', () => {
     render(<RoleCard set="striking" pieces={{}} onSelect={() => {}} />);
     expect(screen.getByText('[近戰]')).toBeInTheDocument();
     expect(screen.getByAltText('MNK')).toBeInTheDocument();
-    expect(screen.getByText(/武僧 · 武士/)).toBeInTheDocument();
+    expect(screen.getByText('武僧')).toBeInTheDocument();
+    expect(screen.getByText('武士')).toBeInTheDocument();
   });
 
   it('shows elemental armor chip label', () => {

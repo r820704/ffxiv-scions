@@ -11,7 +11,6 @@ import {
   isArmorSetShared,
   type JobId,
 } from '../../data/eureka-armor-sets';
-import { Tooltip } from '../ui/Tooltip';
 import { Button } from '@/components/ui/button';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
@@ -79,19 +78,20 @@ function SharedJobIcons({ set }: { set: ArmorSetId }) {
   const jobs = JOBS_FOR_ARMOR_SET[set] ?? [];
   if (jobs.length <= 1) return null;
   return (
-    <span className="inline-flex items-center gap-1 ml-2">
-      <span className="text-xs text-muted-foreground mr-1">共用</span>
+    <span className="inline-flex items-center flex-wrap gap-x-2 gap-y-1 ml-2">
+      <span className="text-xs text-muted-foreground">共用</span>
       {jobs.map((j) => {
         const tcName = JOB_TC_NAME[j] ?? j;
         const icon = JOB_ICONS[j];
         return (
-          <Tooltip key={j} label={tcName}>
+          <span key={j} className="inline-flex items-center gap-1 text-xs text-foreground/80 font-normal">
             {icon ? (
-              <img src={icon} alt={j} className="w-4 h-4 rounded" />
+              <img src={icon} alt="" className="w-4 h-4 rounded" />
             ) : (
               <span className="text-[10px] px-1 py-0.5 bg-gray-700 rounded">{j}</span>
             )}
-          </Tooltip>
+            <span>{tcName}</span>
+          </span>
         );
       })}
     </span>
