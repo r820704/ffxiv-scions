@@ -7,7 +7,7 @@ const base = import.meta.env.BASE_URL;
 
 const links = [
   { to: '/', label: '首頁' },
-  { to: '/eureka-weather', label: '優雷卡天氣' },
+  { to: '/eureka-weather', label: '優雷卡天氣·NM' },
   { to: '/eureka', label: '文理技能' },
   { to: '/eureka-gear', label: '禁地兵裝' },
   { to: '/about', label: '關於作者' },
