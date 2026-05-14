@@ -11,7 +11,7 @@ describe('HomePage', () => {
   it('renders all three feature cards with correct titles', () => {
     renderWithRouter(<HomePage />);
 
-    expect(screen.getByText('優雷卡天氣')).toBeInTheDocument();
+    expect(screen.getByText('優雷卡天氣·NM')).toBeInTheDocument();
     expect(screen.getByText('文理技能')).toBeInTheDocument();
     expect(screen.getByText('禁地兵裝')).toBeInTheDocument();
   });

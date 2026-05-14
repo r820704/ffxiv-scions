@@ -17,7 +17,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-amber-300 text-lg">優雷卡天氣 — 使用說明</DialogTitle>
+          <DialogTitle className="text-amber-300 text-lg">優雷卡天氣·NM — 使用說明</DialogTitle>
           <DialogDescription className="sr-only">優雷卡天氣表的格子讀法、篩選、提醒、NM 搜尋說明</DialogDescription>
         </DialogHeader>
         <div className="text-sm">
