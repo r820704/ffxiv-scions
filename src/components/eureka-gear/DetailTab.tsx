@@ -10,6 +10,7 @@ import {
   isArmorSetShared,
   type JobId,
 } from '../../data/eureka-armor-sets';
+import { ROLE_LABELS, ROLE_COLORS } from '../../types/eureka';
 import { Button } from '@/components/ui/button';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
@@ -47,21 +48,13 @@ const SLOT_TC: Record<ArmorSlot, string> = {
 
 type RoleGroupId = 'tank' | 'melee' | 'ranged' | 'healer' | 'caster';
 
-const JOB_ROLE_GROUPS: ReadonlyArray<{ id: RoleGroupId; label: string; jobs: JobId[] }> = [
-  { id: 'tank',   label: '坦克', jobs: ['PLD', 'WAR', 'DRK'] },
-  { id: 'melee',  label: '近戰', jobs: ['MNK', 'DRG', 'NIN', 'SAM'] },
-  { id: 'ranged', label: '遠程', jobs: ['BRD', 'MCH'] },
-  { id: 'healer', label: '治療', jobs: ['WHM', 'SCH', 'AST'] },
-  { id: 'caster', label: '法職', jobs: ['BLM', 'SMN', 'RDM'] },
+const JOB_ROLE_GROUPS: ReadonlyArray<{ id: RoleGroupId; jobs: JobId[] }> = [
+  { id: 'tank',   jobs: ['PLD', 'WAR', 'DRK'] },
+  { id: 'melee',  jobs: ['MNK', 'DRG', 'NIN', 'SAM'] },
+  { id: 'ranged', jobs: ['BRD', 'MCH'] },
+  { id: 'healer', jobs: ['WHM', 'SCH', 'AST'] },
+  { id: 'caster', jobs: ['BLM', 'SMN', 'RDM'] },
 ];
-
-const ROLE_ACCENT: Record<RoleGroupId, string> = {
-  tank:   'text-blue-300/80',
-  melee:  'text-red-300/80',
-  ranged: 'text-amber-300/80',
-  healer: 'text-green-300/80',
-  caster: 'text-purple-300/80',
-};
 
 function JobPickerPanel({
   selectedJob,
@@ -78,9 +71,9 @@ function JobPickerPanel({
       <h3 className="text-sm font-bold text-gray-200">職業</h3>
       {JOB_ROLE_GROUPS.map((group) => (
         <div key={group.id} className="space-y-1">
-          <div className={`text-[10px] font-semibold tracking-wider ${ROLE_ACCENT[group.id]}`}>
-            {group.label}
-          </div>
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded inline-block ${ROLE_COLORS[group.id]}`}>
+            {ROLE_LABELS[group.id]}
+          </span>
           <div className="flex flex-wrap gap-1.5">
             {group.jobs.map((j) => {
               const tcName = JOB_TC_NAME[j] ?? j;
