@@ -88,7 +88,7 @@ describe('DetailTab', () => {
         .filter((b) => b.hasAttribute('aria-expanded') && (b.textContent ?? '').includes(slotChar));
     }
 
-    it('default state: head slot expanded, others collapsed in each track', () => {
+    it('default state: all armor slots collapsed in each track', () => {
       renderTab();
       // 5 slots × 2 tracks = 10 accordion buttons + 2 track section buttons + 1 weapon accordion = 13.
       // Exclude StageListPanel toggles (text contains "階段列表") which also
@@ -106,7 +106,7 @@ describe('DetailTab', () => {
       const bodyBtns = slotButtons('身');
       expect(headBtns.length).toBe(2);
       expect(bodyBtns.length).toBe(2);
-      headBtns.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('true'));
+      headBtns.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('false'));
       bodyBtns.forEach((b) => expect(b.getAttribute('aria-expanded')).toBe('false'));
     });
 
@@ -121,13 +121,13 @@ describe('DetailTab', () => {
       expect(updated[1]!.getAttribute('aria-expanded')).toBe('false');
     });
 
-    it('clicking 頭 header collapses an expanded head slot', () => {
+    it('clicking 頭 header expands a collapsed head slot', () => {
       renderTab();
       const headBtns = slotButtons('頭');
-      expect(headBtns[0]!.getAttribute('aria-expanded')).toBe('true');
+      expect(headBtns[0]!.getAttribute('aria-expanded')).toBe('false');
       fireEvent.click(headBtns[0]!);
       const updated = slotButtons('頭');
-      expect(updated[0]!.getAttribute('aria-expanded')).toBe('false');
+      expect(updated[0]!.getAttribute('aria-expanded')).toBe('true');
     });
 
     it('two tracks maintain independent accordion state', () => {
@@ -139,28 +139,25 @@ describe('DetailTab', () => {
       expect(after[0]!.getAttribute('aria-expanded')).toBe('true');
       expect(after[1]!.getAttribute('aria-expanded')).toBe('false');
 
-      // Now collapse 頭 in 元素 (second track) only.
+      // Now expand 頭 in 元素 (second track) only.
       const headBtns = slotButtons('頭');
       fireEvent.click(headBtns[1]!);
       const headsAfter = slotButtons('頭');
-      expect(headsAfter[0]!.getAttribute('aria-expanded')).toBe('true');
-      expect(headsAfter[1]!.getAttribute('aria-expanded')).toBe('false');
+      expect(headsAfter[0]!.getAttribute('aria-expanded')).toBe('false');
+      expect(headsAfter[1]!.getAttribute('aria-expanded')).toBe('true');
     });
 
     it('collapsed slots do not render their ChainStepper', () => {
       renderTab();
-      // For each collapsed (身) slot accordion, the parent <div> should not contain
-      // a stepper (it's only the button alone). The expanded head slots WILL contain one.
-      const bodyBtns = slotButtons('身');
-      bodyBtns.forEach((btn) => {
-        const parent = btn.parentElement!;
-        expect(within(parent).queryByTestId('stepper-container')).toBeNull();
-      });
-      const headBtns = slotButtons('頭');
-      headBtns.forEach((btn) => {
-        const parent = btn.parentElement!;
-        expect(within(parent).queryByTestId('stepper-container')).not.toBeNull();
-      });
+      // All armor slots are collapsed by default; none should have a stepper.
+      // Skip '手' because the weapon accordion ('主手') text also matches it.
+      for (const slotLabel of ['頭', '身', '腿', '腳']) {
+        const btns = slotButtons(slotLabel);
+        btns.forEach((btn) => {
+          const parent = btn.parentElement!;
+          expect(within(parent).queryByTestId('stepper-container')).toBeNull();
+        });
+      }
     });
   });
 
