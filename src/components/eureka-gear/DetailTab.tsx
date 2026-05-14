@@ -10,7 +10,7 @@ import {
   isArmorSetShared,
   type JobId,
 } from '../../data/eureka-armor-sets';
-import { ROLE_LABELS, ROLE_COLORS } from '../../types/eureka';
+import { ROLE_LABELS } from '../../types/eureka';
 import { Button } from '@/components/ui/button';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
@@ -56,6 +56,19 @@ const JOB_ROLE_GROUPS: ReadonlyArray<{ id: RoleGroupId; jobs: JobId[] }> = [
   { id: 'caster', jobs: ['BLM', 'SMN', 'RDM'] },
 ];
 
+/**
+ * Softer accent for picker section labels — same hue family as ROLE_COLORS
+ * (used by OverviewTab's active filter chip) but lower saturation so the
+ * always-on labels don't overpower the job chips beneath them.
+ */
+const ROLE_LABEL_ACCENT: Record<RoleGroupId, string> = {
+  tank:   'bg-blue-500/10 text-blue-300',
+  healer: 'bg-green-500/10 text-green-300',
+  melee:  'bg-red-500/10 text-red-300',
+  ranged: 'bg-red-500/10 text-red-300',
+  caster: 'bg-red-500/10 text-red-300',
+};
+
 function JobPickerPanel({
   selectedJob,
   onSelectJob,
@@ -71,7 +84,7 @@ function JobPickerPanel({
       <h3 className="text-sm font-bold text-gray-200">職業</h3>
       {JOB_ROLE_GROUPS.map((group) => (
         <div key={group.id} className="space-y-1">
-          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded inline-block ${ROLE_COLORS[group.id]}`}>
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded inline-block ${ROLE_LABEL_ACCENT[group.id]}`}>
             {ROLE_LABELS[group.id]}
           </span>
           <div className="flex flex-wrap gap-1.5">
