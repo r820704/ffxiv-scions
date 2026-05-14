@@ -304,6 +304,7 @@ export function DetailTab({
         </button>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
       {/* 常風防具 — per-job, no shared badge */}
       <ArmorTrackSection
         title="常風防具"
@@ -361,6 +362,7 @@ export function DetailTab({
           }];
         }}
       />
+      </div>
 
       {resetDialogRef && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -428,7 +430,7 @@ function ArmorTrackSection({
   materials, materialsMap, onSetTarget, onRequestUpgrade, onRequestReset, globalExpand, getPrereqRows,
 }: ArmorTrackSectionProps) {
   const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
-    head: true, body: false, hands: false, legs: false, feet: false,
+    head: false, body: false, hands: false, legs: false, feet: false,
   });
   const [sectionExpanded, setSectionExpanded] = useState(true);
 

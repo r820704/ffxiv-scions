@@ -7,7 +7,7 @@ import type { ChainRef, UpgradeOutcome } from '@/hooks/useEurekaInventory';
 import { OverviewTab } from '@/components/eureka-gear/OverviewTab';
 import { DetailTab } from '@/components/eureka-gear/DetailTab';
 import { FarmingTab } from '@/components/eureka-gear/FarmingTab';
-import InventorySidebar from '@/components/eureka-gear/InventorySidebar';
+import InventoryModal from '@/components/eureka-gear/InventoryModal';
 import { UpgradeDialog } from '@/components/eureka-gear/UpgradeDialog';
 import { OnboardingBanner, toggleOnboarding } from '@/components/eureka-gear/OnboardingBanner';
 import { EUREKA_STAGES, STAGE_TC_LABEL } from '@/types/eureka-gear';
@@ -85,6 +85,9 @@ export default function EurekaGearPage() {
     targetStage: EurekaStage;
     sharedJobs: string[];
   } | null>(null);
+
+  const [inventoryOpen, setInventoryOpen] = useState(false);
+  const inventoryCount = materialsList.filter((m) => (inventory.materials[m.id] ?? 0) > 0).length;
 
   const setTab = (tab: TabKey) => {
     const p = new URLSearchParams(searchParams);
@@ -173,14 +176,32 @@ export default function EurekaGearPage() {
         description="優雷卡武器與防具升級進度追蹤"
         numeral="Tool · Ⅲ"
         actions={
-          <button
-            type="button"
-            aria-label="切換說明"
-            onClick={toggleOnboarding}
-            className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
-          >
-            ?
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => setInventoryOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border border-border bg-card text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            >
+              <span aria-hidden>📦</span>
+              <span>素材庫存</span>
+              {inventoryCount > 0 && (
+                <span
+                  className="inline-flex items-center justify-center min-w-[1.4rem] h-[1.4rem] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold tabular-nums"
+                  aria-label={`已輸入 ${inventoryCount} 種`}
+                >
+                  {inventoryCount}
+                </span>
+              )}
+            </button>
+            <button
+              type="button"
+              aria-label="切換說明"
+              onClick={toggleOnboarding}
+              className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
+            >
+              ?
+            </button>
+          </>
         }
       />
       <OnboardingBanner />
@@ -194,49 +215,46 @@ export default function EurekaGearPage() {
         {tabBtn('farming', '素材需求')}
       </nav>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4">
-        <main>
-          {view === 'overview' && (
-            <OverviewTab
-              inventory={inventory}
-              weapons={weaponsList}
-              onSelectJob={selectJob}
-              role={overviewRole}
-              onRoleChange={setOverviewRole}
-              onResetAllProgress={clearAllProgress}
-            />
-          )}
-          {view === 'detail' && (
-            <DetailTab
-              inventory={inventory}
-              selectedJob={selectedJob}
-              weapons={weaponsList}
-              materialsMap={materialsMap}
-              onSelectJob={selectJob}
-              onSetTarget={setTarget}
-              onRequestUpgrade={handleRequestUpgrade}
-      
-
-              onClearChain={clearChain}
-            />
-          )}
-          {view === 'farming' && (
-            <FarmingTab
-              inventory={inventory}
-              weapons={weaponsList}
-              materialsMap={materialsMap}
-            />
-          )}
-        </main>
-        <aside>
-          <InventorySidebar
-            materials={materialsList}
-            inventory={inventory.materials}
-            onMaterialChange={setMaterial}
-            onClear={clearMaterials}
+      <main>
+        {view === 'overview' && (
+          <OverviewTab
+            inventory={inventory}
+            weapons={weaponsList}
+            onSelectJob={selectJob}
+            role={overviewRole}
+            onRoleChange={setOverviewRole}
+            onResetAllProgress={clearAllProgress}
           />
-        </aside>
-      </div>
+        )}
+        {view === 'detail' && (
+          <DetailTab
+            inventory={inventory}
+            selectedJob={selectedJob}
+            weapons={weaponsList}
+            materialsMap={materialsMap}
+            onSelectJob={selectJob}
+            onSetTarget={setTarget}
+            onRequestUpgrade={handleRequestUpgrade}
+            onClearChain={clearChain}
+          />
+        )}
+        {view === 'farming' && (
+          <FarmingTab
+            inventory={inventory}
+            weapons={weaponsList}
+            materialsMap={materialsMap}
+          />
+        )}
+      </main>
+
+      <InventoryModal
+        open={inventoryOpen}
+        onOpenChange={setInventoryOpen}
+        materials={materialsList}
+        inventory={inventory.materials}
+        onMaterialChange={setMaterial}
+        onClear={clearMaterials}
+      />
 
       {pendingDialog && (
         <UpgradeDialog
