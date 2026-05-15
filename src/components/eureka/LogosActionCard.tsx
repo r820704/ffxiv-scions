@@ -228,7 +228,9 @@ export default function LogosActionCard({
           ? [{ recipe: action.recipes[guideRecipeIdx]!, ri: guideRecipeIdx }]
           : baseOrder.map((ri) => ({ recipe: action.recipes[ri]!, ri }));
         const hasMultiple = !isGuide && action.recipes.length > 1;
+        const maxCols = Math.max(...recipesToShow.map((r) => r.recipe.ingredients.length));
         const showTotalCost = !hidePrice && !showUnitPriceOnly;
+        const templateCols = `repeat(${maxCols}, max-content)${showTotalCost ? ' auto' : ''}`;
         if (compactLayout) {
           return (
             <div className="mt-2 pt-2 border-t border-border/50 flex flex-col gap-1.5 text-xs">
@@ -293,33 +295,134 @@ export default function LogosActionCard({
           );
         }
         return (
-        <div className="mt-2 pt-2 border-t border-border/50 flex flex-col gap-2 text-xs">
-          {recipesToShow.map(({ recipe, ri }, idx) => {
-            const costs = recipeCosts?.[ri] ?? null;
-            const cost95 = costs?.cost95 ?? null;
-            const cost50 = costs?.cost50 ?? null;
-            const isCheapest = hasMultiple && cheapestIdx === ri;
-            const isHighlighted = highlightRecipeIdx === ri;
-            const wrapperBg = isHighlighted
-              ? 'bg-primary/15 ring-1 ring-primary/40'
-              : isCheapest
-                ? 'bg-primary-dark/15 ring-1 ring-primary-dark/40'
-                : 'bg-muted/50';
-            const clickable = onRecipeClick != null;
-            return (
-              <Fragment key={ri}>
-                {hasMultiple && idx > 0 && (
-                  <div className="flex items-center gap-2 my-0.5">
-                    <div className="flex-1 border-t border-border/50" />
-                    <span className="text-[0.6rem] text-muted-foreground/60 shrink-0">或</span>
-                    <div className="flex-1 border-t border-border/50" />
+        <>
+          {/* Mobile (< sm): vertical stack — each ingredient on its own row */}
+          <div className="sm:hidden mt-2 pt-2 border-t border-border/50 flex flex-col gap-2 text-xs">
+            {recipesToShow.map(({ recipe, ri }, idx) => {
+              const costs = recipeCosts?.[ri] ?? null;
+              const cost95 = costs?.cost95 ?? null;
+              const cost50 = costs?.cost50 ?? null;
+              const isCheapest = hasMultiple && cheapestIdx === ri;
+              const isHighlighted = highlightRecipeIdx === ri;
+              const wrapperBg = isHighlighted
+                ? 'bg-primary/15 ring-1 ring-primary/40'
+                : isCheapest
+                  ? 'bg-primary-dark/15 ring-1 ring-primary-dark/40'
+                  : 'bg-muted/50';
+              const clickable = onRecipeClick != null;
+              return (
+                <Fragment key={ri}>
+                  {hasMultiple && idx > 0 && (
+                    <div className="flex items-center gap-2 my-0.5">
+                      <div className="flex-1 border-t border-border/50" />
+                      <span className="text-[0.6rem] text-muted-foreground/60 shrink-0">或</span>
+                      <div className="flex-1 border-t border-border/50" />
+                    </div>
+                  )}
+                  <div
+                    className={`rounded px-3 py-2 ${wrapperBg} ${clickable ? 'cursor-pointer hover:ring-1 hover:ring-primary/30' : ''}`}
+                    onClick={clickable ? () => onRecipeClick(ri) : undefined}
+                  >
+                    <div className="flex flex-col gap-1.5">
+                      {recipe.ingredients.map((ing, ii) => {
+                        const mneme = getMneme(ing.mnemeId);
+                        const logogram = getLogogramForMneme(ing.mnemeId);
+                        const logogramPrice = !hidePrice && logogram
+                          ? prices.find((p) => p.itemId === logogram.itemId)
+                          : undefined;
+                        return (
+                          <div key={ii} className="flex flex-col gap-0.5">
+                            <span className="text-foreground flex items-baseline gap-1.5 flex-wrap">
+                              {hasMultiple && ii === 0 && (
+                                <span className="text-[0.6rem] text-muted-foreground/80 bg-muted rounded px-1 py-0.5 shrink-0">
+                                  {ri + 1}
+                                </span>
+                              )}
+                              <span>
+                                {mneme?.nameTw ?? ing.mnemeId}
+                                {ing.quantity > 1 && <span className="text-primary"> ×{ing.quantity}</span>}
+                              </span>
+                            </span>
+                            {logogram && (
+                              <span className="text-[0.65rem] text-muted-foreground leading-tight flex items-baseline gap-1 flex-wrap">
+                                <span className="shrink-0">{logogram.nameTw}</span>
+                                {!hidePrice && (
+                                  priceLoading ? (
+                                    <span className="inline-block h-3 w-16 bg-muted animate-pulse rounded" />
+                                  ) : logogramPrice?.price != null ? (
+                                    <>
+                                      <span className="text-gil font-medium tabular-nums">
+                                        {logogramPrice.price.toLocaleString()} gil
+                                      </span>
+                                      {logogramPrice.worldName && (
+                                        <span>@ {logogramPrice.worldName}</span>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <span>價格未知</span>
+                                  )
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                      {showTotalCost && (
+                        <div className="border-t border-border/30 pt-1 mt-0.5 flex items-baseline justify-end flex-wrap gap-x-2">
+                          {priceLoading ? (
+                            <span className="text-muted-foreground">計算中...</span>
+                          ) : cost50 != null && cost95 != null ? (
+                            <>
+                              <span className="font-medium text-gil">
+                                預估 {cost50.toLocaleString()} gil
+                              </span>
+                              <span className="text-[0.6rem] text-muted-foreground">
+                                （保底 {cost95.toLocaleString()} gil）
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-                <div
-                  className={`rounded px-3 py-2 ${wrapperBg} ${clickable ? 'cursor-pointer hover:ring-1 hover:ring-primary/30' : ''}`}
-                  onClick={clickable ? () => onRecipeClick(ri) : undefined}
-                >
-                  <div className="flex flex-col gap-1.5">
+                </Fragment>
+              );
+            })}
+          </div>
+
+          {/* Desktop (sm+): horizontal grid — ingredients side by side, total on the right */}
+          <div
+            className="hidden sm:grid mt-2 pt-2 border-t border-border/50 text-xs"
+            style={{ gridTemplateColumns: templateCols }}
+          >
+            {recipesToShow.map(({ recipe, ri }, idx) => {
+              const costs = recipeCosts?.[ri] ?? null;
+              const cost95 = costs?.cost95 ?? null;
+              const cost50 = costs?.cost50 ?? null;
+              const isCheapest = hasMultiple && cheapestIdx === ri;
+              const isHighlighted = highlightRecipeIdx === ri;
+              const wrapperBg = isHighlighted
+                ? 'bg-primary/15 ring-1 ring-primary/40'
+                : isCheapest
+                  ? 'bg-primary-dark/15 ring-1 ring-primary-dark/40'
+                  : 'bg-muted/50';
+              const clickable = onRecipeClick != null;
+              return (
+                <Fragment key={ri}>
+                  {hasMultiple && idx > 0 && (
+                    <div className="flex items-center gap-2 my-1.5" style={{ gridColumn: '1 / -1' }}>
+                      <div className="flex-1 border-t border-border/50" />
+                      <span className="text-[0.6rem] text-muted-foreground/60 shrink-0">或</span>
+                      <div className="flex-1 border-t border-border/50" />
+                    </div>
+                  )}
+                  <div
+                    className={`rounded px-3 py-2 items-baseline gap-x-4 ${wrapperBg} ${clickable ? 'cursor-pointer hover:ring-1 hover:ring-primary/30' : ''}`}
+                    style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'subgrid' }}
+                    onClick={clickable ? () => onRecipeClick(ri) : undefined}
+                  >
                     {recipe.ingredients.map((ing, ii) => {
                       const mneme = getMneme(ing.mnemeId);
                       const logogram = getLogogramForMneme(ing.mnemeId);
@@ -327,8 +430,8 @@ export default function LogosActionCard({
                         ? prices.find((p) => p.itemId === logogram.itemId)
                         : undefined;
                       return (
-                        <div key={ii} className="flex flex-col gap-0.5">
-                          <span className="text-foreground flex items-baseline gap-1.5 flex-wrap">
+                        <div key={ii} className="flex flex-col">
+                          <span className="text-foreground flex items-baseline gap-1.5">
                             {hasMultiple && ii === 0 && (
                               <span className="text-[0.6rem] text-muted-foreground/80 bg-muted rounded px-1 py-0.5 shrink-0">
                                 {ri + 1}
@@ -340,22 +443,22 @@ export default function LogosActionCard({
                             </span>
                           </span>
                           {logogram && (
-                            <span className="text-[0.65rem] text-muted-foreground leading-tight flex items-baseline gap-1 flex-wrap">
+                            <span className="text-[0.65rem] text-muted-foreground leading-tight flex">
                               <span className="shrink-0">{logogram.nameTw}</span>
                               {!hidePrice && (
                                 priceLoading ? (
-                                  <span className="inline-block h-3 w-16 bg-muted animate-pulse rounded" />
+                                  <span className="inline-block h-3 w-16 bg-muted animate-pulse rounded ml-1" />
                                 ) : logogramPrice?.price != null ? (
                                   <>
-                                    <span className="text-gil font-medium tabular-nums">
+                                    <span className="text-gil font-medium tabular-nums min-w-[4.5rem] text-right ml-0.5">
                                       {logogramPrice.price.toLocaleString()} gil
                                     </span>
                                     {logogramPrice.worldName && (
-                                      <span>@ {logogramPrice.worldName}</span>
+                                      <span className="ml-1">@ {logogramPrice.worldName}</span>
                                     )}
                                   </>
                                 ) : (
-                                  <span>價格未知</span>
+                                  <span className="ml-1">價格未知</span>
                                 )
                               )}
                             </span>
@@ -363,8 +466,11 @@ export default function LogosActionCard({
                         </div>
                       );
                     })}
+                    {Array.from({ length: maxCols - recipe.ingredients.length }, (_, i) => (
+                      <div key={`empty-${i}`} />
+                    ))}
                     {showTotalCost && (
-                      <div className="border-t border-border/30 pt-1 mt-0.5 flex items-baseline justify-end flex-wrap gap-x-2">
+                      <div className="text-right justify-self-end flex flex-col items-end gap-0.5">
                         {priceLoading ? (
                           <span className="text-muted-foreground">計算中...</span>
                         ) : cost50 != null && cost95 != null ? (
@@ -382,11 +488,11 @@ export default function LogosActionCard({
                       </div>
                     )}
                   </div>
-                </div>
-              </Fragment>
-            );
-          })}
-        </div>
+                </Fragment>
+              );
+            })}
+          </div>
+        </>
         );
       })()}
     </div>
