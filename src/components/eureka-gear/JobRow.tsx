@@ -161,13 +161,13 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
           The armor block is itself a 3-col × 2-row sub-grid: 常風防具 badge
           occupies the first cell, 頭/身 share its row, 手/腿/腳 form the
           second row. */}
-      <div className="hidden md:grid md:grid-cols-[108px_minmax(0,_1fr)] gap-x-2.5 gap-y-1.5 items-start pr-6">
-        <div className="row-span-2 self-center min-w-0">{jobIdentifier}</div>
+      <div className="hidden md:grid md:grid-cols-[108px_minmax(0,_1fr)] gap-x-2.5 gap-y-1.5 items-center pr-6">
+        <div className="min-w-0">{jobIdentifier}</div>
         <div className="flex items-center gap-x-2 flex-wrap min-w-0">
           {weaponBadge}
           {primaryWeapons.map(renderWeaponDots)}
         </div>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+        <div className="col-start-2 flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
           {anemosBadge}
           {ARMOR_SLOTS.map(renderAnemosSlot)}
         </div>
