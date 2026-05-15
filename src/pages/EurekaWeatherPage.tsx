@@ -160,6 +160,16 @@ export default function EurekaWeatherPage() {
         title="優雷卡天氣·NM"
         description="優雷卡四地圖天氣時間軸、NM 出現時段與日夜指示"
         numeral="Tool · Ⅰ"
+        actions={
+          <button
+            type="button"
+            aria-label="說明"
+            onClick={() => setHelpOpen((v) => !v)}
+            className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
+          >
+            ?
+          </button>
+        }
       />
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
       <NmSearchPanel
@@ -192,14 +202,6 @@ export default function EurekaWeatherPage() {
               className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
             >
               🔍
-            </button>
-            <button
-              type="button"
-              aria-label="說明"
-              onClick={() => setHelpOpen((v) => !v)}
-              className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
-            >
-              ?
             </button>
             <button
               type="button"
