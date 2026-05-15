@@ -74,7 +74,7 @@ export default function AboutPage() {
           </dl>
 
           <blockquote className="relative mt-2 pl-5 border-l-2 border-primary/60 italic text-foreground/85 leading-relaxed">
-            希望這工具有幫助到你，路上看到歡迎打招呼。
+            希望這工具有幫助到你，路上看到歡迎打聲招呼。
           </blockquote>
         </section>
       </div>
