@@ -50,7 +50,7 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
     const done = stage === lastStage;
     return (
       <div key={slot} className="flex items-center gap-1 text-xs min-w-0">
-        <span className="text-elemental/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
+        <span className="text-elemental/70 text-[10px] shrink-0">{SLOT_TC[slot]}</span>
         <ArmorDots
           stages={elementalStages}
           zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
@@ -142,7 +142,7 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
         {/* 4-col × 2-row grid mirroring JobRow's armor block:
             row 1 = [元素防具][頭][身][·]
             row 2 = [·][手][腿][腳] */}
-        <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-3 gap-y-1 min-w-0">
+        <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-3 gap-y-1 items-center min-w-0">
           <div className="row-start-1 col-start-1">{elementalBadge}</div>
           <div className="row-start-1 col-start-2">{renderElementalSlot('head')}</div>
           <div className="row-start-1 col-start-3">{renderElementalSlot('body')}</div>

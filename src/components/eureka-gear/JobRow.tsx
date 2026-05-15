@@ -83,7 +83,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
     const done = stage === 'anemos';
     return (
       <div key={slot} className="flex items-center gap-1 text-xs min-w-0">
-        <span className="text-owned/70 w-4 shrink-0">{SLOT_TC[slot]}</span>
+        <span className="text-owned/70 text-[10px] shrink-0">{SLOT_TC[slot]}</span>
         <ArmorDots
           stages={ARMOR_STAGES_BY_TRACK.anemos}
           zoneGroups={ANEMOS_ARMOR_ZONE_GROUPS}
@@ -185,7 +185,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
             badge occupies its own col-1 lane so slots can cluster compactly
             in cols 2-4 without the badge's narrower width pushing them
             apart. */}
-        <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-3 gap-y-1 min-w-0">
+        <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-3 gap-y-1 items-center min-w-0">
           <div className="row-start-1 col-start-1">{anemosBadge}</div>
           <div className="row-start-1 col-start-2">{renderAnemosSlot('head')}</div>
           <div className="row-start-1 col-start-3">{renderAnemosSlot('body')}</div>
