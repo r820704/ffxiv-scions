@@ -40,17 +40,14 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
   const primary = jobs[0];
   const roleLabel = ROLE_TC_NAME[set];
   const elementalStages = ARMOR_STAGES_BY_TRACK.elemental;
-  const lastStage = elementalStages[elementalStages.length - 1];
 
   const renderElementalSlot = (slot: typeof ARMOR_SLOTS[number]) => {
     const p = pieces[slot];
     const stage: EurekaStage = p?.currentStage ?? 'elemental';
     const started = p !== undefined;
-    const filled = elementalStages.indexOf(stage) + 1;
-    const done = stage === lastStage;
     return (
-      <div key={slot} className="flex items-center gap-1 text-xs min-w-0">
-        <span className="text-elemental/70 text-[10px] shrink-0">{SLOT_TC[slot]}</span>
+      <div key={slot} className="flex items-center gap-1 shrink-0">
+        <span className="text-elemental/70 text-[10px]">{SLOT_TC[slot]}</span>
         <ArmorDots
           stages={elementalStages}
           zoneGroups={ELEMENTAL_ARMOR_ZONE_GROUPS}
@@ -58,9 +55,6 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
           started={started}
           colorFilled="bg-elemental"
         />
-        <span className={`tabular-nums shrink-0 ${done ? 'text-owned' : 'text-gray-400'}`}>
-          {started ? filled : 0}<span className="text-gray-600">/{elementalStages.length}</span>
-        </span>
       </div>
     );
   };
@@ -139,16 +133,9 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
           手/腿/腳 form the second row. */}
       <div className="hidden sm:flex sm:flex-col gap-y-1.5 pr-6">
         <div>{jobsLine}</div>
-        {/* 4-col × 2-row grid mirroring JobRow's armor block:
-            row 1 = [元素防具][頭][身][·]
-            row 2 = [·][手][腿][腳] */}
-        <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-2 gap-y-1 items-baseline min-w-0">
-          <div className="row-start-1 col-start-1">{elementalBadge}</div>
-          <div className="row-start-1 col-start-2">{renderElementalSlot('head')}</div>
-          <div className="row-start-1 col-start-3">{renderElementalSlot('body')}</div>
-          <div className="row-start-2 col-start-2">{renderElementalSlot('hands')}</div>
-          <div className="row-start-2 col-start-3">{renderElementalSlot('legs')}</div>
-          <div className="row-start-2 col-start-4">{renderElementalSlot('feet')}</div>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+          {elementalBadge}
+          {ARMOR_SLOTS.map(renderElementalSlot)}
         </div>
       </div>
     </article>

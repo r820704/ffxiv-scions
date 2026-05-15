@@ -129,26 +129,4 @@ describe('RoleCard', () => {
     expect(screen.getAllByText('元素防具').length).toBeGreaterThan(0);
   });
 
-  it('shows 0/3 count for all unstarted slots', () => {
-    const { container } = render(
-      <RoleCard set="fending" pieces={{}} onSelect={() => {}} />,
-    );
-    const countSpans = Array.from(container.querySelectorAll('.tabular-nums'));
-    const zeroCountSpans = countSpans.filter((el) => el.textContent?.startsWith('0'));
-    expect(zeroCountSpans.length).toBe(5);
-  });
-
-  it('shows filled count for started slots', () => {
-    const { container } = render(
-      <RoleCard
-        set="fending"
-        pieces={{ head: { currentStage: 'elemental' as const } }}
-        onSelect={() => {}}
-      />,
-    );
-    // elemental is index 0 in ELEMENTAL_ARMOR_STAGES → filled = 1
-    const countSpans = Array.from(container.querySelectorAll('.tabular-nums'));
-    const headCount = countSpans.find((el) => el.textContent?.startsWith('1'));
-    expect(headCount).toBeTruthy();
-  });
 });
