@@ -185,7 +185,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
             badge occupies its own col-1 lane so slots can cluster compactly
             in cols 2-4 without the badge's narrower width pushing them
             apart. */}
-        <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-3 gap-y-1 items-center min-w-0">
+        <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-2 gap-y-1 items-baseline min-w-0">
           <div className="row-start-1 col-start-1">{anemosBadge}</div>
           <div className="row-start-1 col-start-2">{renderAnemosSlot('head')}</div>
           <div className="row-start-1 col-start-3">{renderAnemosSlot('body')}</div>
