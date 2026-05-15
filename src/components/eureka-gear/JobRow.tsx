@@ -179,7 +179,7 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
           {weaponBadge}
           {primaryWeapons.map(renderWeaponDots)}
         </div>
-        <div className="grid grid-cols-3 gap-x-2 gap-y-1 min-w-0">
+        <div className="grid grid-cols-[auto_auto_auto] justify-start gap-x-4 gap-y-1 min-w-0">
           <div>{anemosBadge}</div>
           {ARMOR_SLOTS.map(renderAnemosSlot)}
         </div>

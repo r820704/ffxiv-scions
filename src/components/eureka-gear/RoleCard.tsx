@@ -139,7 +139,7 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
           手/腿/腳 form the second row. */}
       <div className="hidden sm:flex sm:flex-col gap-y-1.5 pr-6">
         <div>{jobsLine}</div>
-        <div className="grid grid-cols-3 gap-x-2 gap-y-1 min-w-0">
+        <div className="grid grid-cols-[auto_auto_auto] justify-start gap-x-4 gap-y-1 min-w-0">
           <div>{elementalBadge}</div>
           {ARMOR_SLOTS.map(renderElementalSlot)}
         </div>
