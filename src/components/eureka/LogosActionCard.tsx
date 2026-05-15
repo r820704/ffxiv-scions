@@ -5,6 +5,7 @@ import { getMneme, getLogogramForMneme } from '@/data/eureka-data';
 import { calculateRecipeCostsMC } from '@/utils/eureka-helpers';
 import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 import ActionDetailTooltip from './ActionDetailTooltip';
+import { cn } from '@/lib/utils';
 
 export interface SlotBadgeInfo {
   slotIdx: number;
@@ -34,11 +35,15 @@ interface LogosActionCardProps {
   compactLayout?: boolean;
   /** Slot context badge shown in the card header (slot-mode only) */
   slotBadge?: SlotBadgeInfo;
+  /** When provided, render a learned-state toggle inside the card header. */
+  isLearned?: boolean;
+  onToggleLearned?: () => void;
 }
 
 export default function LogosActionCard({
   action, prices, priceLoading, isExpanded, onToggleExpand, guideRecipeIdx, hidePrice, slotBadge,
   highlightRecipeIdx, showUnitPriceOnly, recipeOrder, onRecipeClick, compactLayout,
+  isLearned, onToggleLearned,
 }: LogosActionCardProps) {
   const [internalExpanded, setInternalExpanded] = useState(false);
   const expanded = isExpanded !== undefined ? isExpanded : internalExpanded;
@@ -191,6 +196,24 @@ export default function LogosActionCard({
               {ROLE_LABELS[role]}
             </span>
           ))}
+          {onToggleLearned && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleLearned();
+              }}
+              aria-label={isLearned ? '取消已習得' : '標記為已習得'}
+              className={cn(
+                'text-[10px] px-1.5 py-0.5 rounded border cursor-pointer transition-colors shrink-0',
+                isLearned
+                  ? 'border-primary-dark text-primary-dark bg-primary-dark/10 hover:bg-primary-dark/20'
+                  : 'border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground',
+              )}
+            >
+              {isLearned ? '✓ 已習得' : '標記習得'}
+            </button>
+          )}
           <span className="text-muted-foreground text-xs ml-1">
             {expanded ? '▲' : '▼'}
           </span>
