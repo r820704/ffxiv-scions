@@ -338,29 +338,18 @@ export default function SkillRecipeList({
             const dim = mode === 'album' && !isLearned && !isGuideMode;
 
             return (
-              <div key={action.id} className="flex items-start gap-2">
-                <div className={cn('flex-1 min-w-0', dim && 'opacity-60')}>
-                  <LogosActionCard
-                    action={action}
-                    prices={prices}
-                    priceLoading={priceLoading}
-                    isExpanded={isExpanded}
-                    onToggleExpand={isGuideMode ? undefined : () => toggleCardExpand(action.id)}
-                    guideRecipeIdx={guideIdx}
-                    showUnitPriceOnly={isGuideMode}
-                  />
-                </div>
-                <button
-                  onClick={() => onToggle(action.id)}
-                  className={cn(
-                    'text-[10px] px-2 py-1 rounded border cursor-pointer transition-colors shrink-0 mt-3',
-                    isLearned
-                      ? 'border-primary-dark text-primary-dark bg-primary-dark/10 hover:bg-primary-dark/20'
-                      : 'border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  {isLearned ? '✓ 已習得' : '標記習得'}
-                </button>
+              <div key={action.id} className={cn('min-w-0', dim && 'opacity-60')}>
+                <LogosActionCard
+                  action={action}
+                  prices={prices}
+                  priceLoading={priceLoading}
+                  isExpanded={isExpanded}
+                  onToggleExpand={isGuideMode ? undefined : () => toggleCardExpand(action.id)}
+                  guideRecipeIdx={guideIdx}
+                  showUnitPriceOnly={isGuideMode}
+                  isLearned={isLearned}
+                  onToggleLearned={() => onToggle(action.id)}
+                />
               </div>
             );
           })
@@ -455,30 +444,19 @@ function renderSlotGroups({
               {skills.map(({ action, recommendedIdx, sortedIndices }) => {
                 const isLearned = learnedSkills.has(action.id);
                 return (
-                  <div key={action.id} className="flex items-start gap-2">
-                    <div className="flex-1 min-w-0">
-                      <LogosActionCard
-                        action={action}
-                        prices={prices}
-                        priceLoading={priceLoading}
-                        isExpanded
-                        highlightRecipeIdx={recommendedIdx}
-                        recipeOrder={sortedIndices}
-                        showUnitPriceOnly
-                        compactLayout
-                      />
-                    </div>
-                    <button
-                      onClick={() => onToggle(action.id)}
-                      className={cn(
-                        'text-[10px] px-2 py-1 rounded border cursor-pointer transition-colors shrink-0 mt-3',
-                        isLearned
-                          ? 'border-primary-dark text-primary-dark bg-primary-dark/10 hover:bg-primary-dark/20'
-                          : 'border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground'
-                      )}
-                    >
-                      {isLearned ? '✓ 已習得' : '標記習得'}
-                    </button>
+                  <div key={action.id} className="min-w-0">
+                    <LogosActionCard
+                      action={action}
+                      prices={prices}
+                      priceLoading={priceLoading}
+                      isExpanded
+                      highlightRecipeIdx={recommendedIdx}
+                      recipeOrder={sortedIndices}
+                      showUnitPriceOnly
+                      compactLayout
+                      isLearned={isLearned}
+                      onToggleLearned={() => onToggle(action.id)}
+                    />
                   </div>
                 );
               })}
