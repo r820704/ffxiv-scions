@@ -19,7 +19,7 @@ import CrystalOverview from '@/components/eureka/CrystalOverview';
 import AlbumPlanSection from '@/components/eureka/AlbumPlanSection';
 import SlotPlanSection from '@/components/eureka/SlotPlanSection';
 import SkillRecipeList from '@/components/eureka/SkillRecipeList';
-import { OnboardingBanner, toggleOnboarding } from '@/components/eureka/OnboardingBanner';
+import HelpModal from '@/components/eureka/HelpModal';
 import PageHead from '@/components/PageHead';
 
 export default function EurekaPage() {
@@ -29,6 +29,7 @@ export default function EurekaPage() {
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceError, setPriceError] = useState(false);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const { learnedSkills, toggleLearned, learnAll, resetAll, inventory, setItemCount } = useAlbumState();
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
@@ -155,8 +156,8 @@ export default function EurekaPage() {
               </button>
               <button
                 type="button"
-                aria-label="切換說明"
-                onClick={toggleOnboarding}
+                aria-label="說明"
+                onClick={() => setHelpOpen((v) => !v)}
                 className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
               >
                 ?
@@ -165,7 +166,7 @@ export default function EurekaPage() {
           }
         />
 
-        <OnboardingBanner />
+        <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
 
         {priceError && (
           <div className="text-xs text-destructive mb-3">價格查詢失敗，請稍後重試</div>

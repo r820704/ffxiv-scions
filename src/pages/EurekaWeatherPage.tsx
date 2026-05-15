@@ -196,7 +196,7 @@ export default function EurekaWeatherPage() {
             <button
               type="button"
               aria-label="說明"
-              onClick={() => setHelpOpen(true)}
+              onClick={() => setHelpOpen((v) => !v)}
               className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
             >
               ?
