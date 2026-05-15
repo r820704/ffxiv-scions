@@ -168,19 +168,19 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
         </div>
       </div>
 
-      {/* Desktop (md+): 2-col grid — col 1 holds the job identifier (vertically
-          centered across all rows), col 2 stacks 武器 row, 常風防具 row, and the
-          5-slot row. 武器 and 常風防具 share their X by virtue of sitting in the
-          same column; the slot row spans col 2 with 5 equal sub-columns so the
-          slots distribute evenly across the card. */}
+      {/* Desktop (md+): 2-col outer grid — col 1 holds the job identifier
+          (vertically centered), col 2 stacks the 武器 row and the armor block.
+          The armor block is itself a 3-col × 2-row sub-grid: 常風防具 badge
+          occupies the first cell, 頭/身 share its row, 手/腿/腳 form the
+          second row. */}
       <div className="hidden md:grid md:grid-cols-[108px_minmax(0,_1fr)] gap-x-2.5 gap-y-1.5 items-start pr-6">
-        <div className="row-span-3 self-center min-w-0">{jobIdentifier}</div>
+        <div className="row-span-2 self-center min-w-0">{jobIdentifier}</div>
         <div className="flex items-center gap-x-2 flex-wrap min-w-0">
           {weaponBadge}
           {primaryWeapons.map(renderWeaponDots)}
         </div>
-        <div>{anemosBadge}</div>
-        <div className="grid grid-cols-5 gap-x-2 min-w-0">
+        <div className="grid grid-cols-3 gap-x-2 gap-y-1 min-w-0">
+          <div>{anemosBadge}</div>
           {ARMOR_SLOTS.map(renderAnemosSlot)}
         </div>
       </div>
