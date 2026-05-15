@@ -168,25 +168,21 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
         </div>
       </div>
 
-      {/* Desktop (md+): 6-col grid — col 1 for icon+name, cols 2-6 for 5 armor slots.
-          武器 badge + 常風防具 badge both anchor to col 4 ("手" column) so the three
-          align on the same vertical axis. */}
-      <div className="hidden md:grid md:grid-cols-[120px_repeat(5,_minmax(0,_1fr))] gap-x-2.5 gap-y-1.5 items-center pr-6">
-        <div className="row-start-1 col-start-1">{jobIdentifier}</div>
-        <div className="row-start-1 col-start-4 col-span-3 flex items-center gap-x-2 min-w-0">
+      {/* Desktop (md+): 2-col grid — col 1 holds the job identifier (vertically
+          centered across all rows), col 2 stacks 武器 row, 常風防具 row, and the
+          5-slot row. 武器 and 常風防具 share their X by virtue of sitting in the
+          same column; the slot row spans col 2 with 5 equal sub-columns so the
+          slots distribute evenly across the card. */}
+      <div className="hidden md:grid md:grid-cols-[108px_minmax(0,_1fr)] gap-x-2.5 gap-y-1.5 items-start pr-6">
+        <div className="row-span-3 self-center min-w-0">{jobIdentifier}</div>
+        <div className="flex items-center gap-x-2 flex-wrap min-w-0">
           {weaponBadge}
           {primaryWeapons.map(renderWeaponDots)}
         </div>
-        <div className="row-start-2 col-start-4 justify-self-start">{anemosBadge}</div>
-        {ARMOR_SLOTS.map((slot, idx) => (
-          <div
-            key={slot}
-            className="row-start-3 min-w-0"
-            style={{ gridColumnStart: idx + 2 }}
-          >
-            {renderAnemosSlot(slot)}
-          </div>
-        ))}
+        <div>{anemosBadge}</div>
+        <div className="grid grid-cols-5 gap-x-2 min-w-0">
+          {ARMOR_SLOTS.map(renderAnemosSlot)}
+        </div>
       </div>
     </div>
   );

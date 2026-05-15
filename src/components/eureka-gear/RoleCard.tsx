@@ -134,20 +134,14 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
         </div>
       </div>
 
-      {/* Desktop (sm+): 5-col grid — jobs line spans full width, 元素防具 badge
-          anchors to col 3 (middle, = "手" column), 5 slots fill cols 1-5. */}
-      <div className="hidden sm:grid sm:grid-cols-5 gap-x-2.5 gap-y-1.5 items-center pr-6">
-        <div className="row-start-1 col-span-5">{jobsLine}</div>
-        <div className="row-start-2 col-start-3 justify-self-start">{elementalBadge}</div>
-        {ARMOR_SLOTS.map((slot, idx) => (
-          <div
-            key={slot}
-            className="row-start-3 min-w-0"
-            style={{ gridColumnStart: idx + 1 }}
-          >
-            {renderElementalSlot(slot)}
-          </div>
-        ))}
+      {/* Desktop (sm+): stacked rows — jobs line, 元素防具 badge, then 5 slots
+          distributed evenly across the card via a 5-col sub-grid. */}
+      <div className="hidden sm:flex sm:flex-col gap-y-1.5 pr-6">
+        <div>{jobsLine}</div>
+        <div>{elementalBadge}</div>
+        <div className="grid grid-cols-5 gap-x-2 min-w-0">
+          {ARMOR_SLOTS.map(renderElementalSlot)}
+        </div>
       </div>
     </article>
   );
