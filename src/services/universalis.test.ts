@@ -54,25 +54,34 @@ describe('fetchLogogramPrices', () => {
     });
   });
 
-  it('should return empty prices on fetch error', async () => {
+  it('should throw on non-OK HTTP response', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
       ok: false,
       status: 500,
     } as Response);
 
-    const result = await fetchLogogramPrices([24007]);
-
-    expect(result).toHaveLength(1);
-    expect(result[0]?.price).toBeNull();
+    await expect(fetchLogogramPrices([24007])).rejects.toThrow(/HTTP 500/);
   });
 
-  it('should return empty prices on network error', async () => {
+  it('should throw on network error', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Network error'));
 
-    const result = await fetchLogogramPrices([24007]);
+    await expect(fetchLogogramPrices([24007])).rejects.toThrow('Network error');
+  });
 
-    expect(result).toHaveLength(1);
-    expect(result[0]?.price).toBeNull();
+  it('should pass an AbortSignal that can be triggered for timeout', async () => {
+    let receivedSignal: AbortSignal | undefined;
+    vi.spyOn(globalThis, 'fetch').mockImplementationOnce((_url, init) => {
+      receivedSignal = (init as RequestInit | undefined)?.signal ?? undefined;
+      return Promise.resolve({
+        ok: true,
+        json: async () => mockMultiResponse,
+      } as Response);
+    });
+
+    await fetchLogogramPrices([24007, 24008]);
+    expect(receivedSignal).toBeDefined();
+    // The signal is wired up — internal setTimeout drives the actual abort.
   });
 
   it('should handle single-item flat response format', async () => {

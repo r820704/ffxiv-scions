@@ -2,6 +2,36 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { eurekaData } from '@/data/eureka-data';
 import { fetchLogogramPrices } from '@/services/universalis';
 import type { LogogramPrice } from '@/types/eureka';
+
+const PRICE_CACHE_KEY = 'eureka-prices-cache';
+const PRICE_CACHE_TTL_MS = 10 * 60 * 1000;
+
+type PriceCache = { prices: LogogramPrice[]; fetchedAt: number };
+
+function readPriceCache(): PriceCache | null {
+  if (typeof localStorage === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(PRICE_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PriceCache;
+    if (!parsed || !Array.isArray(parsed.prices) || typeof parsed.fetchedAt !== 'number') return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writePriceCache(prices: LogogramPrice[]) {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(
+      PRICE_CACHE_KEY,
+      JSON.stringify({ prices, fetchedAt: Date.now() } satisfies PriceCache),
+    );
+  } catch {
+    /* quota exceeded — best-effort */
+  }
+}
 import { useAlbumState } from '@/hooks/useAlbumState';
 import { useSlotState } from '@/hooks/useSlotState';
 import { useCalcMode } from '@/hooks/useCalcMode';
@@ -115,7 +145,15 @@ export default function EurekaPage() {
 
   const crystalMcCosts = calcMode === 'album' ? albumMcCosts : slotMcCosts;
 
-  const loadPrices = useCallback(async () => {
+  const loadPrices = useCallback(async (options: { force?: boolean } = {}) => {
+    if (!options.force) {
+      const cache = readPriceCache();
+      if (cache && Date.now() - cache.fetchedAt < PRICE_CACHE_TTL_MS) {
+        setPrices(cache.prices);
+        setLastFetched(new Date(cache.fetchedAt));
+        return;
+      }
+    }
     setPriceLoading(true);
     setPriceError(false);
     try {
@@ -123,6 +161,7 @@ export default function EurekaPage() {
       const result = await fetchLogogramPrices(itemIds);
       setPrices(result);
       setLastFetched(new Date());
+      writePriceCache(result);
     } catch {
       setPriceError(true);
     } finally {
@@ -148,7 +187,7 @@ export default function EurekaPage() {
                 </span>
               )}
               <button
-                onClick={loadPrices}
+                onClick={() => loadPrices({ force: true })}
                 disabled={priceLoading}
                 className="px-3 py-1.5 text-xs rounded-md border border-border bg-card text-foreground hover:bg-secondary transition-colors disabled:opacity-50 cursor-pointer"
               >
