@@ -139,9 +139,16 @@ export function RoleCard({ set, pieces, onSelect }: RoleCardProps) {
           手/腿/腳 form the second row. */}
       <div className="hidden sm:flex sm:flex-col gap-y-1.5 pr-6">
         <div>{jobsLine}</div>
-        <div className="grid grid-cols-[auto_auto_auto] justify-start gap-x-4 gap-y-1 min-w-0">
-          <div>{elementalBadge}</div>
-          {ARMOR_SLOTS.map(renderElementalSlot)}
+        {/* 4-col × 2-row grid mirroring JobRow's armor block:
+            row 1 = [元素防具][頭][身][·]
+            row 2 = [·][手][腿][腳] */}
+        <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-3 gap-y-1 min-w-0">
+          <div className="row-start-1 col-start-1">{elementalBadge}</div>
+          <div className="row-start-1 col-start-2">{renderElementalSlot('head')}</div>
+          <div className="row-start-1 col-start-3">{renderElementalSlot('body')}</div>
+          <div className="row-start-2 col-start-2">{renderElementalSlot('hands')}</div>
+          <div className="row-start-2 col-start-3">{renderElementalSlot('legs')}</div>
+          <div className="row-start-2 col-start-4">{renderElementalSlot('feet')}</div>
         </div>
       </div>
     </article>

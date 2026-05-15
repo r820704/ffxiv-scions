@@ -179,9 +179,19 @@ export function JobRow({ job, progress, weapons: _weapons, onSelect }: JobRowPro
           {weaponBadge}
           {primaryWeapons.map(renderWeaponDots)}
         </div>
-        <div className="grid grid-cols-[auto_auto_auto] justify-start gap-x-4 gap-y-1 min-w-0">
-          <div>{anemosBadge}</div>
-          {ARMOR_SLOTS.map(renderAnemosSlot)}
+        {/* 4-col × 2-row grid:
+            row 1 = [常風防具][頭][身][·]
+            row 2 = [·][手][腿][腳]
+            badge occupies its own col-1 lane so slots can cluster compactly
+            in cols 2-4 without the badge's narrower width pushing them
+            apart. */}
+        <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-3 gap-y-1 min-w-0">
+          <div className="row-start-1 col-start-1">{anemosBadge}</div>
+          <div className="row-start-1 col-start-2">{renderAnemosSlot('head')}</div>
+          <div className="row-start-1 col-start-3">{renderAnemosSlot('body')}</div>
+          <div className="row-start-2 col-start-2">{renderAnemosSlot('hands')}</div>
+          <div className="row-start-2 col-start-3">{renderAnemosSlot('legs')}</div>
+          <div className="row-start-2 col-start-4">{renderAnemosSlot('feet')}</div>
         </div>
       </div>
     </div>
