@@ -9,7 +9,7 @@ import { DetailTab } from '@/components/eureka-gear/DetailTab';
 import { FarmingTab } from '@/components/eureka-gear/FarmingTab';
 import InventoryModal from '@/components/eureka-gear/InventoryModal';
 import { UpgradeDialog } from '@/components/eureka-gear/UpgradeDialog';
-import { OnboardingBanner, toggleOnboarding } from '@/components/eureka-gear/OnboardingBanner';
+import HelpModal from '@/components/eureka-gear/HelpModal';
 import { EUREKA_STAGES, STAGE_TC_LABEL } from '@/types/eureka-gear';
 import type { EurekaStage, SlotProgress } from '@/types/eureka-gear';
 import { sharedJobNames } from '@/data/eureka-armor-sets';
@@ -87,6 +87,7 @@ export default function EurekaGearPage() {
   } | null>(null);
 
   const [inventoryOpen, setInventoryOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const inventoryCount = materialsList.filter((m) => (inventory.materials[m.id] ?? 0) > 0).length;
 
   const setTab = (tab: TabKey) => {
@@ -195,8 +196,8 @@ export default function EurekaGearPage() {
             </button>
             <button
               type="button"
-              aria-label="切換說明"
-              onClick={toggleOnboarding}
+              aria-label="說明"
+              onClick={() => setHelpOpen((v) => !v)}
               className="w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-sm"
             >
               ?
@@ -204,7 +205,7 @@ export default function EurekaGearPage() {
           </>
         }
       />
-      <OnboardingBanner />
+      <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
 
       <nav
         role="tablist"
