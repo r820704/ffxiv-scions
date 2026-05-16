@@ -117,7 +117,7 @@ describe('PreviewPanel', () => {
       expect(screen.getByText(/從.*未開始.*→.*禁地兵裝.*需要/)).toBeInTheDocument();
     });
 
-    it('renders prereqRows as list items with × 1 and obtain method in parens', () => {
+    it('renders prereqRows with × 1 inline and obtainMethod via ⓘ tooltip button', () => {
       render(
         <PreviewPanel
           currentStage={undefined}
@@ -132,10 +132,14 @@ describe('PreviewPanel', () => {
           ]}
         />,
       );
+      // Item name + × 1 still rendered inline (no longer truncated)
       expect(screen.getByText(/舊化的嘉拉汀 × 1/)).toBeInTheDocument();
       expect(screen.getByText(/舊化的艾瓦拉克血十字盾 × 1/)).toBeInTheDocument();
-      const obtainMethodEls = screen.getAllByText(/完成70級職業任務或從失物管理人兌換取得/);
-      expect(obtainMethodEls.length).toBe(2);
+      // obtainMethod moved off-screen into Radix Tooltip; verify ⓘ button exists per row
+      expect(screen.getByRole('button', { name: /舊化的嘉拉汀 取得方式/ })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /舊化的艾瓦拉克血十字盾 取得方式/ })).toBeInTheDocument();
+      // The raw obtainMethod text should NOT be inline anymore (avoids truncation)
+      expect(screen.queryByText(/完成70級職業任務或從失物管理人兌換取得/)).toBeNull();
     });
 
     it('button label is 升階段 (target) — no special "取得舊化" case', () => {
@@ -215,6 +219,95 @@ describe('PreviewPanel', () => {
         />,
       );
       expect(screen.getByText(/湧火水晶 × 40/)).toBeInTheDocument();
+    });
+  });
+
+  describe('cost edge notes', () => {
+    it('renders condition notes inline (no 70 級 / 元素武器 wording, no redundant slot prefix)', () => {
+      render(
+        <PreviewPanel
+          currentStage={undefined}
+          targetStage="elemental+2"
+          inventory={{}}
+          onSetCurrent={() => {}}
+          onClearTarget={() => {}}
+          materialsMap={materials}
+          stages={ELEMENTAL_ARMOR_STAGES}
+          costs={ELEMENTAL_ARMOR_COSTS}
+          slot="head"
+        />,
+      );
+      // antiquated → elemental: corrected text
+      expect(screen.getByText(/需收集 50 個文理技能圖鑑.*至少完成一件任意職業的恆冰武器/)).toBeInTheDocument();
+      // Old wrong wording is gone
+      expect(screen.queryByText(/70 級職業套裝/)).toBeNull();
+      expect(screen.queryByText(/至少擁有一件元素武器/)).toBeNull();
+      // elemental → +1: clean text without "頭/手/腳：" prefix (system filters by slot)
+      expect(screen.getByText(/需解鎖 56 個文理技能圖鑑/)).toBeInTheDocument();
+      expect(screen.queryByText(/頭\/手\/腳：/)).toBeNull();
+      expect(screen.queryByText(/身\/腿：/)).toBeNull();
+      // 優雷卡的斷片 acquisition moved into material tooltip, no longer inline note
+      expect(screen.queryByText(/優雷卡的斷片於.*獲取/)).toBeNull();
+      // Wrong location "禁地王都" must NOT appear anywhere
+      expect(screen.queryByText(/禁地王都/)).toBeNull();
+    });
+
+    it('does not render notes section when no edges have notes', () => {
+      const { container } = render(
+        <PreviewPanel
+          currentStage="anemos-base"
+          targetStage="anemos+1"
+          inventory={{ 21801: 400 }}
+          onSetCurrent={() => {}}
+          onClearTarget={() => {}}
+          materialsMap={materials}
+        />,
+      );
+      // anemos-base → anemos+1 has no notes
+      expect(container.querySelector('ul.italic')).toBeNull();
+    });
+  });
+
+  describe('material acquisition tooltip', () => {
+    const fullMaterials = {
+      ...materials,
+      24808: { nameTC: '優雷卡的斷片', icon: 0 },
+    };
+
+    it('renders ⓘ tooltip button next to 優雷卡的斷片 row with corrected location text', () => {
+      render(
+        <PreviewPanel
+          currentStage="elemental+1"
+          targetStage="elemental+2"
+          inventory={{}}
+          onSetCurrent={() => {}}
+          onClearTarget={() => {}}
+          materialsMap={fullMaterials}
+          stages={ELEMENTAL_ARMOR_STAGES}
+          costs={ELEMENTAL_ARMOR_COSTS}
+          slot="head"
+        />,
+      );
+      // Material row shows as usual
+      expect(screen.getByText(/優雷卡的斷片 × 21/)).toBeInTheDocument();
+      // Acquisition tooltip button exists with aria-label scoped to this material
+      const tipBtn = screen.getByRole('button', { name: /優雷卡的斷片 取得方式/ });
+      expect(tipBtn).toBeInTheDocument();
+    });
+
+    it('does NOT render ⓘ tooltip for generic zone-mob materials (Protean / Pyros crystal)', () => {
+      render(
+        <PreviewPanel
+          currentStage="antiquated"
+          targetStage="anemos-base"
+          inventory={{}}
+          onSetCurrent={() => {}}
+          onClearTarget={() => {}}
+          materialsMap={materials}
+        />,
+      );
+      // 亂屬性水晶 (Protean) is general drop — no tooltip
+      expect(screen.queryByRole('button', { name: /禁地水晶 取得方式/ })).toBeNull();
     });
   });
 });

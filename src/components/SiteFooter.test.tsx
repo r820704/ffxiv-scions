@@ -38,4 +38,11 @@ describe('SiteFooter', () => {
     expect(link).toBeInTheDocument();
     expect(link.getAttribute('href')).toMatch(/THIRD-PARTY-NOTICES\.md$/);
   });
+
+  it('displays the app version from __APP_VERSION__ (vite-injected)', () => {
+    renderFooter();
+    // Matches v + semver-ish digits (e.g. v0.9.0). Avoids hard-coding a
+    // specific version so the test stays valid across release-please bumps.
+    expect(screen.getByText(/^v\d+\.\d+\.\d+$/)).toBeInTheDocument();
+  });
 });

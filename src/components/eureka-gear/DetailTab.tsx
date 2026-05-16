@@ -4,6 +4,8 @@ import { StageListPanel } from './StageListPanel';
 import { PreviewPanel } from './PreviewPanel';
 import { AccordionItem } from '../ui/Accordion';
 import { getJobProgress } from '../../utils/eurekaGear';
+import { useLocalStorageBool } from '../../hooks/useLocalStorageBool';
+import { useLocalStorageJson } from '../../hooks/useLocalStorageJson';
 import {
   JOB_TC_NAME,
   JOBS_FOR_ARMOR_SET,
@@ -184,11 +186,12 @@ export function DetailTab({
   const progress = useMemo(() => getJobProgress(selectedJob as JobId, inventory), [selectedJob, inventory]);
   const [globalArmorExpand, setGlobalArmorExpand] = useState<{ rev: number; expand: boolean } | null>(null);
   const [resetDialogRef, setResetDialogRef] = useState<{ ref: ChainRef; label: string } | null>(null);
-  const [weaponExpanded, setWeaponExpanded] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    setWeaponExpanded({});
-  }, [selectedJob]);
+  // Weapon accordion expand state — scoped by job so switching jobs preserves
+  // each job's own state; survives tab switches via localStorage.
+  const [weaponExpanded, setWeaponExpanded] = useLocalStorageJson<Record<string, boolean>>(
+    `eureka-gear-detail:weapons:${selectedJob}`,
+    {},
+  );
 
   const primaryChains = progress.weapons.filter(({ chainId }) => {
     const chain = EUREKA_CHAINS.find((c) => c.chainId === chainId);
@@ -372,6 +375,7 @@ export function DetailTab({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
       {/* 常風防具 — per-job, no shared badge */}
       <ArmorTrackSection
+        trackKey="anemos"
         title="常風防具"
         colorClass="text-green-400"
         slotColorClass="text-green-400/70"
@@ -396,6 +400,7 @@ export function DetailTab({
 
       {/* 元素防具 — per-role, shared badge */}
       <ArmorTrackSection
+        trackKey="elemental"
         title="元素防具"
         colorClass="text-cyan-400"
         slotColorClass="text-cyan-400/70"
@@ -418,14 +423,6 @@ export function DetailTab({
         onRequestUpgrade={onRequestUpgrade}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
-        getPrereqRows={(slot) => {
-          // 元素防具：antiquated 起點（AF 套裝）作為前置道具，前置條件文字寫在 obtainMethod
-          const antName = getAnemosArmorName(selectedJob, slot, 'antiquated') ?? STAGE_TC_LABEL['antiquated'];
-          return [{
-            name: antName,
-            obtainMethod: '前置：持有 70 級職業套裝、解鎖 50 個文理技能圖鑑、至少擁有一件元素武器',
-          }];
-        }}
       />
       </div>
 
@@ -465,6 +462,8 @@ export function DetailTab({
 }
 
 type ArmorTrackSectionProps = {
+  /** Stable identifier used to scope localStorage keys for expand state. */
+  trackKey: 'anemos' | 'elemental';
   title: string;
   colorClass: string;
   slotColorClass: string;
@@ -491,13 +490,17 @@ type ArmorTrackSectionProps = {
 };
 
 function ArmorTrackSection({
-  title, colorClass, slotColorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader, glowStages,
+  trackKey, title, colorClass, slotColorClass, pieces, stages, costs, makeRef, zoneGroups, getItemName, itemLevels, sharedHeader, glowStages,
   materials, materialsMap, onSetTarget, onRequestUpgrade, onRequestReset, globalExpand, getPrereqRows,
 }: ArmorTrackSectionProps) {
-  const [expanded, setExpanded] = useState<Record<ArmorSlot, boolean>>({
-    head: false, body: false, hands: false, legs: false, feet: false,
-  });
-  const [sectionExpanded, setSectionExpanded] = useState(true);
+  const [expanded, setExpanded] = useLocalStorageJson<Record<ArmorSlot, boolean>>(
+    `eureka-gear-detail:${trackKey}:slots`,
+    { head: false, body: false, hands: false, legs: false, feet: false },
+  );
+  const [sectionExpanded, setSectionExpanded] = useLocalStorageBool(
+    `eureka-gear-detail:${trackKey}:section`,
+    true,
+  );
 
   useEffect(() => {
     if (globalExpand == null) return;

@@ -282,6 +282,51 @@ export const ZONE_TC_NAME: Record<EurekaZone, string> = {
   hydatos: '豐水之地',
 };
 
+/**
+ * Source zone for each upgrade material (where players farm it).
+ *
+ * Used by FarmingTab to bucket materials by farming destination. This is
+ * material-centric and distinct from ZONE_OF_STAGE (which describes the
+ * stage's progression zone for the visual stepper).
+ *
+ * They diverge for elemental armor: ZONE_OF_STAGE['elemental+1'] = 'pyros'
+ * (correct for weapons whose elemental+1 upgrade NPC sits in Pyros), but the
+ * elemental armor's elemental → elemental+1 step consumes Hydatos Crystals
+ * farmed in Hydatos. Bucketing by material zone keeps the farming list honest.
+ */
+/**
+ * Per-material acquisition method tooltip text.
+ *
+ * Used by PreviewPanel to render a ⓘ button next to a material row when the
+ * source is non-obvious (NM drops, BA loot). General zone-mob crystals
+ * (Protean / Pagos / Pyros / Hydatos) are omitted — their source is already
+ * implied by the zone bucket in FarmingTab.
+ *
+ * NM TC names verified against eureka-nm-data.ts; BA location confirmed by player.
+ */
+export const MATERIAL_ACQUISITION: Record<number, string> = {
+  21802: '常風之地 NM「帕祖祖」掉落',           // Pazuzu's Feather
+  22975: '恆冰之地 NM「婁希」掉落',             // Louhi's Ice
+  24123: '湧火之地 NM「彭忒西勒亞」掉落',        // Penthesilea's Flame
+  24806: '豐水之地 NM「起源守望者」掉落',        // Crystalline Scale
+  24808: '巴爾德西昂兵武塔取得',                // Eureka Fragment (BA loot)
+};
+
+export const MATERIAL_ZONE: Record<number, EurekaZone> = {
+  21801: 'anemos',  // 亂屬性水晶 Protean Crystal
+  21802: 'anemos',  // 帕祖祖的羽毛 Pazuzu's Feather
+  21803: 'anemos',  // 常風水晶 Anemos Crystal
+  22975: 'pagos',   // 婁希的冰片 Louhi's Ice
+  22976: 'pagos',   // 恆冰水晶 Pagos Crystal
+  23309: 'pagos',   // 結冰亂屬性水晶 Frosted Protean Crystal
+  24122: 'pyros',   // 大火焰亂屬性水晶 Smoldering Protean Crystal
+  24123: 'pyros',   // 彭忒西勒亞的火種 Penthesilea's Flame
+  24124: 'pyros',   // 湧火水晶 Pyros Crystal
+  24806: 'hydatos', // 水晶龍之鱗 Crystalline Scale
+  24807: 'hydatos', // 豐水水晶 Hydatos Crystal
+  24808: 'hydatos', // 優雷卡的斷片 Eureka Fragment (Baldesion Arsenal in Hydatos)
+};
+
 export const ZONE_ENDPOINT_TC_NAME = {
   start: '起點',
   final: '最終形態',

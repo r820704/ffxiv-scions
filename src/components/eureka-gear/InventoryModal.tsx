@@ -22,7 +22,7 @@ interface InventoryModalProps {
   onClear: () => void;
 }
 
-const STEP_DELTAS = [-100, -10, -1, +1, +10, +100] as const;
+const STEP_DELTAS = [-1000, -100, -10, -1, +1, +10, +100, +1000] as const;
 
 export default function InventoryModal({
   open, onOpenChange, materials, inventory, onMaterialChange, onClear,
@@ -31,7 +31,7 @@ export default function InventoryModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto [scrollbar-gutter:stable]">
+      <DialogContent className="sm:max-w-6xl max-h-[90vh] overflow-y-auto [scrollbar-gutter:stable]">
         <DialogHeader>
           <DialogTitle className="text-primary flex items-center gap-2">
             📦 素材庫存
@@ -39,7 +39,7 @@ export default function InventoryModal({
               （{registered}/{materials.length} 種已輸入）
             </span>
           </DialogTitle>
-          <DialogDescription className="sr-only">編輯素材庫存：每個素材可輸入數字或用 -100 / -10 / -1 / +1 / +10 / +100 按鈕調整</DialogDescription>
+          <DialogDescription className="sr-only">編輯素材庫存：每個素材可輸入數字或用 -1000 / -100 / -10 / -1 / +1 / +10 / +100 / +1000 按鈕調整</DialogDescription>
         </DialogHeader>
 
         <div className="flex justify-end mb-2">
@@ -52,29 +52,33 @@ export default function InventoryModal({
           </button>
         </div>
 
-        <ul className="grid grid-cols-1 lg:grid-cols-2 gap-x-3 gap-y-1.5">
+        <ul className="grid grid-cols-1 xl:grid-cols-2 gap-x-3 gap-y-1.5">
           {materials.map((m) => {
             const count = inventory[m.id] ?? 0;
             const iconSrc = MATERIAL_ICONS[m.iconId];
             return (
               <li
                 key={m.id}
-                className="flex items-center gap-1.5 p-1.5 rounded border border-border/40 bg-card hover:bg-secondary/40 transition-colors"
+                className="p-1.5 rounded border border-border/40 bg-card hover:bg-secondary/40 transition-colors lg:flex lg:items-center lg:gap-1.5"
               >
-                {iconSrc && (
-                  <img src={iconSrc} alt="" className="w-5 h-5 shrink-0" loading="lazy" />
-                )}
-                <span className="text-xs text-foreground flex-1 min-w-0 leading-tight" title={m.tcName}>
-                  {m.tcName}
-                </span>
-                <input
-                  type="number"
-                  min={0}
-                  value={count}
-                  onChange={(e) => onMaterialChange(m.id, Math.max(0, Number(e.target.value) || 0))}
-                  className="w-12 text-center text-xs bg-transparent border border-border/50 rounded px-1 py-0.5 outline-none focus:border-primary tabular-nums shrink-0"
-                />
-                <div className="flex gap-0.5 shrink-0">
+                {/* Row 1 (mobile) / left half (desktop): icon + name + input */}
+                <div className="flex items-center gap-1.5 lg:flex-1 lg:min-w-0">
+                  {iconSrc && (
+                    <img src={iconSrc} alt="" className="w-5 h-5 shrink-0" loading="lazy" />
+                  )}
+                  <span className="text-xs text-foreground flex-1 min-w-0 leading-tight whitespace-nowrap">
+                    {m.tcName}
+                  </span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={count}
+                    onChange={(e) => onMaterialChange(m.id, Math.max(0, Number(e.target.value) || 0))}
+                    className="w-20 text-center text-xs bg-transparent border border-border/50 rounded px-1 py-0.5 outline-none focus:border-primary tabular-nums shrink-0"
+                  />
+                </div>
+                {/* Row 2 (mobile) / right half (desktop): step buttons */}
+                <div className="mt-1.5 lg:mt-0 flex gap-0.5 shrink-0 justify-end">
                   {STEP_DELTAS.map((delta) => {
                     const label = delta > 0 ? `+${delta}` : `${delta}`;
                     return (
@@ -83,7 +87,7 @@ export default function InventoryModal({
                           type="button"
                           aria-label={label}
                           onClick={() => onMaterialChange(m.id, Math.max(0, count + delta))}
-                          className={`min-w-[2rem] px-0.5 py-0.5 text-[10px] rounded transition-colors tabular-nums ${
+                          className={`min-w-[2.25rem] px-0.5 py-0.5 text-[10px] rounded transition-colors tabular-nums ${
                             delta > 0
                               ? 'bg-primary/10 text-primary hover:bg-primary/20'
                               : 'bg-muted text-muted-foreground hover:bg-muted/80'

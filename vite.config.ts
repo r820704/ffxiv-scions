@@ -3,7 +3,9 @@ import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
-import { copyFileSync } from 'node:fs'
+import { copyFileSync, readFileSync } from 'node:fs'
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string };
 
 /**
  * Mirrors the root-level NOTICES files into `public/` so the deployed site
@@ -28,6 +30,9 @@ function syncRootNoticesToPublic(): Plugin {
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), syncRootNoticesToPublic()],
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+  },
   base: process.env.VITE_BASE_URL || '/ffxiv-scions/',
   resolve: {
     alias: {

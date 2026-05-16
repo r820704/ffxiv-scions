@@ -24,13 +24,25 @@ describe('InventoryModal', () => {
     expect(screen.getByText('異質結晶')).toBeInTheDocument();
   });
 
-  it('provides ±1 / ±10 / ±100 quick action buttons', () => {
+  it('provides ±1 / ±10 / ±100 / ±1000 quick action buttons', () => {
     const onChange = vi.fn();
     render(<InventoryModal open onOpenChange={() => {}} materials={mats} inventory={{ 1: 50 }} onMaterialChange={onChange} onClear={() => {}} />);
     fireEvent.click(screen.getByRole('button', { name: '+10' }));
     expect(onChange).toHaveBeenLastCalledWith(1, 60);
     fireEvent.click(screen.getByRole('button', { name: '-100' }));
     expect(onChange).toHaveBeenLastCalledWith(1, 0);
+    fireEvent.click(screen.getByRole('button', { name: '+1000' }));
+    expect(onChange).toHaveBeenLastCalledWith(1, 1050);
+    // -1000 from 50 should floor at 0 (clamped via Math.max)
+    fireEvent.click(screen.getByRole('button', { name: '-1000' }));
+    expect(onChange).toHaveBeenLastCalledWith(1, 0);
+  });
+
+  it('input field is wide enough for 5-digit values', () => {
+    render(<InventoryModal open onOpenChange={() => {}} materials={mats} inventory={{ 1: 99999 }} onMaterialChange={() => {}} onClear={() => {}} />);
+    const input = screen.getByDisplayValue('99999') as HTMLInputElement;
+    // w-20 (= 5rem ≈ 80px) accommodates "99999" without clipping
+    expect(input.className).toMatch(/w-20/);
   });
 
   it('calls onClear when 全部清空 clicked', () => {
