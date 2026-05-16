@@ -45,32 +45,34 @@ export const ELEMENTAL_ARMOR_COSTS: StageUpgradeCost[] = [
     materials: [{ materialId: PYROS_CRYSTAL, quantity: 40 }],
     notes: '需收集 50 個文理技能圖鑑，且至少完成一件任意職業的恆冰武器',
   },
+  // elemental → elemental+1 — system filters by slot, so the "身/腿" / "頭/手/腳"
+  // prefix is redundant; only one of these is shown to any given player.
   {
     from: 'elemental',
     to: 'elemental+1',
     slots: ['body', 'legs'],
     materials: [{ materialId: HYDATOS_CRYSTAL, quantity: 50 }],
-    notes: '身/腿：需解鎖 56 個文理技能圖鑑',
+    notes: '需解鎖 56 個文理技能圖鑑',
   },
   {
     from: 'elemental',
     to: 'elemental+1',
     slots: ['head', 'hands', 'feet'],
     materials: [{ materialId: HYDATOS_CRYSTAL, quantity: 30 }],
-    notes: '頭/手/腳：需解鎖 56 個文理技能圖鑑',
+    notes: '需解鎖 56 個文理技能圖鑑',
   },
+  // elemental+1 → elemental+2 — acquisition method for 優雷卡的斷片 is now
+  // per-material (MATERIAL_ACQUISITION); no additional edge note needed.
   {
     from: 'elemental+1',
     to: 'elemental+2',
     slots: ['body', 'legs'],
     materials: [{ materialId: EUREKA_FRAGMENT, quantity: 35 }],
-    notes: '身/腿：優雷卡的斷片於禁地王都獲取',
   },
   {
     from: 'elemental+1',
     to: 'elemental+2',
     slots: ['head', 'hands', 'feet'],
     materials: [{ materialId: EUREKA_FRAGMENT, quantity: 21 }],
-    notes: '頭/手/腳：優雷卡的斷片於禁地王都獲取',
   },
 ];

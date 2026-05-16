@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { costBetween, costBetweenInSequence, notesBetweenInSequence } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
-import { EUREKA_STAGES, STAGE_TC_LABEL } from '../../types/eureka-gear';
+import { EUREKA_STAGES, MATERIAL_ACQUISITION, STAGE_TC_LABEL } from '../../types/eureka-gear';
 import { Tooltip } from '../ui/Tooltip';
 import type { ArmorSlot, EurekaStage, StageUpgradeCost } from '../../types/eureka-gear';
 
@@ -102,11 +102,23 @@ export function PreviewPanel({
     const name = meta?.nameTC ?? `#${m.materialId}`;
     const iconUrl = MATERIAL_ICONS[meta?.icon ?? 0];
     const short = Math.max(0, m.quantity - have);
+    const acquisition = MATERIAL_ACQUISITION[m.materialId];
     return (
       <li key={m.materialId} className="flex items-center justify-between gap-2">
         <span className="flex items-center gap-2 min-w-0">
           {iconUrl && <img src={iconUrl} alt="" aria-hidden="true" className="w-5 h-5 shrink-0" loading="lazy" />}
           <span className="truncate">{name} × {m.quantity}</span>
+          {acquisition && (
+            <Tooltip label={acquisition}>
+              <button
+                type="button"
+                aria-label={`${name} 取得方式`}
+                className="shrink-0 w-4 h-4 rounded-full bg-gray-700 text-gray-300 text-[10px] leading-4 text-center hover:bg-gray-600 transition-colors"
+              >
+                ⓘ
+              </button>
+            </Tooltip>
+          )}
         </span>
         <span className={`shrink-0 ${short === 0 ? 'text-green-400' : 'text-red-400'}`}>
           有 {have}{short > 0 ? ` / 缺 ${short}` : ' ✓'}
