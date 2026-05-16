@@ -21,13 +21,13 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
       <HelpSection title="三條升級鏈">
         <ul className="list-disc list-outside ml-4 mt-1 space-y-1 text-muted-foreground">
           <li>
-            <strong className="text-foreground">武器</strong>（依職業，共 16 階段，最終階段 iL405，帶有優雷卡元素加持屬性）
+            <strong className="text-foreground">武器</strong>（少數職業沒有優雷卡武器，共 16 階段，最終階段為 iL405 且帶有優雷卡元素加持屬性）
           </li>
           <li>
-            <strong className="text-foreground">常風防具</strong>（外觀專用，不影響角色能力值，各職業獨立，共 5 階段，最終階段為可染色的 Lv.70 職業套裝）
+            <strong className="text-foreground">常風防具</strong>（與 70 級職業裝備素質相同，各職業獨立，共 5 階段，最終階段為可染色的 Lv.70 職業套裝）
           </li>
           <li>
-            <strong className="text-foreground">元素防具</strong>（戰鬥用，共 3 階段，依職能共用——同職能玩家共享同一套外觀，最終階段 iL390，帶有優雷卡元素加持屬性）
+            <strong className="text-foreground">元素防具</strong>（共 3 階段，依職能共用——同職能玩家共享同一套外觀，最終階段為 iL390 且帶有優雷卡元素加持屬性）
           </li>
         </ul>
       </HelpSection>
