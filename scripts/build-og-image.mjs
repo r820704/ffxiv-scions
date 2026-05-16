@@ -78,7 +78,7 @@ import sharp from 'sharp';
 const WORDMARK_TOP = 'FFXIV';
 const WORDMARK_BOTTOM = 'SCIONS';
 const FEATURES_ROW = '優雷卡天氣·文理技能·禁地兵裝';
-const SLOGAN = '◆ 為你的冒險點一盞燈';
+const SLOGAN = '為你的冒險點一盞燈';
 // ────────────────────────────────
 
 const OUT = '/workspaces/FFXIV/public/brand/og-image.png';
@@ -138,13 +138,7 @@ const glowSvg = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}
 </svg>`);
 
 // ── text overlay ──
-// Wordmark stays left-aligned at textLeft. Features + slogan are
-// right-aligned to the same right edge that SCIONS naturally lands on,
-// giving the three CJK/English rows a clean shared right margin. Diamond
-// is embedded into the slogan string so text-anchor="end" carries it
-// along automatically.
 const textLeft = 555;
-const textRight = 1094; // SCIONS natural right edge with current font config
 const textSvg = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
   <style>
     .wordmark {
@@ -166,11 +160,18 @@ const textSvg = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}
       letter-spacing: 5px;
       fill: ${TEXT_COLOR};
     }
+    .diamond {
+      fill: ${TEXT_MUTED};
+    }
   </style>
   <text x="${textLeft}" y="210" class="wordmark">${WORDMARK_TOP}</text>
   <text x="${textLeft}" y="325" class="wordmark">${WORDMARK_BOTTOM}</text>
-  <text x="${textRight}" y="410" text-anchor="end" class="features">${FEATURES_ROW}</text>
-  <text x="${textRight}" y="492" text-anchor="end" class="slogan">${SLOGAN}</text>
+  <text x="${textLeft}" y="415" class="features">${FEATURES_ROW}</text>
+  <polygon
+    points="${textLeft + 1},475 ${textLeft + 8},467 ${textLeft + 15},475 ${textLeft + 8},483"
+    class="diamond"
+  />
+  <text x="${textLeft + 28}" y="490" class="slogan">${SLOGAN}</text>
 </svg>`);
 
 await sharp(bgSvg)
