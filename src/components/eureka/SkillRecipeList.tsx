@@ -7,6 +7,7 @@ import { ROLE_LABELS, ROLE_COLORS } from '@/types/eureka';
 import type { OptimizationResult } from '@/utils/recipe-optimizer';
 import type { SlotConfig, SlotOptimizationResult } from '@/utils/slot-optimizer';
 import type { CalcMode } from '@/hooks/useCalcMode';
+import { useRecentSearches } from '@/hooks/useRecentSearches';
 import LogosActionCard from './LogosActionCard';
 import { cn } from '@/lib/utils';
 
@@ -65,6 +66,7 @@ export default function SkillRecipeList({
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [stateFilter, setStateFilter] = useState<StateFilter>('all');
   const [expandedSet, setExpandedSet] = useState<Set<string>>(() => new Set(ALBUM_ORDER));
+  const { recents, pushRecent, removeRecent } = useRecentSearches();
 
   // Auto-switch to 'guide' when a fresh result arrives (both modes)
   useEffect(() => {
@@ -197,13 +199,46 @@ export default function SkillRecipeList({
 
   return (
     <div className="space-y-3">
-      <input
-        type="text"
-        placeholder="搜尋技能名稱或說明..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-      />
+      <div className="space-y-1.5">
+        <input
+          type="text"
+          placeholder="搜尋技能名稱或說明..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onBlur={() => pushRecent(search)}
+          className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+        {recents.length > 0 && (
+          <div className="flex items-center gap-1.5 flex-wrap text-xs">
+            <span className="text-[10px] text-muted-foreground/70 shrink-0">最近搜尋：</span>
+            {recents.map((q) => (
+              <span
+                key={q}
+                className="inline-flex items-center gap-0.5 rounded-full border border-border bg-secondary/40 pl-2 pr-0.5 py-0.5 text-[11px] text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors"
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch(q);
+                    pushRecent(q);
+                  }}
+                  className="cursor-pointer"
+                >
+                  {q}
+                </button>
+                <button
+                  type="button"
+                  aria-label={`移除 ${q}`}
+                  onClick={() => removeRecent(q)}
+                  className="cursor-pointer text-muted-foreground/60 hover:text-destructive transition-colors w-4 h-4 flex items-center justify-center rounded-full"
+                >
+                  ✕
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* State filter */}
       <div className="flex flex-wrap gap-1.5 items-center">
