@@ -33,5 +33,9 @@ docs/eureka-weapons-review.csv
 # Ephemeral verification artifacts (screenshots, snapshots)
 tmp/
 
+# Synced from root by vite plugin (see syncRootNoticesToPublic in vite.config.ts)
+public/THIRD-PARTY-NOTICES.md
+public/THIRD-PARTY-NOTICES.en.md
+
 # Git worktrees (created by superpowers:using-git-worktrees skill)
 .worktrees/
