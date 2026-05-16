@@ -50,3 +50,7 @@
 FINAL FANTASY XIV © 2010 - 2026 SQUARE ENIX CO., LTD. All Rights Reserved.
 
 本網站非 Square Enix 官方授權，亦非營利性質。
+
+## 4. 特別致謝
+
+最終幻想XIV大型任務支援群辛苦的主催們，以及在島上辛苦觸發的玩家們。
