@@ -41,8 +41,10 @@ describe('SiteFooter', () => {
 
   it('displays the app version from __APP_VERSION__ (vite-injected)', () => {
     renderFooter();
-    // Matches v + semver-ish digits (e.g. v0.9.0). Avoids hard-coding a
-    // specific version so the test stays valid across release-please bumps.
-    expect(screen.getByText(/^v\d+\.\d+\.\d+$/)).toBeInTheDocument();
+    // Matches v + semver-ish digits, optionally followed by "+" suffix when
+    // the build commit is past the latest release tag (in-development build).
+    // Avoids hard-coding a specific version so the test stays valid across
+    // release-please bumps.
+    expect(screen.getByText(/^v\d+\.\d+\.\d+\+?$/)).toBeInTheDocument();
   });
 });

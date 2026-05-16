@@ -18,6 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Need full history + tags so vite.config.ts's git describe can
+          # compute the version suffix ("v0.9.0" vs "v0.9.0+").
+          fetch-depth: 0
+          fetch-tags: true
 
       - uses: actions/setup-node@v4
         with:

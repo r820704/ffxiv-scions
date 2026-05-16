@@ -22,7 +22,9 @@ export default function SiteFooter() {
           第三方資料致謝
         </a>
       </div>
-      <div className="mt-1 text-muted-foreground/50">v{__APP_VERSION__}</div>
+      <div className="mt-1 text-muted-foreground/50" title={__APP_VERSION_SUFFIX__ ? `領先 v${__APP_VERSION__} 標籤（開發中變更）` : undefined}>
+        v{__APP_VERSION__}{__APP_VERSION_SUFFIX__}
+      </div>
     </footer>
   );
 }
