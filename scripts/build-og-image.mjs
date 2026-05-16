@@ -77,7 +77,7 @@ import sharp from 'sharp';
 // ─────────── EDITABLE ───────────
 const WORDMARK_TOP = 'FFXIV';
 const WORDMARK_BOTTOM = 'SCIONS';
-const FEATURES_ROW = '優雷卡天氣 · 文理技能 · 禁地兵裝';
+const FEATURES_ROW = '優雷卡天氣·文理技能·禁地兵裝';
 const SLOGAN = '為你的冒險點一盞燈';
 // ────────────────────────────────
 
