@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { ZoneGroup } from './ZoneGroup';
-import { NextEdgeShortage } from './NextEdgeShortage';
+// NextEdgeShortage card is removed from the layout (the current hint wasn't
+// giving players enough actionable info). Component + tests preserved in
+// ./NextEdgeShortage.tsx for a future redesign.
 import { Tooltip } from '../ui/Tooltip';
 import { useLocalStorageBool } from '@/hooks/useLocalStorageBool';
 import { costBetweenInSequence, notesBetweenInSequence } from '../../utils/eurekaGear';
@@ -475,7 +477,6 @@ export function FarmingTab({ inventory, weapons, materialsMap }: FarmingTabProps
       {toggle}
       <PrereqList items={prereqItems} />
       <ActiveTargetsList entries={activeTargets} />
-      <NextEdgeShortage inventory={inventory} materialsMap={materialsMap} />
       <div className="space-y-3">
         {zones.map((zone) => {
           const items: AggregatedMaterial[] = Array.from(zoneAgg[zone]).map(
