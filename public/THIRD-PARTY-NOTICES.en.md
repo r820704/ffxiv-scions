@@ -30,6 +30,11 @@ We gratefully acknowledge the following projects and data sources, whose work ma
 ### 1.6 thewakingsands/ffxiv-datamining-tc
 - https://github.com/thewakingsands/ffxiv-datamining-tc
 
+### 1.7 Eureka element icons
+
+- Source: [FFXIV consolegameswiki — Template:Eurekaelement_icon](https://ffxiv.consolegameswiki.com/wiki/Template:Eurekaelement_icon) — community-uploaded element icons (Fire / Ice / Wind / Earth / Lightning / Water)
+- Assets originate from FINAL FANTASY XIV © SQUARE ENIX; with thanks to the consolegameswiki community for curating and sharing them
+
 ## 2. Reference Sources
 
 > The following projects served as references and cross-verification during data preparation.
@@ -45,3 +50,7 @@ We gratefully acknowledge the following projects and data sources, whose work ma
 FINAL FANTASY XIV © 2010 - 2026 SQUARE ENIX CO., LTD. All Rights Reserved.
 
 This site is not officially endorsed by Square Enix and is non-commercial in nature.
+
+## 4. Special Thanks
+
+Special thanks to the dedicated hosts of 最終幻想XIV大型任務支援群 (a Traditional Chinese community for FFXIV large-scale activities), and to every player putting in the work triggering NMs in Eureka.
