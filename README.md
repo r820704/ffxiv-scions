@@ -35,6 +35,16 @@ npm run test
 npm run build
 ```
 
+## 重新產生 OG 分享圖
+
+`public/brand/og-image.png` 是社群分享預覽用的 1200×630 卡片（含燈籠圖、品牌字、slogan）。要改文字／字級／位置時，編輯 `scripts/build-og-image.mjs` 最上方的 EDITABLE 區塊與下方的合成設定，再執行：
+
+```bash
+node scripts/build-og-image.mjs
+```
+
+腳本最上方的註解列出所需字型（LXGW WenKai 霞鶩文楷、Noto Serif TC、Noto Sans CJK TC、Cinzel Decorative）與一次性安裝指令。
+
 ## 第三方資料致謝
 
 本專案的資料整理受惠於多個開源計畫與社群。完整列表請見 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)（English: [THIRD-PARTY-NOTICES.en.md](THIRD-PARTY-NOTICES.en.md)）。
