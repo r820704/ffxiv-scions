@@ -31,7 +31,7 @@ export default function InventoryModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto [scrollbar-gutter:stable]">
+      <DialogContent className="sm:max-w-6xl max-h-[90vh] overflow-y-auto [scrollbar-gutter:stable]">
         <DialogHeader>
           <DialogTitle className="text-primary flex items-center gap-2">
             📦 素材庫存
@@ -52,7 +52,7 @@ export default function InventoryModal({
           </button>
         </div>
 
-        <ul className="grid grid-cols-1 lg:grid-cols-2 gap-x-3 gap-y-1.5">
+        <ul className="grid grid-cols-1 xl:grid-cols-2 gap-x-3 gap-y-1.5">
           {materials.map((m) => {
             const count = inventory[m.id] ?? 0;
             const iconSrc = MATERIAL_ICONS[m.iconId];
@@ -66,7 +66,7 @@ export default function InventoryModal({
                   {iconSrc && (
                     <img src={iconSrc} alt="" className="w-5 h-5 shrink-0" loading="lazy" />
                   )}
-                  <span className="text-xs text-foreground flex-1 min-w-0 leading-tight" title={m.tcName}>
+                  <span className="text-xs text-foreground flex-1 min-w-0 leading-tight whitespace-nowrap">
                     {m.tcName}
                   </span>
                   <input
