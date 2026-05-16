@@ -50,3 +50,7 @@ We gratefully acknowledge the following projects and data sources, whose work ma
 FINAL FANTASY XIV © 2010 - 2026 SQUARE ENIX CO., LTD. All Rights Reserved.
 
 This site is not officially endorsed by Square Enix and is non-commercial in nature.
+
+## 4. Special Thanks
+
+Special thanks to the dedicated hosts of 最終幻想XIV大型任務支援群 (a Traditional Chinese community for FFXIV large-scale activities), and to every player putting in the work triggering NMs in Eureka.

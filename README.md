@@ -39,6 +39,10 @@ npm run build
 
 本專案的資料整理受惠於多個開源計畫與社群。完整列表請見 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)（English: [THIRD-PARTY-NOTICES.en.md](THIRD-PARTY-NOTICES.en.md)）。
 
+## 特別致謝
+
+最終幻想XIV大型任務支援群辛苦的主催們，以及在島上辛苦觸發的玩家們。
+
 ## License
 
 Source code of this project is licensed under the MIT license.

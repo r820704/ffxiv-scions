@@ -39,6 +39,10 @@ npm run build
 
 This project's data preparation benefits from several open-source projects and community resources. See [THIRD-PARTY-NOTICES.en.md](THIRD-PARTY-NOTICES.en.md) for the full list (繁體中文：[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)).
 
+## Special Thanks
+
+Special thanks to the dedicated hosts of 最終幻想XIV大型任務支援群 (a Traditional Chinese community for FFXIV large-scale activities), and to every player putting in the work triggering NMs in Eureka.
+
 ## License
 
 Source code of this project is licensed under the MIT license.
