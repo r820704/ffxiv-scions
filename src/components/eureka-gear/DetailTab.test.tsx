@@ -1,8 +1,11 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
 import { DetailTab } from './DetailTab';
 import { emptyInventoryV3 } from '../../utils/eureka-gear-migrate';
 
+beforeEach(() => {
+  window.localStorage.clear();
+});
 afterEach(() => cleanup());
 
 describe('DetailTab', () => {
@@ -179,6 +182,51 @@ describe('DetailTab', () => {
           expect(within(parent).queryByTestId('stepper-container')).toBeNull();
         });
       }
+    });
+
+    describe('expand state persistence (survives unmount/remount like tab switch)', () => {
+      it('per-slot expand state of each track is restored on remount', () => {
+        const { unmount } = renderTab();
+        // Expand 身 in 常風 (first track) and 頭 in 元素 (second track).
+        fireEvent.click(slotButtons('身')[0]!);
+        fireEvent.click(slotButtons('頭')[1]!);
+        unmount();
+
+        // Remount: previously expanded slots should still be expanded.
+        renderTab();
+        const bodyAfter = slotButtons('身');
+        const headAfter = slotButtons('頭');
+        expect(bodyAfter[0]!.getAttribute('aria-expanded')).toBe('true');
+        expect(bodyAfter[1]!.getAttribute('aria-expanded')).toBe('false');
+        expect(headAfter[0]!.getAttribute('aria-expanded')).toBe('false');
+        expect(headAfter[1]!.getAttribute('aria-expanded')).toBe('true');
+      });
+
+      it('section-level expand state is restored on remount', () => {
+        const { unmount } = renderTab();
+        // Find the two armor section toggles (常風防具 / 元素防具) — they have
+        // aria-expanded and the text matches the title.
+        const sectionBtns = screen
+          .getAllByRole('button')
+          .filter((b) => b.hasAttribute('aria-expanded') && (b.textContent ?? '').match(/(常風|元素)防具/));
+        expect(sectionBtns.length).toBe(2);
+        // Both default to expanded; collapse the elemental track.
+        const elementalBtn = sectionBtns.find((b) => (b.textContent ?? '').includes('元素'))!;
+        expect(elementalBtn.getAttribute('aria-expanded')).toBe('true');
+        fireEvent.click(elementalBtn);
+        expect(elementalBtn.getAttribute('aria-expanded')).toBe('false');
+        unmount();
+
+        // Remount: elemental section should still be collapsed.
+        renderTab();
+        const sectionBtnsAfter = screen
+          .getAllByRole('button')
+          .filter((b) => b.hasAttribute('aria-expanded') && (b.textContent ?? '').match(/(常風|元素)防具/));
+        const elementalAfter = sectionBtnsAfter.find((b) => (b.textContent ?? '').includes('元素'))!;
+        const anemosAfter = sectionBtnsAfter.find((b) => (b.textContent ?? '').includes('常風'))!;
+        expect(elementalAfter.getAttribute('aria-expanded')).toBe('false');
+        expect(anemosAfter.getAttribute('aria-expanded')).toBe('true');
+      });
     });
   });
 
