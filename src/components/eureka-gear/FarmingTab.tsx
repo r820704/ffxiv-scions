@@ -3,7 +3,7 @@ import { ZoneGroup } from './ZoneGroup';
 import { NextEdgeShortage } from './NextEdgeShortage';
 import { Tooltip } from '../ui/Tooltip';
 import { useLocalStorageBool } from '@/hooks/useLocalStorageBool';
-import { costBetweenInSequence } from '../../utils/eurekaGear';
+import { costBetweenInSequence, notesBetweenInSequence } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
 import {
@@ -240,15 +240,17 @@ type PrereqEntry =
   | { kind: 'item'; key: string; name: string; obtainMethod: string }
   | { kind: 'condition'; key: string; text: string };
 
-const ELEMENTAL_ENTRY_CONDITION =
-  '元素防具入門條件：需收集 50 個文理技能圖鑑，且至少完成一件任意職業的恆冰武器';
-
 /**
  * Collects 前置條件 for chains whose currentStage is undefined and have a target.
  *
  * Two kinds of entries:
  * - `item` (📜) — a physical prereq item (e.g. 舊化的XX, obtained from AF quest)
- * - `condition` (📋) — a non-item gate (e.g. 元素防具入門條件: 50 文理 + 恆冰武器)
+ * - `condition` (📋) — a non-item gate sourced from cost-edge `notes` along
+ *   the planned upgrade path (e.g. "需收集 50 個文理技能圖鑑", "需解鎖 56 個…")
+ *
+ * Condition rows are walked per chain so they only appear when the relevant
+ * edges will actually be traversed (e.g. someone already at `elemental` won't
+ * see the antiquated→elemental entry condition).
  */
 function computePrereqItems(inv: EurekaInventoryV5, weapons: EurekaWeapon[]): PrereqEntry[] {
   const out: PrereqEntry[] = [];
@@ -285,25 +287,42 @@ function computePrereqItems(inv: EurekaInventoryV5, weapons: EurekaWeapon[]): Pr
     }
   }
 
-  // Elemental armor: surface the entry condition (50 文理 + 恆冰武器) when any
-  // piece is still pre-obtained — these are not items, they're gates.
-  const elementalNeedsCondition = ARMOR_SET_IDS.some((setId) => {
+  // Condition rows: walk every chain with a target, collect edge notes along
+  // the planned path. Dedup happens later via the shared `seen` set.
+  const addConditions = (notes: string[]) => {
+    for (const n of notes) {
+      out.push({ kind: 'condition', key: `cond:${n}`, text: n });
+    }
+  };
+  for (const [chainId, slot] of Object.entries(inv.weapons) as [string, SlotProgress][]) {
+    if (MIRROR_CHAIN_IDS.has(chainId)) continue;
+    if (!slot.targetStage) continue;
+    const from: EurekaStage = slot.currentStage ?? 'antiquated';
+    addConditions(notesBetweenInSequence(from, slot.targetStage, EUREKA_STAGES, STAGE_UPGRADE_COSTS));
+  }
+  for (const [_job, jobPieces] of Object.entries(inv.armor.anemos)) {
+    if (!jobPieces) continue;
+    for (const slotName of ARMOR_SLOTS) {
+      const p = jobPieces[slotName];
+      if (!p?.targetStage) continue;
+      const from: EurekaStage = p.currentStage ?? 'antiquated';
+      addConditions(notesBetweenInSequence(from, p.targetStage, ARMOR_STAGES_BY_TRACK.anemos, ANEMOS_ARMOR_COSTS, slotName));
+    }
+  }
+  for (const setId of ARMOR_SET_IDS) {
     const setData = inv.armor.elemental[setId] ?? {};
-    return ARMOR_SLOTS.some((slot) => {
-      const p = setData[slot];
-      if (!p) return false;
-      if (p.currentStage !== undefined) return false;
-      return p.targetStage !== undefined;
-    });
-  });
-  if (elementalNeedsCondition) {
-    out.push({ kind: 'condition', key: 'elemental-entry-condition', text: ELEMENTAL_ENTRY_CONDITION });
+    for (const slotName of ARMOR_SLOTS) {
+      const p = setData[slotName];
+      if (!p?.targetStage) continue;
+      const from: EurekaStage = p.currentStage ?? 'antiquated';
+      addConditions(notesBetweenInSequence(from, p.targetStage, ARMOR_STAGES_BY_TRACK.elemental, ELEMENTAL_ARMOR_COSTS, slotName));
+    }
   }
 
-  // De-duplicate item rows by (name, obtainMethod); condition rows by key.
+  // De-duplicate: item rows by (name, obtainMethod); condition rows by text.
   const seen = new Set<string>();
   return out.filter((e) => {
-    const k = e.kind === 'item' ? `item::${e.name}::${e.obtainMethod}` : `cond::${e.key}`;
+    const k = e.kind === 'item' ? `item::${e.name}::${e.obtainMethod}` : `cond::${e.text}`;
     if (seen.has(k)) return false;
     seen.add(k);
     return true;

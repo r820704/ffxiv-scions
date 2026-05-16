@@ -155,7 +155,7 @@ describe('FarmingTab', () => {
   describe('前置條件 list', () => {
     it('section header reads "前置條件" (renamed from "前置道具")', () => {
       const inv: EurekaInventoryV5 = emptyInventoryV3();
-      // Use elemental armor 未開始 → triggers the entry-condition row,
+      // Use elemental armor 未開始 → triggers the entry condition,
       // which causes the section to render without needing the weapons array.
       inv.armor.elemental.fending.head = { targetStage: 'elemental+2' };
       render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
@@ -163,29 +163,56 @@ describe('FarmingTab', () => {
       expect(screen.queryByText(/📜 前置道具/)).not.toBeInTheDocument();
     });
 
-    it('adds elemental armor entry condition row when a piece is 未開始 with target', () => {
+    it('adds elemental entry condition (50 文理 + 恆冰武器) when piece is 未開始 with target', () => {
       const inv: EurekaInventoryV5 = emptyInventoryV3();
       inv.armor.elemental.fending.head = { targetStage: 'elemental+2' };
       render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
-      expect(screen.getByText(/元素防具入門條件/)).toBeInTheDocument();
-      expect(screen.getByText(/收集 50 個文理技能圖鑑/)).toBeInTheDocument();
-      expect(screen.getByText(/至少完成一件任意職業的恆冰武器/)).toBeInTheDocument();
+      expect(screen.getByText(/需收集 50 個文理技能圖鑑.*至少完成一件任意職業的恆冰武器/)).toBeInTheDocument();
     });
 
-    it('does NOT add elemental condition row when piece is already at elemental stage', () => {
+    it('adds 56 文理 condition when elemental piece targets +1 or +2', () => {
+      const inv: EurekaInventoryV5 = emptyInventoryV3();
+      inv.armor.elemental.fending.head = { targetStage: 'elemental+2' };
+      render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
+      expect(screen.getByText(/需解鎖 56 個文理技能圖鑑/)).toBeInTheDocument();
+    });
+
+    it('does NOT add the 50 文理 + 恆冰武器 condition when piece is already at elemental stage', () => {
       const inv: EurekaInventoryV5 = emptyInventoryV3();
       inv.armor.elemental.fending.head = { currentStage: 'elemental', targetStage: 'elemental+2' };
       render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
-      expect(screen.queryByText(/元素防具入門條件/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/需收集 50 個文理技能圖鑑/)).not.toBeInTheDocument();
+      // But 56 文理 still applies (elemental → +1 still walked)
+      expect(screen.getByText(/需解鎖 56 個文理技能圖鑑/)).toBeInTheDocument();
     });
 
-    it('elemental condition row is deduplicated across multiple 未開始 pieces', () => {
+    it('deduplicates conditions across multiple slots of the same set', () => {
       const inv: EurekaInventoryV5 = emptyInventoryV3();
       inv.armor.elemental.fending.head = { targetStage: 'elemental+2' };
       inv.armor.elemental.fending.body = { targetStage: 'elemental+2' };
       inv.armor.elemental.aiming.legs = { targetStage: 'elemental+2' };
       render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
-      expect(screen.getAllByText(/元素防具入門條件/)).toHaveLength(1);
+      // Both head/hands/feet and body/legs have the same "56 文理" text after cleanup → 1 row
+      expect(screen.getAllByText(/需解鎖 56 個文理技能圖鑑/)).toHaveLength(1);
+      expect(screen.getAllByText(/需收集 50 個文理技能圖鑑/)).toHaveLength(1);
+    });
+
+    it('aggregates weapon文理 conditions from stage cost notes', () => {
+      const inv: EurekaInventoryV5 = emptyInventoryV3();
+      inv.weapons['pld-galatyn'] = { currentStage: 'elemental', targetStage: 'pyros' };
+      render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
+      // Walks elemental → +1 → +2 → pyros, picks up 10 + 20 + 30 文理 notes
+      expect(screen.getByText(/需收集 10 個文理技能圖鑑/)).toBeInTheDocument();
+      expect(screen.getByText(/需收集 20 個文理技能圖鑑/)).toBeInTheDocument();
+      expect(screen.getByText(/需收集 30 個文理技能圖鑑/)).toBeInTheDocument();
+    });
+
+    it('does not add weapon文理 conditions when target is before the elemental stages', () => {
+      const inv: EurekaInventoryV5 = emptyInventoryV3();
+      inv.weapons['pld-galatyn'] = { currentStage: 'antiquated', targetStage: 'anemos' };
+      render(<FarmingTab inventory={inv} weapons={[]} materialsMap={materialsMap} />);
+      expect(screen.queryByText(/需收集 10 個文理技能圖鑑/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/需收集 50 個文理技能圖鑑/)).not.toBeInTheDocument();
     });
   });
 });
