@@ -418,14 +418,6 @@ export function DetailTab({
         onRequestUpgrade={onRequestUpgrade}
         onRequestReset={(ref, label) => setResetDialogRef({ ref, label })}
         globalExpand={globalArmorExpand}
-        getPrereqRows={(slot) => {
-          // 元素防具：antiquated 起點（AF 套裝）作為前置道具，前置條件文字寫在 obtainMethod
-          const antName = getAnemosArmorName(selectedJob, slot, 'antiquated') ?? STAGE_TC_LABEL['antiquated'];
-          return [{
-            name: antName,
-            obtainMethod: '前置：持有 70 級職業套裝、解鎖 50 個文理技能圖鑑、至少擁有一件元素武器',
-          }];
-        }}
       />
       </div>
 

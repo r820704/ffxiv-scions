@@ -43,7 +43,7 @@ export const ELEMENTAL_ARMOR_COSTS: StageUpgradeCost[] = [
     from: 'antiquated',
     to: 'elemental',
     materials: [{ materialId: PYROS_CRYSTAL, quantity: 40 }],
-    notes: '需解鎖 50 個文理技能圖鑑且至少擁有一件元素武器',
+    notes: '需收集 50 個文理技能圖鑑，且至少完成一件任意職業的恆冰武器',
   },
   {
     from: 'elemental',

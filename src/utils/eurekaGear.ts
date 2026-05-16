@@ -71,6 +71,36 @@ export function costBetween(
 }
 
 /**
+ * Collect the `notes` string from every cost edge walked between `from` and
+ * `to`. Mirrors `costBetweenInSequence`'s slot filtering. Used by PreviewPanel
+ * to surface upgrade conditions (e.g. "需收集 50 文理技能圖鑑").
+ */
+export function notesBetweenInSequence(
+  from: EurekaStage,
+  to: EurekaStage,
+  sequence: readonly EurekaStage[],
+  costs: StageUpgradeCost[],
+  slot?: ArmorSlot,
+): string[] {
+  const fromIdx = sequence.indexOf(from);
+  const toIdx = sequence.indexOf(to);
+  if (toIdx < 0 || toIdx <= fromIdx) return [];
+  if (fromIdx < 0) {
+    return notesBetweenInSequence(from, to, [from, ...sequence], costs, slot);
+  }
+  const out: string[] = [];
+  for (let i = fromIdx; i < toIdx; i++) {
+    const edges = costs.filter((c) => c.from === sequence[i] && c.to === sequence[i + 1]);
+    const edge = edges.find((c) => {
+      if (!c.slots) return true;
+      return slot ? c.slots.includes(slot) : false;
+    });
+    if (edge?.notes) out.push(edge.notes);
+  }
+  return out;
+}
+
+/**
  * Like `costBetween` but walks a custom stage sequence (used for armor tracks
  * whose stages are a non-contiguous subset of EUREKA_STAGES). When `slot` is
  * provided, cost entries with a `slots` restriction are filtered to match;

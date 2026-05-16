@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { costBetween, costBetweenInSequence } from '../../utils/eurekaGear';
+import { costBetween, costBetweenInSequence, notesBetweenInSequence } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { EUREKA_STAGES, STAGE_TC_LABEL } from '../../types/eureka-gear';
+import { Tooltip } from '../ui/Tooltip';
 import type { ArmorSlot, EurekaStage, StageUpgradeCost } from '../../types/eureka-gear';
 
 const MATERIAL_ICON_MODULES = import.meta.glob('../../assets/material-icons/*.png', {
@@ -78,6 +79,18 @@ export function PreviewPanel({
         return costBetweenInSequence(effectiveFrom, targetStage, seq, costs ?? STAGE_UPGRADE_COSTS, slot);
       }
       return costBetween(effectiveFrom, targetStage, STAGE_UPGRADE_COSTS);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentStage, targetStage, direction, slot, isPreObtained],
+  );
+
+  // 升階段所經過的 cost edge notes（前置條件、特殊條件文字）
+  const edgeNotes = useMemo(
+    () => {
+      if (!targetStage || direction !== 'up') return [];
+      const effectiveFrom: EurekaStage = currentStage ?? 'antiquated';
+      if (effectiveFrom === targetStage) return [];
+      return notesBetweenInSequence(effectiveFrom, targetStage, seq, costs ?? STAGE_UPGRADE_COSTS, slot);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentStage, targetStage, direction, slot, isPreObtained],
@@ -163,16 +176,32 @@ export function PreviewPanel({
             <li key={`prereq-${i}`} className="flex items-center justify-between gap-2">
               <span className="flex items-center gap-2 min-w-0">
                 <span aria-hidden="true" className="w-5 h-5 shrink-0 inline-flex items-center justify-center text-base">📜</span>
-                <span className="truncate">
-                  {row.name} × 1
-                  {row.obtainMethod && (
-                    <span className="text-gray-400">（{row.obtainMethod}）</span>
-                  )}
-                </span>
+                <span className="truncate">{row.name} × 1</span>
+                {row.obtainMethod && (
+                  <Tooltip label={row.obtainMethod}>
+                    <button
+                      type="button"
+                      aria-label={`${row.name} 取得方式`}
+                      className="shrink-0 w-4 h-4 rounded-full bg-gray-700 text-gray-300 text-[10px] leading-4 text-center hover:bg-gray-600 transition-colors"
+                    >
+                      ⓘ
+                    </button>
+                  </Tooltip>
+                )}
               </span>
             </li>
           ))}
           {materials.map(renderMaterialRow)}
+        </ul>
+      )}
+      {edgeNotes.length > 0 && (
+        <ul className="mb-3 space-y-0.5 text-xs text-gray-400 italic">
+          {edgeNotes.map((n, i) => (
+            <li key={`note-${i}`} className="flex items-baseline gap-1.5">
+              <span aria-hidden="true" className="shrink-0 text-gray-500">ⓘ</span>
+              <span>{n}</span>
+            </li>
+          ))}
         </ul>
       )}
       <div className="flex gap-2">

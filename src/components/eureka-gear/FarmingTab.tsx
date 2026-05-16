@@ -3,7 +3,7 @@ import { ZoneGroup } from './ZoneGroup';
 import { NextEdgeShortage } from './NextEdgeShortage';
 import { Tooltip } from '../ui/Tooltip';
 import { useLocalStorageBool } from '@/hooks/useLocalStorageBool';
-import { costBetween, costBetweenInSequence } from '../../utils/eurekaGear';
+import { costBetweenInSequence } from '../../utils/eurekaGear';
 import { STAGE_UPGRADE_COSTS } from '../../data/eureka-stage-costs';
 import { ANEMOS_ARMOR_COSTS, ELEMENTAL_ARMOR_COSTS } from '../../data/eureka-armor-costs';
 import {
@@ -11,9 +11,9 @@ import {
   ARMOR_SLOTS,
   ARMOR_STAGES_BY_TRACK,
   EUREKA_STAGES,
+  MATERIAL_ZONE,
   STAGE_ITEM_LEVELS,
   STAGE_TC_LABEL,
-  ZONE_OF_STAGE,
 } from '../../types/eureka-gear';
 import { EUREKA_CHAINS } from '../../data/eureka-chains';
 import { JOB_TC_NAME, type JobId } from '../../data/eureka-armor-sets';
@@ -72,8 +72,14 @@ type ZoneAgg = Record<EurekaZone, Map<number, number>>;
 
 type AggOpts = { expandAll: boolean };
 
-function addMaterialsToZone(agg: ZoneAgg, zone: EurekaZone, materials: MaterialCost[]) {
+/**
+ * Bucket each material into its source zone (where players farm it).
+ * Materials without a known zone are skipped — keeps the farming list honest.
+ */
+function addMaterials(agg: ZoneAgg, materials: MaterialCost[]) {
   for (const m of materials) {
+    const zone = MATERIAL_ZONE[m.materialId];
+    if (!zone) continue;
     agg[zone].set(m.materialId, (agg[zone].get(m.materialId) ?? 0) + m.quantity);
   }
 }
@@ -86,17 +92,8 @@ function aggregateWeaponCosts(inv: EurekaInventoryV5, agg: ZoneAgg, opts: AggOpt
       : slot.targetStage;
     if (!target) continue;
     // currentStage undefined（尚未取得舊化）視為 antiquated 起算成本
-    const effectiveFrom = slot.currentStage ?? 'antiquated';
-    const fromIdx = EUREKA_STAGES.indexOf(effectiveFrom);
-    const toIdx = EUREKA_STAGES.indexOf(target);
-    if (toIdx <= fromIdx) continue;
-    for (let i = fromIdx; i < toIdx; i++) {
-      const from = EUREKA_STAGES[i];
-      const to = EUREKA_STAGES[i + 1];
-      if (!from || !to) continue;
-      const zone = zoneForCostEdge(to);
-      addMaterialsToZone(agg, zone, costBetween(from, to, STAGE_UPGRADE_COSTS));
-    }
+    const effectiveFrom: EurekaStage = slot.currentStage ?? 'antiquated';
+    addMaterials(agg, costBetweenInSequence(effectiveFrom, target, EUREKA_STAGES, STAGE_UPGRADE_COSTS));
   }
 }
 
@@ -108,10 +105,14 @@ function aggregateArmorCosts(inv: EurekaInventoryV5, agg: ZoneAgg, opts: AggOpts
       if (!p) continue;
       const target: EurekaStage | undefined = opts.expandAll ? ANEMOS_ENDPOINT : p.targetStage;
       if (!target) continue;
-      walkAndAggregate(p.currentStage ?? 'antiquated', target, ARMOR_STAGES_BY_TRACK.anemos, ANEMOS_ARMOR_COSTS, slot, agg);
+      const effectiveFrom: EurekaStage = p.currentStage ?? 'antiquated';
+      addMaterials(agg, costBetweenInSequence(effectiveFrom, target, ARMOR_STAGES_BY_TRACK.anemos, ANEMOS_ARMOR_COSTS, slot));
     }
   }
-  // Elemental armor: per-role
+  // Elemental armor: per-role.
+  // currentStage undefined → start from 'antiquated' so the antiquated→elemental
+  // edge (40 Pyros Crystal) gets included. costBetweenInSequence handles the
+  // from-not-in-sequence case by prepending it transparently.
   for (const setId of ARMOR_SET_IDS) {
     const setData = inv.armor.elemental[setId] ?? {};
     for (const slot of ARMOR_SLOTS) {
@@ -119,40 +120,10 @@ function aggregateArmorCosts(inv: EurekaInventoryV5, agg: ZoneAgg, opts: AggOpts
       if (!p) continue;
       const target: EurekaStage | undefined = opts.expandAll ? ELEMENTAL_ENDPOINT : p.targetStage;
       if (!target) continue;
-      walkAndAggregate(p.currentStage ?? 'elemental', target, ARMOR_STAGES_BY_TRACK.elemental, ELEMENTAL_ARMOR_COSTS, slot, agg);
+      const effectiveFrom: EurekaStage = p.currentStage ?? 'antiquated';
+      addMaterials(agg, costBetweenInSequence(effectiveFrom, target, ARMOR_STAGES_BY_TRACK.elemental, ELEMENTAL_ARMOR_COSTS, slot));
     }
   }
-}
-
-function walkAndAggregate(
-  from: EurekaStage,
-  to: EurekaStage,
-  sequence: EurekaStage[],
-  costs: typeof ANEMOS_ARMOR_COSTS,
-  slot: ArmorSlot,
-  agg: ZoneAgg,
-) {
-  const fromIdx = sequence.indexOf(from);
-  const toIdx = sequence.indexOf(to);
-  if (toIdx <= fromIdx) return;
-  for (let i = fromIdx; i < toIdx; i++) {
-    const f = sequence[i];
-    const t = sequence[i + 1];
-    if (!f || !t) continue;
-    const zone = zoneForCostEdge(t);
-    addMaterialsToZone(agg, zone, costBetweenInSequence(f, t, sequence, costs, slot));
-  }
-}
-
-/**
- * Resolve the zone for aggregating an upgrade edge's materials.
- * Falls back to 'hydatos' for null-zone stages (physeos endpoint, where
- * Eureka Fragments drop in Baldesion Arsenal in Hydatos zone).
- *
- * Used by both weapon and armor aggregation to keep behaviour symmetric.
- */
-function zoneForCostEdge(to: EurekaStage): EurekaZone {
-  return ZONE_OF_STAGE[to] ?? 'hydatos';
 }
 
 function aggregateMaterialsByZone(inv: EurekaInventoryV5, opts: AggOpts): ZoneAgg {
@@ -265,13 +236,19 @@ function computeActiveTargets(
   return out;
 }
 
-type PrereqEntry = { key: string; name: string; obtainMethod: string };
+type PrereqEntry =
+  | { kind: 'item'; key: string; name: string; obtainMethod: string }
+  | { kind: 'condition'; key: string; text: string };
+
+const ELEMENTAL_ENTRY_CONDITION =
+  '元素防具入門條件：需收集 50 個文理技能圖鑑，且至少完成一件任意職業的恆冰武器';
 
 /**
- * Collects 前置道具 (AF gear) for chains whose currentStage is undefined
- * and have a target set. Each chain contributes one item per primary +
- * mirror chain. Armor contributes the antiquated head/body/etc. for each
- * affected slot.
+ * Collects 前置條件 for chains whose currentStage is undefined and have a target.
+ *
+ * Two kinds of entries:
+ * - `item` (📜) — a physical prereq item (e.g. 舊化的XX, obtained from AF quest)
+ * - `condition` (📋) — a non-item gate (e.g. 元素防具入門條件: 50 文理 + 恆冰武器)
  */
 function computePrereqItems(inv: EurekaInventoryV5, weapons: EurekaWeapon[]): PrereqEntry[] {
   const out: PrereqEntry[] = [];
@@ -284,13 +261,13 @@ function computePrereqItems(inv: EurekaInventoryV5, weapons: EurekaWeapon[]): Pr
     if (!slot.targetStage) continue;
     const primaryAnt = weaponInfoAt(weapons, chainId, 'antiquated');
     if (primaryAnt) {
-      out.push({ key: `weapon-prereq:${chainId}`, name: primaryAnt.tcName, obtainMethod: AF_METHOD });
+      out.push({ kind: 'item', key: `weapon-prereq:${chainId}`, name: primaryAnt.tcName, obtainMethod: AF_METHOD });
     }
     const mirrors = EUREKA_CHAINS.filter((c) => c.mirrorsChainId === chainId);
     for (const mc of mirrors) {
       const mAnt = weaponInfoAt(weapons, mc.chainId, 'antiquated');
       if (mAnt) {
-        out.push({ key: `weapon-prereq:${mc.chainId}`, name: mAnt.tcName, obtainMethod: AF_METHOD });
+        out.push({ kind: 'item', key: `weapon-prereq:${mc.chainId}`, name: mAnt.tcName, obtainMethod: AF_METHOD });
       }
     }
   }
@@ -304,19 +281,29 @@ function computePrereqItems(inv: EurekaInventoryV5, weapons: EurekaWeapon[]): Pr
       if (p.currentStage !== undefined) continue;
       if (!p.targetStage) continue;
       const name = getAnemosArmorName(job, slotName, 'antiquated') ?? STAGE_TC_LABEL['antiquated'];
-      out.push({ key: `anemos-prereq:${job}:${slotName}`, name, obtainMethod: AF_METHOD });
+      out.push({ kind: 'item', key: `anemos-prereq:${job}:${slotName}`, name, obtainMethod: AF_METHOD });
     }
   }
 
-  // Elemental armor: the AF gear prereq is already covered by the anemos armor prereq above
-  // (same physical item — 舊化的 XX). Adding a duplicate entry adds noise. The other elemental
-  // prereqs (50 文理技能 + 元素武器) aren't items so they don't fit this row format — surface
-  // them in the elemental armor's DetailTab preview instead.
+  // Elemental armor: surface the entry condition (50 文理 + 恆冰武器) when any
+  // piece is still pre-obtained — these are not items, they're gates.
+  const elementalNeedsCondition = ARMOR_SET_IDS.some((setId) => {
+    const setData = inv.armor.elemental[setId] ?? {};
+    return ARMOR_SLOTS.some((slot) => {
+      const p = setData[slot];
+      if (!p) return false;
+      if (p.currentStage !== undefined) return false;
+      return p.targetStage !== undefined;
+    });
+  });
+  if (elementalNeedsCondition) {
+    out.push({ kind: 'condition', key: 'elemental-entry-condition', text: ELEMENTAL_ENTRY_CONDITION });
+  }
 
-  // De-duplicate by (name, obtainMethod) so the same AF piece isn't repeated.
+  // De-duplicate item rows by (name, obtainMethod); condition rows by key.
   const seen = new Set<string>();
   return out.filter((e) => {
-    const k = `${e.name}::${e.obtainMethod}`;
+    const k = e.kind === 'item' ? `item::${e.name}::${e.obtainMethod}` : `cond::${e.key}`;
     if (seen.has(k)) return false;
     seen.add(k);
     return true;
@@ -384,18 +371,25 @@ function PrereqList({ items }: { items: PrereqEntry[] }) {
         className="w-full px-3 py-2 text-left flex items-center gap-2 text-sm hover:bg-gray-800/50 transition-colors"
       >
         <span className="text-gray-500 text-xs">{open ? '▼' : '▶'}</span>
-        <span className="text-yellow-400 font-semibold">📜 前置道具</span>
-        <span className="text-xs text-gray-500">（{items.length} 件 · 任務 / NPC 兌換）</span>
+        <span className="text-yellow-400 font-semibold">📜 前置條件</span>
+        <span className="text-xs text-gray-500">（{items.length} 項）</span>
       </button>
       {open && (
         <ul className="px-3 pb-3 space-y-1 text-xs">
           {items.map((it) => (
-            <li key={it.key} className="flex items-baseline gap-2 text-gray-300">
-              <span className="text-gray-500 shrink-0">•</span>
-              <span className="font-medium">{it.name}</span>
-              <span className="text-gray-500">× 1</span>
-              <span className="text-gray-400 text-[11px]">（{it.obtainMethod}）</span>
-            </li>
+            it.kind === 'item' ? (
+              <li key={it.key} className="flex items-baseline gap-2 text-gray-300">
+                <span aria-hidden="true" className="shrink-0">📜</span>
+                <span className="font-medium">{it.name}</span>
+                <span className="text-gray-500">× 1</span>
+                <span className="text-gray-400 text-[11px]">（{it.obtainMethod}）</span>
+              </li>
+            ) : (
+              <li key={it.key} className="flex items-baseline gap-2 text-gray-300">
+                <span aria-hidden="true" className="shrink-0">📋</span>
+                <span>{it.text}</span>
+              </li>
+            )
           ))}
         </ul>
       )}

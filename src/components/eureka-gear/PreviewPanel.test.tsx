@@ -117,7 +117,7 @@ describe('PreviewPanel', () => {
       expect(screen.getByText(/從.*未開始.*→.*禁地兵裝.*需要/)).toBeInTheDocument();
     });
 
-    it('renders prereqRows as list items with × 1 and obtain method in parens', () => {
+    it('renders prereqRows with × 1 inline and obtainMethod via ⓘ tooltip button', () => {
       render(
         <PreviewPanel
           currentStage={undefined}
@@ -132,10 +132,14 @@ describe('PreviewPanel', () => {
           ]}
         />,
       );
+      // Item name + × 1 still rendered inline (no longer truncated)
       expect(screen.getByText(/舊化的嘉拉汀 × 1/)).toBeInTheDocument();
       expect(screen.getByText(/舊化的艾瓦拉克血十字盾 × 1/)).toBeInTheDocument();
-      const obtainMethodEls = screen.getAllByText(/完成70級職業任務或從失物管理人兌換取得/);
-      expect(obtainMethodEls.length).toBe(2);
+      // obtainMethod moved off-screen into Radix Tooltip; verify ⓘ button exists per row
+      expect(screen.getByRole('button', { name: /舊化的嘉拉汀 取得方式/ })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /舊化的艾瓦拉克血十字盾 取得方式/ })).toBeInTheDocument();
+      // The raw obtainMethod text should NOT be inline anymore (avoids truncation)
+      expect(screen.queryByText(/完成70級職業任務或從失物管理人兌換取得/)).toBeNull();
     });
 
     it('button label is 升階段 (target) — no special "取得舊化" case', () => {
@@ -215,6 +219,48 @@ describe('PreviewPanel', () => {
         />,
       );
       expect(screen.getByText(/湧火水晶 × 40/)).toBeInTheDocument();
+    });
+  });
+
+  describe('cost edge notes', () => {
+    it('renders edge notes inline (corrected condition text, no 70 級 / 元素武器 mention)', () => {
+      render(
+        <PreviewPanel
+          currentStage={undefined}
+          targetStage="elemental+2"
+          inventory={{}}
+          onSetCurrent={() => {}}
+          onClearTarget={() => {}}
+          materialsMap={materials}
+          stages={ELEMENTAL_ARMOR_STAGES}
+          costs={ELEMENTAL_ARMOR_COSTS}
+          slot="head"
+        />,
+      );
+      // antiquated → elemental note: corrected text
+      expect(screen.getByText(/需收集 50 個文理技能圖鑑.*至少完成一件任意職業的恆冰武器/)).toBeInTheDocument();
+      // Old wrong text gone
+      expect(screen.queryByText(/70 級職業套裝/)).toBeNull();
+      expect(screen.queryByText(/至少擁有一件元素武器/)).toBeNull();
+      // elemental → elemental+1 (head/hands/feet) note
+      expect(screen.getByText(/需解鎖 56 個文理技能圖鑑/)).toBeInTheDocument();
+      // elemental+1 → elemental+2 (head/hands/feet) note
+      expect(screen.getByText(/優雷卡的斷片於禁地王都獲取/)).toBeInTheDocument();
+    });
+
+    it('does not render notes section when no edges have notes', () => {
+      const { container } = render(
+        <PreviewPanel
+          currentStage="anemos-base"
+          targetStage="anemos+1"
+          inventory={{ 21801: 400 }}
+          onSetCurrent={() => {}}
+          onClearTarget={() => {}}
+          materialsMap={materials}
+        />,
+      );
+      // anemos-base → anemos+1 has no notes
+      expect(container.querySelector('ul.italic')).toBeNull();
     });
   });
 });
