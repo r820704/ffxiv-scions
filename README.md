@@ -2,6 +2,8 @@
 
 為 Final Fantasy XIV 繁體中文伺服器玩家打造的優雷卡工具網站。
 
+![FFXIV Scions — 為你的冒險點一盞燈](public/brand/og-image.png)
+
 ## 功能
 
 - **優雷卡天氣·NM**：四地圖天氣時間軸、NM 出現時段、NM 詳細資訊與日夜指示
@@ -34,16 +36,6 @@ npm run test
 ```bash
 npm run build
 ```
-
-## 重新產生 OG 分享圖
-
-`public/brand/og-image.png` 是社群分享預覽用的 1200×630 卡片（含燈籠圖、品牌字、slogan）。要改文字／字級／位置時，編輯 `scripts/build-og-image.mjs` 最上方的 EDITABLE 區塊與下方的合成設定，再執行：
-
-```bash
-node scripts/build-og-image.mjs
-```
-
-腳本最上方的註解列出所需字型（LXGW WenKai 霞鶩文楷、Noto Serif TC、Noto Sans CJK TC、Cinzel Decorative）與一次性安裝指令。
 
 ## 第三方資料致謝
 
