@@ -4,6 +4,8 @@ A toolkit for FINAL FANTASY XIV Traditional Chinese server players.
 
 [繁體中文版本](README.md)
 
+![FFXIV Scions — A lantern for your adventure](public/brand/og-image.png)
+
 ## Features
 
 - Eureka weather forecast
