@@ -178,7 +178,6 @@ export default function EurekaPage() {
         <PageHead
           title="文理技能"
           description="優雷卡文理技能查詢、材料反查與市場價格"
-          numeral="Tool · Ⅱ"
           actions={
             <>
               {lastFetched && (
