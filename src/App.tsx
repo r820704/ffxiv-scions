@@ -60,9 +60,9 @@ export default function App() {
           />
         </Routes>
       </main>
-      <Contained>
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <SiteFooter />
-      </Contained>
+      </div>
       <Toaster position="bottom-center" />
     </HashRouter>
   );
