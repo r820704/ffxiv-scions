@@ -35,6 +35,12 @@ We gratefully acknowledge the following projects and data sources, whose work ma
 - Source: [FFXIV consolegameswiki — Template:Eurekaelement_icon](https://ffxiv.consolegameswiki.com/wiki/Template:Eurekaelement_icon) — community-uploaded element icons (Fire / Ice / Wind / Earth / Lightning / Water)
 - Assets originate from FINAL FANTASY XIV © SQUARE ENIX; with thanks to the consolegameswiki community for curating and sharing them
 
+### 1.8 FFXIV Console Games Wiki — NM notable drop data
+
+- Source: [https://ffxiv.consolegameswiki.com](https://ffxiv.consolegameswiki.com)
+- Notable drop item names listed on the NM Tracker page of this project are compiled from per-NM drop tables on consolegameswiki.
+- With thanks to the consolegameswiki community for maintaining and sharing these drop tables.
+
 ## 2. Reference Sources
 
 > The following projects served as references and cross-verification during data preparation.
