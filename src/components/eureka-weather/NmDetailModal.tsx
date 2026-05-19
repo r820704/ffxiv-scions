@@ -2,6 +2,7 @@ import { eurekaNms, type EurekaNm } from '@/data/eureka-nm-data';
 import { zoneShortNamesTw, weatherNamesTw } from '@/data/weather-data';
 import { nmSpawnInfo } from '@/data/eureka-nm-spawn-data';
 import { triggerMobAttrs } from '@/data/eureka-trigger-mob-data';
+import { getNotableDrops } from '@/data/eureka-nm-drops';
 import {
   Dialog,
   DialogContent,
@@ -146,6 +147,26 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
                 </div>
 
                 <NmDetailMap zone={nm.zone} pins={pins} />
+
+                {(() => {
+                  const drops = getNotableDrops(nm.id);
+                  if (drops.length === 0) return null;
+                  return (
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">特殊掉落</div>
+                      <ul className="flex flex-col gap-1 text-xs">
+                        {drops.map((d, i) => (
+                          <li key={i} className="flex items-center gap-2">
+                            <span className="text-foreground">{d.nameTw}</span>
+                            {d.nameTw !== d.nameEn && (
+                              <span className="text-muted-foreground">{d.nameEn}</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })()}
               </>
             )}
           </div>

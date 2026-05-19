@@ -37,7 +37,10 @@ export function NmRow(props: NmRowProps) {
   const coords = nmSpawnInfo[props.nm.id]?.nmCoord;
 
   return (
-    <tr className={`border-l-4 transition-colors ${ACCENT[props.state]} ${ROW_BG[props.state]}`}>
+    <tr
+      className={`border-l-4 transition-colors cursor-pointer ${ACCENT[props.state]} ${ROW_BG[props.state]}`}
+      onClick={() => props.onOpenDetail?.()}
+    >
       <td className="px-2 py-1 align-middle">
         <div className="flex items-center gap-1">
           <PinStar isPinned={props.isPinned} onToggle={props.onTogglePin} nmName={props.nm.nameTw} />
