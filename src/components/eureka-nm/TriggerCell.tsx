@@ -41,14 +41,24 @@ function ConditionSegment({ cond, status, prefix, mobName }: {
   mobName?: string;
 }) {
   return (
-    <span className="inline-flex items-center gap-0.5 text-xs">
-      {mobName && <span>{mobName}・</span>}
-      {prefix && <span>{prefix}</span>}
-      {cond.timeOfDay === 'night' && <Moon className="inline h-3 w-3" aria-label="夜" />}
-      {cond.timeOfDay === 'day' && <Sun className="inline h-3 w-3" aria-label="晝" />}
-      {cond.weather?.map(w => <span key={w}>{weatherIcon(w)}</span>)}
-      {statusIcon(status)}
-    </span>
+    <>
+      {/* Desktop: full text + icons */}
+      <span className="hidden md:inline-flex items-center gap-0.5 text-xs">
+        {mobName && <span>{mobName}・</span>}
+        {prefix && <span>{prefix}</span>}
+        {cond.timeOfDay === 'night' && <Moon className="inline h-3 w-3" aria-label="夜" />}
+        {cond.timeOfDay === 'day' && <Sun className="inline h-3 w-3" aria-label="晝" />}
+        {cond.weather?.map(w => <span key={w}>{weatherIcon(w)}</span>)}
+        {statusIcon(status)}
+      </span>
+      {/* Mobile: icons only */}
+      <span className="md:hidden inline-flex items-center gap-0.5 text-xs">
+        {cond.timeOfDay === 'night' && <Moon className="inline h-3 w-3" aria-label="夜" />}
+        {cond.timeOfDay === 'day' && <Sun className="inline h-3 w-3" aria-label="晝" />}
+        {cond.weather?.map(w => <span key={`m-${w}`}>{weatherIcon(w)}</span>)}
+        {statusIcon(status)}
+      </span>
+    </>
   );
 }
 
