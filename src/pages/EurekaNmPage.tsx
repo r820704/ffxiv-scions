@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PageHead from '@/components/PageHead';
 import { SubTabStrip } from '@/components/eureka-nm/SubTabStrip';
+import { NmTable } from '@/components/eureka-nm/NmTable';
 import { useNmTrackerRecords } from '@/hooks/useNmTrackerRecords';
+import { useNmTrackerPinned } from '@/hooks/useNmTrackerPinned';
+import { useNmTrackerNow } from '@/hooks/useNmTrackerNow';
+import { eurekaNms } from '@/data/eureka-nm-data';
 import {
   type NmTabKey,
   isNmTabKey,
@@ -25,6 +29,13 @@ export default function EurekaNmPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tab, setTabState] = useState<NmTabKey>(() => getInitialTab(searchParams));
   const records = useNmTrackerRecords();
+  const pinned = useNmTrackerPinned();
+  const now = useNmTrackerNow();
+
+  const nmsForTab = useMemo(() => {
+    if (tab === 'custom') return eurekaNms.filter(n => pinned.pinned.includes(n.id));
+    return eurekaNms.filter(n => n.zone === tab);
+  }, [tab, pinned.pinned]);
 
   function setTab(next: NmTabKey) {
     setTabState(next);
@@ -43,7 +54,17 @@ export default function EurekaNmPage() {
         description="記錄惡名精英的時間軸以及冷卻時間"
       />
       <SubTabStrip activeTab={tab} onTabChange={setTab} onClearAll={records.clearAll} />
-      {/* Tasks 10+ will add ConditionSummaryBar + NmTable here */}
+      <NmTable
+        nms={nmsForTab}
+        records={records.records}
+        pinned={pinned.pinned}
+        now={now}
+        showZoneChips={tab === 'custom'}
+        onTogglePin={pinned.toggle}
+        onPop={records.setPop}
+        onClear={records.clear}
+        onSetCustom={records.setCustom}
+      />
     </>
   );
 }
