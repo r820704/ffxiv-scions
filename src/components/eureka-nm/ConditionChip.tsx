@@ -10,15 +10,15 @@ interface ConditionChipProps {
 }
 
 const COLOR: Record<ConditionStatus, string> = {
-  met: 'border-emerald-500/50 bg-emerald-500/10 text-foreground',
-  soon: 'border-amber-500/50 bg-amber-500/10 text-foreground',
+  met: 'border-owned/50 bg-owned/10 text-foreground',
+  soon: 'border-warning/50 bg-warning/10 text-foreground',
   idle: 'border-border text-muted-foreground',
 };
 
 export function ConditionChip({ icon, label, status, remainText }: ConditionChipProps) {
   const statusIcon =
-    status === 'met' ? <Check className="h-3 w-3 text-emerald-500" />
-    : status === 'soon' ? <Hourglass className="h-3 w-3 text-amber-500" />
+    status === 'met' ? <Check className="h-3 w-3 text-owned" />
+    : status === 'soon' ? <Hourglass className="h-3 w-3 text-warning" />
     : null;
 
   return (

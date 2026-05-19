@@ -23,13 +23,13 @@ interface NmRowProps {
 }
 
 const ROW_BG: Record<NmRowState, string> = {
-  green: 'bg-emerald-500/10',   // Task 22 will swap to var(--tracker-ready)
-  amber: 'bg-amber-500/10',     // Task 22 will swap to var(--tracker-amber)
+  green: 'bg-owned/10',
+  amber: 'bg-warning/10',
   neutral: '',
 };
 const ACCENT: Record<NmRowState, string> = {
-  green: 'border-l-emerald-500',
-  amber: 'border-l-amber-500',
+  green: 'border-l-owned',
+  amber: 'border-l-warning',
   neutral: 'border-l-transparent',
 };
 

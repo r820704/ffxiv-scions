@@ -26,7 +26,7 @@ export function CooldownCell({ nm, record, now }: Props) {
   if (remain === null) {
     cdLabel = <span>--</span>;
   } else if (remain === 0) {
-    cdLabel = <span className="font-medium text-emerald-500">可打</span>;
+    cdLabel = <span className="font-medium text-owned">可打</span>;
   } else {
     cdLabel = <span className="tabular-nums">{formatHHMMSS(remain)}</span>;
   }
