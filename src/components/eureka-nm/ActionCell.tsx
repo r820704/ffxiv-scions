@@ -18,9 +18,9 @@ export function ActionCell({ onPop, onClear, onSetCustom, nmName }: ActionCellPr
         type="button"
         aria-label={`記錄 ${nmName} 出現`}
         onClick={(e) => { e.stopPropagation(); onPop(); }}
-        className="inline-flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-xs text-primary hover:bg-primary/20"
+        className="inline-flex items-center gap-1 whitespace-nowrap rounded bg-primary/10 px-1.5 py-0.5 text-xs text-primary hover:bg-primary/20"
       >
-        <Check className="h-3 w-3" /> 出現
+        <Check className="h-3 w-3" /> <span className="hidden md:inline">出現</span>
       </button>
       <button
         type="button"

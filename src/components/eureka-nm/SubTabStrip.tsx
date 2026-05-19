@@ -37,7 +37,7 @@ export function SubTabStrip({ activeTab, onTabChange, onClearAll }: SubTabStripP
             role="tab"
             aria-selected={activeTab === t.key}
             className={
-              'px-3 py-2 text-sm rounded-t transition-colors ' +
+              'whitespace-nowrap px-2 md:px-3 py-2 text-sm rounded-t transition-colors ' +
               (activeTab === t.key
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-muted-foreground hover:text-foreground')

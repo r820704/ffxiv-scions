@@ -48,13 +48,13 @@ export function NmRow(props: NmRowProps) {
         </div>
       </td>
       <td className="px-2 py-0.5 md:py-1 align-middle">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 min-w-0">
           {props.showZoneChip && (
-            <span className="rounded bg-muted px-1 text-xs text-muted-foreground">
+            <span className="rounded bg-muted px-1 text-xs text-muted-foreground whitespace-nowrap">
               {props.nm.zone.replace('Eureka ', '')}
             </span>
           )}
-          <span className="text-sm">{props.nm.nameTw}</span>
+          <span className="text-xs md:text-sm truncate">{props.nm.nameTw}</span>
           {hasNotableDrops(props.nm.id) && <DropsTooltip nmId={props.nm.id} />}
         </div>
       </td>
