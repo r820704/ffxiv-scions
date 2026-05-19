@@ -175,7 +175,6 @@ export default function EurekaGearPage() {
       <PageHead
         title="禁地兵裝"
         description="優雷卡武器與防具升級進度追蹤"
-        numeral="Tool · Ⅲ"
         actions={
           <>
             <button

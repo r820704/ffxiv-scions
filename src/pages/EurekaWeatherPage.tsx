@@ -159,7 +159,6 @@ export default function EurekaWeatherPage() {
       <PageHead
         title="優雷卡天氣·NM"
         description="優雷卡四地圖天氣時間軸、NM 出現時段與日夜指示"
-        numeral="Tool · Ⅰ"
         actions={
           <button
             type="button"
