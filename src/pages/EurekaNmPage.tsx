@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import PageHead from '@/components/PageHead';
 import { SubTabStrip } from '@/components/eureka-nm/SubTabStrip';
 import { NmTable } from '@/components/eureka-nm/NmTable';
+import { ConditionSummaryBar } from '@/components/eureka-nm/ConditionSummaryBar';
 import { useNmTrackerRecords } from '@/hooks/useNmTrackerRecords';
 import { useNmTrackerPinned } from '@/hooks/useNmTrackerPinned';
 import { useNmTrackerNow } from '@/hooks/useNmTrackerNow';
@@ -14,6 +15,7 @@ import {
   parseTabFromUrl,
   tabToUrl,
 } from '@/types/nm-tracker';
+import type { EurekaZone } from '@/data/weather-data';
 
 function getInitialTab(searchParams: URLSearchParams): NmTabKey {
   const fromUrl = parseTabFromUrl(searchParams.get('tab'));
@@ -54,6 +56,7 @@ export default function EurekaNmPage() {
         description="記錄惡名精英的時間軸以及冷卻時間"
       />
       <SubTabStrip activeTab={tab} onTabChange={setTab} onClearAll={records.clearAll} />
+      {tab !== 'custom' && <ConditionSummaryBar zone={tab as EurekaZone} now={now} />}
       <NmTable
         nms={nmsForTab}
         records={records.records}
