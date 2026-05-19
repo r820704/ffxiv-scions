@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PageHead from '@/components/PageHead';
 import { SubTabStrip } from '@/components/eureka-nm/SubTabStrip';
+import { useNmTrackerRecords } from '@/hooks/useNmTrackerRecords';
 import {
   type NmTabKey,
   isNmTabKey,
@@ -23,6 +24,7 @@ function getInitialTab(searchParams: URLSearchParams): NmTabKey {
 export default function EurekaNmPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tab, setTabState] = useState<NmTabKey>(() => getInitialTab(searchParams));
+  const records = useNmTrackerRecords();
 
   function setTab(next: NmTabKey) {
     setTabState(next);
@@ -40,7 +42,7 @@ export default function EurekaNmPage() {
         title="惡名精英"
         description="記錄惡名精英的時間軸以及冷卻時間"
       />
-      <SubTabStrip activeTab={tab} onTabChange={setTab} />
+      <SubTabStrip activeTab={tab} onTabChange={setTab} onClearAll={records.clearAll} />
       {/* Tasks 10+ will add ConditionSummaryBar + NmTable here */}
     </>
   );
