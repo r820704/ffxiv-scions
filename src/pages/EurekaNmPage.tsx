@@ -8,6 +8,8 @@ import NmDetailModal from '@/components/eureka-weather/NmDetailModal';
 import { useNmTrackerRecords } from '@/hooks/useNmTrackerRecords';
 import { useNmTrackerPinned } from '@/hooks/useNmTrackerPinned';
 import { useNmTrackerNow } from '@/hooks/useNmTrackerNow';
+import { useNmTrackerNotifications } from '@/hooks/useNmTrackerNotifications';
+import { NotificationButton } from '@/components/eureka-nm/NotificationButton';
 import { eurekaNms } from '@/data/eureka-nm-data';
 import {
   type NmTabKey,
@@ -35,6 +37,10 @@ export default function EurekaNmPage() {
   const records = useNmTrackerRecords();
   const pinned = useNmTrackerPinned();
   const now = useNmTrackerNow();
+  const notifications = useNmTrackerNotifications({
+    pinned: pinned.pinned,
+    records: records.records,
+  });
 
   const nmsForTab = useMemo(() => {
     if (tab === 'custom') return eurekaNms.filter(n => pinned.pinned.includes(n.id));
@@ -56,6 +62,15 @@ export default function EurekaNmPage() {
       <PageHead
         title="惡名精英"
         description="記錄惡名精英的時間軸以及冷卻時間"
+        actions={
+          <NotificationButton
+            pinned={pinned.pinned}
+            enabled={notifications.enabled}
+            permission={notifications.permission}
+            supported={notifications.supported}
+            onSetEnabled={notifications.setEnabled}
+          />
+        }
       />
       <SubTabStrip activeTab={tab} onTabChange={setTab} onClearAll={records.clearAll} />
       {tab !== 'custom' && <ConditionSummaryBar zone={tab as EurekaZone} now={now} />}
