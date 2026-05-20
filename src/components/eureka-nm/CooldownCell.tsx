@@ -26,21 +26,19 @@ export function CooldownCell({ nm, record, state, now, onSetCustom }: Props) {
   const remain = cdRemainMs(record?.popAt, now);
 
   // Label hierarchy (row state wins over CD digits when actionable):
-  //   row green or amber  -> 「可觸發」 (color matches row accent)
-  //   row neutral + CD running   -> HH:MM:SS countdown
-  //   row neutral + untracked    -> 「--」
-  //   row neutral + CD elapsed   -> nothing (conditions block; NM 條件 column already shows what we're waiting for)
-  let cdLabel: JSX.Element | null = null;
+  //   row green or amber       -> 「可觸發」/「可提前觸發」 (color matches row accent)
+  //   row neutral + CD running -> HH:MM:SS countdown
+  //   row neutral + otherwise  -> 「--」 (untracked, or CD elapsed but conditions block)
+  let cdLabel: JSX.Element;
   if (state === 'green') {
     cdLabel = <span className="font-medium text-owned">可觸發</span>;
   } else if (state === 'amber') {
     cdLabel = <span className="font-medium text-warning">可提前觸發</span>;
   } else if (remain !== null && remain > 0) {
     cdLabel = <span className="tabular-nums">{formatHHMMSS(remain)}</span>;
-  } else if (remain === null) {
+  } else {
     cdLabel = <span>--</span>;
   }
-  // else: remain === 0 AND state === 'neutral' → render nothing
 
   return (
     <>

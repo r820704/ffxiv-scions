@@ -57,7 +57,7 @@ describe('CooldownCell', () => {
     expect(screen.getByText('可提前觸發')).toBeInTheDocument();
   });
 
-  it('renders nothing visible when CD elapsed AND row state is neutral (waiting on conditions)', () => {
+  it('renders -- when CD elapsed AND row state is neutral (waiting on conditions)', () => {
     const now = Date.now();
     const { container } = render(
       <CooldownCell
@@ -68,10 +68,9 @@ describe('CooldownCell', () => {
         onSetCustom={vi.fn()}
       />,
     );
-    // No 可打 / 可觸發 / 等條件 text
+    expect(screen.getByText('--')).toBeInTheDocument();
     expect(screen.queryByText('可觸發')).not.toBeInTheDocument();
     expect(screen.queryByText('可提前觸發')).not.toBeInTheDocument();
-    expect(screen.queryByText('等條件')).not.toBeInTheDocument();
     // No HH:MM:SS either (CD elapsed = remain 0)
     expect(container.querySelector('.tabular-nums')).toBeNull();
   });
