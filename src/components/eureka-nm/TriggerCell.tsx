@@ -1,7 +1,7 @@
 import type { EurekaNm } from '@/data/eureka-nm-data';
 import { nmSpawnInfo } from '@/data/eureka-nm-spawn-data';
 import { weatherNamesTw } from '@/data/weather-data';
-import { Check, Hourglass } from 'lucide-react';
+import { Check, Hourglass, Moon, Sun } from 'lucide-react';
 import WeatherIcon from '@/components/WeatherIcon';
 import { computeConditionStatus } from '@/utils/nm-tracker-state';
 import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
@@ -46,10 +46,16 @@ function ConditionSegment({ cond, status, prefix, mobName }: {
         {mobName && <span>{mobName}・</span>}
         {prefix && <span>{prefix}</span>}
         {cond.timeOfDay === 'night' && (
-          <span className="text-night">夜間</span>
+          <>
+            <Moon className="inline h-3 w-3 text-night" aria-hidden="true" />
+            <span className="text-night">夜間</span>
+          </>
         )}
         {cond.timeOfDay === 'day' && (
-          <span className="text-day">白天</span>
+          <>
+            <Sun className="inline h-3 w-3 text-day" aria-hidden="true" />
+            <span className="text-day">白天</span>
+          </>
         )}
         {cond.weather?.map(w => (
           <span key={w} className="inline-flex items-center gap-0.5">
@@ -59,14 +65,10 @@ function ConditionSegment({ cond, status, prefix, mobName }: {
         {weatherTw && <span>{weatherTw}</span>}
         {statusIcon(status)}
       </span>
-      {/* Mobile: compact — colored short labels + weather icons */}
+      {/* Mobile: icons only (colored) */}
       <span className="md:hidden inline-flex items-center gap-0.5 text-xs">
-        {cond.timeOfDay === 'night' && (
-          <span className="text-night" aria-label="夜間">夜</span>
-        )}
-        {cond.timeOfDay === 'day' && (
-          <span className="text-day" aria-label="白天">晝</span>
-        )}
+        {cond.timeOfDay === 'night' && <Moon className="inline h-3 w-3 text-night" aria-label="夜間" />}
+        {cond.timeOfDay === 'day' && <Sun className="inline h-3 w-3 text-day" aria-label="白天" />}
         {cond.weather?.map(w => <span key={`m-${w}`}>{weatherIcon(w)}</span>)}
         {statusIcon(status)}
       </span>

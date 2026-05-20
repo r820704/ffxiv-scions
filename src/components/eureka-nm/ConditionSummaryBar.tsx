@@ -5,6 +5,7 @@ import { eurekaNms } from '@/data/eureka-nm-data';
 import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
 import { isDayTime, getNextTransition } from '@/utils/game-day-night';
 import { toEorzeaTime } from '@/utils/eorzea-time';
+import { Moon, Sun } from 'lucide-react';
 import WeatherIcon from '@/components/WeatherIcon';
 import { ConditionChip } from './ConditionChip';
 import type { ConditionStatus } from '@/types/nm-tracker';
@@ -42,7 +43,7 @@ export function ConditionSummaryBar({ zone, now }: Props) {
   const dayChip = (
     <ConditionChip
       key="day"
-      icon={<span className="inline-block h-2 w-2 rounded-full bg-day" aria-hidden="true" />}
+      icon={<Sun className="h-3 w-3 text-day" />}
       label="白天"
       status={!isNightNow ? 'met' : 'idle'}
       remainText={!isNightNow ? `剩 ${formatMinutes(msToTransition)}` : `還要 ${formatMinutes(msToTransition)}`}
@@ -51,7 +52,7 @@ export function ConditionSummaryBar({ zone, now }: Props) {
   const nightChip = (
     <ConditionChip
       key="night"
-      icon={<span className="inline-block h-2 w-2 rounded-full bg-night" aria-hidden="true" />}
+      icon={<Moon className="h-3 w-3 text-night" />}
       label="夜間"
       status={isNightNow ? 'met' : 'idle'}
       remainText={isNightNow ? `剩 ${formatMinutes(msToTransition)}` : `還要 ${formatMinutes(msToTransition)}`}
