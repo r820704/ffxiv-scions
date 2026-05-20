@@ -9,7 +9,7 @@ interface ActionCellProps {
 
 export function ActionCell({ hasRecord, onPop, onClear, nmName }: ActionCellProps) {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center justify-end md:justify-start">
       {hasRecord ? (
         <button
           type="button"
