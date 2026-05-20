@@ -42,7 +42,7 @@ describe('NmTable', () => {
     expect(screen.queryByText('位置')).not.toBeInTheDocument();
     expect(screen.getByText('觸發怪')).toBeInTheDocument();
     expect(screen.getByText('NM 條件')).toBeInTheDocument();
-    expect(screen.getByText('條件')).toBeInTheDocument();  // mobile-only header
+    expect(screen.getByText('觸發｜NM')).toBeInTheDocument();  // mobile-only header
     expect(screen.getByText('冷卻')).toBeInTheDocument();
     expect(screen.getByText('記錄')).toBeInTheDocument();
   });

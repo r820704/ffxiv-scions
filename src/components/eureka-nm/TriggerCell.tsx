@@ -176,9 +176,11 @@ export function NmConditionCell({ nm, now }: Props) {
 }
 
 /**
- * Mobile-only merged condition cell: icons-only for both mob and NM segments,
- * no countdown text (save horizontal space). Separated by ｜ when both exist.
- * 「—」 when neither condition exists.
+ * Mobile-only merged condition cell. Layout mirrors the bipartite mobile header
+ * (「觸發怪｜NM條件」): left slot = 觸發怪 condition, right slot = NM condition.
+ * When neither side has a condition, falls back to a single「—」.
+ * Otherwise both slots render and the empty side shows「—」 as a placeholder
+ * so users can tell which side a single-condition icon refers to.
  */
 export function MergedConditionCellMobile({ nm, now }: Props) {
   const mob = nm.trigger?.mob;
@@ -190,8 +192,10 @@ export function MergedConditionCellMobile({ nm, now }: Props) {
 
   const ctx = ctxOf(nm, now);
 
-  function renderSegment(cond: NmCondition | undefined): JSX.Element | null {
-    if (!cond) return null;
+  function renderSegment(cond: NmCondition | undefined): JSX.Element {
+    if (!cond) {
+      return <span className="text-muted-foreground">{EMPTY_LABEL}</span>;
+    }
     const status = computeConditionStatus(cond, ctx);
     return (
       <span className="inline-flex items-center gap-0.5">
@@ -206,7 +210,7 @@ export function MergedConditionCellMobile({ nm, now }: Props) {
   return (
     <span className="inline-flex items-center gap-0.5 text-xs">
       {renderSegment(mob)}
-      {mob && nmCond && <span className="text-muted-foreground">｜</span>}
+      <span className="text-muted-foreground">｜</span>
       {renderSegment(nmCond)}
     </span>
   );

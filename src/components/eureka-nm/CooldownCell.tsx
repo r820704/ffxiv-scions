@@ -33,7 +33,7 @@ export function CooldownCell({ nm, record, state, now, onSetCustom }: Props) {
   if (state === 'green') {
     cdLabel = <span className="font-medium text-owned">可觸發</span>;
   } else if (state === 'amber') {
-    cdLabel = <span className="font-medium text-warning">可提前觸發</span>;
+    cdLabel = <span className="font-medium text-warning">提前觸發</span>;
   } else if (remain !== null && remain > 0) {
     cdLabel = <span className="tabular-nums">{formatHHMMSS(remain)}</span>;
   } else {

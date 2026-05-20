@@ -43,7 +43,7 @@ describe('CooldownCell', () => {
     expect(screen.getByText('可觸發')).toBeInTheDocument();
   });
 
-  it('renders 可提前觸發 when row state is amber', () => {
+  it('renders 提前觸發 when row state is amber', () => {
     const now = Date.now();
     render(
       <CooldownCell
@@ -54,7 +54,7 @@ describe('CooldownCell', () => {
         onSetCustom={vi.fn()}
       />,
     );
-    expect(screen.getByText('可提前觸發')).toBeInTheDocument();
+    expect(screen.getByText('提前觸發')).toBeInTheDocument();
   });
 
   it('renders -- when CD elapsed AND row state is neutral (waiting on conditions)', () => {
@@ -70,7 +70,7 @@ describe('CooldownCell', () => {
     );
     expect(screen.getByText('--')).toBeInTheDocument();
     expect(screen.queryByText('可觸發')).not.toBeInTheDocument();
-    expect(screen.queryByText('可提前觸發')).not.toBeInTheDocument();
+    expect(screen.queryByText('提前觸發')).not.toBeInTheDocument();
     // No HH:MM:SS either (CD elapsed = remain 0)
     expect(container.querySelector('.tabular-nums')).toBeNull();
   });

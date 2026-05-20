@@ -65,13 +65,15 @@ describe('MergedConditionCellMobile', () => {
     expect(screen.getByText('｜')).toBeInTheDocument();
   });
 
-  it('no separator when only mob condition (jahannam)', () => {
+  it('renders ｜ with — placeholder on right when only mob condition (jahannam)', () => {
     render(<MergedConditionCellMobile nm={jahannam} now={Date.now()} />);
-    expect(screen.queryByText('｜')).not.toBeInTheDocument();
+    expect(screen.getByText('｜')).toBeInTheDocument();
+    expect(screen.getByText('—')).toBeInTheDocument();
   });
 
-  it('no separator when only NM condition (cassie)', () => {
+  it('renders ｜ with — placeholder on left when only NM condition (cassie)', () => {
     render(<MergedConditionCellMobile nm={cassie} now={Date.now()} />);
-    expect(screen.queryByText('｜')).not.toBeInTheDocument();
+    expect(screen.getByText('｜')).toBeInTheDocument();
+    expect(screen.getByText('—')).toBeInTheDocument();
   });
 });

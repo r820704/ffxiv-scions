@@ -42,7 +42,7 @@ export function NmRow(props: NmRowProps) {
       <td className="px-2 py-0.5 md:py-1 align-middle">
         <div className="flex items-center gap-1">
           <PinStar isPinned={props.isPinned} onToggle={props.onTogglePin} nmName={props.nm.nameTw} />
-          <span className="text-xs text-muted-foreground tabular-nums">LV{props.nm.level}</span>
+          <span className="text-xs text-muted-foreground tabular-nums">{props.nm.level}</span>
         </div>
       </td>
       <td className="px-2 py-0.5 md:py-1 align-middle">
@@ -77,7 +77,7 @@ export function NmRow(props: NmRowProps) {
           onSetCustom={props.onSetCustom}
         />
       </td>
-      <td className="px-2 py-0.5 md:py-1 align-middle">
+      <td className="pl-1 pr-2 py-0.5 md:px-2 md:py-1 align-middle text-right md:text-left">
         <ActionCell
           hasRecord={props.record != null}
           onPop={props.onPop}

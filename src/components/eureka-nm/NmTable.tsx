@@ -32,9 +32,9 @@ export function NmTable(props: NmTableProps) {
             <th className="px-2 py-0.5 md:py-1 text-left hidden md:table-cell">觸發怪</th>
             <th className="px-2 py-0.5 md:py-1 text-left hidden md:table-cell">NM 條件</th>
             {/* Mobile: merged condition column header */}
-            <th className="px-2 py-0.5 text-left md:hidden">條件</th>
+            <th className="px-2 py-0.5 text-left md:hidden whitespace-nowrap">觸發｜NM</th>
             <th className="px-2 py-0.5 md:py-1 text-left">冷卻</th>
-            <th className="px-2 py-0.5 md:py-1 text-left">記錄</th>
+            <th className="pl-1 pr-2 py-0.5 md:px-2 md:py-1 text-right md:text-left">記錄</th>
           </tr>
         </thead>
         <tbody>
