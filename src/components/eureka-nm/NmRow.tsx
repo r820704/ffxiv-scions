@@ -2,6 +2,7 @@ import type { EurekaNm } from '@/data/eureka-nm-data';
 import type { NmRecord, NmRowState } from '@/types/nm-tracker';
 import { nmSpawnInfo } from '@/data/eureka-nm-spawn-data';
 import { hasNotableDrops } from '@/data/eureka-nm-drops';
+import { zoneShortNamesTw } from '@/data/weather-data';
 import { PinStar } from './PinStar';
 import { TriggerCell } from './TriggerCell';
 import { CooldownCell } from './CooldownCell';
@@ -51,7 +52,7 @@ export function NmRow(props: NmRowProps) {
         <div className="flex items-center gap-1 min-w-0">
           {props.showZoneChip && (
             <span className="rounded bg-muted px-1 text-xs text-muted-foreground whitespace-nowrap">
-              {props.nm.zone.replace('Eureka ', '')}
+              {zoneShortNamesTw[props.nm.zone] ?? props.nm.zone}
             </span>
           )}
           <span className="text-xs md:text-sm truncate">{props.nm.nameTw}</span>

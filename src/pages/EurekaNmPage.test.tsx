@@ -10,12 +10,12 @@ describe('EurekaNmPage', () => {
     render(<MemoryRouter><EurekaNmPage /></MemoryRouter>);
     expect(screen.getByText('惡名精英')).toBeInTheDocument();
   });
-  it('renders 5 sub-tabs (Anemos / Pagos / Pyros / Hydatos / 自定義)', () => {
+  it('renders 5 sub-tabs (常風 / 恆冰 / 湧火 / 豐水 / 自定義)', () => {
     render(<MemoryRouter><EurekaNmPage /></MemoryRouter>);
-    expect(screen.getByRole('tab', { name: /Anemos/i })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /Pagos/i })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /Pyros/i })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /Hydatos/i })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /自定義/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /常風/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /恆冰/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /湧火/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /豐水/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /自定義/ })).toBeInTheDocument();
   });
 });

@@ -14,7 +14,7 @@ describe('SubTabStrip', () => {
   it('clicking tab calls onTabChange', () => {
     const onTabChange = vi.fn();
     render(<SubTabStrip activeTab="Eureka Anemos" onTabChange={onTabChange} onClearAll={vi.fn()} />);
-    fireEvent.click(screen.getByRole('tab', { name: /Pagos/i }));
+    fireEvent.click(screen.getByRole('tab', { name: /恆冰/ }));
     expect(onTabChange).toHaveBeenCalledWith('Eureka Pagos');
   });
 

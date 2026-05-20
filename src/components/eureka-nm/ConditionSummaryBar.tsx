@@ -1,20 +1,14 @@
 import { useMemo } from 'react';
 import type { EurekaZone } from '@/data/weather-data';
+import { weatherNamesTw } from '@/data/weather-data';
 import { eurekaNms } from '@/data/eureka-nm-data';
 import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
 import { isDayTime, getNextTransition } from '@/utils/game-day-night';
 import { toEorzeaTime } from '@/utils/eorzea-time';
-import { Moon, Sun, Wind, Snowflake, Flame, Zap, CloudFog } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
+import WeatherIcon from '@/components/WeatherIcon';
 import { ConditionChip } from './ConditionChip';
 import type { ConditionStatus } from '@/types/nm-tracker';
-
-const WEATHER_ICON: Record<string, JSX.Element> = {
-  Gales: <Wind className="h-3 w-3" />,
-  Blizzards: <Snowflake className="h-3 w-3" />,
-  'Heat Waves': <Flame className="h-3 w-3" />,
-  Thunder: <Zap className="h-3 w-3" />,
-  Fog: <CloudFog className="h-3 w-3" />,
-};
 
 function formatMinutes(ms: number): string {
   if (!Number.isFinite(ms)) return '∞';
@@ -50,7 +44,7 @@ export function ConditionSummaryBar({ zone, now }: Props) {
     <ConditionChip
       key="day"
       icon={<Sun className="h-3 w-3" />}
-      label="晝"
+      label="白天"
       status={!isNightNow ? 'met' : 'idle'}
       remainText={!isNightNow ? `剩 ${formatMinutes(msToTransition)}` : `還要 ${formatMinutes(msToTransition)}`}
     />
@@ -59,7 +53,7 @@ export function ConditionSummaryBar({ zone, now }: Props) {
     <ConditionChip
       key="night"
       icon={<Moon className="h-3 w-3" />}
-      label="夜"
+      label="夜間"
       status={isNightNow ? 'met' : 'idle'}
       remainText={isNightNow ? `剩 ${formatMinutes(msToTransition)}` : `還要 ${formatMinutes(msToTransition)}`}
     />
@@ -70,11 +64,12 @@ export function ConditionSummaryBar({ zone, now }: Props) {
     const msToNext = msUntilWeather(zone, w, now);
     const status = statusFromMs(active, msToNext);
     const remain = active ? `現在` : `還要 ${formatMinutes(msToNext)}`;
+    const tw = weatherNamesTw[w] ?? w;
     return (
       <ConditionChip
         key={w}
-        icon={WEATHER_ICON[w] ?? <span className="text-[10px]">{w}</span>}
-        label={w}
+        icon={<WeatherIcon weatherEn={w} weatherTw={tw} size={14} />}
+        label={tw}
         status={status}
         remainText={remain}
       />

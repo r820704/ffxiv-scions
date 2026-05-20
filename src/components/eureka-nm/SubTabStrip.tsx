@@ -18,10 +18,10 @@ interface SubTabStripProps {
 }
 
 const TABS: Array<{ key: NmTabKey; label: string }> = [
-  { key: 'Eureka Anemos', label: 'Anemos' },
-  { key: 'Eureka Pagos', label: 'Pagos' },
-  { key: 'Eureka Pyros', label: 'Pyros' },
-  { key: 'Eureka Hydatos', label: 'Hydatos' },
+  { key: 'Eureka Anemos', label: '常風' },
+  { key: 'Eureka Pagos', label: '恆冰' },
+  { key: 'Eureka Pyros', label: '湧火' },
+  { key: 'Eureka Hydatos', label: '豐水' },
   { key: 'custom', label: '自定義' },
 ];
 

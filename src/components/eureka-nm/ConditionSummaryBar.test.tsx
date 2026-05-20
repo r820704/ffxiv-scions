@@ -10,23 +10,23 @@ vi.mock('@/utils/weather-data-runtime', () => ({
 afterEach(() => cleanup());
 
 describe('ConditionSummaryBar', () => {
-  it('renders day + night chips always', () => {
+  it('renders 白天 + 夜間 chips always', () => {
     render(<ConditionSummaryBar zone="Eureka Anemos" now={Date.now()} />);
-    expect(screen.getByText('晝')).toBeInTheDocument();
-    expect(screen.getByText('夜')).toBeInTheDocument();
+    expect(screen.getByText('白天')).toBeInTheDocument();
+    expect(screen.getByText('夜間')).toBeInTheDocument();
   });
 
-  it('renders weather chips for Anemos (includes Gales)', () => {
+  it('renders weather chips for Anemos using TC weather names (Gales → 強風)', () => {
     render(<ConditionSummaryBar zone="Eureka Anemos" now={Date.now()} />);
-    expect(screen.getByText('Gales')).toBeInTheDocument();
+    expect(screen.getByText('強風')).toBeInTheDocument();
   });
 
-  it('renders multiple weather chips for Pagos', () => {
+  it('renders multiple weather chips for Pagos using TC names', () => {
     render(<ConditionSummaryBar zone="Eureka Pagos" now={Date.now()} />);
-    // Pagos has Fog, Thunder, Heat Waves, Blizzards
-    expect(screen.getByText('Fog')).toBeInTheDocument();
-    expect(screen.getByText('Thunder')).toBeInTheDocument();
-    expect(screen.getByText('Heat Waves')).toBeInTheDocument();
-    expect(screen.getByText('Blizzards')).toBeInTheDocument();
+    // Pagos has Fog/Thunder/Heat Waves/Blizzards → 薄霧/打雷/熱浪/暴雪
+    expect(screen.getByText('薄霧')).toBeInTheDocument();
+    expect(screen.getByText('打雷')).toBeInTheDocument();
+    expect(screen.getByText('熱浪')).toBeInTheDocument();
+    expect(screen.getByText('暴雪')).toBeInTheDocument();
   });
 });
