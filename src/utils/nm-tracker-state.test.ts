@@ -179,14 +179,19 @@ describe('computeConditionStatus', () => {
       isWeather: (w) => w === 'Gales', minutesToWeather: () => 0, isNight: false,
     })).toBe('met');
   });
-  it('returns soon when within 5 min', () => {
+  it('returns soon when within 10 min', () => {
     expect(computeConditionStatus({ weather: ['Gales'] }, {
       isWeather: () => false, minutesToWeather: () => 3, isNight: false,
     })).toBe('soon');
   });
-  it('returns idle when far in future', () => {
+  it('returns distant when > 10 min but finite', () => {
     expect(computeConditionStatus({ weather: ['Gales'] }, {
       isWeather: () => false, minutesToWeather: () => 30, isNight: false,
+    })).toBe('distant');
+  });
+  it('returns idle when no upcoming occurrence (infinite)', () => {
+    expect(computeConditionStatus({ weather: ['Gales'] }, {
+      isWeather: () => false, minutesToWeather: () => Number.POSITIVE_INFINITY, isNight: false,
     })).toBe('idle');
   });
   it('night condition met when isNight=true', () => {

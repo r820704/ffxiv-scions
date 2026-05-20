@@ -8,6 +8,7 @@ import { toEorzeaTime } from '@/utils/eorzea-time';
 import WeatherIcon from '@/components/WeatherIcon';
 import { ConditionChip } from './ConditionChip';
 import type { ConditionStatus } from '@/types/nm-tracker';
+import { NM_SOON_THRESHOLD_MS } from '@/types/nm-tracker';
 
 function formatMinutes(ms: number): string {
   if (!Number.isFinite(ms)) return '∞';
@@ -18,7 +19,8 @@ function formatMinutes(ms: number): string {
 
 function statusFromMs(currentlyActive: boolean, msToNext: number): ConditionStatus {
   if (currentlyActive) return 'met';
-  if (msToNext > 0 && msToNext <= 5 * 60_000) return 'soon';
+  if (msToNext > 0 && msToNext <= NM_SOON_THRESHOLD_MS) return 'soon';
+  if (Number.isFinite(msToNext) && msToNext > NM_SOON_THRESHOLD_MS) return 'distant';
   return 'idle';
 }
 

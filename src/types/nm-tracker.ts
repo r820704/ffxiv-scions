@@ -14,14 +14,18 @@ export const NM_TRACKER_NOTIFICATION_ENABLED_KEY = 'eureka-nm-tracker-notificati
 // 2-hour CD per ffxiv-eureka.com convention.
 export const NM_CD_MS = 2 * 60 * 60 * 1000;
 
-// 5-minute "預備窗" threshold.
-export const NM_SOON_THRESHOLD_MS = 5 * 60 * 1000;
+// "預備窗" threshold — condition opens within this many ms counts as 'soon'.
+export const NM_SOON_THRESHOLD_MS = 10 * 60 * 1000;
 
 // Row state machine output
 export type NmRowState = 'green' | 'amber' | 'neutral';
 
-// Condition status for chips / cells
-export type ConditionStatus = 'met' | 'soon' | 'idle';
+// Condition status for chips / cells.
+// - met: condition currently satisfied
+// - soon: not met, opens within NM_SOON_THRESHOLD_MS
+// - distant: not met, opens later than soon but still has a known upcoming occurrence
+// - idle: no relevant upcoming occurrence (or condition not applicable to this segment)
+export type ConditionStatus = 'met' | 'soon' | 'distant' | 'idle';
 
 // Tab key: zone or 'custom'
 export type NmTabKey = EurekaZone | 'custom';

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ConditionStatus } from '@/types/nm-tracker';
-import { Check, Hourglass } from 'lucide-react';
+import { Check, Hourglass, Clock } from 'lucide-react';
 
 interface ConditionChipProps {
   icon: ReactNode;
@@ -12,6 +12,7 @@ interface ConditionChipProps {
 const COLOR: Record<ConditionStatus, string> = {
   met: 'border-owned/50 bg-owned/10 text-foreground',
   soon: 'border-warning/50 bg-warning/10 text-foreground',
+  distant: 'border-border text-muted-foreground',
   idle: 'border-border text-muted-foreground',
 };
 
@@ -19,6 +20,7 @@ export function ConditionChip({ icon, label, status, remainText }: ConditionChip
   const statusIcon =
     status === 'met' ? <Check className="h-3 w-3 text-owned" />
     : status === 'soon' ? <Hourglass className="h-3 w-3 text-warning" />
+    : status === 'distant' ? <Clock className="h-3 w-3 text-muted-foreground" />
     : null;
 
   return (

@@ -1,7 +1,7 @@
 import type { EurekaNm } from '@/data/eureka-nm-data';
 import { nmSpawnInfo } from '@/data/eureka-nm-spawn-data';
 import { weatherNamesTw } from '@/data/weather-data';
-import { Check, Hourglass } from 'lucide-react';
+import { Check, Hourglass, Clock } from 'lucide-react';
 import WeatherIcon from '@/components/WeatherIcon';
 import { computeConditionStatus } from '@/utils/nm-tracker-state';
 import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
@@ -29,6 +29,7 @@ function weatherLabel(weathers: string[] | undefined): string {
 function statusIcon(s: ConditionStatus): JSX.Element | null {
   if (s === 'met') return <Check className="inline h-3 w-3 text-success" aria-label="符合" />;
   if (s === 'soon') return <Hourglass className="inline h-3 w-3 text-warning" aria-label="即將" />;
+  if (s === 'distant') return <Clock className="inline h-3 w-3 text-muted-foreground" aria-label="等待中" />;
   return null;
 }
 

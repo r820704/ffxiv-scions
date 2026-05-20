@@ -62,7 +62,9 @@ export function computeConditionStatus(cond: NmCondition, ctx: StateCtx): Condit
   if (matchesCondition(cond, ctx)) return 'met';
   if (cond.weather && cond.weather.length > 0) {
     const minToAny = Math.min(...cond.weather.map(w => ctx.minutesToWeather(w)));
-    if (minToAny > 0 && minToAny <= NM_SOON_THRESHOLD_MS / 60_000) return 'soon';
+    const thresholdMin = NM_SOON_THRESHOLD_MS / 60_000;
+    if (minToAny > 0 && minToAny <= thresholdMin) return 'soon';
+    if (Number.isFinite(minToAny) && minToAny > thresholdMin) return 'distant';
   }
   return 'idle';
 }
