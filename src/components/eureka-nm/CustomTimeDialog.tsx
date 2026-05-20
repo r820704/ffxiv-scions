@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -16,17 +16,33 @@ interface CustomTimeDialogProps {
   onConfirm: (popAt: number) => void;
 }
 
-const PRESETS: Array<{ label: string; minutes: number }> = [
-  { label: '10 分前', minutes: 10 },
-  { label: '30 分前', minutes: 30 },
-  { label: '1 小時前', minutes: 60 },
-  { label: '90 分前', minutes: 90 },
-];
-
-function nowDatetimeLocal(): string {
+function nowHHMM(): string {
   const d = new Date();
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 16);
+  const h = String(d.getHours()).padStart(2, '0');
+  const m = String(d.getMinutes()).padStart(2, '0');
+  return `${h}:${m}`;
+}
+
+/**
+ * Convert "HH:MM" (24-hour, today in local timezone) to a Unix ms.
+ * Picks "today at HH:MM" if that is in the past; otherwise treats it as
+ * yesterday (NM CD is 2 hours so the input always refers to <24h ago).
+ */
+function hhmmToPopAt(hhmm: string): number | null {
+  const [hStr, mStr] = hhmm.split(':');
+  if (!hStr || !mStr) return null;
+  const h = Number(hStr);
+  const m = Number(mStr);
+  if (!Number.isFinite(h) || !Number.isFinite(m) || h < 0 || h > 23 || m < 0 || m > 59) {
+    return null;
+  }
+  const now = new Date();
+  const candidate = new Date(now);
+  candidate.setHours(h, m, 0, 0);
+  if (candidate.getTime() > now.getTime()) {
+    candidate.setDate(candidate.getDate() - 1);
+  }
+  return candidate.getTime();
 }
 
 export function CustomTimeDialog({
@@ -35,59 +51,56 @@ export function CustomTimeDialog({
   nmName,
   onConfirm,
 }: CustomTimeDialogProps) {
-  const [datetimeValue, setDatetimeValue] = useState<string>(nowDatetimeLocal());
+  const [timeValue, setTimeValue] = useState<string>(nowHHMM);
 
-  function applyPreset(minutesAgo: number) {
-    onConfirm(Date.now() - minutesAgo * 60_000);
+  // Reset the value to "now" each time the dialog opens, so it's always a
+  // fresh starting point rather than carrying over a stale picked time.
+  useEffect(() => {
+    if (open) setTimeValue(nowHHMM());
+  }, [open]);
+
+  function applyTime() {
+    const t = hhmmToPopAt(timeValue);
+    if (t !== null) onConfirm(t);
   }
-  function applyDatetime() {
-    const t = new Date(datetimeValue).getTime();
-    if (Number.isFinite(t)) onConfirm(t);
+
+  // Swallow clicks inside the dialog so they don't bubble to the underlying
+  // <tr onClick> in NmRow (which would open NmDetailModal as a side effect).
+  function stopRowPropagation(e: React.MouseEvent) {
+    e.stopPropagation();
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent onClick={stopRowPropagation}>
         <DialogHeader>
           <DialogTitle>自訂 {nmName} 出現時間</DialogTitle>
           <DialogDescription>
-            選擇 NM 上次出現的時間，系統會自動算 2 小時 CD。
+            輸入 NM 上次出現的時間（24 小時制），系統會自動算 2 小時 CD。
+            若輸入時間在未來，會自動視為昨天同時刻。
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-2">
-            {PRESETS.map((p) => (
-              <Button
-                key={p.label}
-                variant="outline"
-                size="sm"
-                onClick={() => applyPreset(p.minutes)}
-              >
-                {p.label}
-              </Button>
-            ))}
-          </div>
-          <div>
-            <label
-              htmlFor="custom-pop-time"
-              className="block text-sm text-muted-foreground mb-1"
-            >
-              或選具體時間：
-            </label>
-            <input
-              id="custom-pop-time"
-              type="datetime-local"
-              value={datetimeValue}
-              onChange={(e) => setDatetimeValue(e.target.value)}
-              className="w-full rounded border border-border bg-background px-2 py-1 text-sm"
-            />
-          </div>
+        <div>
+          <label
+            htmlFor="custom-pop-time"
+            className="block text-sm text-muted-foreground mb-1"
+          >
+            出現時間（HH:MM）：
+          </label>
+          <input
+            id="custom-pop-time"
+            type="time"
+            value={timeValue}
+            onChange={(e) => setTimeValue(e.target.value)}
+            className="w-full rounded border border-border bg-background px-2 py-1 text-sm tabular-nums"
+            required
+          />
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             取消
           </Button>
-          <Button onClick={applyDatetime}>使用此時間</Button>
+          <Button onClick={applyTime}>使用此時間</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
