@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Pencil } from 'lucide-react';
 import type { EurekaNm } from '@/data/eureka-nm-data';
-import type { NmRecord } from '@/types/nm-tracker';
+import type { NmRecord, NmRowState } from '@/types/nm-tracker';
 import { cdRemainMs } from '@/utils/nm-tracker-state';
 import { CustomTimeDialog } from './CustomTimeDialog';
 
 interface Props {
   nm: EurekaNm;
   record?: NmRecord;
+  state: NmRowState;
   now: number;
   onSetCustom: (popAt: number) => void;
 }
@@ -20,15 +21,31 @@ function formatHHMMSS(ms: number): string {
   return `${h}:${m}:${s}`;
 }
 
-export function CooldownCell({ nm, record, now, onSetCustom }: Props) {
+export function CooldownCell({ nm, record, state, now, onSetCustom }: Props) {
   const [customOpen, setCustomOpen] = useState(false);
   const remain = cdRemainMs(record?.popAt, now);
 
   let cdLabel: JSX.Element;
   if (remain === null) {
-    cdLabel = <span>--</span>;
+    // Not tracked yet. Reflect overall row state (e.g. unconditioned NM with all
+    // conditions met is already 'fight-able' regardless of CD record).
+    if (state === 'green') {
+      cdLabel = <span className="font-medium text-owned">可打</span>;
+    } else if (state === 'amber') {
+      cdLabel = <span className="font-medium text-warning">預備</span>;
+    } else {
+      cdLabel = <span>--</span>;
+    }
   } else if (remain === 0) {
-    cdLabel = <span className="font-medium text-owned">可打</span>;
+    // CD has elapsed — actual readiness depends on whether the other conditions
+    // (weather / day-night) are also satisfied. Defer to row state.
+    if (state === 'green') {
+      cdLabel = <span className="font-medium text-owned">可打</span>;
+    } else if (state === 'amber') {
+      cdLabel = <span className="font-medium text-warning">預備</span>;
+    } else {
+      cdLabel = <span className="text-muted-foreground">等條件</span>;
+    }
   } else {
     cdLabel = <span className="tabular-nums">{formatHHMMSS(remain)}</span>;
   }

@@ -72,6 +72,7 @@ export function NmRow(props: NmRowProps) {
         <CooldownCell
           nm={props.nm}
           record={props.record}
+          state={props.state}
           now={props.now}
           onSetCustom={props.onSetCustom}
         />
