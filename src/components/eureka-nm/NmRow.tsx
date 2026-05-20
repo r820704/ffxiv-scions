@@ -66,13 +66,18 @@ export function NmRow(props: NmRowProps) {
         <TriggerCell nm={props.nm} now={props.now} />
       </td>
       <td className="px-2 py-0.5 md:py-1 align-middle">
-        <CooldownCell nm={props.nm} record={props.record} now={props.now} />
+        <CooldownCell
+          nm={props.nm}
+          record={props.record}
+          now={props.now}
+          onSetCustom={props.onSetCustom}
+        />
       </td>
       <td className="px-2 py-0.5 md:py-1 align-middle">
         <ActionCell
+          hasRecord={props.record != null}
           onPop={props.onPop}
           onClear={props.onClear}
-          onSetCustom={props.onSetCustom}
           nmName={props.nm.nameTw}
         />
       </td>
