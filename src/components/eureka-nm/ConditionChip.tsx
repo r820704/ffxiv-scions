@@ -20,7 +20,7 @@ export function ConditionChip({ icon, label, status, remainText }: ConditionChip
   const statusIcon =
     status === 'met' ? <Check className="h-3 w-3 text-owned" />
     : status === 'soon' ? <Hourglass className="h-3 w-3 text-warning" />
-    : status === 'distant' ? <Clock className="h-3 w-3 text-muted-foreground" />
+    : status === 'distant' ? <Clock className="h-3 w-3 text-sky-500" />
     : null;
 
   return (
