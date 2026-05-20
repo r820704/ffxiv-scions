@@ -5,17 +5,12 @@ import { eurekaNms } from '@/data/eureka-nm-data';
 import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
 import { isDayTime, getNextTransition } from '@/utils/game-day-night';
 import { toEorzeaTime } from '@/utils/eorzea-time';
+import { currentRunRemaining } from '@/utils/weather-engine';
 import WeatherIcon from '@/components/WeatherIcon';
 import { ConditionChip } from './ConditionChip';
 import type { ConditionStatus } from '@/types/nm-tracker';
 import { NM_SOON_THRESHOLD_MS } from '@/types/nm-tracker';
-
-function formatMinutes(ms: number): string {
-  if (!Number.isFinite(ms)) return '∞';
-  const m = Math.max(0, Math.round(ms / 60_000));
-  if (m < 60) return `${m}m`;
-  return `${Math.floor(m / 60)}h${m % 60}m`;
-}
+import { formatRemain } from './TriggerCell';
 
 function statusFromMs(currentlyActive: boolean, msToNext: number): ConditionStatus {
   if (currentlyActive) return 'met';
@@ -47,7 +42,7 @@ export function ConditionSummaryBar({ zone, now }: Props) {
       icon={<span aria-hidden="true">☀</span>}
       label="白天"
       status={!isNightNow ? 'met' : 'idle'}
-      remainText={!isNightNow ? `剩 ${formatMinutes(msToTransition)}` : `還要 ${formatMinutes(msToTransition)}`}
+      remainText={formatRemain(msToTransition, !isNightNow ? '剩' : '再')}
     />
   );
   const nightChip = (
@@ -56,7 +51,7 @@ export function ConditionSummaryBar({ zone, now }: Props) {
       icon={<span aria-hidden="true">🌙</span>}
       label="夜間"
       status={isNightNow ? 'met' : 'idle'}
-      remainText={isNightNow ? `剩 ${formatMinutes(msToTransition)}` : `還要 ${formatMinutes(msToTransition)}`}
+      remainText={formatRemain(msToTransition, isNightNow ? '剩' : '再')}
     />
   );
 
@@ -64,7 +59,9 @@ export function ConditionSummaryBar({ zone, now }: Props) {
     const active = isWeatherActive(zone, w, now);
     const msToNext = msUntilWeather(zone, w, now);
     const status = statusFromMs(active, msToNext);
-    const remain = active ? `現在` : `還要 ${formatMinutes(msToNext)}`;
+    const remain = active
+      ? formatRemain(currentRunRemaining(zone, w, now) ?? 0, '剩')
+      : formatRemain(msToNext, '再');
     const tw = weatherNamesTw[w] ?? w;
     return (
       <ConditionChip

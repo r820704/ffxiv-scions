@@ -5,6 +5,7 @@ import { Check, Hourglass, Clock } from 'lucide-react';
 import WeatherIcon from '@/components/WeatherIcon';
 import { computeConditionStatus } from '@/utils/nm-tracker-state';
 import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
+import { currentRunRemaining } from '@/utils/weather-engine';
 import { isDayTime, getNextTransition } from '@/utils/game-day-night';
 import { toEorzeaTime } from '@/utils/eorzea-time';
 import type { ConditionStatus } from '@/types/nm-tracker';
@@ -31,15 +32,27 @@ function weatherLabel(weathers: string[] | undefined): string {
 function statusIcon(s: ConditionStatus): JSX.Element | null {
   if (s === 'met') return <Check className="inline h-3 w-3 text-success" aria-label="符合" />;
   if (s === 'soon') return <Hourglass className="inline h-3 w-3 text-warning" aria-label="即將" />;
-  if (s === 'distant') return <Clock className="inline h-3 w-3 text-muted-foreground" aria-label="等待中" />;
+  if (s === 'distant') return <Clock className="inline h-3 w-3 text-sky-500" aria-label="等待中" />;
   return null;
 }
 
-function formatMinutes(ms: number): string {
+/**
+ * Format a millisecond duration as Chinese time string with a prefix:
+ *   - < 60 min:  "再 5分30秒" / "剩 5分30秒"   (seconds precision)
+ *   - >= 60 min: "再 1小時5分" / "剩 1小時5分" (drop seconds)
+ * Returns '' for non-finite or non-positive inputs.
+ */
+export function formatRemain(ms: number, prefix: '再' | '剩'): string {
   if (!Number.isFinite(ms) || ms <= 0) return '';
-  const m = Math.round(ms / 60_000);
-  if (m < 60) return `${m}m`;
-  return `${Math.floor(m / 60)}h${m % 60}m`;
+  const totalSec = Math.floor(ms / 1000);
+  const totalMin = Math.floor(totalSec / 60);
+  if (totalMin < 60) {
+    const sec = totalSec % 60;
+    return `${prefix} ${totalMin}分${String(sec).padStart(2, '0')}秒`;
+  }
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return `${prefix} ${h}小時${m}分`;
 }
 
 function ctxOf(nm: EurekaNm, now: number) {
@@ -56,16 +69,33 @@ function conditionCountdown(
   now: number,
   status: ConditionStatus,
 ): string {
-  if (status === 'met') return '';
+  // met: how long the current window will still last → 「剩」
+  if (status === 'met') {
+    if (cond.weather && cond.weather.length > 0) {
+      // Find which of the listed weathers is currently active and ask how long it runs
+      for (const w of cond.weather) {
+        if (isWeatherActive(nm.zone, w, now)) {
+          const ms = currentRunRemaining(nm.zone, w, now);
+          if (ms != null) return formatRemain(ms, '剩');
+        }
+      }
+      return '';
+    }
+    if (cond.timeOfDay) {
+      const ms = getNextTransition(now);  // ms until current day/night flips
+      return formatRemain(ms, '剩');
+    }
+    return '';
+  }
+  // not met: how long until the next occurrence opens → 「再」
   if (cond.weather && cond.weather.length > 0) {
     const firstWeather = cond.weather[0]!;
     const ms = msUntilWeather(nm.zone, firstWeather, now);
-    return formatMinutes(ms);
+    return formatRemain(ms, '再');
   }
   if (cond.timeOfDay) {
-    // Countdown to next day↔night boundary (real ms via getNextTransition)
     const ms = getNextTransition(now);
-    return formatMinutes(ms);
+    return formatRemain(ms, '再');
   }
   return '';
 }
