@@ -29,7 +29,7 @@ describe('CooldownCell', () => {
     expect(screen.getByText(/01:00:0\d/)).toBeInTheDocument();
   });
 
-  it('renders 可打 when CD elapsed AND row state is green', () => {
+  it('renders 可觸發 when row state is green', () => {
     const now = Date.now();
     render(
       <CooldownCell
@@ -40,10 +40,10 @@ describe('CooldownCell', () => {
         onSetCustom={vi.fn()}
       />,
     );
-    expect(screen.getByText('可打')).toBeInTheDocument();
+    expect(screen.getByText('可觸發')).toBeInTheDocument();
   });
 
-  it('renders 預備 when CD elapsed AND row state is amber', () => {
+  it('renders 可提前觸發 when row state is amber', () => {
     const now = Date.now();
     render(
       <CooldownCell
@@ -54,12 +54,12 @@ describe('CooldownCell', () => {
         onSetCustom={vi.fn()}
       />,
     );
-    expect(screen.getByText('預備')).toBeInTheDocument();
+    expect(screen.getByText('可提前觸發')).toBeInTheDocument();
   });
 
-  it('renders 等條件 when CD elapsed BUT row state is neutral (conditions not met)', () => {
+  it('renders nothing visible when CD elapsed AND row state is neutral (waiting on conditions)', () => {
     const now = Date.now();
-    render(
+    const { container } = render(
       <CooldownCell
         nm={pazuzu}
         record={{ popAt: now - 3 * 60 * 60 * 1000 }}
@@ -68,14 +68,19 @@ describe('CooldownCell', () => {
         onSetCustom={vi.fn()}
       />,
     );
-    expect(screen.getByText('等條件')).toBeInTheDocument();
+    // No 可打 / 可觸發 / 等條件 text
+    expect(screen.queryByText('可觸發')).not.toBeInTheDocument();
+    expect(screen.queryByText('可提前觸發')).not.toBeInTheDocument();
+    expect(screen.queryByText('等條件')).not.toBeInTheDocument();
+    // No HH:MM:SS either (CD elapsed = remain 0)
+    expect(container.querySelector('.tabular-nums')).toBeNull();
   });
 
-  it('renders 可打 even without record when row state is green (常駐 NM scenario)', () => {
+  it('renders 可觸發 even without record when row state is green (常駐 NM scenario)', () => {
     render(
       <CooldownCell nm={pazuzu} record={undefined} state="green" now={Date.now()} onSetCustom={vi.fn()} />,
     );
-    expect(screen.getByText('可打')).toBeInTheDocument();
+    expect(screen.getByText('可觸發')).toBeInTheDocument();
   });
 
   it('clicking cell opens CustomTimeDialog', () => {

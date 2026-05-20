@@ -25,30 +25,22 @@ export function CooldownCell({ nm, record, state, now, onSetCustom }: Props) {
   const [customOpen, setCustomOpen] = useState(false);
   const remain = cdRemainMs(record?.popAt, now);
 
-  let cdLabel: JSX.Element;
-  if (remain === null) {
-    // Not tracked yet. Reflect overall row state (e.g. unconditioned NM with all
-    // conditions met is already 'fight-able' regardless of CD record).
-    if (state === 'green') {
-      cdLabel = <span className="font-medium text-owned">可打</span>;
-    } else if (state === 'amber') {
-      cdLabel = <span className="font-medium text-warning">預備</span>;
-    } else {
-      cdLabel = <span>--</span>;
-    }
-  } else if (remain === 0) {
-    // CD has elapsed — actual readiness depends on whether the other conditions
-    // (weather / day-night) are also satisfied. Defer to row state.
-    if (state === 'green') {
-      cdLabel = <span className="font-medium text-owned">可打</span>;
-    } else if (state === 'amber') {
-      cdLabel = <span className="font-medium text-warning">預備</span>;
-    } else {
-      cdLabel = <span className="text-muted-foreground">等條件</span>;
-    }
-  } else {
+  // Label hierarchy (row state wins over CD digits when actionable):
+  //   row green or amber  -> 「可觸發」 (color matches row accent)
+  //   row neutral + CD running   -> HH:MM:SS countdown
+  //   row neutral + untracked    -> 「--」
+  //   row neutral + CD elapsed   -> nothing (conditions block; NM 條件 column already shows what we're waiting for)
+  let cdLabel: JSX.Element | null = null;
+  if (state === 'green') {
+    cdLabel = <span className="font-medium text-owned">可觸發</span>;
+  } else if (state === 'amber') {
+    cdLabel = <span className="font-medium text-warning">可提前觸發</span>;
+  } else if (remain !== null && remain > 0) {
     cdLabel = <span className="tabular-nums">{formatHHMMSS(remain)}</span>;
+  } else if (remain === null) {
+    cdLabel = <span>--</span>;
   }
+  // else: remain === 0 AND state === 'neutral' → render nothing
 
   return (
     <>
