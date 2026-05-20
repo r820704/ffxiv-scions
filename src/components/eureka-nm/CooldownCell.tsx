@@ -3,7 +3,6 @@ import { Pencil } from 'lucide-react';
 import type { EurekaNm } from '@/data/eureka-nm-data';
 import type { NmRecord } from '@/types/nm-tracker';
 import { cdRemainMs } from '@/utils/nm-tracker-state';
-import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
 import { CustomTimeDialog } from './CustomTimeDialog';
 
 interface Props {
@@ -21,12 +20,6 @@ function formatHHMMSS(ms: number): string {
   return `${h}:${m}:${s}`;
 }
 
-function formatMinutes(ms: number): string {
-  const m = Math.round(ms / 60_000);
-  if (m < 60) return `${m}m`;
-  return `${Math.floor(m / 60)}h${m % 60}m`;
-}
-
 export function CooldownCell({ nm, record, now, onSetCustom }: Props) {
   const [customOpen, setCustomOpen] = useState(false);
   const remain = cdRemainMs(record?.popAt, now);
@@ -38,20 +31,6 @@ export function CooldownCell({ nm, record, now, onSetCustom }: Props) {
     cdLabel = <span className="font-medium text-owned">可打</span>;
   } else {
     cdLabel = <span className="tabular-nums">{formatHHMMSS(remain)}</span>;
-  }
-
-  let weatherLabel: JSX.Element | null = null;
-  const nmWeathers = nm.trigger?.nm?.weather;
-  if (nmWeathers && nmWeathers.length > 0) {
-    const firstWeather = nmWeathers[0]!;
-    if (!isWeatherActive(nm.zone, firstWeather, now)) {
-      const ms = msUntilWeather(nm.zone, firstWeather, now);
-      if (Number.isFinite(ms)) {
-        weatherLabel = (
-          <span className="hidden md:inline text-muted-foreground"> · {formatMinutes(ms)}</span>
-        );
-      }
-    }
   }
 
   return (
@@ -66,7 +45,6 @@ export function CooldownCell({ nm, record, now, onSetCustom }: Props) {
         className="group inline-flex items-center gap-1 text-xs text-left hover:text-foreground transition-colors"
       >
         {cdLabel}
-        {weatherLabel}
         <Pencil className="hidden md:inline-block h-3 w-3 opacity-0 group-hover:opacity-40 transition-opacity" />
       </button>
       <CustomTimeDialog

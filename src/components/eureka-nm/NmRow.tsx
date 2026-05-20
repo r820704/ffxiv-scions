@@ -4,7 +4,7 @@ import { nmSpawnInfo } from '@/data/eureka-nm-spawn-data';
 import { hasNotableDrops } from '@/data/eureka-nm-drops';
 import { zoneShortNamesTw } from '@/data/weather-data';
 import { PinStar } from './PinStar';
-import { TriggerCell } from './TriggerCell';
+import { MobConditionCell, NmConditionCell, MergedConditionCellMobile } from './TriggerCell';
 import { CooldownCell } from './CooldownCell';
 import { ActionCell } from './ActionCell';
 import { DropsTooltip } from './DropsTooltip';
@@ -62,8 +62,17 @@ export function NmRow(props: NmRowProps) {
       <td className="px-2 py-0.5 md:py-1 align-middle hidden md:table-cell text-xs text-muted-foreground tabular-nums">
         {coords ? `X${coords.x.toFixed(1)} Y${coords.y.toFixed(1)}` : '—'}
       </td>
-      <td className="px-2 py-0.5 md:py-1 align-middle">
-        <TriggerCell nm={props.nm} now={props.now} />
+      {/* Desktop only: 觸發怪 column */}
+      <td className="px-2 py-0.5 md:py-1 align-middle hidden md:table-cell">
+        <MobConditionCell nm={props.nm} now={props.now} />
+      </td>
+      {/* Desktop only: NM 條件 + 天氣窗 column */}
+      <td className="px-2 py-0.5 md:py-1 align-middle hidden md:table-cell">
+        <NmConditionCell nm={props.nm} now={props.now} />
+      </td>
+      {/* Mobile only: merged condition cell */}
+      <td className="px-2 py-0.5 align-middle md:hidden">
+        <MergedConditionCellMobile nm={props.nm} now={props.now} />
       </td>
       <td className="px-2 py-0.5 md:py-1 align-middle">
         <CooldownCell

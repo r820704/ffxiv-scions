@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
-import { TriggerCell } from './TriggerCell';
+import { MobConditionCell, NmConditionCell, MergedConditionCellMobile } from './TriggerCell';
 import { eurekaNms } from '@/data/eureka-nm-data';
 
 vi.mock('@/utils/weather-data-runtime', () => ({
@@ -10,31 +10,68 @@ vi.mock('@/utils/weather-data-runtime', () => ({
 
 afterEach(() => cleanup());
 
-describe('TriggerCell', () => {
-  it('renders 常駐 for NM without trigger', () => {
-    const sabotender = eurekaNms.find(n => n.id === 'sabotender-corrido')!;
-    render(<TriggerCell nm={sabotender} now={Date.now()} />);
-    expect(screen.getByText('常駐')).toBeInTheDocument();
+const sabotender = eurekaNms.find(n => n.id === 'sabotender-corrido')!;  // no trigger
+const cassie = eurekaNms.find(n => n.id === 'copycat-cassie')!;          // only NM condition
+const pazuzu = eurekaNms.find(n => n.id === 'pazuzu')!;                  // both
+const jahannam = eurekaNms.find(n => n.id === 'jahannam')!;              // only mob condition
+
+describe('MobConditionCell', () => {
+  it('renders — for NM with no mob condition (cassie)', () => {
+    render(<MobConditionCell nm={cassie} now={Date.now()} />);
+    expect(screen.getByText('—')).toBeInTheDocument();
   });
 
-  it('renders NM需 segment for cassie (only NM condition)', () => {
-    const cassie = eurekaNms.find(n => n.id === 'copycat-cassie')!;
-    render(<TriggerCell nm={cassie} now={Date.now()} />);
-    expect(screen.getByText('NM需')).toBeInTheDocument();
-  });
-
-  it('renders both segments for pazuzu (mob + NM)', () => {
-    const pazuzu = eurekaNms.find(n => n.id === 'pazuzu')!;
-    render(<TriggerCell nm={pazuzu} now={Date.now()} />);
-    expect(screen.getByText('NM需')).toBeInTheDocument();
-    // Mob segment includes "・" separator after mob name
+  it('renders mob name + condition for pazuzu (night)', () => {
+    render(<MobConditionCell nm={pazuzu} now={Date.now()} />);
     expect(screen.getByText(/・/)).toBeInTheDocument();
   });
 
-  it('renders only mob segment for jahannam (only mob condition)', () => {
-    const jahannam = eurekaNms.find(n => n.id === 'jahannam')!;
-    render(<TriggerCell nm={jahannam} now={Date.now()} />);
+  it('renders mob name + Gales weather for jahannam', () => {
+    render(<MobConditionCell nm={jahannam} now={Date.now()} />);
     expect(screen.getByText(/・/)).toBeInTheDocument();
-    expect(screen.queryByText('NM需')).not.toBeInTheDocument();
+  });
+
+  it('renders — for sabotender (no trigger at all)', () => {
+    render(<MobConditionCell nm={sabotender} now={Date.now()} />);
+    expect(screen.getByText('—')).toBeInTheDocument();
+  });
+});
+
+describe('NmConditionCell', () => {
+  it('renders — for NM with no own condition (jahannam — only mob trigger)', () => {
+    render(<NmConditionCell nm={jahannam} now={Date.now()} />);
+    expect(screen.getByText('—')).toBeInTheDocument();
+  });
+
+  it('renders weather label for pazuzu (Gales)', () => {
+    render(<NmConditionCell nm={pazuzu} now={Date.now()} />);
+    expect(screen.getByText('強風')).toBeInTheDocument();
+  });
+
+  it('renders — for sabotender (no trigger at all)', () => {
+    render(<NmConditionCell nm={sabotender} now={Date.now()} />);
+    expect(screen.getByText('—')).toBeInTheDocument();
+  });
+});
+
+describe('MergedConditionCellMobile', () => {
+  it('renders — for 常駐 NM (no conditions)', () => {
+    render(<MergedConditionCellMobile nm={sabotender} now={Date.now()} />);
+    expect(screen.getByText('—')).toBeInTheDocument();
+  });
+
+  it('renders ｜ separator when both mob and NM conditions exist (pazuzu)', () => {
+    render(<MergedConditionCellMobile nm={pazuzu} now={Date.now()} />);
+    expect(screen.getByText('｜')).toBeInTheDocument();
+  });
+
+  it('no separator when only mob condition (jahannam)', () => {
+    render(<MergedConditionCellMobile nm={jahannam} now={Date.now()} />);
+    expect(screen.queryByText('｜')).not.toBeInTheDocument();
+  });
+
+  it('no separator when only NM condition (cassie)', () => {
+    render(<MergedConditionCellMobile nm={cassie} now={Date.now()} />);
+    expect(screen.queryByText('｜')).not.toBeInTheDocument();
   });
 });

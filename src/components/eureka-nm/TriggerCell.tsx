@@ -16,6 +16,8 @@ interface NmCondition {
 
 interface Props { nm: EurekaNm; now: number; }
 
+const EMPTY_LABEL = '—';
+
 function weatherIcon(w: string): JSX.Element {
   const tw = weatherNamesTw[w] ?? w;
   return <WeatherIcon weatherEn={w} weatherTw={tw} size={12} />;
@@ -33,95 +35,133 @@ function statusIcon(s: ConditionStatus): JSX.Element | null {
   return null;
 }
 
-function ConditionSegment({ cond, status, prefix, mobName }: {
-  cond: NmCondition;
-  status: ConditionStatus;
-  prefix?: string;
-  mobName?: string;
-}) {
-  const weatherTw = weatherLabel(cond.weather);
-  return (
-    <>
-      {/* Desktop: full text + icons */}
-      <span className="hidden md:inline-flex items-center gap-0.5 text-xs">
-        {mobName && <span>{mobName}・</span>}
-        {prefix && <span>{prefix}</span>}
-        {cond.timeOfDay === 'night' && (
-          <span className="inline-flex items-center gap-0.5">
-            <span aria-hidden="true">🌙</span>
-            <span>夜間</span>
-          </span>
-        )}
-        {cond.timeOfDay === 'day' && (
-          <span className="inline-flex items-center gap-0.5">
-            <span aria-hidden="true">☀</span>
-            <span>白天</span>
-          </span>
-        )}
-        {cond.weather?.map(w => (
-          <span key={w} className="inline-flex items-center gap-0.5">
-            {weatherIcon(w)}
-          </span>
-        ))}
-        {weatherTw && <span>{weatherTw}</span>}
-        {statusIcon(status)}
-      </span>
-      {/* Mobile: emoji + full TC label */}
-      <span className="md:hidden inline-flex items-center gap-0.5 text-xs">
-        {cond.timeOfDay === 'night' && (
-          <span className="inline-flex items-center gap-0.5">
-            <span aria-hidden="true">🌙</span>
-            <span>夜間</span>
-          </span>
-        )}
-        {cond.timeOfDay === 'day' && (
-          <span className="inline-flex items-center gap-0.5">
-            <span aria-hidden="true">☀</span>
-            <span>白天</span>
-          </span>
-        )}
-        {cond.weather?.map(w => <span key={`m-${w}`}>{weatherIcon(w)}</span>)}
-        {statusIcon(status)}
-      </span>
-    </>
-  );
+function formatMinutes(ms: number): string {
+  if (!Number.isFinite(ms) || ms <= 0) return '';
+  const m = Math.round(ms / 60_000);
+  if (m < 60) return `${m}m`;
+  return `${Math.floor(m / 60)}h${m % 60}m`;
 }
 
-export function TriggerCell({ nm, now }: Props) {
-  const mob = nm.trigger?.mob;
-  const nmCond = nm.trigger?.nm;
-
-  if (!mob && !nmCond) {
-    return <span className="text-xs text-muted-foreground">常駐</span>;
-  }
-
-  const ctx = {
+function ctxOf(nm: EurekaNm, now: number) {
+  return {
     isNight: !isDayTime(toEorzeaTime(now)),
     isWeather: (w: string) => isWeatherActive(nm.zone, w, now),
     minutesToWeather: (w: string) => msUntilWeather(nm.zone, w, now) / 60_000,
   };
+}
 
-  // Get mob name(s) from nmSpawnInfo
+/**
+ * Desktop "觸發怪" column: mob name + condition (day/night + weather) + status icon.
+ * Renders "—" when this NM has no mob condition.
+ */
+export function MobConditionCell({ nm, now }: Props) {
+  const mob = nm.trigger?.mob;
+  if (!mob) return <span className="text-xs text-muted-foreground">{EMPTY_LABEL}</span>;
+
+  const ctx = ctxOf(nm, now);
+  const status = computeConditionStatus(mob, ctx);
   const mobSpawns = nmSpawnInfo[nm.id]?.trigger ?? [];
   const mobName = mobSpawns.length > 0 ? mobSpawns.map(m => m.nameTw).join('/') : undefined;
+  const wTw = weatherLabel(mob.weather);
 
   return (
-    <div className="flex flex-wrap items-center gap-1">
-      {mob && (
-        <ConditionSegment
-          cond={mob}
-          status={computeConditionStatus(mob, ctx)}
-          mobName={mobName}
-        />
+    <span className="inline-flex items-center gap-0.5 text-xs whitespace-nowrap">
+      {mobName && <span>{mobName}・</span>}
+      {mob.timeOfDay === 'night' && (
+        <>
+          <span aria-hidden="true">🌙</span>
+          <span>夜間</span>
+        </>
       )}
+      {mob.timeOfDay === 'day' && (
+        <>
+          <span aria-hidden="true">☀</span>
+          <span>白天</span>
+        </>
+      )}
+      {mob.weather?.map(w => <span key={w}>{weatherIcon(w)}</span>)}
+      {wTw && <span>{wTw}</span>}
+      {statusIcon(status)}
+    </span>
+  );
+}
+
+/**
+ * Desktop "NM 條件" column: NM weather/time condition + status icon + countdown
+ * to the next occurrence (only shown when not currently active).
+ * Renders "—" when this NM has no own condition.
+ */
+export function NmConditionCell({ nm, now }: Props) {
+  const nmCond = nm.trigger?.nm;
+  if (!nmCond) return <span className="text-xs text-muted-foreground">{EMPTY_LABEL}</span>;
+
+  const ctx = ctxOf(nm, now);
+  const status = computeConditionStatus(nmCond, ctx);
+  const wTw = weatherLabel(nmCond.weather);
+
+  // Countdown to next occurrence of the first weather option (only when not currently active)
+  let countdown = '';
+  if (nmCond.weather && nmCond.weather.length > 0 && status !== 'met') {
+    const firstWeather = nmCond.weather[0]!;
+    const ms = msUntilWeather(nm.zone, firstWeather, now);
+    countdown = formatMinutes(ms);
+  }
+
+  return (
+    <span className="inline-flex items-center gap-0.5 text-xs whitespace-nowrap">
+      {nmCond.timeOfDay === 'night' && (
+        <>
+          <span aria-hidden="true">🌙</span>
+          <span>夜間</span>
+        </>
+      )}
+      {nmCond.timeOfDay === 'day' && (
+        <>
+          <span aria-hidden="true">☀</span>
+          <span>白天</span>
+        </>
+      )}
+      {nmCond.weather?.map(w => <span key={w}>{weatherIcon(w)}</span>)}
+      {wTw && <span>{wTw}</span>}
+      {statusIcon(status)}
+      {countdown && <span className="text-muted-foreground"> {countdown}</span>}
+    </span>
+  );
+}
+
+/**
+ * Mobile-only merged condition cell: icons-only for both mob and NM segments,
+ * no countdown text (save horizontal space). Separated by ｜ when both exist.
+ * 「—」 when neither condition exists.
+ */
+export function MergedConditionCellMobile({ nm, now }: Props) {
+  const mob = nm.trigger?.mob;
+  const nmCond = nm.trigger?.nm;
+
+  if (!mob && !nmCond) {
+    return <span className="text-xs text-muted-foreground">{EMPTY_LABEL}</span>;
+  }
+
+  const ctx = ctxOf(nm, now);
+
+  function renderSegment(cond: NmCondition | undefined): JSX.Element | null {
+    if (!cond) return null;
+    const status = computeConditionStatus(cond, ctx);
+    return (
+      <span className="inline-flex items-center gap-0.5">
+        {cond.timeOfDay === 'night' && <span aria-label="夜間">🌙</span>}
+        {cond.timeOfDay === 'day' && <span aria-label="白天">☀</span>}
+        {cond.weather?.map(w => <span key={`m-${w}`}>{weatherIcon(w)}</span>)}
+        {statusIcon(status)}
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center gap-0.5 text-xs">
+      {renderSegment(mob)}
       {mob && nmCond && <span className="text-muted-foreground">｜</span>}
-      {nmCond && (
-        <ConditionSegment
-          cond={nmCond}
-          status={computeConditionStatus(nmCond, ctx)}
-          prefix="NM需"
-        />
-      )}
-    </div>
+      {renderSegment(nmCond)}
+    </span>
   );
 }
