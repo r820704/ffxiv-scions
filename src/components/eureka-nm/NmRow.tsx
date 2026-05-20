@@ -1,6 +1,5 @@
 import type { EurekaNm } from '@/data/eureka-nm-data';
 import type { NmRecord, NmRowState } from '@/types/nm-tracker';
-import { nmSpawnInfo } from '@/data/eureka-nm-spawn-data';
 import { hasNotableDrops } from '@/data/eureka-nm-drops';
 import { zoneShortNamesTw } from '@/data/weather-data';
 import { PinStar } from './PinStar';
@@ -35,8 +34,6 @@ const ACCENT: Record<NmRowState, string> = {
 };
 
 export function NmRow(props: NmRowProps) {
-  const coords = nmSpawnInfo[props.nm.id]?.nmCoord;
-
   return (
     <tr
       className={`border-l-4 transition-colors cursor-pointer md:cursor-default ${ACCENT[props.state]} ${ROW_BG[props.state]}`}
@@ -58,9 +55,6 @@ export function NmRow(props: NmRowProps) {
           <span className="text-xs md:text-sm truncate">{props.nm.nameTw}</span>
           {hasNotableDrops(props.nm.id) && <DropsTooltip nmId={props.nm.id} />}
         </div>
-      </td>
-      <td className="px-2 py-0.5 md:py-1 align-middle hidden md:table-cell text-xs text-muted-foreground tabular-nums">
-        {coords ? `X${coords.x.toFixed(1)} Y${coords.y.toFixed(1)}` : '—'}
       </td>
       {/* Desktop only: 觸發怪 column */}
       <td className="px-2 py-0.5 md:py-1 align-middle hidden md:table-cell">

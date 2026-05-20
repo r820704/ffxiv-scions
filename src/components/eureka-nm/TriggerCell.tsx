@@ -5,7 +5,7 @@ import { Check, Hourglass, Clock } from 'lucide-react';
 import WeatherIcon from '@/components/WeatherIcon';
 import { computeConditionStatus } from '@/utils/nm-tracker-state';
 import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
-import { isDayTime } from '@/utils/game-day-night';
+import { isDayTime, getNextTransition } from '@/utils/game-day-night';
 import { toEorzeaTime } from '@/utils/eorzea-time';
 import type { ConditionStatus } from '@/types/nm-tracker';
 
@@ -50,8 +50,29 @@ function ctxOf(nm: EurekaNm, now: number) {
   };
 }
 
+function conditionCountdown(
+  cond: { weather?: string[]; timeOfDay?: 'day' | 'night' },
+  nm: EurekaNm,
+  now: number,
+  status: ConditionStatus,
+): string {
+  if (status === 'met') return '';
+  if (cond.weather && cond.weather.length > 0) {
+    const firstWeather = cond.weather[0]!;
+    const ms = msUntilWeather(nm.zone, firstWeather, now);
+    return formatMinutes(ms);
+  }
+  if (cond.timeOfDay) {
+    // Countdown to next day↔night boundary (real ms via getNextTransition)
+    const ms = getNextTransition(now);
+    return formatMinutes(ms);
+  }
+  return '';
+}
+
 /**
- * Desktop "觸發怪" column: mob name + condition (day/night + weather) + status icon.
+ * Desktop "觸發怪" column: mob name + condition (day/night + weather) + status icon
+ * + countdown to next occurrence (when not currently met).
  * Renders "—" when this NM has no mob condition.
  */
 export function MobConditionCell({ nm, now }: Props) {
@@ -63,6 +84,7 @@ export function MobConditionCell({ nm, now }: Props) {
   const mobSpawns = nmSpawnInfo[nm.id]?.trigger ?? [];
   const mobName = mobSpawns.length > 0 ? mobSpawns.map(m => m.nameTw).join('/') : undefined;
   const wTw = weatherLabel(mob.weather);
+  const countdown = conditionCountdown(mob, nm, now, status);
 
   return (
     <span className="inline-flex items-center gap-0.5 text-xs whitespace-nowrap">
@@ -82,6 +104,7 @@ export function MobConditionCell({ nm, now }: Props) {
       {mob.weather?.map(w => <span key={w}>{weatherIcon(w)}</span>)}
       {wTw && <span>{wTw}</span>}
       {statusIcon(status)}
+      {countdown && <span className="text-muted-foreground"> {countdown}</span>}
     </span>
   );
 }
@@ -98,14 +121,7 @@ export function NmConditionCell({ nm, now }: Props) {
   const ctx = ctxOf(nm, now);
   const status = computeConditionStatus(nmCond, ctx);
   const wTw = weatherLabel(nmCond.weather);
-
-  // Countdown to next occurrence of the first weather option (only when not currently active)
-  let countdown = '';
-  if (nmCond.weather && nmCond.weather.length > 0 && status !== 'met') {
-    const firstWeather = nmCond.weather[0]!;
-    const ms = msUntilWeather(nm.zone, firstWeather, now);
-    countdown = formatMinutes(ms);
-  }
+  const countdown = conditionCountdown(nmCond, nm, now, status);
 
   return (
     <span className="inline-flex items-center gap-0.5 text-xs whitespace-nowrap">
