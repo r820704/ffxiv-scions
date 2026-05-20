@@ -14,8 +14,7 @@ describe('NmDetailModal', () => {
     render(<NmDetailModal nmId="pazuzu" onClose={() => {}} />);
     expect(screen.getByText('帕祖祖')).toBeInTheDocument();
     expect(screen.getByText('Pazuzu')).toBeInTheDocument();
-    // Pazuzu Lv.25; trigger mob Shadow Wraith is also Lv.25, so getAllByText is used.
-    expect(screen.getAllByText(/Lv\.25/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/Lv\.20/)).toBeInTheDocument();
   });
 
   it('shows NM 出現條件 and 觸發怪條件 sections', () => {
@@ -71,8 +70,8 @@ describe('NmDetailModal', () => {
   it('shows trigger mob attrs (Lv / element / timeOfDay) for Fafnir → 龍化石', () => {
     render(<NmDetailModal nmId="fafnir" onClose={() => {}} />);
     // 龍化石: Lv.22, Fire, night per eureka-trigger-mob-data.ts
-    // Note: Fafnir itself is also Lv.22 now, so getAllByText is used.
-    expect(screen.getAllByText('Lv.22').length).toBeGreaterThanOrEqual(1);
+    // Note: Fafnir's own trigger condition also contains 夜間, so getAllByText is used.
+    expect(screen.getByText('Lv.22')).toBeTruthy();
     expect(screen.getByAltText('火屬性')).toBeTruthy();
     expect(screen.getAllByText('夜間').length).toBeGreaterThanOrEqual(1);
   });

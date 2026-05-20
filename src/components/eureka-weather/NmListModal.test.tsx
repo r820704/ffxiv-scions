@@ -16,15 +16,15 @@ describe('NmListModal', () => {
     render(
       <NmListModal zone="Eureka Anemos" onClose={() => {}} onOpenDetail={() => {}} />,
     );
-    // Anemos has Lv.6-25, 20 NMs total
+    // Anemos has Lv.1-20, 20 NMs total
     expect(screen.getByText(/全部 NM/)).toBeTruthy();
-    expect(screen.getByText('寇里多仙人掌怪')).toBeTruthy(); // Lv.6
-    expect(screen.getByText('帕祖祖')).toBeTruthy(); // Lv.25
-    // Verify sorted by level: first Lv chip is 6, last is 25
+    expect(screen.getByText('寇里多仙人掌怪')).toBeTruthy(); // Lv.1
+    expect(screen.getByText('帕祖祖')).toBeTruthy(); // Lv.20
+    // Verify sorted by level: first Lv chip is 1, last is 20
     const lvLabels = screen.getAllByTestId('nm-level-chip');
     expect(lvLabels.length).toBe(20);
-    expect(lvLabels[0]?.textContent).toBe('6');
-    expect(lvLabels[lvLabels.length - 1]?.textContent).toBe('25');
+    expect(lvLabels[0]?.textContent).toBe('1');
+    expect(lvLabels[lvLabels.length - 1]?.textContent).toBe('20');
   });
 
   it('shows trigger condition for each NM', () => {
