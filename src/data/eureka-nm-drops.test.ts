@@ -15,7 +15,17 @@ describe('eurekaNmDrops', () => {
       for (const d of drops) {
         expect(d.nameTw, `${id} drop missing nameTw`).toBeTruthy();
         expect(d.nameEn, `${id} drop missing nameEn`).toBeTruthy();
-        expect(['accessory', 'weapon-material', 'logogram-manual', 'crystal', 'other']).toContain(d.kind);
+        expect([
+          'accessory',
+          'gear',
+          'minion',
+          'furniture',
+          'card',
+          'weapon-material',
+          'logogram-manual',
+          'crystal',
+          'other',
+        ]).toContain(d.kind);
         expect(typeof d.notable).toBe('boolean');
       }
     }

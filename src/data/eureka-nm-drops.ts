@@ -1,23 +1,44 @@
 import type { NmDropItem } from '@/types/nm-drop';
 
-// Source: ffxiv.consolegameswiki.com (per-NM drop tables) + community references.
-// TC names sourced from thewakingsands/ffxiv-datamining-tc Item.csv where verifiable; fallback EN otherwise.
+// Source: ffxiv.consolegameswiki.com (per-NM FATE loot tables).
+// TC names sourced from thewakingsands/ffxiv-datamining-tc Item.csv; fallback EN otherwise.
 // See THIRD-PARTY-NOTICES for license details.
 //
-// MVP scope: only entries with high-confidence NM ids (verified against eureka-nm-data.ts)
-// and well-documented iconic drops are included. Per CLAUDE.md rule
-// "若拆包資料中尚無該詞的繁中翻譯，不要使用，等官方資料更新後再加入",
-// nameTw is set equal to nameEn until the user audits each entry against Item.csv.
-// User will audit + populate proper TC names.
+// Anemos drops audited 2026-05-21 against Item.csv (item IDs included as inline comments).
+// Pagos/Pyros lieutenant accessories still use EN fallback pending audit.
+// Excludes 常風水晶碎片 and 常風地帶上鎖的寶箱 per data design.
 export const eurekaNmDrops: Record<string, NmDropItem[]> = {
-  // Eureka Anemos — Lv 20 boss
+  // Eureka Anemos — Lv 2 (the Lord of Anemos)
+  'lord-of-anemos': [
+    { nameTw: '常風王子', nameEn: 'the Prince of Anemos', kind: 'minion', notable: true }, // 21919
+  ],
+
+  // Eureka Anemos — Lv 4 (the Emperor of Anemos)
+  'emperor-of-anemos': [
+    { nameTw: '皇帝飛蟲的薄翼髮飾', nameEn: 'Emperor Hairpin', kind: 'accessory', notable: true }, // 22360
+  ],
+
+  // Eureka Anemos — Lv 11 (Serket)
+  serket: [
+    { nameTw: '毒蠍格鬥服', nameEn: 'Scorpion Harness', kind: 'gear', notable: true }, // 22358
+    { nameTw: '米斯拉人偶', nameEn: 'Wind-up Mithra', kind: 'minion', notable: true }, // 21917
+  ],
+
+  // Eureka Anemos — Lv 15 (Simurgh's Strider)
+  'simurghs-strider': [
+    { nameTw: '闊步高筒靴', nameEn: 'Strider Boots', kind: 'gear', notable: true }, // 22359
+  ],
+
+  // Eureka Anemos — Lv 17 (Fafnir)
+  fafnir: [
+    { nameTw: '迷你法夫納', nameEn: 'Wind-up Fafnir', kind: 'minion', notable: true }, // 21918
+  ],
+
+  // Eureka Anemos — Lv 20 boss (Pazuzu)
   pazuzu: [
-    {
-      nameTw: "Pazuzu's Feather",
-      nameEn: "Pazuzu's Feather",
-      kind: 'accessory',
-      notable: true,
-    },
+    { nameTw: '帕祖祖的羽毛', nameEn: "Pazuzu's Feather", kind: 'accessory', notable: true }, // 21802
+    { nameTw: '帕祖祖的祭壇', nameEn: 'Altar to Pazuzu', kind: 'furniture', notable: true }, // 21852
+    { nameTw: '九宮幻卡：帕祖祖', nameEn: 'Pazuzu Card', kind: 'card', notable: true }, // 23912
   ],
 
   // Eureka Pagos — Lv 36 boss (Blizzards weather)
