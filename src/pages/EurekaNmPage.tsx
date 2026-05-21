@@ -79,7 +79,6 @@ export default function EurekaNmPage() {
         records={records.records}
         pinned={pinned.pinned}
         now={now}
-        showZoneChips={tab === 'custom'}
         onTogglePin={pinned.toggle}
         onPop={records.setPop}
         onClear={records.clear}
