@@ -21,7 +21,7 @@ const EMPTY_LABEL = '—';
 
 function weatherIcon(w: string): JSX.Element {
   const tw = weatherNamesTw[w] ?? w;
-  return <WeatherIcon weatherEn={w} weatherTw={tw} size={12} />;
+  return <WeatherIcon weatherEn={w} weatherTw={tw} size={16} />;
 }
 
 function weatherLabel(weathers: string[] | undefined): string {
@@ -121,13 +121,13 @@ export function MobConditionCell({ nm, now }: Props) {
       {mobName && <span>{mobName}・</span>}
       {mob.timeOfDay === 'night' && (
         <>
-          <span aria-hidden="true">🌙</span>
+          <span aria-hidden="true" className="text-base leading-none">🌙</span>
           <span>夜間</span>
         </>
       )}
       {mob.timeOfDay === 'day' && (
         <>
-          <span aria-hidden="true">☀</span>
+          <span aria-hidden="true" className="text-base leading-none">☀</span>
           <span>白天</span>
         </>
       )}
@@ -199,8 +199,8 @@ export function MergedConditionCellMobile({ nm, now }: Props) {
     const status = computeConditionStatus(cond, ctx);
     return (
       <span className="inline-flex items-center gap-0.5">
-        {cond.timeOfDay === 'night' && <span aria-label="夜間">🌙</span>}
-        {cond.timeOfDay === 'day' && <span aria-label="白天">☀</span>}
+        {cond.timeOfDay === 'night' && <span aria-label="夜間" className="text-base leading-none">🌙</span>}
+        {cond.timeOfDay === 'day' && <span aria-label="白天" className="text-base leading-none">☀</span>}
         {cond.weather?.map(w => <span key={`m-${w}`}>{weatherIcon(w)}</span>)}
         {statusIcon(status)}
       </span>
