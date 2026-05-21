@@ -39,13 +39,13 @@ export function NmRow(props: NmRowProps) {
       className={`border-l-4 transition-colors cursor-pointer md:cursor-default ${ACCENT[props.state]} ${ROW_BG[props.state]}`}
       onClick={() => props.onOpenDetail?.()}
     >
-      <td className="px-2 py-0.5 md:py-1 align-middle">
+      <td className="px-2 py-0.5 md:py-0.5 align-middle">
         <div className="flex items-center gap-1">
           <PinStar isPinned={props.isPinned} onToggle={props.onTogglePin} nmName={props.nm.nameTw} />
           <span className="text-xs text-muted-foreground tabular-nums">{props.nm.level}</span>
         </div>
       </td>
-      <td className="px-2 py-0.5 md:py-1 align-middle">
+      <td className="px-2 py-0.5 md:py-0.5 align-middle">
         <div className="flex items-center gap-1 min-w-0">
           {props.showZoneChip && (
             <span className="rounded bg-muted px-1 text-xs text-muted-foreground whitespace-nowrap">
@@ -57,18 +57,18 @@ export function NmRow(props: NmRowProps) {
         </div>
       </td>
       {/* Desktop only: 觸發怪 column */}
-      <td className="px-2 py-0.5 md:py-1 align-middle hidden md:table-cell">
+      <td className="px-2 py-0.5 md:py-0.5 align-middle hidden md:table-cell">
         <MobConditionCell nm={props.nm} now={props.now} />
       </td>
       {/* Desktop only: NM 條件 + 天氣窗 column */}
-      <td className="px-2 py-0.5 md:py-1 align-middle hidden md:table-cell">
+      <td className="px-2 py-0.5 md:py-0.5 align-middle hidden md:table-cell">
         <NmConditionCell nm={props.nm} now={props.now} />
       </td>
       {/* Mobile only: merged condition cell */}
       <td className="px-2 py-0.5 align-middle md:hidden">
         <MergedConditionCellMobile nm={props.nm} now={props.now} />
       </td>
-      <td className="px-2 py-0.5 md:py-1 align-middle">
+      <td className="px-2 py-0.5 md:py-0.5 align-middle">
         <CooldownCell
           nm={props.nm}
           record={props.record}
@@ -77,7 +77,7 @@ export function NmRow(props: NmRowProps) {
           onSetCustom={props.onSetCustom}
         />
       </td>
-      <td className="pl-1 pr-2 py-0.5 md:px-2 md:py-1 align-middle text-right md:text-left">
+      <td className="pl-1 pr-2 py-0.5 md:px-2 md:py-0.5 align-middle text-right md:text-left">
         <ActionCell
           hasRecord={props.record != null}
           onPop={props.onPop}

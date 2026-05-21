@@ -27,14 +27,14 @@ export function NmTable(props: NmTableProps) {
       <table className="w-full text-sm">
         <thead className="bg-muted/40 text-xs text-muted-foreground">
           <tr>
-            <th className="px-2 py-0.5 md:py-1 text-left">等級</th>
-            <th className="px-2 py-0.5 md:py-1 text-left">NM 名稱</th>
-            <th className="px-2 py-0.5 md:py-1 text-left hidden md:table-cell">觸發怪</th>
-            <th className="px-2 py-0.5 md:py-1 text-left hidden md:table-cell">NM 條件</th>
+            <th className="px-2 py-0.5 md:py-0.5 text-left">等級</th>
+            <th className="px-2 py-0.5 md:py-0.5 text-left">NM 名稱</th>
+            <th className="px-2 py-0.5 md:py-0.5 text-left hidden md:table-cell">觸發怪</th>
+            <th className="px-2 py-0.5 md:py-0.5 text-left hidden md:table-cell">NM 條件</th>
             {/* Mobile: merged condition column header */}
             <th className="px-2 py-0.5 text-left md:hidden whitespace-nowrap min-w-[80px]">觸發｜NM</th>
-            <th className="px-2 py-0.5 md:py-1 text-left min-w-[72px]">冷卻</th>
-            <th className="pl-1 pr-2 py-0.5 md:px-2 md:py-1 text-right md:text-left">記錄</th>
+            <th className="px-2 py-0.5 md:py-0.5 text-left min-w-[72px]">冷卻</th>
+            <th className="pl-1 pr-2 py-0.5 md:px-2 md:py-0.5 text-right md:text-left">記錄</th>
           </tr>
         </thead>
         <tbody>
