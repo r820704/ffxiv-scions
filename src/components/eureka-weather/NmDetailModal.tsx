@@ -107,14 +107,39 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
               </div>
             ) : (
               <>
-                <div>
-                  <div className="text-xs text-muted-foreground mb-1">NM 座標</div>
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-nm/15 text-xs">
-                    <span className="text-nm-foreground font-bold">NM</span>
-                    <span className="text-muted-foreground">
-                      📍 {zoneShort} ({spawn.nmCoord.x.toFixed(1)}, {spawn.nmCoord.y.toFixed(1)})
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                  <div className="sm:flex-1">
+                    <div className="text-xs text-muted-foreground mb-1">NM 座標</div>
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-nm/15 text-xs">
+                      <span className="text-nm-foreground font-bold">NM</span>
+                      <span className="text-muted-foreground">
+                        📍 {zoneShort} ({spawn.nmCoord.x.toFixed(1)}, {spawn.nmCoord.y.toFixed(1)})
+                      </span>
                     </span>
-                  </span>
+                  </div>
+
+                  {(() => {
+                    const drops = getNotableDrops(nm.id);
+                    if (drops.length === 0) return null;
+                    return (
+                      <div className="sm:flex-1">
+                        <div className="text-xs text-muted-foreground mb-1">特殊掉落</div>
+                        <ul className="flex flex-col gap-1 text-xs">
+                          {drops.map((d, i) => (
+                            <li key={i} className="flex items-center gap-2">
+                              <span className="text-foreground">
+                                {d.nameTw}
+                                {d.labelTw && `（${d.labelTw}）`}
+                              </span>
+                              {d.nameTw !== d.nameEn && (
+                                <span className="text-muted-foreground">{d.nameEn}</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 <div>
@@ -147,29 +172,6 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
                 </div>
 
                 <NmDetailMap zone={nm.zone} pins={pins} />
-
-                {(() => {
-                  const drops = getNotableDrops(nm.id);
-                  if (drops.length === 0) return null;
-                  return (
-                    <div>
-                      <div className="text-xs text-muted-foreground mb-1">特殊掉落</div>
-                      <ul className="flex flex-col gap-1 text-xs">
-                        {drops.map((d, i) => (
-                          <li key={i} className="flex items-center gap-2">
-                            <span className="text-foreground">
-                              {d.nameTw}
-                              {d.labelTw && `（${d.labelTw}）`}
-                            </span>
-                            {d.nameTw !== d.nameEn && (
-                              <span className="text-muted-foreground">{d.nameEn}</span>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                })()}
               </>
             )}
           </div>
