@@ -31,7 +31,7 @@ export const eurekaNmDrops: Record<string, NmDropItem[]> = {
 
   // Lv 15 (Simurgh's Strider)
   'simurghs-strider': [
-    { nameTw: '闊步高筒靴', nameEn: 'Strider Boots', kind: 'gear', labelTw: '防具', notable: true }, // 22359
+    { nameTw: '闊步高筒靴', nameEn: 'Strider Boots', kind: 'gear', labelTw: '防具,城內衝刺效果時間延長10秒', notable: true }, // 22359
   ],
 
   // Lv 17 (Fafnir)
@@ -60,7 +60,7 @@ export const eurekaNmDrops: Record<string, NmDropItem[]> = {
 
   // Lv 30 (King Arthro)
   'king-arthro': [
-    { nameTw: '閃襲指環', nameEn: 'Blitzring', kind: 'accessory', labelTw: '戒指', notable: true }, // 36121
+    { nameTw: '閃襲指環', nameEn: 'Blitzring', kind: 'accessory', labelTw: '戒指, 優雷卡專用效果', notable: true }, // 36121
   ],
 
   // Lv 33 (Hadhayosh)
