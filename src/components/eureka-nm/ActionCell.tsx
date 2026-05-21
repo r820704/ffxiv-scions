@@ -1,16 +1,22 @@
 import { Check, RotateCcw } from 'lucide-react';
+import type { NmRowState } from '@/types/nm-tracker';
 
 interface ActionCellProps {
   hasRecord: boolean;
+  state: NmRowState;
   onPop: () => void;
   onClear: () => void;
   nmName: string;
 }
 
-export function ActionCell({ hasRecord, onPop, onClear, nmName }: ActionCellProps) {
+export function ActionCell({ hasRecord, state, onPop, onClear, nmName }: ActionCellProps) {
+  // Show 重置 only when an active record blocks recording a new pop —
+  // i.e. cooldown still running. Once the row turns green the old record
+  // is stale, so flip back to 出現 (which overwrites popAt on click).
+  const showClear = hasRecord && state !== 'green';
   return (
     <div className="flex items-center justify-end md:justify-start">
-      {hasRecord ? (
+      {showClear ? (
         <button
           type="button"
           aria-label={`重置 ${nmName} 記錄`}

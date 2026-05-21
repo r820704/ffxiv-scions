@@ -80,6 +80,7 @@ export function NmRow(props: NmRowProps) {
       <td className="pl-1 pr-2 py-0.5 md:px-2 md:py-0.5 align-middle text-right md:text-left">
         <ActionCell
           hasRecord={props.record != null}
+          state={props.state}
           onPop={props.onPop}
           onClear={props.onClear}
           nmName={props.nm.nameTw}
