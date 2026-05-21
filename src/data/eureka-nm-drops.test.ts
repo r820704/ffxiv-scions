@@ -26,6 +26,7 @@ describe('eurekaNmDrops', () => {
           'crystal',
           'other',
         ]).toContain(d.kind);
+        expect(typeof d.labelTw, `${id} drop labelTw must be string`).toBe('string');
         expect(typeof d.notable).toBe('boolean');
       }
     }

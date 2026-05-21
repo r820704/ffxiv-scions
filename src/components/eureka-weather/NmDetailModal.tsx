@@ -157,7 +157,10 @@ export default function NmDetailModal({ nmId, onClose }: NmDetailModalProps) {
                       <ul className="flex flex-col gap-1 text-xs">
                         {drops.map((d, i) => (
                           <li key={i} className="flex items-center gap-2">
-                            <span className="text-foreground">{d.nameTw}</span>
+                            <span className="text-foreground">
+                              {d.nameTw}
+                              {d.labelTw && `（${d.labelTw}）`}
+                            </span>
                             {d.nameTw !== d.nameEn && (
                               <span className="text-muted-foreground">{d.nameEn}</span>
                             )}

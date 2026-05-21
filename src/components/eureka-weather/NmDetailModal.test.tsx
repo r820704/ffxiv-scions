@@ -86,8 +86,7 @@ describe('NmDetailModal', () => {
   it('renders 特殊掉落 section for NM with notable drops', () => {
     render(<NmDetailModal nmId="copycat-cassie" onClose={vi.fn()} />);
     expect(screen.getByText('特殊掉落')).toBeInTheDocument();
-    // Drops use EN fallback per CLAUDE.md TC strict rule
-    expect(screen.getByText("Cassie's Earring")).toBeInTheDocument();
+    expect(screen.getByText(/凱西耳墜/)).toBeInTheDocument();
   });
 
   it('does not render 特殊掉落 section for NM without notable drops', () => {

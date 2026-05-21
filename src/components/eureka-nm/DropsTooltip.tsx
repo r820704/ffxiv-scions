@@ -11,7 +11,10 @@ export function DropsTooltip({ nmId }: Props) {
   const label = (
     <ul className="space-y-0.5 list-none m-0 p-0">
       {drops.map((d, i) => (
-        <li key={i}>{d.nameTw}</li>
+        <li key={i}>
+          {d.nameTw}
+          {d.labelTw && `（${d.labelTw}）`}
+        </li>
       ))}
     </ul>
   );
