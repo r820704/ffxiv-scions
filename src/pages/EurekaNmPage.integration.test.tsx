@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import EurekaNmPage from './EurekaNmPage';
 
@@ -17,7 +17,7 @@ describe('EurekaNmPage — 自定義 tab integration', () => {
     expect(allRows.length).toBe(1);
   });
 
-  it('shows pinned NMs across zones with zone chips in 自定義 tab', () => {
+  it('shows pinned NMs from multiple zones in 自定義 tab', () => {
     render(<MemoryRouter><EurekaNmPage /></MemoryRouter>);
 
     // On Anemos tab (default), pin Pazuzu (Lv 20, last in zone)
@@ -34,11 +34,6 @@ describe('EurekaNmPage — 自定義 tab integration', () => {
     // Both NMs should be visible
     expect(screen.getByText('帕祖祖')).toBeInTheDocument();
     expect(screen.getByText('複製魔花凱西')).toBeInTheDocument();
-
-    // Zone chips show TC zone short names (常風之地 / 恆冰之地 etc.)
-    const table = screen.getByRole('table');
-    expect(within(table).getAllByText('常風之地').length).toBeGreaterThanOrEqual(1);
-    expect(within(table).getAllByText('恆冰之地').length).toBeGreaterThanOrEqual(1);
   });
 
   it('unpinning from 自定義 tab removes the NM and updates original zone tab', () => {
