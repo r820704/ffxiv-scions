@@ -15,7 +15,7 @@ export default function WeatherIcon({ weatherEn, weatherTw, size = 24 }: Weather
   if (!url || errored) {
     return (
       <span
-        className="inline-block rounded-full shrink-0"
+        className="inline-block align-middle rounded-full shrink-0"
         style={{ width: size, height: size, background: getWeatherColor(weatherTw) }}
         aria-hidden="true"
       />
@@ -24,7 +24,7 @@ export default function WeatherIcon({ weatherEn, weatherTw, size = 24 }: Weather
 
   return (
     <img
-      className="inline-block shrink-0"
+      className="inline-block align-middle shrink-0"
       src={url}
       alt={weatherTw}
       width={size}

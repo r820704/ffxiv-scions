@@ -21,7 +21,7 @@ const EMPTY_LABEL = '—';
 
 function weatherIcon(w: string): JSX.Element {
   const tw = weatherNamesTw[w] ?? w;
-  return <WeatherIcon weatherEn={w} weatherTw={tw} size={16} />;
+  return <WeatherIcon weatherEn={w} weatherTw={tw} size={18} />;
 }
 
 function weatherLabel(weathers: string[] | undefined): string {
@@ -30,9 +30,9 @@ function weatherLabel(weathers: string[] | undefined): string {
 }
 
 function statusIcon(s: ConditionStatus): JSX.Element | null {
-  if (s === 'met') return <Check className="inline h-3 w-3 text-success" aria-label="符合" />;
-  if (s === 'soon') return <Hourglass className="inline h-3 w-3 text-warning" aria-label="即將" />;
-  if (s === 'distant') return <Clock className="inline h-3 w-3 text-sky-500" aria-label="等待中" />;
+  if (s === 'met') return <Check className="inline align-middle h-4 w-4 text-success" aria-label="符合" />;
+  if (s === 'soon') return <Hourglass className="inline align-middle h-4 w-4 text-warning" aria-label="即將" />;
+  if (s === 'distant') return <Clock className="inline align-middle h-4 w-4 text-sky-500" aria-label="等待中" />;
   return null;
 }
 
