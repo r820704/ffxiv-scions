@@ -1,8 +1,27 @@
-import { Package } from 'lucide-react';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { getNotableDrops } from '@/data/eureka-nm-drops';
 
 interface Props { nmId: string; }
+
+function ChestIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M3 10 C 3 7, 5 5, 12 5 C 19 5, 21 7, 21 10 V 11 H 3 Z" />
+      <rect x="3" y="11" width="18" height="9" rx="1" />
+      <rect x="10.5" y="9" width="3" height="4" rx="0.5" />
+      <circle cx="12" cy="11.5" r="0.6" fill="currentColor" />
+    </svg>
+  );
+}
 
 export function DropsTooltip({ nmId }: Props) {
   const drops = getNotableDrops(nmId);
@@ -25,9 +44,9 @@ export function DropsTooltip({ nmId }: Props) {
         type="button"
         aria-label={`${nmId} drops`}
         onClick={(e) => e.stopPropagation()}
-        className="inline-flex items-center text-muted-foreground/60 hover:text-foreground"
+        className="inline-flex items-center text-glow/80 hover:text-glow"
       >
-        <Package className="h-3 w-3" />
+        <ChestIcon className="h-3.5 w-3.5" />
       </button>
     </Tooltip>
   );
