@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { eurekaNms } from '@/data/eureka-nm-data';
+import { zoneShortNamesTw } from '@/data/weather-data';
 
 interface Props {
   pinned: string[];
@@ -74,12 +75,12 @@ export function NotificationButton({ pinned, enabled, permission, supported, onS
                 尚未 pin 任何 NM。前往 zone tab 點 ☆ 加入。
               </p>
             ) : (
-              <ul className="text-xs space-y-0.5 max-h-40 overflow-y-auto">
+              <ul className="text-xs space-y-0.5">
                 {pinnedNms.map(n => (
                   <li key={n.id} className="flex justify-between">
                     <span>{n.nameTw}</span>
                     <span className="text-muted-foreground">
-                      {n.zone.replace('Eureka ', '')}
+                      {zoneShortNamesTw[n.zone] ?? n.zone}
                     </span>
                   </li>
                 ))}

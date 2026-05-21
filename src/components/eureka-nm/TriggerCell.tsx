@@ -107,18 +107,30 @@ function conditionCountdown(
  */
 export function MobConditionCell({ nm, now }: Props) {
   const mob = nm.trigger?.mob;
-  if (!mob) return <span className="text-xs text-muted-foreground">{EMPTY_LABEL}</span>;
+  const mobSpawns = nmSpawnInfo[nm.id]?.trigger ?? [];
+  const mobName = mobSpawns.length > 0 ? mobSpawns.map(m => m.nameTw).join('/') : undefined;
+
+  // Every NM has a trigger mob in spawn data; fall back to "—" only when we
+  // genuinely have no mob info at all.
+  if (!mobName) return <span className="text-xs text-muted-foreground">{EMPTY_LABEL}</span>;
+
+  // No special trigger condition (no day/night, no weather): show mob name only.
+  if (!mob) {
+    return (
+      <span className="inline-flex items-center gap-0.5 text-xs whitespace-nowrap">
+        <span>{mobName}</span>
+      </span>
+    );
+  }
 
   const ctx = ctxOf(nm, now);
   const status = computeConditionStatus(mob, ctx);
-  const mobSpawns = nmSpawnInfo[nm.id]?.trigger ?? [];
-  const mobName = mobSpawns.length > 0 ? mobSpawns.map(m => m.nameTw).join('/') : undefined;
   const wTw = weatherLabel(mob.weather);
   const countdown = conditionCountdown(mob, nm, now, status);
 
   return (
     <span className="inline-flex items-center gap-0.5 text-xs whitespace-nowrap">
-      {mobName && <span>{mobName}・</span>}
+      <span>{mobName}・</span>
       {mob.timeOfDay === 'night' && (
         <>
           <span aria-hidden="true" className="text-base leading-none">🌙</span>

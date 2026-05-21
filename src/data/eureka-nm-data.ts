@@ -107,7 +107,7 @@ export const eurekaNms: EurekaNm[] = [
   { id: 'barong', nameTw: '巴龍', nameEn: 'Barong', zone: 'Eureka Hydatos', level: 63 },
   { id: 'ceto', nameTw: '刻托', nameEn: 'Ceto', zone: 'Eureka Hydatos', level: 64 },
   { id: 'provenance-watcher', nameTw: '起源守望者', nameEn: 'Provenance Watcher', zone: 'Eureka Hydatos', level: 65 },
-  { id: 'ovni', nameTw: '未確認飛行物體', nameEn: 'Ovni', zone: 'Eureka Hydatos', level: 65 },
+  // Ovni intentionally omitted — wandering NM with unique spawn rules; revisit display later.
 ];
 
 export function getActiveNms(

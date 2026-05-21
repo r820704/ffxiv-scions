@@ -16,12 +16,13 @@ const pazuzu = eurekaNms.find(n => n.id === 'pazuzu')!;                  // both
 const jahannam = eurekaNms.find(n => n.id === 'jahannam')!;              // only mob condition
 
 describe('MobConditionCell', () => {
-  it('renders — for NM with no mob condition (cassie)', () => {
+  it('renders mob name (no condition suffix) when NM has no mob trigger condition (cassie)', () => {
     render(<MobConditionCell nm={cassie} now={Date.now()} />);
-    expect(screen.getByText('—')).toBeInTheDocument();
+    expect(screen.getByText('阿米雷戴')).toBeInTheDocument();
+    expect(screen.queryByText(/・/)).not.toBeInTheDocument();
   });
 
-  it('renders mob name + condition for pazuzu (night)', () => {
+  it('renders mob name + condition separator for pazuzu (night)', () => {
     render(<MobConditionCell nm={pazuzu} now={Date.now()} />);
     expect(screen.getByText(/・/)).toBeInTheDocument();
   });
@@ -31,9 +32,10 @@ describe('MobConditionCell', () => {
     expect(screen.getByText(/・/)).toBeInTheDocument();
   });
 
-  it('renders — for sabotender (no trigger at all)', () => {
+  it('renders mob name (no condition suffix) for sabotender (no nm.trigger)', () => {
     render(<MobConditionCell nm={sabotender} now={Date.now()} />);
-    expect(screen.getByText('—')).toBeInTheDocument();
+    expect(screen.getByText('開花仙人掌怪')).toBeInTheDocument();
+    expect(screen.queryByText(/・/)).not.toBeInTheDocument();
   });
 });
 

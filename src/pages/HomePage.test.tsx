@@ -8,20 +8,22 @@ describe('HomePage', () => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 
-  it('renders all three feature cards with correct titles', () => {
+  it('renders all four feature cards with correct titles', () => {
     renderWithRouter(<HomePage />);
 
     expect(screen.getByText('優雷卡天氣·NM')).toBeInTheDocument();
     expect(screen.getByText('文理技能')).toBeInTheDocument();
     expect(screen.getByText('禁地兵裝')).toBeInTheDocument();
+    expect(screen.getByText('惡名精英')).toBeInTheDocument();
   });
 
-  it('renders all three card descriptions', () => {
+  it('renders all four card descriptions', () => {
     renderWithRouter(<HomePage />);
 
     expect(screen.getAllByText(/優雷卡四地圖天氣時間軸/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/優雷卡文理技能查詢/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/優雷卡武器與防具升級進度追蹤/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/記錄惡名精英的時間軸以及冷卻時間/).length).toBeGreaterThan(0);
   });
 
   it('renders 優雷卡天氣 card with correct href', () => {
@@ -49,5 +51,14 @@ describe('HomePage', () => {
       (link) => link.getAttribute('href') === '/eureka-gear' && link.textContent?.includes('禁地兵裝')
     );
     expect(gearLink).toBeInTheDocument();
+  });
+
+  it('renders 惡名精英 card with correct href', () => {
+    renderWithRouter(<HomePage />);
+
+    const nmLink = screen.getAllByRole('link').find(
+      (link) => link.getAttribute('href') === '/eureka-nm' && link.textContent?.includes('惡名精英')
+    );
+    expect(nmLink).toBeInTheDocument();
   });
 });
