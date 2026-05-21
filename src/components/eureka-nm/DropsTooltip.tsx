@@ -43,7 +43,6 @@ export function DropsTooltip({ nmId }: Props) {
       <button
         type="button"
         aria-label={`${nmId} drops`}
-        onClick={(e) => e.stopPropagation()}
         className="inline-flex items-center text-glow/80 hover:text-glow"
       >
         <ChestIcon className="h-3.5 w-3.5" />
