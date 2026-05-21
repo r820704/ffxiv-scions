@@ -18,9 +18,9 @@ const COLOR: Record<ConditionStatus, string> = {
 
 export function ConditionChip({ icon, label, status, remainText }: ConditionChipProps) {
   const statusIcon =
-    status === 'met' ? <Check className="h-3 w-3 text-owned" />
-    : status === 'soon' ? <Hourglass className="h-3 w-3 text-warning" />
-    : status === 'distant' ? <Clock className="h-3 w-3 text-sky-500" />
+    status === 'met' ? <Check className="h-2.5 w-2.5 text-owned" />
+    : status === 'soon' ? <Hourglass className="h-2.5 w-2.5 text-warning" />
+    : status === 'distant' ? <Clock className="h-2.5 w-2.5 text-sky-500" />
     : null;
 
   return (
