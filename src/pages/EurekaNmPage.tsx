@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import PageHead from '@/components/PageHead';
 import { SubTabStrip } from '@/components/eureka-nm/SubTabStrip';
 import { NmTable } from '@/components/eureka-nm/NmTable';
-import { ConditionSummaryBar } from '@/components/eureka-nm/ConditionSummaryBar';
+import { ConditionSummaryBar, CustomConditionSummaryBar } from '@/components/eureka-nm/ConditionSummaryBar';
 import NmDetailModal from '@/components/eureka-weather/NmDetailModal';
 import { useNmTrackerRecords } from '@/hooks/useNmTrackerRecords';
 import { useNmTrackerPinned } from '@/hooks/useNmTrackerPinned';
@@ -73,7 +73,9 @@ export default function EurekaNmPage() {
         }
       />
       <SubTabStrip activeTab={tab} onTabChange={setTab} onClearAll={records.clearAll} />
-      {tab !== 'custom' && <ConditionSummaryBar zone={tab as EurekaZone} now={now} />}
+      {tab !== 'custom'
+        ? <ConditionSummaryBar zone={tab as EurekaZone} now={now} />
+        : <CustomConditionSummaryBar nms={nmsForTab} now={now} />}
       <NmTable
         nms={nmsForTab}
         records={records.records}
