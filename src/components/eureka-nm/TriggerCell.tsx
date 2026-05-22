@@ -60,6 +60,7 @@ function ctxOf(nm: EurekaNm, now: number) {
     isNight: !isDayTime(toEorzeaTime(now)),
     isWeather: (w: string) => isWeatherActive(nm.zone, w, now),
     minutesToWeather: (w: string) => msUntilWeather(nm.zone, w, now) / 60_000,
+    msToTransition: getNextTransition(now),
   };
 }
 
@@ -211,8 +212,8 @@ export function MergedConditionCellMobile({ nm, now }: Props) {
     const status = computeConditionStatus(cond, ctx);
     return (
       <span className="inline-flex items-center gap-0.5">
-        {cond.timeOfDay === 'night' && <span aria-label="夜間" className="text-sm leading-none">🌙</span>}
-        {cond.timeOfDay === 'day' && <span aria-label="白天" className="text-sm leading-none">☀</span>}
+        {cond.timeOfDay === 'night' && <span aria-label="夜間" className="text-xs leading-none">🌙</span>}
+        {cond.timeOfDay === 'day' && <span aria-label="白天" className="text-xs leading-none">☀</span>}
         {cond.weather?.map(w => <span key={`m-${w}`}>{weatherIcon(w)}</span>)}
         {statusIcon(status)}
       </span>
@@ -220,10 +221,10 @@ export function MergedConditionCellMobile({ nm, now }: Props) {
   }
 
   return (
-    <span className="inline-flex items-center gap-0.5 text-xs">
-      {renderSegment(mob)}
+    <span className="grid grid-cols-[1fr_auto_1fr] items-center gap-1 text-xs">
+      <span className="justify-self-start">{renderSegment(mob)}</span>
       <span className="text-muted-foreground">｜</span>
-      {renderSegment(nmCond)}
+      <span className="justify-self-start">{renderSegment(nmCond)}</span>
     </span>
   );
 }

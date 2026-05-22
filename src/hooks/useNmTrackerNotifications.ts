@@ -3,7 +3,7 @@ import { isNotificationSupported } from '@/utils/notification-engine';
 import { computeNextNotifications, type NotificationEntry } from '@/utils/nm-tracker-notification';
 import type { StateCtx } from '@/utils/nm-tracker-state';
 import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
-import { isDayTime } from '@/utils/game-day-night';
+import { isDayTime, getNextTransition } from '@/utils/game-day-night';
 import { toEorzeaTime } from '@/utils/eorzea-time';
 import { eurekaNms, type EurekaNm } from '@/data/eureka-nm-data';
 import { NM_TRACKER_NOTIFICATION_ENABLED_KEY, type NmRecord } from '@/types/nm-tracker';
@@ -33,6 +33,7 @@ function makeCtxAt(nm: EurekaNm): (t: number) => StateCtx {
     isNight: !isDayTime(toEorzeaTime(t)),
     isWeather: (w: string) => isWeatherActive(nm.zone, w, t),
     minutesToWeather: (w: string) => msUntilWeather(nm.zone, w, t) / 60_000,
+    msToTransition: getNextTransition(t),
   });
 }
 

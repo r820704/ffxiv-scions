@@ -3,7 +3,7 @@ import type { NmRecord } from '@/types/nm-tracker';
 import { NmRow } from './NmRow';
 import { computeRowState } from '@/utils/nm-tracker-state';
 import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
-import { isDayTime } from '@/utils/game-day-night';
+import { isDayTime, getNextTransition } from '@/utils/game-day-night';
 import { toEorzeaTime } from '@/utils/eorzea-time';
 
 interface NmTableProps {
@@ -21,6 +21,7 @@ interface NmTableProps {
 
 export function NmTable(props: NmTableProps) {
   const isNight = !isDayTime(toEorzeaTime(props.now));
+  const msToTransition = getNextTransition(props.now);
 
   return (
     <div className="overflow-hidden rounded border border-border">
@@ -31,8 +32,16 @@ export function NmTable(props: NmTableProps) {
             <th className="px-2 py-0.5 md:py-0.5 text-left">NM 名稱</th>
             <th className="px-2 py-0.5 md:py-0.5 text-left hidden md:table-cell">觸發怪</th>
             <th className="px-2 py-0.5 md:py-0.5 text-left hidden md:table-cell">NM 條件</th>
-            {/* Mobile: merged condition column header */}
-            <th className="px-2 py-0.5 text-left md:hidden whitespace-nowrap min-w-[80px]">觸發｜NM</th>
+            {/* Mobile: merged condition column header. The inner grid mirrors
+                MergedConditionCellMobile so the ｜ separator lines up with the
+                cell ｜ regardless of which side has content. */}
+            <th className="px-2 py-0.5 text-left md:hidden whitespace-nowrap min-w-[80px]">
+              <span className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
+                <span className="justify-self-start">觸發</span>
+                <span className="text-muted-foreground">｜</span>
+                <span className="justify-self-start">NM</span>
+              </span>
+            </th>
             <th className="px-2 py-0.5 md:py-0.5 text-left min-w-[72px]">冷卻</th>
             <th className="pl-1 pr-2 py-0.5 md:px-2 md:py-0.5 text-right md:text-left">記錄</th>
           </tr>
@@ -45,6 +54,7 @@ export function NmTable(props: NmTableProps) {
               isWeather: (w: string) => isWeatherActive(nm.zone, w, props.now),
               minutesToWeather: (w: string) =>
                 msUntilWeather(nm.zone, w, props.now) / 60_000,
+              msToTransition,
             };
             const state = computeRowState(nm, { popAt: record?.popAt }, props.now, ctx);
             return (

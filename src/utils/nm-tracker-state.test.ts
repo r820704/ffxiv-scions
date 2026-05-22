@@ -76,20 +76,20 @@ describe('isCdReady', () => {
 
 describe('isMobConditionMet', () => {
   it('returns true for NM without mob condition (常駐)', () => {
-    const ctx: StateCtx = { isNight: true, isWeather: () => false, minutesToWeather: () => 999 };
+    const ctx: StateCtx = { isNight: true, isWeather: () => false, minutesToWeather: () => 999, msToTransition: 999_999 };
     expect(isMobConditionMet(sabotender, ctx)).toBe(true);
   });
   it('returns true for pazuzu at night (mob=night)', () => {
-    const ctx: StateCtx = { isNight: true, isWeather: () => false, minutesToWeather: () => 999 };
+    const ctx: StateCtx = { isNight: true, isWeather: () => false, minutesToWeather: () => 999, msToTransition: 999_999 };
     expect(isMobConditionMet(pazuzu, ctx)).toBe(true);
   });
   it('returns false for pazuzu at day', () => {
-    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 999 };
+    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 999, msToTransition: 999_999 };
     expect(isMobConditionMet(pazuzu, ctx)).toBe(false);
   });
   it('weather mob condition: jahannam needs Gales', () => {
-    const yes: StateCtx = { isNight: false, isWeather: (w) => w === 'Gales', minutesToWeather: () => 0 };
-    const no: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 30 };
+    const yes: StateCtx = { isNight: false, isWeather: (w) => w === 'Gales', minutesToWeather: () => 0, msToTransition: 999_999 };
+    const no: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 30, msToTransition: 999_999 };
     expect(isMobConditionMet(jahannam, yes)).toBe(true);
     expect(isMobConditionMet(jahannam, no)).toBe(false);
   });
@@ -97,12 +97,12 @@ describe('isMobConditionMet', () => {
 
 describe('isNmConditionMet', () => {
   it('returns true for NM without nm condition (mob-only)', () => {
-    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 999 };
+    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 999, msToTransition: 999_999 };
     expect(isNmConditionMet(jahannam, ctx)).toBe(true);
   });
   it('cassie needs Blizzards', () => {
-    const yes: StateCtx = { isNight: false, isWeather: (w) => w === 'Blizzards', minutesToWeather: () => 0 };
-    const no: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 30 };
+    const yes: StateCtx = { isNight: false, isWeather: (w) => w === 'Blizzards', minutesToWeather: () => 0, msToTransition: 999_999 };
+    const no: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 30, msToTransition: 999_999 };
     expect(isNmConditionMet(cassie, yes)).toBe(true);
     expect(isNmConditionMet(cassie, no)).toBe(false);
   });
@@ -110,19 +110,19 @@ describe('isNmConditionMet', () => {
 
 describe('isNmConditionSoon', () => {
   it('returns false when no nm condition', () => {
-    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 3 };
+    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 3, msToTransition: 999_999 };
     expect(isNmConditionSoon(jahannam, ctx)).toBe(false);
   });
   it('returns true when weather opens within 5 min', () => {
-    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 3 };
+    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 3, msToTransition: 999_999 };
     expect(isNmConditionSoon(cassie, ctx)).toBe(true);
   });
   it('returns false when weather > 5 min away', () => {
-    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 30 };
+    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 30, msToTransition: 999_999 };
     expect(isNmConditionSoon(cassie, ctx)).toBe(false);
   });
   it('returns false when already active (minutesToWeather=0)', () => {
-    const ctx: StateCtx = { isNight: false, isWeather: () => true, minutesToWeather: () => 0 };
+    const ctx: StateCtx = { isNight: false, isWeather: () => true, minutesToWeather: () => 0, msToTransition: 999_999 };
     expect(isNmConditionSoon(cassie, ctx)).toBe(false);
   });
 });
@@ -141,34 +141,34 @@ describe('computeRowState — 常駐 NM (rule B)', () => {
 
 describe('computeRowState — 有條件 NM (pazuzu)', () => {
   it('全條件 ✓ + 未追蹤 → green', () => {
-    const ctx: StateCtx = { isNight: true, isWeather: (w) => w === 'Gales', minutesToWeather: () => 0 };
+    const ctx: StateCtx = { isNight: true, isWeather: (w) => w === 'Gales', minutesToWeather: () => 0, msToTransition: 999_999 };
     expect(computeRowState(pazuzu, { popAt: undefined }, at('02:00'), ctx)).toBe('green');
   });
   it('mob ✓ + nm 5min 內 → amber', () => {
-    const ctx: StateCtx = { isNight: true, isWeather: () => false, minutesToWeather: () => 3 };
+    const ctx: StateCtx = { isNight: true, isWeather: () => false, minutesToWeather: () => 3, msToTransition: 999_999 };
     expect(computeRowState(pazuzu, { popAt: undefined }, at('02:00'), ctx)).toBe('amber');
   });
   it('mob ✓ + nm 不符 + 不即將 → neutral', () => {
-    const ctx: StateCtx = { isNight: true, isWeather: () => false, minutesToWeather: () => 30 };
+    const ctx: StateCtx = { isNight: true, isWeather: () => false, minutesToWeather: () => 30, msToTransition: 999_999 };
     expect(computeRowState(pazuzu, { popAt: undefined }, at('02:00'), ctx)).toBe('neutral');
   });
   it('mob ✗ → neutral even if NM ✓', () => {
-    const ctx: StateCtx = { isNight: false, isWeather: () => true, minutesToWeather: () => 0 };
+    const ctx: StateCtx = { isNight: false, isWeather: () => true, minutesToWeather: () => 0, msToTransition: 999_999 };
     expect(computeRowState(pazuzu, { popAt: undefined }, at('12:00'), ctx)).toBe('neutral');
   });
   it('CD 進行中 → neutral even if all conditions ✓', () => {
-    const ctx: StateCtx = { isNight: true, isWeather: () => true, minutesToWeather: () => 0 };
+    const ctx: StateCtx = { isNight: true, isWeather: () => true, minutesToWeather: () => 0, msToTransition: 999_999 };
     expect(computeRowState(pazuzu, { popAt: at('01:30') }, at('02:00'), ctx)).toBe('neutral');
   });
 });
 
 describe('computeRowState — NM 條件 only (cassie)', () => {
   it('Blizzards ✓ → green', () => {
-    const ctx: StateCtx = { isNight: false, isWeather: (w) => w === 'Blizzards', minutesToWeather: () => 0 };
+    const ctx: StateCtx = { isNight: false, isWeather: (w) => w === 'Blizzards', minutesToWeather: () => 0, msToTransition: 999_999 };
     expect(computeRowState(cassie, { popAt: undefined }, at('10:00'), ctx)).toBe('green');
   });
   it('Blizzards 4 min 後 → amber (mob 無條件 視為 ✓)', () => {
-    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 4 };
+    const ctx: StateCtx = { isNight: false, isWeather: () => false, minutesToWeather: () => 4, msToTransition: 999_999 };
     expect(computeRowState(cassie, { popAt: undefined }, at('10:00'), ctx)).toBe('amber');
   });
 });
@@ -176,32 +176,47 @@ describe('computeRowState — NM 條件 only (cassie)', () => {
 describe('computeConditionStatus', () => {
   it('returns met when condition matches now', () => {
     expect(computeConditionStatus({ weather: ['Gales'] }, {
-      isWeather: (w) => w === 'Gales', minutesToWeather: () => 0, isNight: false,
+      isWeather: (w) => w === 'Gales', minutesToWeather: () => 0, msToTransition: 999_999, isNight: false,
     })).toBe('met');
   });
   it('returns soon when within 10 min', () => {
     expect(computeConditionStatus({ weather: ['Gales'] }, {
-      isWeather: () => false, minutesToWeather: () => 3, isNight: false,
+      isWeather: () => false, minutesToWeather: () => 3, msToTransition: 999_999, isNight: false,
     })).toBe('soon');
   });
   it('returns distant when > 10 min but finite', () => {
     expect(computeConditionStatus({ weather: ['Gales'] }, {
-      isWeather: () => false, minutesToWeather: () => 30, isNight: false,
+      isWeather: () => false, minutesToWeather: () => 30, msToTransition: 999_999, isNight: false,
     })).toBe('distant');
   });
   it('returns idle when no upcoming occurrence (infinite)', () => {
     expect(computeConditionStatus({ weather: ['Gales'] }, {
-      isWeather: () => false, minutesToWeather: () => Number.POSITIVE_INFINITY, isNight: false,
+      isWeather: () => false, minutesToWeather: () => Number.POSITIVE_INFINITY, msToTransition: 999_999, isNight: false,
     })).toBe('idle');
   });
   it('night condition met when isNight=true', () => {
     expect(computeConditionStatus({ timeOfDay: 'night' }, {
-      isWeather: () => false, minutesToWeather: () => 0, isNight: true,
+      isWeather: () => false, minutesToWeather: () => 0, msToTransition: 999_999, isNight: true,
     })).toBe('met');
   });
   it('day condition met when isNight=false', () => {
     expect(computeConditionStatus({ timeOfDay: 'day' }, {
-      isWeather: () => false, minutesToWeather: () => 0, isNight: false,
+      isWeather: () => false, minutesToWeather: () => 0, msToTransition: 999_999, isNight: false,
     })).toBe('met');
+  });
+  it('night condition during day → soon when transition within threshold', () => {
+    expect(computeConditionStatus({ timeOfDay: 'night' }, {
+      isWeather: () => false, minutesToWeather: () => 0, msToTransition: 3 * 60_000, isNight: false,
+    })).toBe('soon');
+  });
+  it('night condition during day → distant when transition is far away', () => {
+    expect(computeConditionStatus({ timeOfDay: 'night' }, {
+      isWeather: () => false, minutesToWeather: () => 0, msToTransition: 25 * 60_000, isNight: false,
+    })).toBe('distant');
+  });
+  it('day condition during night → soon when transition within threshold', () => {
+    expect(computeConditionStatus({ timeOfDay: 'day' }, {
+      isWeather: () => false, minutesToWeather: () => 0, msToTransition: 1 * 60_000, isNight: true,
+    })).toBe('soon');
   });
 });

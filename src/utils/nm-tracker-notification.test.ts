@@ -26,6 +26,7 @@ describe('computeNextNotifications', () => {
       isNight: false,
       isWeather: () => false,
       minutesToWeather: () => Number.POSITIVE_INFINITY,
+      msToTransition: 999_999,
     }))).toEqual([]);
   });
 
@@ -34,6 +35,7 @@ describe('computeNextNotifications', () => {
       isNight: false,
       isWeather: () => false,
       minutesToWeather: () => Number.POSITIVE_INFINITY,
+      msToTransition: 999_999,
     }));
     expect(result).toEqual([]);
   });
@@ -44,6 +46,7 @@ describe('computeNextNotifications', () => {
       isNight: true,
       isWeather: (w: string) => w === 'Gales',
       minutesToWeather: () => 0,
+      msToTransition: 999_999,
     });
     const result = computeNextNotifications([pazuzu], {}, now, ctxAt);
     const t2 = result.find(r => r.trigger === 'T2');
@@ -59,6 +62,7 @@ describe('computeNextNotifications', () => {
       isNight: true,
       isWeather: () => false,
       minutesToWeather: () => 3,  // Gales opens in 3 min
+      msToTransition: 999_999,
     });
     const result = computeNextNotifications([pazuzu], {}, now, ctxAt);
     const t1 = result.find(r => r.trigger === 'T1');
@@ -74,6 +78,7 @@ describe('computeNextNotifications', () => {
       isNight: true,
       isWeather: () => true,
       minutesToWeather: () => 0,
+      msToTransition: 999_999,
     });
     const result = computeNextNotifications([pazuzu], records, now, ctxAt);
     const t2 = result.find(r => r.trigger === 'T2');

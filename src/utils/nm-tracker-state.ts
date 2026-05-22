@@ -6,6 +6,8 @@ export interface StateCtx {
   isNight: boolean;
   isWeather: (w: string) => boolean;
   minutesToWeather: (w: string) => number;
+  /** Ms until the next day↔night transition (always > 0). */
+  msToTransition: number;
 }
 
 interface NmCondition {
@@ -65,6 +67,9 @@ export function computeConditionStatus(cond: NmCondition, ctx: StateCtx): Condit
     const thresholdMin = NM_SOON_THRESHOLD_MS / 60_000;
     if (minToAny > 0 && minToAny <= thresholdMin) return 'soon';
     if (Number.isFinite(minToAny) && minToAny > thresholdMin) return 'distant';
+  }
+  if (cond.timeOfDay) {
+    return ctx.msToTransition <= NM_SOON_THRESHOLD_MS ? 'soon' : 'distant';
   }
   return 'idle';
 }
