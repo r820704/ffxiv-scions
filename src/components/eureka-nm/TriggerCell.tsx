@@ -221,7 +221,7 @@ export function MergedConditionCellMobile({ nm, now }: Props) {
   }
 
   return (
-    <span className="grid grid-cols-[1fr_auto_1fr] items-center gap-1 text-xs">
+    <span className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-0.5 text-xs">
       <span className="justify-self-center">{renderSegment(mob)}</span>
       <span className="text-muted-foreground">｜</span>
       <span className="justify-self-center">{renderSegment(nmCond)}</span>

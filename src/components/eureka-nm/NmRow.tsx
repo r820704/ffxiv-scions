@@ -39,13 +39,13 @@ export function NmRow(props: NmRowProps) {
       className={`border-l-4 transition-colors cursor-pointer md:cursor-default ${ACCENT[props.state]} ${ROW_BG[props.state]}`}
       onClick={() => props.onOpenDetail?.()}
     >
-      <td className="px-2 py-0.5 md:py-0.5 align-middle">
-        <div className="flex items-center gap-1">
+      <td className="pl-2 pr-0 md:px-2 py-0.5 md:py-0.5 align-middle">
+        <div className="flex items-center md:gap-1">
           <PinStar isPinned={props.isPinned} onToggle={props.onTogglePin} nmName={props.nm.nameTw} />
-          <span className="text-xs text-muted-foreground tabular-nums">{props.nm.level}</span>
+          <span className="hidden md:inline text-xs text-muted-foreground tabular-nums">{props.nm.level}</span>
         </div>
       </td>
-      <td className="px-2 py-0.5 md:py-0.5 align-middle">
+      <td className="pl-1 pr-2 md:px-2 py-0.5 md:py-0.5 align-middle">
         <div className="flex items-center gap-1 min-w-0">
           {props.showZoneChip && (
             <span className="rounded bg-muted px-1 text-xs text-muted-foreground whitespace-nowrap">
@@ -65,10 +65,10 @@ export function NmRow(props: NmRowProps) {
         <NmConditionCell nm={props.nm} now={props.now} />
       </td>
       {/* Mobile only: merged condition cell */}
-      <td className="px-2 py-0.5 align-middle md:hidden">
+      <td className="px-1 py-0.5 align-middle md:hidden">
         <MergedConditionCellMobile nm={props.nm} now={props.now} />
       </td>
-      <td className="px-2 py-0.5 md:py-0.5 align-middle">
+      <td className="pl-1 pr-2 md:px-2 py-0.5 md:py-0.5 align-middle text-right md:text-left">
         <CooldownCell
           nm={props.nm}
           record={props.record}

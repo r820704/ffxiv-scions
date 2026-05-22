@@ -17,13 +17,13 @@ export function PinStar({ isPinned, onToggle, nmName }: PinStarProps) {
         onToggle();
       }}
       className={
-        'p-1 transition-colors ' +
+        'p-0.5 md:p-1 transition-colors ' +
         (isPinned
           ? 'text-primary'
           : 'text-muted-foreground/40 hover:text-muted-foreground')
       }
     >
-      <Star className={'h-4 w-4 ' + (isPinned ? 'fill-current' : '')} />
+      <Star className={'h-3.5 w-3.5 md:h-4 md:w-4 ' + (isPinned ? 'fill-current' : '')} />
     </button>
   );
 }
