@@ -30,9 +30,9 @@ function weatherLabel(weathers: string[] | undefined): string {
 }
 
 function statusIcon(s: ConditionStatus): JSX.Element | null {
-  if (s === 'met') return <Check className="inline align-middle h-3.5 w-3.5 text-success" aria-label="符合" />;
-  if (s === 'soon') return <Hourglass className="inline align-middle h-3.5 w-3.5 text-warning" aria-label="即將" />;
-  if (s === 'distant') return <Clock className="inline align-middle h-3.5 w-3.5 text-sky-500" aria-label="等待中" />;
+  if (s === 'met') return <Check className="inline align-middle translate-y-px h-3.5 w-3.5 text-success" aria-label="符合" />;
+  if (s === 'soon') return <Hourglass className="inline align-middle translate-y-px h-3.5 w-3.5 text-warning" aria-label="即將" />;
+  if (s === 'distant') return <Clock className="inline align-middle translate-y-px h-3.5 w-3.5 text-sky-500" aria-label="等待中" />;
   return null;
 }
 
