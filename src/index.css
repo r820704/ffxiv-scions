@@ -132,6 +132,7 @@
   --c-eureka: #4A9BD9;
   --c-skill: #5BAE5B;
   --c-bozja: #B8922E;
+  --c-nm: #8E62C4;
 }
 
 html, body {
@@ -140,6 +141,10 @@ html, body {
   font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
   margin: 0;
   min-height: 100vh;
+}
+
+html {
+  scrollbar-gutter: stable;
 }
 
 @keyframes float {

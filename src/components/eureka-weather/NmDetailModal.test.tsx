@@ -82,4 +82,15 @@ describe('NmDetailModal', () => {
     const trigList = screen.getByText('觸發方式：在以下地點擊殺').parentElement!;
     expect(trigList.querySelector('[class*="indigo-950"]')).toBeNull();
   });
+
+  it('renders 特殊掉落 section for NM with notable drops', () => {
+    render(<NmDetailModal nmId="copycat-cassie" onClose={vi.fn()} />);
+    expect(screen.getByText('特殊掉落')).toBeInTheDocument();
+    expect(screen.getByText(/凱西耳墜/)).toBeInTheDocument();
+  });
+
+  it('does not render 特殊掉落 section for NM without notable drops', () => {
+    render(<NmDetailModal nmId="sabotender-corrido" onClose={vi.fn()} />);
+    expect(screen.queryByText('特殊掉落')).not.toBeInTheDocument();
+  });
 });

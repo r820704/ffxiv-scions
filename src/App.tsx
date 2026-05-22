@@ -7,6 +7,7 @@ import HomePage from '@/pages/HomePage';
 import EurekaWeatherPage from '@/pages/EurekaWeatherPage';
 import EurekaPage from '@/pages/EurekaPage';
 import EurekaGearPage from '@/pages/EurekaGearPage';
+import EurekaNmPage from '@/pages/EurekaNmPage';
 import AboutPage from '@/pages/AboutPage';
 
 function Contained({ children }: { children: ReactNode }) {
@@ -47,6 +48,14 @@ export default function App() {
             element={
               <Contained>
                 <EurekaGearPage />
+              </Contained>
+            }
+          />
+          <Route
+            path="/eureka-nm"
+            element={
+              <Contained>
+                <EurekaNmPage />
               </Contained>
             }
           />

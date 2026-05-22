@@ -35,6 +35,12 @@
 - 來源：[FFXIV consolegameswiki — Template:Eurekaelement_icon](https://ffxiv.consolegameswiki.com/wiki/Template:Eurekaelement_icon) 社群上傳之屬性 icon（Fire / Ice / Wind / Earth / Lightning / Water）
 - 素材源自 FINAL FANTASY XIV © SQUARE ENIX；感謝 consolegameswiki 社群整理並公開分享
 
+### 1.8 FFXIV Console Games Wiki — 惡名精英特殊掉落物資料
+
+- 來源：[https://ffxiv.consolegameswiki.com](https://ffxiv.consolegameswiki.com)
+- 本專案「惡名精英」頁面所列特殊掉落物名稱，整理自各 NM 頁面之 drop table。
+- 感謝 consolegameswiki 社群維護並公開分享的 NM drop table 資料。
+
 ## 2. 對照與查考來源
 
 > 下列計畫於資料整理過程提供查考與相互印證，特此致謝。

@@ -38,6 +38,15 @@ export default function HomePage() {
             description="優雷卡武器與防具升級進度追蹤"
             cta="規劃路線"
           />
+          <FeatureCard
+            to="/eureka-nm"
+            accent="var(--c-nm)"
+            numeral="Ⅳ"
+            eyebrow="Tool · Ⅳ"
+            title="惡名精英"
+            description="記錄惡名精英的時間軸以及冷卻時間"
+            cta="開始追蹤"
+          />
         </section>
       </div>
     </>
