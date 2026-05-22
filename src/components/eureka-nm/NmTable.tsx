@@ -37,9 +37,9 @@ export function NmTable(props: NmTableProps) {
                 cell ｜ regardless of which side has content. */}
             <th className="px-2 py-0.5 text-left md:hidden whitespace-nowrap w-[100px]">
               <span className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
-                <span className="justify-self-start">觸發</span>
+                <span className="justify-self-center">觸發</span>
                 <span className="text-muted-foreground">｜</span>
-                <span className="justify-self-start">NM</span>
+                <span className="justify-self-center">NM</span>
               </span>
             </th>
             <th className="px-2 py-0.5 text-left w-[72px] md:w-[130px]">冷卻</th>

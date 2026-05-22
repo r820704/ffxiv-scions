@@ -200,7 +200,7 @@ export function MergedConditionCellMobile({ nm, now }: Props) {
   const nmCond = nm.trigger?.nm;
 
   if (!mob && !nmCond) {
-    return <span className="text-xs text-muted-foreground">{EMPTY_LABEL}</span>;
+    return <span className="block text-center text-xs text-muted-foreground">{EMPTY_LABEL}</span>;
   }
 
   const ctx = ctxOf(nm, now);
@@ -222,9 +222,9 @@ export function MergedConditionCellMobile({ nm, now }: Props) {
 
   return (
     <span className="grid grid-cols-[1fr_auto_1fr] items-center gap-1 text-xs">
-      <span className="justify-self-start">{renderSegment(mob)}</span>
+      <span className="justify-self-center">{renderSegment(mob)}</span>
       <span className="text-muted-foreground">｜</span>
-      <span className="justify-self-start">{renderSegment(nmCond)}</span>
+      <span className="justify-self-center">{renderSegment(nmCond)}</span>
     </span>
   );
 }
