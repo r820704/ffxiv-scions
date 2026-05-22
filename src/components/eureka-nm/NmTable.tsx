@@ -42,7 +42,7 @@ export function NmTable(props: NmTableProps) {
                 <span className="justify-self-center">NM</span>
               </span>
             </th>
-            <th className="pl-1 pr-2 md:px-2 py-0.5 text-left w-[64px] md:w-[130px]">冷卻</th>
+            <th className="pl-1 pr-2 md:px-2 py-0.5 text-right md:text-left w-[64px] md:w-[130px]">冷卻</th>
             <th className="pl-1 pr-2 py-0.5 md:px-2 text-right md:text-left w-[44px] md:w-[80px]">記錄</th>
           </tr>
         </thead>

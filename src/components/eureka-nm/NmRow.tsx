@@ -68,7 +68,7 @@ export function NmRow(props: NmRowProps) {
       <td className="px-1 py-0.5 align-middle md:hidden">
         <MergedConditionCellMobile nm={props.nm} now={props.now} />
       </td>
-      <td className="pl-1 pr-2 md:px-2 py-0.5 md:py-0.5 align-middle">
+      <td className="pl-1 pr-2 md:px-2 py-0.5 md:py-0.5 align-middle text-right md:text-left">
         <CooldownCell
           nm={props.nm}
           record={props.record}
