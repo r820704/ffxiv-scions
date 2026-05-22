@@ -62,7 +62,7 @@ export function SubTabStrip({ activeTab, onTabChange, onClearAll }: SubTabStripP
           <DialogHeader>
             <DialogTitle>清除所有 NM 記錄？</DialogTitle>
             <DialogDescription>
-              將清除所有 NM 的「出現時間」記錄。Pin 的 NM 與 push notification 設定不會受影響。此操作不可復原。
+              將清除所有 NM 的「出現時間」記錄。已釘選的 NM 與通知設定不會受影響。此操作不可復原。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
