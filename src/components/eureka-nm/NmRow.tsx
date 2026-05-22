@@ -40,7 +40,7 @@ export function NmRow(props: NmRowProps) {
       onClick={() => props.onOpenDetail?.()}
     >
       <td className="px-2 py-0.5 md:py-0.5 align-middle">
-        <div className="flex items-center gap-0.5 md:gap-1">
+        <div className="flex items-center gap-1">
           <PinStar isPinned={props.isPinned} onToggle={props.onTogglePin} nmName={props.nm.nameTw} />
           <span className="text-xs text-muted-foreground tabular-nums">{props.nm.level}</span>
         </div>

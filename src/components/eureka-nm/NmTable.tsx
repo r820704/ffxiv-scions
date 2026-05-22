@@ -28,7 +28,7 @@ export function NmTable(props: NmTableProps) {
       <table className="w-full text-sm table-fixed">
         <thead className="bg-muted/40 text-xs text-muted-foreground">
           <tr>
-            <th className="px-2 py-0.5 text-left w-[56px] md:w-[60px]">等級</th>
+            <th className="px-2 py-0.5 text-left w-[44px] md:w-[60px]">等級</th>
             <th className="px-2 py-0.5 text-left md:w-[210px]">NM 名稱</th>
             <th className="px-2 py-0.5 text-left hidden md:table-cell">觸發怪</th>
             <th className="px-2 py-0.5 text-left hidden md:table-cell">NM 條件</th>
