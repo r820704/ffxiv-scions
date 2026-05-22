@@ -133,13 +133,13 @@ export function MobConditionCell({ nm, now }: Props) {
       <span>{mobName}・</span>
       {mob.timeOfDay === 'night' && (
         <>
-          <span aria-hidden="true" className="text-base leading-none">🌙</span>
+          <span aria-hidden="true" className="text-sm leading-none">🌙</span>
           <span>夜間</span>
         </>
       )}
       {mob.timeOfDay === 'day' && (
         <>
-          <span aria-hidden="true" className="text-base leading-none">☀</span>
+          <span aria-hidden="true" className="text-sm leading-none">☀</span>
           <span>白天</span>
         </>
       )}
@@ -211,8 +211,8 @@ export function MergedConditionCellMobile({ nm, now }: Props) {
     const status = computeConditionStatus(cond, ctx);
     return (
       <span className="inline-flex items-center gap-0.5">
-        {cond.timeOfDay === 'night' && <span aria-label="夜間" className="text-base leading-none">🌙</span>}
-        {cond.timeOfDay === 'day' && <span aria-label="白天" className="text-base leading-none">☀</span>}
+        {cond.timeOfDay === 'night' && <span aria-label="夜間" className="text-sm leading-none">🌙</span>}
+        {cond.timeOfDay === 'day' && <span aria-label="白天" className="text-sm leading-none">☀</span>}
         {cond.weather?.map(w => <span key={`m-${w}`}>{weatherIcon(w)}</span>)}
         {statusIcon(status)}
       </span>
