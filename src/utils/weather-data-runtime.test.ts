@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isWeatherActive, msUntilWeather } from './weather-data-runtime';
+import { isWeatherActive, msUntilWeather, nextWeatherStart } from './weather-data-runtime';
 
 describe('isWeatherActive', () => {
   it('returns boolean for known zone + weather', () => {
@@ -24,5 +24,33 @@ describe('msUntilWeather', () => {
     expect(ms).toBeGreaterThanOrEqual(0);
     // Should find Gales within 48h (Gales rate in Anemos is non-trivial)
     expect(ms).toBeLessThan(48 * 60 * 60 * 1000);
+  });
+});
+
+describe('nextWeatherStart', () => {
+  it('returns a future timestamp for inactive weather', () => {
+    const now = Date.UTC(2026, 4, 19, 0, 0, 0);
+    const ts = nextWeatherStart('Eureka Anemos', 'Gales', now);
+    if (!isWeatherActive('Eureka Anemos', 'Gales', now)) {
+      expect(ts).not.toBeNull();
+      expect(ts!).toBeGreaterThan(now);
+    }
+  });
+
+  it('skips the current active run when weather is active', () => {
+    // Scan forward to find an active period
+    const start = Date.UTC(2026, 4, 19, 0, 0, 0);
+    const PERIOD_MS = 23 * 60_000 + 20_000;
+    for (let i = 0; i < 100; i++) {
+      const t = start + i * PERIOD_MS;
+      if (isWeatherActive('Eureka Anemos', 'Gales', t)) {
+        const ts = nextWeatherStart('Eureka Anemos', 'Gales', t);
+        expect(ts).not.toBeNull();
+        // Should be past the current period end
+        expect(ts!).toBeGreaterThan(t + PERIOD_MS);
+        return;
+      }
+    }
+    throw new Error('No active Gales window found within scan range');
   });
 });

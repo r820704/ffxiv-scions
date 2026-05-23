@@ -3,7 +3,7 @@ import type { EurekaNm } from '@/data/eureka-nm-data';
 import type { EurekaZone } from '@/data/weather-data';
 import { weatherNamesTw, zoneShortNamesTw, EUREKA_ZONES } from '@/data/weather-data';
 import { eurekaNms } from '@/data/eureka-nm-data';
-import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
+import { isWeatherActive, msUntilWeather, nextWeatherStart } from '@/utils/weather-data-runtime';
 import { isDayTime, getNextTransition } from '@/utils/game-day-night';
 import { toEorzeaTime } from '@/utils/eorzea-time';
 import { currentRunRemaining } from '@/utils/weather-engine';
@@ -18,6 +18,18 @@ function statusFromMs(currentlyActive: boolean, msToNext: number): ConditionStat
   if (msToNext > 0 && msToNext <= NM_SOON_THRESHOLD_MS) return 'soon';
   if (Number.isFinite(msToNext) && msToNext > NM_SOON_THRESHOLD_MS) return 'distant';
   return 'idle';
+}
+
+const STATUS_ORDER: Record<ConditionStatus, number> = {
+  met: 0,
+  soon: 1,
+  distant: 2,
+  idle: 3,
+};
+
+function formatClockTime(ts: number): string {
+  const d = new Date(ts);
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
 interface Props { zone: EurekaZone; now: number; }
@@ -56,7 +68,7 @@ export function ConditionSummaryBar({ zone, now }: Props) {
     />
   );
 
-  const weatherChips = weathers.map(w => {
+  const weatherEntries = weathers.map(w => {
     const active = isWeatherActive(zone, w, now);
     const msToNext = msUntilWeather(zone, w, now);
     const status = statusFromMs(active, msToNext);
@@ -64,16 +76,20 @@ export function ConditionSummaryBar({ zone, now }: Props) {
       ? formatRemain(currentRunRemaining(zone, w, now) ?? 0, '剩')
       : formatRemain(msToNext, '再');
     const tw = weatherNamesTw[w] ?? w;
-    return (
-      <ConditionChip
-        key={w}
-        icon={<WeatherIcon weatherEn={w} weatherTw={tw} size={14} />}
-        label={tw}
-        status={status}
-        remainText={remain}
-      />
-    );
+    const nextTs = active ? nextWeatherStart(zone, w, now) : null;
+    return { w, status, remain, tw, nextText: nextTs != null ? formatClockTime(nextTs) : undefined };
   });
+  const sortedWeather = weatherEntries.slice().sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
+  const weatherChips = sortedWeather.map(e => (
+    <ConditionChip
+      key={e.w}
+      icon={<WeatherIcon weatherEn={e.w} weatherTw={e.tw} size={14} />}
+      label={e.tw}
+      status={e.status}
+      remainText={e.remain}
+      nextText={e.nextText}
+    />
+  ));
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-2 py-2 mb-2">
@@ -144,7 +160,7 @@ export function CustomConditionSummaryBar({ nms, now }: CustomProps) {
       ]
     : [];
 
-  const weatherChips = weatherPairs.map(({ zone, weather }) => {
+  const weatherEntries = weatherPairs.map(({ zone, weather }) => {
     const active = isWeatherActive(zone, weather, now);
     const msToNext = msUntilWeather(zone, weather, now);
     const status = statusFromMs(active, msToNext);
@@ -154,16 +170,28 @@ export function CustomConditionSummaryBar({ nms, now }: CustomProps) {
     const tw = weatherNamesTw[weather] ?? weather;
     const zoneTw = zoneShortNamesTw[zone] ?? zone;
     const label = multiZone ? `${tw}（${zoneTw}）` : tw;
-    return (
-      <ConditionChip
-        key={`${zone}|${weather}`}
-        icon={<WeatherIcon weatherEn={weather} weatherTw={tw} size={14} />}
-        label={label}
-        status={status}
-        remainText={remain}
-      />
-    );
+    const nextTs = active ? nextWeatherStart(zone, weather, now) : null;
+    return {
+      key: `${zone}|${weather}`,
+      weather,
+      tw,
+      label,
+      status,
+      remain,
+      nextText: nextTs != null ? formatClockTime(nextTs) : undefined,
+    };
   });
+  const sortedWeather = weatherEntries.slice().sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
+  const weatherChips = sortedWeather.map(e => (
+    <ConditionChip
+      key={e.key}
+      icon={<WeatherIcon weatherEn={e.weather} weatherTw={e.tw} size={14} />}
+      label={e.label}
+      status={e.status}
+      remainText={e.remain}
+      nextText={e.nextText}
+    />
+  ));
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-2 py-2 mb-2">
