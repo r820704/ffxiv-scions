@@ -30,7 +30,7 @@ export function ConditionChip({ icon, label, status, remainText, nextText }: Con
       <span>{label}</span>
       {statusIcon}
       {remainText && <span className="tabular-nums text-muted-foreground">{remainText}</span>}
-      {nextText && <span className="tabular-nums text-muted-foreground">· 下次 {nextText}</span>}
+      {nextText && <span className="tabular-nums text-muted-foreground">· {nextText}</span>}
     </span>
   );
 }
