@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
 import {
   Dialog,
@@ -27,9 +27,17 @@ const TABS: Array<{ key: NmTabKey; label: string }> = [
 
 export function SubTabStrip({ activeTab, onTabChange, onClearAll }: SubTabStripProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const stripRef = useRef<HTMLDivElement>(null);
+
+  const handleTabClick = (key: NmTabKey) => {
+    onTabChange(key);
+    requestAnimationFrame(() => {
+      stripRef.current?.scrollIntoView({ block: 'start' });
+    });
+  };
 
   return (
-    <div className="flex items-center border-b border-border mb-2">
+    <div ref={stripRef} className="flex items-center border-b border-border mb-2">
       <div role="tablist" className="flex gap-1 flex-1">
         {TABS.map(t => (
           <button
@@ -42,7 +50,7 @@ export function SubTabStrip({ activeTab, onTabChange, onClearAll }: SubTabStripP
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-muted-foreground hover:text-foreground')
             }
-            onClick={() => onTabChange(t.key)}
+            onClick={() => handleTabClick(t.key)}
           >
             {t.label}
           </button>
