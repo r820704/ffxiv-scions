@@ -27,10 +27,6 @@ const STATUS_ORDER: Record<ConditionStatus, number> = {
   idle: 3,
 };
 
-function formatClockTime(ts: number): string {
-  const d = new Date(ts);
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-}
 
 interface Props { zone: EurekaZone; now: number; }
 
@@ -49,22 +45,13 @@ export function ConditionSummaryBar({ zone, now }: Props) {
   const isNightNow = !isDayTime(et);
   const msToTransition = getNextTransition(now);
 
-  const dayChip = (
+  const activeTimeOfDayChip = (
     <ConditionChip
-      key="day"
-      icon={<span aria-hidden="true">☀</span>}
-      label="白天"
-      status={!isNightNow ? 'met' : 'idle'}
-      remainText={formatRemain(msToTransition, !isNightNow ? '剩' : '再')}
-    />
-  );
-  const nightChip = (
-    <ConditionChip
-      key="night"
-      icon={<span aria-hidden="true">🌙</span>}
-      label="夜間"
-      status={isNightNow ? 'met' : 'idle'}
-      remainText={formatRemain(msToTransition, isNightNow ? '剩' : '再')}
+      key={isNightNow ? 'night' : 'day'}
+      icon={<span aria-hidden="true">{isNightNow ? '🌙' : '☀'}</span>}
+      label={isNightNow ? '夜間' : '白天'}
+      status="met"
+      remainText={formatRemain(msToTransition, '剩')}
     />
   );
 
@@ -77,7 +64,8 @@ export function ConditionSummaryBar({ zone, now }: Props) {
       : formatRemain(msToNext, '再');
     const tw = weatherNamesTw[w] ?? w;
     const nextTs = active ? nextWeatherStart(zone, w, now) : null;
-    return { w, status, remain, tw, nextText: nextTs != null ? formatClockTime(nextTs) : undefined };
+    const nextText = nextTs != null ? formatRemain(nextTs - now, '再') : undefined;
+    return { w, status, remain, tw, nextText: nextText || undefined };
   });
   const sortedWeather = weatherEntries.slice().sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
   const weatherChips = sortedWeather.map(e => (
@@ -93,8 +81,7 @@ export function ConditionSummaryBar({ zone, now }: Props) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-2 py-2 mb-2">
-      {dayChip}
-      {nightChip}
+      {activeTimeOfDayChip}
       {weatherChips}
     </div>
   );
@@ -141,24 +128,15 @@ export function CustomConditionSummaryBar({ nms, now }: CustomProps) {
   const isNightNow = !isDayTime(et);
   const msToTransition = getNextTransition(now);
 
-  const dayNightChips = needsTimeOfDay
-    ? [
-        <ConditionChip
-          key="day"
-          icon={<span aria-hidden="true">☀</span>}
-          label="白天"
-          status={!isNightNow ? 'met' : 'idle'}
-          remainText={formatRemain(msToTransition, !isNightNow ? '剩' : '再')}
-        />,
-        <ConditionChip
-          key="night"
-          icon={<span aria-hidden="true">🌙</span>}
-          label="夜間"
-          status={isNightNow ? 'met' : 'idle'}
-          remainText={formatRemain(msToTransition, isNightNow ? '剩' : '再')}
-        />,
-      ]
-    : [];
+  const activeTimeOfDayChip = needsTimeOfDay ? (
+    <ConditionChip
+      key={isNightNow ? 'night' : 'day'}
+      icon={<span aria-hidden="true">{isNightNow ? '🌙' : '☀'}</span>}
+      label={isNightNow ? '夜間' : '白天'}
+      status="met"
+      remainText={formatRemain(msToTransition, '剩')}
+    />
+  ) : null;
 
   const weatherEntries = weatherPairs.map(({ zone, weather }) => {
     const active = isWeatherActive(zone, weather, now);
@@ -171,6 +149,7 @@ export function CustomConditionSummaryBar({ nms, now }: CustomProps) {
     const zoneTw = zoneShortNamesTw[zone] ?? zone;
     const label = multiZone ? `${tw}（${zoneTw}）` : tw;
     const nextTs = active ? nextWeatherStart(zone, weather, now) : null;
+    const nextText = nextTs != null ? formatRemain(nextTs - now, '再') : undefined;
     return {
       key: `${zone}|${weather}`,
       weather,
@@ -178,7 +157,7 @@ export function CustomConditionSummaryBar({ nms, now }: CustomProps) {
       label,
       status,
       remain,
-      nextText: nextTs != null ? formatClockTime(nextTs) : undefined,
+      nextText: nextText || undefined,
     };
   });
   const sortedWeather = weatherEntries.slice().sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
@@ -195,7 +174,7 @@ export function CustomConditionSummaryBar({ nms, now }: CustomProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-2 py-2 mb-2">
-      {dayNightChips}
+      {activeTimeOfDayChip}
       {weatherChips}
     </div>
   );

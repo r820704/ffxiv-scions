@@ -11,10 +11,11 @@ vi.mock('@/utils/weather-data-runtime', () => ({
 afterEach(() => cleanup());
 
 describe('ConditionSummaryBar', () => {
-  it('renders 白天 + 夜間 chips always', () => {
+  it('renders exactly one of 白天/夜間 (the active one) and not the other', () => {
     render(<ConditionSummaryBar zone="Eureka Anemos" now={Date.now()} />);
-    expect(screen.getByText('白天')).toBeInTheDocument();
-    expect(screen.getByText('夜間')).toBeInTheDocument();
+    const hasDay = screen.queryByText('白天') != null;
+    const hasNight = screen.queryByText('夜間') != null;
+    expect(hasDay !== hasNight).toBe(true);
   });
 
   it('renders weather chips for Anemos using TC weather names (Gales → 強風)', () => {

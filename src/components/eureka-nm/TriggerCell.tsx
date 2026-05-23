@@ -4,7 +4,7 @@ import { weatherNamesTw } from '@/data/weather-data';
 import { Check, Hourglass, Clock } from 'lucide-react';
 import WeatherIcon from '@/components/WeatherIcon';
 import { computeConditionStatus } from '@/utils/nm-tracker-state';
-import { isWeatherActive, msUntilWeather } from '@/utils/weather-data-runtime';
+import { isWeatherActive, msUntilWeather, nextWeatherStart } from '@/utils/weather-data-runtime';
 import { currentRunRemaining } from '@/utils/weather-engine';
 import { isDayTime, getNextTransition } from '@/utils/game-day-night';
 import { toEorzeaTime } from '@/utils/eorzea-time';
@@ -71,13 +71,22 @@ function conditionCountdown(
   status: ConditionStatus,
 ): string {
   // met: how long the current window will still last → 「剩」
+  // For weather, also show the next occurrence countdown so the player can
+  // see whether to wait for the next window after the current run ends.
   if (status === 'met') {
     if (cond.weather && cond.weather.length > 0) {
       // Find which of the listed weathers is currently active and ask how long it runs
       for (const w of cond.weather) {
         if (isWeatherActive(nm.zone, w, now)) {
           const ms = currentRunRemaining(nm.zone, w, now);
-          if (ms != null) return formatRemain(ms, '剩');
+          if (ms == null) continue;
+          const remainStr = formatRemain(ms, '剩');
+          const nextTs = nextWeatherStart(nm.zone, w, now);
+          if (nextTs != null) {
+            const nextStr = formatRemain(nextTs - now, '再');
+            if (nextStr) return `${remainStr} · ${nextStr}`;
+          }
+          return remainStr;
         }
       }
       return '';

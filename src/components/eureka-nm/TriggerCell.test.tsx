@@ -6,6 +6,7 @@ import { eurekaNms } from '@/data/eureka-nm-data';
 vi.mock('@/utils/weather-data-runtime', () => ({
   isWeatherActive: () => true,
   msUntilWeather: () => 0,
+  nextWeatherStart: () => null,
 }));
 
 afterEach(() => cleanup());
