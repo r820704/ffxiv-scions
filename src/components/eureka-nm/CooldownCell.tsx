@@ -38,7 +38,12 @@ export function CooldownCell({ nm, record, state, now, onSetCustom }: Props) {
   } else if (state === 'amber' && (remain === null || remain <= 0)) {
     cdLabel = <span className="font-medium text-warning">提前觸發</span>;
   } else if (state === 'amber' && remain !== null && remain > 0) {
-    cdLabel = <span className="font-medium tabular-nums text-warning">{formatHHMMSS(remain)}</span>;
+    cdLabel = (
+      <span className="font-medium text-warning">
+        <span className="tabular-nums">{formatHHMMSS(remain)}</span>
+        <span className="ml-1">提前觸發</span>
+      </span>
+    );
   } else if (remain !== null && remain > 0) {
     cdLabel = <span className="tabular-nums">{formatHHMMSS(remain)}</span>;
   } else {
