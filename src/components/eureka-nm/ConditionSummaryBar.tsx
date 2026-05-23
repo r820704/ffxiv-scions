@@ -76,7 +76,7 @@ export function ConditionSummaryBar({ zone, now }: Props) {
   });
 
   return (
-    <div className="flex flex-wrap items-center gap-2 px-2 py-2 mb-2 border-y border-border bg-muted/20">
+    <div className="flex flex-wrap items-center gap-2 px-2 py-2 mb-2">
       {dayChip}
       {nightChip}
       {weatherChips}
@@ -166,7 +166,7 @@ export function CustomConditionSummaryBar({ nms, now }: CustomProps) {
   });
 
   return (
-    <div className="flex flex-wrap items-center gap-2 px-2 py-2 mb-2 border-y border-border bg-muted/20">
+    <div className="flex flex-wrap items-center gap-2 px-2 py-2 mb-2">
       {dayNightChips}
       {weatherChips}
     </div>
