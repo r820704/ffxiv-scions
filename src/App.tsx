@@ -23,54 +23,56 @@ export default function App() {
       >
         跳至主要內容
       </a>
-      <NavBar />
-      <main id="main">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route
-            path="/eureka-weather"
-            element={
-              <Contained>
-                <EurekaWeatherPage />
-              </Contained>
-            }
-          />
-          <Route
-            path="/eureka"
-            element={
-              <Contained>
-                <EurekaPage />
-              </Contained>
-            }
-          />
-          <Route
-            path="/eureka-gear"
-            element={
-              <Contained>
-                <EurekaGearPage />
-              </Contained>
-            }
-          />
-          <Route
-            path="/eureka-nm"
-            element={
-              <Contained>
-                <EurekaNmPage />
-              </Contained>
-            }
-          />
-          <Route
-            path="/about"
-            element={
-              <Contained>
-                <AboutPage />
-              </Contained>
-            }
-          />
-        </Routes>
-      </main>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-4">
-        <SiteFooter />
+      <div className="min-h-screen flex flex-col">
+        <NavBar />
+        <main id="main" className="flex-1">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/eureka-weather"
+              element={
+                <Contained>
+                  <EurekaWeatherPage />
+                </Contained>
+              }
+            />
+            <Route
+              path="/eureka"
+              element={
+                <Contained>
+                  <EurekaPage />
+                </Contained>
+              }
+            />
+            <Route
+              path="/eureka-gear"
+              element={
+                <Contained>
+                  <EurekaGearPage />
+                </Contained>
+              }
+            />
+            <Route
+              path="/eureka-nm"
+              element={
+                <Contained>
+                  <EurekaNmPage />
+                </Contained>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <Contained>
+                  <AboutPage />
+                </Contained>
+              }
+            />
+          </Routes>
+        </main>
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-4 w-full">
+          <SiteFooter />
+        </div>
       </div>
       <Toaster position="bottom-center" />
     </HashRouter>
