@@ -3,6 +3,7 @@ import type { NmRecord } from '@/types/nm-tracker';
 import type { StateCtx } from './nm-tracker-state';
 import {
   isCdReady,
+  isCdSoon,
   isMobConditionMet,
   isNmConditionMet,
   isNmConditionSoon,
@@ -22,12 +23,13 @@ const FINE_STEP_MS = 60_000;  // 1 minute
 
 /**
  * For each pinned NM, find the next T1 and T2 trigger time within 24h.
- * - T1: mob condition ✓ AND nm condition 5 min within opening (預備)
- * - T2: all conditions ✓ (CD ready + mob ✓ + nm ✓)
+ * - T1: (CD ready OR CD ≤ NM_SOON_THRESHOLD_MS away) AND mob condition ✓ AND
+ *       NM condition opens within NM_SOON_THRESHOLD_MS (預備). Aligns with the
+ *       amber row state in computeRowState.
+ * - T2: all conditions ✓ (CD ready + mob ✓ + nm ✓). Aligns with the green row.
  *
  * Strategy: fine 1-min scan across 24h lookahead (1440 steps per NM).
- * Returns at most 1 T1 + 1 T2
- * per NM (the next occurrence).
+ * Returns at most 1 T1 + 1 T2 per NM (the next occurrence).
  *
  * 常駐 NMs (no trigger) are skipped — they don't have meaningful "windows".
  */
@@ -52,6 +54,7 @@ export function computeNextNotifications(
     while (t < horizonEnd && (foundT1 === null || foundT2 === null)) {
       const ctx = ctxAt(nm, t);
       const cdReady = isCdReady(records[nm.id]?.popAt, t);
+      const cdSoon = isCdSoon(records[nm.id]?.popAt, t);
       const mobMet = isMobConditionMet(nm, ctx);
       const nmMet = isNmConditionMet(nm, ctx);
       const nmSoon = isNmConditionSoon(nm, ctx);
@@ -59,7 +62,7 @@ export function computeNextNotifications(
       if (cdReady && mobMet && nmMet && foundT2 === null) {
         foundT2 = t;
       }
-      if (cdReady && mobMet && !nmMet && nmSoon && foundT1 === null) {
+      if ((cdReady || cdSoon) && mobMet && !nmMet && nmSoon && foundT1 === null) {
         foundT1 = t;
       }
       t += FINE_STEP_MS;

@@ -72,7 +72,7 @@ export function NotificationButton({ pinned, enabled, permission, supported, onS
             </h4>
             {pinnedNms.length === 0 ? (
               <p className="text-xs text-muted-foreground">
-                尚未 pin 任何 NM。前往 zone tab 點 ☆ 加入。
+                尚未釘選任何 NM。請至各區域分頁點 ☆ 加入。
               </p>
             ) : (
               <ul className="text-xs space-y-0.5">

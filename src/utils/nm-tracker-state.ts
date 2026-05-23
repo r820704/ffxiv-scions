@@ -27,6 +27,13 @@ export function isCdReady(popAt: number | undefined, now: number): boolean {
   return now >= popAt + NM_CD_MS;
 }
 
+/** CD still ticking but ≤ NM_SOON_THRESHOLD_MS away from becoming ready. */
+export function isCdSoon(popAt: number | undefined, now: number): boolean {
+  if (popAt == null) return false;
+  const remain = popAt + NM_CD_MS - now;
+  return remain > 0 && remain <= NM_SOON_THRESHOLD_MS;
+}
+
 function matchesCondition(cond: NmCondition, ctx: StateCtx): boolean {
   if (cond.timeOfDay === 'night' && !ctx.isNight) return false;
   if (cond.timeOfDay === 'day' && ctx.isNight) return false;
@@ -82,14 +89,14 @@ export function computeRowState(
 ): NmRowState {
   const isUnconditional = nm.trigger == null;
   const cdReady = isCdReady(record.popAt, now);
+  const cdSoon = isCdSoon(record.popAt, now);
   const wasTracked = record.popAt != null;
 
   if (isUnconditional) {
     return (wasTracked && cdReady) ? 'green' : 'neutral';
   }
   if (!ctx) return 'neutral';
-  if (!cdReady) return 'neutral';
-  if (isMobConditionMet(nm, ctx) && isNmConditionMet(nm, ctx)) return 'green';
-  if (isMobConditionMet(nm, ctx) && isNmConditionSoon(nm, ctx)) return 'amber';
+  if (cdReady && isMobConditionMet(nm, ctx) && isNmConditionMet(nm, ctx)) return 'green';
+  if ((cdReady || cdSoon) && isMobConditionMet(nm, ctx) && isNmConditionSoon(nm, ctx)) return 'amber';
   return 'neutral';
 }

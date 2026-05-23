@@ -4,6 +4,7 @@ import {
   computeConditionStatus,
   cdRemainMs,
   isCdReady,
+  isCdSoon,
   isMobConditionMet,
   isNmConditionMet,
   isNmConditionSoon,
@@ -72,6 +73,20 @@ describe('isCdReady', () => {
   it('true when popAt missing', () => expect(isCdReady(undefined, at('10:00'))).toBe(true));
   it('true when CD expired', () => expect(isCdReady(at('07:00'), at('10:00'))).toBe(true));
   it('false when CD running', () => expect(isCdReady(at('09:30'), at('10:00'))).toBe(false));
+});
+
+describe('isCdSoon', () => {
+  it('false when popAt missing (no CD running)', () => expect(isCdSoon(undefined, at('10:00'))).toBe(false));
+  it('false when CD already expired', () => expect(isCdSoon(at('07:00'), at('10:00'))).toBe(false));
+  // NM_CD_MS = 2h, NM_SOON_THRESHOLD_MS = 10min
+  it('true when CD has ≤10 min remaining (popped 1h55m ago)', () => {
+    // popAt 1h55m before now → CD remain = 5 min → soon
+    expect(isCdSoon(at('08:05'), at('10:00'))).toBe(true);
+  });
+  it('false when CD has >10 min remaining', () => {
+    // popAt 1h45m before now → CD remain = 15 min → not soon
+    expect(isCdSoon(at('08:15'), at('10:00'))).toBe(false);
+  });
 });
 
 describe('isMobConditionMet', () => {
@@ -159,6 +174,22 @@ describe('computeRowState — 有條件 NM (pazuzu)', () => {
   it('CD 進行中 → neutral even if all conditions ✓', () => {
     const ctx: StateCtx = { isNight: true, isWeather: () => true, minutesToWeather: () => 0, msToTransition: 999_999 };
     expect(computeRowState(pazuzu, { popAt: at('01:30') }, at('02:00'), ctx)).toBe('neutral');
+  });
+  // Extended amber: row also goes amber when CD ≤10 min away + mob ✓ + nm soon.
+  it('CD ≤10 min + mob ✓ + nm soon → amber (early-prep window)', () => {
+    // popAt at 00:05 → CD remain at 02:00 = 5 min → cdSoon ✓
+    const ctx: StateCtx = { isNight: true, isWeather: () => false, minutesToWeather: () => 3, msToTransition: 999_999 };
+    expect(computeRowState(pazuzu, { popAt: at('00:05') }, at('02:00'), ctx)).toBe('amber');
+  });
+  it('CD ≤10 min + mob ✓ + nm met (not soon) → still neutral (need to wait for CD)', () => {
+    // CD remain 5 min, but nm already active (minutesToWeather=0 = active, not "soon")
+    const ctx: StateCtx = { isNight: true, isWeather: () => true, minutesToWeather: () => 0, msToTransition: 999_999 };
+    expect(computeRowState(pazuzu, { popAt: at('00:05') }, at('02:00'), ctx)).toBe('neutral');
+  });
+  it('CD >10 min + mob ✓ + nm soon → neutral (CD too far)', () => {
+    // CD remain 15 min, not cdSoon
+    const ctx: StateCtx = { isNight: true, isWeather: () => false, minutesToWeather: () => 3, msToTransition: 999_999 };
+    expect(computeRowState(pazuzu, { popAt: at('00:15') }, at('02:00'), ctx)).toBe('neutral');
   });
 });
 

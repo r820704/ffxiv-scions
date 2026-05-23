@@ -25,15 +25,20 @@ export function CooldownCell({ nm, record, state, now, onSetCustom }: Props) {
   const [customOpen, setCustomOpen] = useState(false);
   const remain = cdRemainMs(record?.popAt, now);
 
-  // Label hierarchy (row state wins over CD digits when actionable):
-  //   row green or amber       -> 「可觸發」/「可提前觸發」 (color matches row accent)
-  //   row neutral + CD running -> HH:MM:SS countdown
-  //   row neutral + otherwise  -> 「--」 (untracked, or CD elapsed but conditions block)
+  // Label hierarchy (row state + CD state combined):
+  //   row green                       -> 「可觸發」 (success color, CD is ready)
+  //   row amber + CD ready            -> 「提前觸發」 (warning color, can leave now)
+  //   row amber + CD still counting   -> HH:MM:SS countdown in warning color
+  //                                      (mob ✓ + nm soon + CD ≤ 10 min away)
+  //   row neutral + CD counting       -> HH:MM:SS countdown (neutral)
+  //   row neutral + otherwise         -> 「--」 (untracked, or CD elapsed but conditions block)
   let cdLabel: JSX.Element;
   if (state === 'green') {
     cdLabel = <span className="font-medium text-owned">可觸發</span>;
-  } else if (state === 'amber') {
+  } else if (state === 'amber' && (remain === null || remain <= 0)) {
     cdLabel = <span className="font-medium text-warning">提前觸發</span>;
+  } else if (state === 'amber' && remain !== null && remain > 0) {
+    cdLabel = <span className="font-medium tabular-nums text-warning">{formatHHMMSS(remain)}</span>;
   } else if (remain !== null && remain > 0) {
     cdLabel = <span className="tabular-nums">{formatHHMMSS(remain)}</span>;
   } else {
