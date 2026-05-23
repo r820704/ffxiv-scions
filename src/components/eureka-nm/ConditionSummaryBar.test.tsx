@@ -5,6 +5,7 @@ import { ConditionSummaryBar } from './ConditionSummaryBar';
 vi.mock('@/utils/weather-data-runtime', () => ({
   isWeatherActive: () => false,
   msUntilWeather: () => 30 * 60_000,
+  nextWeatherStart: () => null,
 }));
 
 afterEach(() => cleanup());

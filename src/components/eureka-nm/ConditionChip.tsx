@@ -7,6 +7,7 @@ interface ConditionChipProps {
   label: string;
   status: ConditionStatus;
   remainText: string;
+  nextText?: string;
 }
 
 const COLOR: Record<ConditionStatus, string> = {
@@ -16,7 +17,7 @@ const COLOR: Record<ConditionStatus, string> = {
   idle: 'border-border text-muted-foreground',
 };
 
-export function ConditionChip({ icon, label, status, remainText }: ConditionChipProps) {
+export function ConditionChip({ icon, label, status, remainText, nextText }: ConditionChipProps) {
   const statusIcon =
     status === 'met' ? <Check className="translate-y-px h-2.5 w-2.5 text-owned" />
     : status === 'soon' ? <Hourglass className="translate-y-px h-2.5 w-2.5 text-warning" />
@@ -29,6 +30,7 @@ export function ConditionChip({ icon, label, status, remainText }: ConditionChip
       <span>{label}</span>
       {statusIcon}
       {remainText && <span className="tabular-nums text-muted-foreground">{remainText}</span>}
+      {nextText && <span className="tabular-nums text-muted-foreground">· 下次 {nextText}</span>}
     </span>
   );
 }
