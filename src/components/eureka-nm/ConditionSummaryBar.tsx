@@ -49,22 +49,13 @@ export function ConditionSummaryBar({ zone, now }: Props) {
   const isNightNow = !isDayTime(et);
   const msToTransition = getNextTransition(now);
 
-  const dayChip = (
+  const activeTimeOfDayChip = (
     <ConditionChip
-      key="day"
-      icon={<span aria-hidden="true">☀</span>}
-      label="白天"
-      status={!isNightNow ? 'met' : 'idle'}
-      remainText={formatRemain(msToTransition, !isNightNow ? '剩' : '再')}
-    />
-  );
-  const nightChip = (
-    <ConditionChip
-      key="night"
-      icon={<span aria-hidden="true">🌙</span>}
-      label="夜間"
-      status={isNightNow ? 'met' : 'idle'}
-      remainText={formatRemain(msToTransition, isNightNow ? '剩' : '再')}
+      key={isNightNow ? 'night' : 'day'}
+      icon={<span aria-hidden="true">{isNightNow ? '🌙' : '☀'}</span>}
+      label={isNightNow ? '夜間' : '白天'}
+      status="met"
+      remainText={formatRemain(msToTransition, '剩')}
     />
   );
 
@@ -93,8 +84,7 @@ export function ConditionSummaryBar({ zone, now }: Props) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-2 py-2 mb-2">
-      {dayChip}
-      {nightChip}
+      {activeTimeOfDayChip}
       {weatherChips}
     </div>
   );
@@ -141,24 +131,15 @@ export function CustomConditionSummaryBar({ nms, now }: CustomProps) {
   const isNightNow = !isDayTime(et);
   const msToTransition = getNextTransition(now);
 
-  const dayNightChips = needsTimeOfDay
-    ? [
-        <ConditionChip
-          key="day"
-          icon={<span aria-hidden="true">☀</span>}
-          label="白天"
-          status={!isNightNow ? 'met' : 'idle'}
-          remainText={formatRemain(msToTransition, !isNightNow ? '剩' : '再')}
-        />,
-        <ConditionChip
-          key="night"
-          icon={<span aria-hidden="true">🌙</span>}
-          label="夜間"
-          status={isNightNow ? 'met' : 'idle'}
-          remainText={formatRemain(msToTransition, isNightNow ? '剩' : '再')}
-        />,
-      ]
-    : [];
+  const activeTimeOfDayChip = needsTimeOfDay ? (
+    <ConditionChip
+      key={isNightNow ? 'night' : 'day'}
+      icon={<span aria-hidden="true">{isNightNow ? '🌙' : '☀'}</span>}
+      label={isNightNow ? '夜間' : '白天'}
+      status="met"
+      remainText={formatRemain(msToTransition, '剩')}
+    />
+  ) : null;
 
   const weatherEntries = weatherPairs.map(({ zone, weather }) => {
     const active = isWeatherActive(zone, weather, now);
@@ -195,7 +176,7 @@ export function CustomConditionSummaryBar({ nms, now }: CustomProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-2 py-2 mb-2">
-      {dayNightChips}
+      {activeTimeOfDayChip}
       {weatherChips}
     </div>
   );
