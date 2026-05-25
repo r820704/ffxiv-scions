@@ -73,6 +73,8 @@
 // ───────────────────────────────────────────────────────────────────────────
 
 import sharp from 'sharp';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 // ─────────── EDITABLE ───────────
 const WORDMARK_TOP = 'FFXIV';
@@ -81,8 +83,11 @@ const FEATURES_ROW = '優雷卡天氣·文理技能·禁地兵裝';
 const SLOGAN = '為你的冒險點一盞燈';
 // ────────────────────────────────
 
-const OUT = '/workspaces/FFXIV/public/brand/og-image.png';
-const LANTERN = '/workspaces/FFXIV/public/brand/favicon-512.png';
+// Resolve asset paths relative to the repo root (this file lives in scripts/),
+// so the script works regardless of cwd or the local checkout directory name.
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const OUT = join(ROOT, 'public/brand/og-image.png');
+const LANTERN = join(ROOT, 'public/brand/favicon-512.png');
 
 const W = 1200;
 const H = 630;
