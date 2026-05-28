@@ -17,7 +17,7 @@ lessons.md
 .claude/
 .agents/
 .superpowers/
-docs/
+docs
 
 # Editor
 .vscode/
