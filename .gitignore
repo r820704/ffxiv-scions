@@ -33,6 +33,7 @@ docs/eureka-weapons-review.csv
 
 # Ephemeral verification artifacts (screenshots, snapshots)
 tmp/
+.playwright-mcp/
 
 # Synced from root by vite plugin (see syncRootNoticesToPublic in vite.config.ts)
 public/THIRD-PARTY-NOTICES.md
